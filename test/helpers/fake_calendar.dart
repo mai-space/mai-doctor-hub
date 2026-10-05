@@ -6,6 +6,7 @@ class FakeCalendar implements CalendarGateway {
   final foreign = <String, CalendarEventData>{}; // fremde Events
   bool permission = true;
   int writes = 0;
+  final syncRequests = <String>[];
   int _next = 1;
   Set<String> failOnTitle = {};
 
@@ -44,6 +45,8 @@ class FakeCalendar implements CalendarGateway {
     if (failOnTitle.any(event.title.contains)) {
       throw const CalendarException('boom');
     }
+    // Wie der echte Kanal: asynchron (deckt parallele Abgleiche auf).
+    await Future<void>.delayed(Duration.zero);
     writes++;
     final calendar = events.putIfAbsent(calendarId, () => {});
     final id = eventId != null && calendar.containsKey(eventId)
@@ -59,6 +62,10 @@ class FakeCalendar implements CalendarGateway {
       calendar.remove(eventId);
     }
   }
+
+  @override
+  Future<void> requestSync(String calendarId) async =>
+      syncRequests.add(calendarId);
 
   List<CalendarEventData> all(String calendarId) =>
       events[calendarId]?.values.toList() ?? const [];

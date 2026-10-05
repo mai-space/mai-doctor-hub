@@ -89,7 +89,24 @@ class CalendarSyncService {
       .convert(utf8.encode(jsonEncode({'c': calendarId, ...event.toJson()})))
       .toString();
 
+  Future<void>? _inFlight;
+
+  /// Läuft nie parallel (manueller Abgleich + Auto-Sync würden sonst
+  /// dasselbe Event doppelt anlegen).
   Future<CalendarSyncReport> syncAll() async {
+    while (_inFlight != null) {
+      await _inFlight;
+    }
+    final run = _syncAll();
+    _inFlight = run.then<void>((_) {}, onError: (_) {});
+    try {
+      return await run;
+    } finally {
+      _inFlight = null;
+    }
+  }
+
+  Future<CalendarSyncReport> _syncAll() async {
     final settings = await _db.select(_db.appSettings).getSingle();
     final calendarId = settings.calendarId;
     if (!settings.calendarSyncEnabled || calendarId == null) {
@@ -187,6 +204,14 @@ class CalendarSyncService {
         await (_db.update(_db.calendarLinks)
               ..where((t) => t.appointmentId.equals(link.appointmentId)))
             .write(CalendarLinksCompanion(lastError: Value('$e')));
+      }
+    }
+
+    if (created + updated + deleted > 0) {
+      try {
+        await _gateway.requestSync(calendarId);
+      } catch (e) {
+        debugPrint('Konto-Sync nicht angestoßen: $e');
       }
     }
 

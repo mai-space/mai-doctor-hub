@@ -160,6 +160,24 @@ void main() {
     expect(calendar.all('g1').single.title, 'Geburtstag');
   });
 
+  test('parallel syncs never create an event twice', () async {
+    await enable();
+    await appointments.create(doctorId: doctorId, scheduledAt: DateTime(2030));
+    await appointments.create(doctorId: doctorId, scheduledAt: DateTime(2031));
+    final reports = await Future.wait([sync.syncAll(), sync.syncAll()]);
+    expect(calendar.all('g1'), hasLength(2));
+    expect(reports.map((r) => r.created).reduce((a, b) => a + b), 2);
+  });
+
+  test('asks the account to sync only when something changed', () async {
+    await enable();
+    await appointments.create(doctorId: doctorId, scheduledAt: DateTime(2030));
+    await sync.syncAll();
+    expect(calendar.syncRequests, ['g1']);
+    await sync.syncAll();
+    expect(calendar.syncRequests, ['g1']);
+  });
+
   test('switching calendars moves events', () async {
     await appointments.create(doctorId: doctorId, scheduledAt: DateTime(2030));
     await enable(calendarId: 'g1');

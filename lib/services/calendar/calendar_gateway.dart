@@ -82,6 +82,9 @@ abstract interface class CalendarGateway {
   });
 
   Future<void> deleteEvent(String eventId);
+
+  /// Bittet das Konto (z. B. Google), sofort zu synchronisieren.
+  Future<void> requestSync(String calendarId);
 }
 
 /// Android-Kalender über `CalendarContract` (siehe CalendarChannel.kt).
@@ -134,6 +137,10 @@ class AndroidCalendarGateway implements CalendarGateway {
   @override
   Future<void> deleteEvent(String eventId) =>
       _invoke<bool>('deleteEvent', {'eventId': eventId});
+
+  @override
+  Future<void> requestSync(String calendarId) =>
+      _invoke<bool>('requestSync', {'calendarId': calendarId});
 
   Future<T?> _invoke<T>(String method, [Object? args]) async {
     try {

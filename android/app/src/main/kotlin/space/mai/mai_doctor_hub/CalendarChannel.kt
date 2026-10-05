@@ -1,10 +1,13 @@
 package space.mai.mai_doctor_hub
 
 import android.Manifest
+import android.accounts.Account
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.pm.PackageManager
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.CalendarContract
@@ -40,6 +43,9 @@ class CalendarChannel(private val activity: Activity) : MethodChannel.MethodCall
             "upsertEvent" -> background(result) { upsertEvent(call) }
             "deleteEvent" -> background(result) {
                 deleteEvent((call.argument<String>("eventId"))!!.toLong())
+            }
+            "requestSync" -> background(result) {
+                requestSync(call.argument<String>("calendarId")!!.toLong())
             }
             else -> result.notImplemented()
         }
@@ -132,15 +138,53 @@ class CalendarChannel(private val activity: Activity) : MethodChannel.MethodCall
             put(CalendarContract.Events.EVENT_END_TIMEZONE, zone)
         }
         val resolver = activity.contentResolver
+        val calendarId = call.argument<String>("calendarId")!!.toLong()
         val existing = call.argument<String>("eventId")?.toLongOrNull()
-        if (existing != null) {
+        if (existing != null && isLive(existing, calendarId)) {
             val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, existing)
-            // 0 Zeilen → Event wurde extern gelöscht: neu anlegen.
             if (resolver.update(uri, values, null, null) > 0) return existing.toString()
         }
         val inserted = resolver.insert(CalendarContract.Events.CONTENT_URI, values)
             ?: throw IllegalStateException("Event konnte nicht angelegt werden")
         return ContentUris.parseId(inserted).toString()
+    }
+
+    /**
+     * Gibt es das Event noch in diesem Kalender? Extern gelöschte Events bleiben
+     * bis zum nächsten Konto-Sync mit DELETED=1 stehen — ein Update darauf
+     * „gelingt“, das Event bleibt aber verschwunden.
+     */
+    private fun isLive(eventId: Long, calendarId: Long): Boolean {
+        val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
+        activity.contentResolver.query(
+            uri,
+            arrayOf(CalendarContract.Events.DELETED, CalendarContract.Events.CALENDAR_ID),
+            null, null, null,
+        )?.use { c ->
+            if (c.moveToFirst()) return c.getInt(0) == 0 && c.getLong(1) == calendarId
+        }
+        return false
+    }
+
+    /** Konto-Sync sofort anstoßen, statt auf Androids nächsten Lauf zu warten. */
+    private fun requestSync(calendarId: Long): Boolean {
+        val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarId)
+        activity.contentResolver.query(
+            uri,
+            arrayOf(CalendarContract.Calendars.ACCOUNT_NAME, CalendarContract.Calendars.ACCOUNT_TYPE),
+            null, null, null,
+        )?.use { c ->
+            if (!c.moveToFirst()) return false
+            val type = c.getString(1) ?: return false
+            if (type == CalendarContract.ACCOUNT_TYPE_LOCAL) return false
+            val extras = Bundle().apply {
+                putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
+                putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
+            }
+            ContentResolver.requestSync(Account(c.getString(0), type), CalendarContract.AUTHORITY, extras)
+            return true
+        }
+        return false
     }
 
     private fun deleteEvent(eventId: Long): Boolean {
