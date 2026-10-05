@@ -17,6 +17,12 @@ class SymptomRepository {
         .watch();
   }
 
+  Stream<List<Symptom>> watchAll() {
+    return (_db.select(_db.symptoms)
+          ..orderBy([(t) => OrderingTerm.asc(t.label)]))
+        .watch();
+  }
+
   Future<String> create({
     required String label,
     String? diagnosisId,

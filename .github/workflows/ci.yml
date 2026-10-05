@@ -35,6 +35,16 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
+      # PDFium für Host-Tests der PDF-Text-Extraktion (gleiches Release wie
+      # pdfium_dart/hook/build.dart). Ohne PDFIUM_PATH werden sie übersprungen.
+      - name: Download PDFium (tests)
+        run: |
+          mkdir -p "$RUNNER_TEMP/pdfium"
+          curl -sSL --retry 3 \
+            "https://github.com/bblanchon/pdfium-binaries/releases/download/chromium%2F7811/pdfium-linux-x64.tgz" \
+            | tar -xz -C "$RUNNER_TEMP/pdfium"
+          echo "PDFIUM_PATH=$RUNNER_TEMP/pdfium/lib/libpdfium.so" >> "$GITHUB_ENV"
+
       - name: Test
         run: flutter test
 

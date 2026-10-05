@@ -11,17 +11,25 @@ import '../../data/repositories/symptom_repository.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/suggestion_text_field.dart';
 
-Future<String?> showAddAppointmentSheet(BuildContext context) {
+Future<String?> showAddAppointmentSheet(
+  BuildContext context, {
+  AppointmentSummary? initial,
+}) {
   return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (context) => const AddAppointmentSheet(),
+    builder: (context) => AddAppointmentSheet(initial: initial),
   );
 }
 
+const _durationOptions = [15, 30, 45, 60, 90, 120];
+
+/// Anlegen oder — mit [initial] — Bearbeiten eines Termins.
 class AddAppointmentSheet extends StatefulWidget {
-  const AddAppointmentSheet({super.key});
+  const AddAppointmentSheet({super.key, this.initial});
+
+  final AppointmentSummary? initial;
 
   @override
   State<AddAppointmentSheet> createState() => _AddAppointmentSheetState();
@@ -38,7 +46,39 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
   bool _creatingDoctor = false;
   final Set<String> _diagnosisIds = {};
   final Set<String> _symptomIds = {};
+  int? _durationMin;
   bool _saving = false;
+
+  Stream<List<Doctor>>? _doctors;
+  Stream<List<Diagnose>>? _diagnoses;
+  Stream<List<Symptom>>? _symptoms;
+
+  bool get _editing => widget.initial != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final initial = widget.initial;
+    if (initial != null) {
+      final a = initial.appointment;
+      _scheduledAt = a.scheduledAt;
+      _doctorId = a.doctorId;
+      _durationMin = a.durationMin;
+      _titleController.text = a.title ?? '';
+      _notesController.text = a.notes ?? '';
+      _diagnosisIds.addAll(initial.diagnosisIds);
+      _symptomIds.addAll(initial.symptomIds);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final db = DatabaseScope.of(context);
+    _doctors ??= DoctorRepository(db).watchAll();
+    _diagnoses ??= RecordsRepository(db).watchDiagnoses();
+    _symptoms ??= SymptomRepository(db).watchAll();
+  }
 
   @override
   void dispose() {
@@ -105,18 +145,36 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
         return;
       }
 
-      final id = await appointments.create(
-        doctorId: doctorId,
-        scheduledAt: _scheduledAt,
-        title: _titleController.text.trim().isEmpty
-            ? null
-            : _titleController.text.trim(),
-        notes: _notesController.text.trim().isEmpty
-            ? null
-            : _notesController.text.trim(),
-        diagnosisIds: _diagnosisIds.toList(),
-        symptomIds: _symptomIds.toList(),
-      );
+      final title = _titleController.text.trim().isEmpty
+          ? null
+          : _titleController.text.trim();
+      final notes = _notesController.text.trim().isEmpty
+          ? null
+          : _notesController.text.trim();
+      final String id;
+      if (_editing) {
+        id = widget.initial!.appointment.id;
+        await appointments.update(
+          id: id,
+          doctorId: doctorId,
+          scheduledAt: _scheduledAt,
+          durationMin: _durationMin,
+          title: title,
+          notes: notes,
+          diagnosisIds: _diagnosisIds.toList(),
+          symptomIds: _symptomIds.toList(),
+        );
+      } else {
+        id = await appointments.create(
+          doctorId: doctorId,
+          scheduledAt: _scheduledAt,
+          durationMin: _durationMin,
+          title: title,
+          notes: notes,
+          diagnosisIds: _diagnosisIds.toList(),
+          symptomIds: _symptomIds.toList(),
+        );
+      }
 
       if (!mounted) return;
       Navigator.of(context).pop(id);
@@ -127,10 +185,6 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final db = DatabaseScope.of(context);
-    final doctorRepo = DoctorRepository(db);
-    final recordsRepo = RecordsRepository(db);
-    final symptomRepo = SymptomRepository(db);
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
     final dateLabel = DateFormat('EEE, d. MMM yyyy · HH:mm', 'de').format(
       _scheduledAt,
@@ -143,7 +197,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Termin hinzufügen',
+              _editing ? 'Termin bearbeiten' : 'Termin hinzufügen',
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -157,7 +211,18 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
               trailing: const Icon(Icons.edit_outlined),
               onTap: _pickDateTime,
             ),
-            const SizedBox(height: 8),
+            DropdownMenu<int?>(
+              initialSelection: _durationMin,
+              label: const Text('Dauer'),
+              expandedInsets: EdgeInsets.zero,
+              dropdownMenuEntries: [
+                const DropdownMenuEntry(value: null, label: 'Keine Angabe'),
+                for (final minutes in _durationOptions)
+                  DropdownMenuEntry(value: minutes, label: '$minutes Min.'),
+              ],
+              onSelected: (value) => setState(() => _durationMin = value),
+            ),
+            const SizedBox(height: 12),
             SuggestionTextField(
               controller: _titleController,
               field: SuggestionField.appointmentTitle,
@@ -207,7 +272,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
               ),
             ] else
               StreamBuilder<List<Doctor>>(
-                stream: doctorRepo.watchAll(),
+                stream: _doctors,
                 builder: (context, snapshot) {
                   final doctors = snapshot.data ?? const [];
                   if (doctors.isEmpty) {
@@ -241,7 +306,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             StreamBuilder<List<Diagnose>>(
-              stream: recordsRepo.watchDiagnoses(),
+              stream: _diagnoses,
               builder: (context, snapshot) {
                 final diagnoses = snapshot.data ?? const [];
                 if (diagnoses.isEmpty) {
@@ -284,9 +349,14 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             StreamBuilder<List<Symptom>>(
-              stream: symptomRepo.watchOpen(),
+              stream: _symptoms,
               builder: (context, snapshot) {
-                final symptoms = snapshot.data ?? const [];
+                // Offene Symptome + bereits verknüpfte (auch geheilte).
+                final symptoms = (snapshot.data ?? const <Symptom>[])
+                    .where(
+                      (s) => s.healedAt == null || _symptomIds.contains(s.id),
+                    )
+                    .toList();
                 if (symptoms.isEmpty) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -331,7 +401,13 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
             const SizedBox(height: 20),
             FilledButton(
               onPressed: _saving ? null : _save,
-              child: Text(_saving ? 'Speichern…' : 'Termin speichern'),
+              child: Text(
+                _saving
+                    ? 'Speichern…'
+                    : _editing
+                    ? 'Änderungen speichern'
+                    : 'Termin speichern',
+              ),
             ),
           ],
         ),

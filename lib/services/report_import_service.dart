@@ -128,6 +128,32 @@ class ReportImportService {
     }
   }
 
+  /// Extrahiert den Text eines gespeicherten PDF-Berichts (erneut) und
+  /// aktualisiert den Suchindex. Gibt `true` zurück, wenn Text gefunden wurde.
+  Future<bool> reindex(Report report) async {
+    if (kIsWeb || report.mimeType != 'application/pdf') return false;
+    if (!await File(report.localPath).exists()) return false;
+    try {
+      final result = await extractPdfText(report.localPath);
+      await _records.setReportText(report.id, result.text, result.pageCount);
+      return result.text != null;
+    } catch (e) {
+      debugPrint('PDF-Text für ${report.id} fehlgeschlagen: $e');
+      return false;
+    }
+  }
+
+  /// Indexiert alle PDF-Berichte ohne Text (z. B. Import vor I2).
+  /// Gibt die Anzahl neu indexierter Berichte zurück.
+  Future<int> reindexMissing() async {
+    var count = 0;
+    for (final report in await _records.allReports()) {
+      if (report.extractedText != null) continue;
+      if (await reindex(report)) count++;
+    }
+    return count;
+  }
+
   Future<String> _persistFile(
     String name,
     String? sourcePath,

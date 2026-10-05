@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:pdfrx/pdfrx.dart';
 
 import 'data/app_database.dart';
 import 'data/database_provider.dart';
@@ -13,6 +14,7 @@ final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  pdfrxFlutterInitialize();
   await initializeDateFormatting('de');
 
   final database = AppDatabase();

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
+import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/doctor_repository.dart';
 import '../../data/repositories/records_repository.dart';
@@ -8,213 +10,494 @@ import '../../data/repositories/symptom_repository.dart';
 import '../../services/report_import_service.dart';
 import '../../widgets/suggestion_text_field.dart';
 
-Future<void> showCreateDoctorDialog(BuildContext context) async {
-  final name = TextEditingController();
-  final specialty = TextEditingController();
-  final ok = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Arzt anlegen'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: name,
-            decoration: const InputDecoration(labelText: 'Name'),
-            autofocus: true,
-          ),
-          SuggestionTextField(
-            controller: specialty,
-            field: SuggestionField.specialty,
-            decoration: const InputDecoration(labelText: 'Fachrichtung'),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('Abbrechen'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: const Text('Speichern'),
-        ),
-      ],
-    ),
-  );
-  if (ok != true || !context.mounted) return;
-  if (name.text.trim().isEmpty) return;
-  await DoctorRepository(DatabaseScope.of(context)).create(
-    name: name.text.trim(),
-    specialty: specialty.text.trim().isEmpty ? null : specialty.text.trim(),
-  );
+String? _trimOrNull(TextEditingController c) {
+  final value = c.text.trim();
+  return value.isEmpty ? null : value;
 }
 
-Future<void> showCreateDiagnosisDialog(BuildContext context) async {
-  final title = TextEditingController();
-  final notes = TextEditingController();
+/// Gemeinsamer Dialog-Rahmen für Anlegen/Bearbeiten.
+Future<bool> _showFormDialog(
+  BuildContext context, {
+  required String title,
+  required List<Widget> Function(StateSetter setState) fields,
+}) async {
   final ok = await showDialog<bool>(
     context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Diagnose anlegen'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SuggestionTextField(
-            controller: title,
-            field: SuggestionField.diagnosisTitle,
-            decoration: const InputDecoration(labelText: 'Titel'),
-            autofocus: true,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) => AlertDialog(
+        title: Text(title),
+        scrollable: true,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: fields(setState),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Abbrechen'),
           ),
-          TextField(
-            controller: notes,
-            decoration: const InputDecoration(labelText: 'Notizen'),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Speichern'),
           ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('Abbrechen'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: const Text('Speichern'),
-        ),
-      ],
     ),
   );
-  if (ok != true || !context.mounted) return;
-  if (title.text.trim().isEmpty) return;
-  await RecordsRepository(DatabaseScope.of(context)).createDiagnosis(
+  return ok == true && context.mounted;
+}
+
+/// Auswahl einer (optionalen) Diagnose als Dropdown.
+class DiagnosisPicker extends StatelessWidget {
+  const DiagnosisPicker({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String? value;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Diagnose>>(
+      future: RecordsRepository(
+        DatabaseScope.of(context),
+      ).watchDiagnoses().first,
+      builder: (context, snapshot) {
+        final diagnoses = snapshot.data ?? const <Diagnose>[];
+        if (diagnoses.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: DropdownMenu<String?>(
+            initialSelection: value,
+            label: const Text('Diagnose'),
+            expandedInsets: EdgeInsets.zero,
+            dropdownMenuEntries: [
+              const DropdownMenuEntry(value: null, label: 'Keine'),
+              for (final d in diagnoses)
+                DropdownMenuEntry(value: d.id, label: d.title),
+            ],
+            onSelected: onChanged,
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Datumsfeld mit Löschen-Knopf.
+class DateField extends StatelessWidget {
+  const DateField({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String label;
+  final DateTime? value;
+  final ValueChanged<DateTime?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(label),
+      subtitle: Text(
+        value == null ? '—' : DateFormat('d. MMM yyyy', 'de').format(value!),
+      ),
+      trailing: value == null
+          ? const Icon(Icons.event_outlined)
+          : IconButton(
+              tooltip: '$label entfernen',
+              icon: const Icon(Icons.clear),
+              onPressed: () => onChanged(null),
+            ),
+      onTap: () async {
+        final picked = await showDatePicker(
+          context: context,
+          initialDate: value ?? DateTime.now(),
+          firstDate: DateTime(1900),
+          lastDate: DateTime(2100),
+        );
+        if (picked != null) onChanged(picked);
+      },
+    );
+  }
+}
+
+Future<String?> showDoctorForm(BuildContext context, {Doctor? doctor}) async {
+  final name = TextEditingController(text: doctor?.name);
+  final specialty = TextEditingController(text: doctor?.specialty);
+  final practice = TextEditingController(text: doctor?.practiceName);
+  final phone = TextEditingController(text: doctor?.phone);
+  final address = TextEditingController(text: doctor?.address);
+  final notes = TextEditingController(text: doctor?.notes);
+  final repo = DoctorRepository(DatabaseScope.of(context));
+
+  final ok = await _showFormDialog(
+    context,
+    title: doctor == null ? 'Arzt anlegen' : 'Arzt bearbeiten',
+    fields: (_) => [
+      TextField(
+        controller: name,
+        decoration: const InputDecoration(labelText: 'Name'),
+        textCapitalization: TextCapitalization.words,
+        autofocus: doctor == null,
+      ),
+      SuggestionTextField(
+        controller: specialty,
+        field: SuggestionField.specialty,
+        decoration: const InputDecoration(labelText: 'Fachrichtung'),
+      ),
+      TextField(
+        controller: practice,
+        decoration: const InputDecoration(labelText: 'Praxis / Klinik'),
+      ),
+      TextField(
+        controller: phone,
+        keyboardType: TextInputType.phone,
+        decoration: const InputDecoration(labelText: 'Telefon'),
+      ),
+      TextField(
+        controller: address,
+        maxLines: 2,
+        decoration: const InputDecoration(labelText: 'Adresse'),
+      ),
+      TextField(
+        controller: notes,
+        maxLines: 3,
+        decoration: const InputDecoration(labelText: 'Notizen'),
+      ),
+    ],
+  );
+  if (!ok || name.text.trim().isEmpty) return null;
+  if (doctor == null) {
+    return repo.create(
+      name: name.text.trim(),
+      specialty: _trimOrNull(specialty),
+      practiceName: _trimOrNull(practice),
+      phone: _trimOrNull(phone),
+      address: _trimOrNull(address),
+      notes: _trimOrNull(notes),
+    );
+  }
+  await repo.update(
+    id: doctor.id,
+    name: name.text.trim(),
+    specialty: _trimOrNull(specialty),
+    practiceName: _trimOrNull(practice),
+    phone: _trimOrNull(phone),
+    address: _trimOrNull(address),
+    notes: _trimOrNull(notes),
+  );
+  return doctor.id;
+}
+
+Future<String?> showDiagnosisForm(
+  BuildContext context, {
+  Diagnose? diagnosis,
+}) async {
+  final title = TextEditingController(text: diagnosis?.title);
+  final notes = TextEditingController(text: diagnosis?.notes);
+  var status = diagnosis?.status ?? DiagnosisStatus.active;
+  var startedAt = diagnosis?.startedAt;
+  var endedAt = diagnosis?.endedAt;
+  final repo = RecordsRepository(DatabaseScope.of(context));
+
+  final ok = await _showFormDialog(
+    context,
+    title: diagnosis == null ? 'Diagnose anlegen' : 'Diagnose bearbeiten',
+    fields: (setState) => [
+      SuggestionTextField(
+        controller: title,
+        field: SuggestionField.diagnosisTitle,
+        decoration: const InputDecoration(labelText: 'Titel'),
+        autofocus: diagnosis == null,
+      ),
+      TextField(
+        controller: notes,
+        maxLines: 3,
+        decoration: const InputDecoration(labelText: 'Notizen'),
+      ),
+      const SizedBox(height: 12),
+      SegmentedButton<DiagnosisStatus>(
+        segments: const [
+          ButtonSegment(value: DiagnosisStatus.active, label: Text('Aktiv')),
+          ButtonSegment(
+            value: DiagnosisStatus.resolved,
+            label: Text('Abgeschlossen'),
+          ),
+        ],
+        selected: {status},
+        onSelectionChanged: (v) => setState(() => status = v.first),
+      ),
+      DateField(
+        label: 'Seit',
+        value: startedAt,
+        onChanged: (v) => setState(() => startedAt = v),
+      ),
+      if (status == DiagnosisStatus.resolved)
+        DateField(
+          label: 'Bis',
+          value: endedAt,
+          onChanged: (v) => setState(() => endedAt = v),
+        ),
+    ],
+  );
+  if (!ok || title.text.trim().isEmpty) return null;
+  if (diagnosis == null) {
+    final id = await repo.createDiagnosis(
+      title: title.text.trim(),
+      notes: _trimOrNull(notes),
+      status: status,
+    );
+    if (startedAt != null || endedAt != null) {
+      await repo.updateDiagnosis(
+        id: id,
+        title: title.text.trim(),
+        notes: _trimOrNull(notes),
+        status: status,
+        startedAt: startedAt,
+        endedAt: status == DiagnosisStatus.resolved ? endedAt : null,
+      );
+    }
+    return id;
+  }
+  await repo.updateDiagnosis(
+    id: diagnosis.id,
     title: title.text.trim(),
-    notes: notes.text.trim().isEmpty ? null : notes.text.trim(),
+    notes: _trimOrNull(notes),
+    status: status,
+    startedAt: startedAt,
+    endedAt: status == DiagnosisStatus.resolved ? endedAt : null,
   );
+  return diagnosis.id;
 }
 
-Future<void> showCreateSymptomDialog(BuildContext context) async {
-  final label = TextEditingController();
-  final region = TextEditingController();
-  final ok = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Symptom anlegen'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SuggestionTextField(
-            controller: label,
-            field: SuggestionField.symptomLabel,
-            decoration: const InputDecoration(labelText: 'Bezeichnung'),
-            autofocus: true,
-          ),
-          SuggestionTextField(
-            controller: region,
-            field: SuggestionField.bodyRegion,
-            decoration: const InputDecoration(labelText: 'Körperregion'),
-          ),
-        ],
+Future<String?> showSymptomForm(BuildContext context, {Symptom? symptom}) async {
+  final label = TextEditingController(text: symptom?.label);
+  final region = TextEditingController(text: symptom?.bodyRegion);
+  var diagnosisId = symptom?.diagnosisId;
+  final repo = SymptomRepository(DatabaseScope.of(context));
+
+  final ok = await _showFormDialog(
+    context,
+    title: symptom == null ? 'Symptom anlegen' : 'Symptom bearbeiten',
+    fields: (setState) => [
+      SuggestionTextField(
+        controller: label,
+        field: SuggestionField.symptomLabel,
+        decoration: const InputDecoration(labelText: 'Bezeichnung'),
+        autofocus: symptom == null,
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('Abbrechen'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: const Text('Speichern'),
-        ),
-      ],
-    ),
+      SuggestionTextField(
+        controller: region,
+        field: SuggestionField.bodyRegion,
+        decoration: const InputDecoration(labelText: 'Körperregion'),
+      ),
+      DiagnosisPicker(
+        value: diagnosisId,
+        onChanged: (v) => setState(() => diagnosisId = v),
+      ),
+    ],
   );
-  if (ok != true || !context.mounted) return;
-  if (label.text.trim().isEmpty) return;
-  await SymptomRepository(DatabaseScope.of(context)).create(
+  if (!ok || label.text.trim().isEmpty) return null;
+  if (symptom == null) {
+    return repo.create(
+      label: label.text.trim(),
+      bodyRegion: _trimOrNull(region),
+      diagnosisId: diagnosisId,
+    );
+  }
+  await repo.update(
+    id: symptom.id,
     label: label.text.trim(),
-    bodyRegion: region.text.trim().isEmpty ? null : region.text.trim(),
+    bodyRegion: _trimOrNull(region),
+    diagnosisId: diagnosisId,
   );
+  return symptom.id;
 }
 
-Future<void> showCreateMedicationDialog(BuildContext context) async {
-  final name = TextEditingController();
-  final dosage = TextEditingController();
-  final schedule = TextEditingController();
-  final ok = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Medikament anlegen'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SuggestionTextField(
-            controller: name,
-            field: SuggestionField.medicationName,
-            decoration: const InputDecoration(labelText: 'Name'),
-            autofocus: true,
-          ),
-          SuggestionTextField(
-            controller: dosage,
-            field: SuggestionField.dosage,
-            decoration: const InputDecoration(labelText: 'Dosierung'),
-          ),
-          SuggestionTextField(
-            controller: schedule,
-            field: SuggestionField.medicationSchedule,
-            decoration: const InputDecoration(labelText: 'Einnahmeplan'),
-          ),
-        ],
+Future<String?> showMedicationForm(
+  BuildContext context, {
+  Medication? medication,
+}) async {
+  final name = TextEditingController(text: medication?.name);
+  final dosage = TextEditingController(text: medication?.dosage);
+  final schedule = TextEditingController(text: medication?.scheduleText);
+  final notes = TextEditingController(text: medication?.notes);
+  var diagnosisId = medication?.diagnosisId;
+  var startedAt = medication?.startedAt;
+  var endedAt = medication?.endedAt;
+  final repo = RecordsRepository(DatabaseScope.of(context));
+
+  final ok = await _showFormDialog(
+    context,
+    title: medication == null ? 'Medikament anlegen' : 'Medikament bearbeiten',
+    fields: (setState) => [
+      SuggestionTextField(
+        controller: name,
+        field: SuggestionField.medicationName,
+        decoration: const InputDecoration(labelText: 'Name'),
+        autofocus: medication == null,
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('Abbrechen'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: const Text('Speichern'),
-        ),
-      ],
-    ),
+      SuggestionTextField(
+        controller: dosage,
+        field: SuggestionField.dosage,
+        decoration: const InputDecoration(labelText: 'Dosierung'),
+      ),
+      SuggestionTextField(
+        controller: schedule,
+        field: SuggestionField.medicationSchedule,
+        decoration: const InputDecoration(labelText: 'Einnahmeplan'),
+      ),
+      DiagnosisPicker(
+        value: diagnosisId,
+        onChanged: (v) => setState(() => diagnosisId = v),
+      ),
+      DateField(
+        label: 'Start',
+        value: startedAt,
+        onChanged: (v) => setState(() => startedAt = v),
+      ),
+      DateField(
+        label: 'Ende',
+        value: endedAt,
+        onChanged: (v) => setState(() => endedAt = v),
+      ),
+      TextField(
+        controller: notes,
+        maxLines: 2,
+        decoration: const InputDecoration(labelText: 'Notizen'),
+      ),
+    ],
   );
-  if (ok != true || !context.mounted) return;
-  if (name.text.trim().isEmpty) return;
-  await RecordsRepository(DatabaseScope.of(context)).createMedication(
+  if (!ok || name.text.trim().isEmpty) return null;
+  final id =
+      medication?.id ??
+      await repo.createMedication(name: name.text.trim());
+  await repo.updateMedication(
+    id: id,
     name: name.text.trim(),
-    dosage: dosage.text.trim().isEmpty ? null : dosage.text.trim(),
-    scheduleText: schedule.text.trim().isEmpty ? null : schedule.text.trim(),
+    dosage: _trimOrNull(dosage),
+    scheduleText: _trimOrNull(schedule),
+    diagnosisId: diagnosisId,
+    startedAt: startedAt,
+    endedAt: endedAt,
+    notes: _trimOrNull(notes),
+  );
+  return id;
+}
+
+Future<String?> showNoteForm(
+  BuildContext context, {
+  Note? note,
+  String? relatedAppointmentId,
+  String? relatedDiagnosisId,
+}) async {
+  final body = TextEditingController(text: note?.body);
+  var diagnosisId = note?.relatedDiagnosisId ?? relatedDiagnosisId;
+  final repo = RecordsRepository(DatabaseScope.of(context));
+
+  final ok = await _showFormDialog(
+    context,
+    title: note == null ? 'Notiz anlegen' : 'Notiz bearbeiten',
+    fields: (setState) => [
+      TextField(
+        controller: body,
+        maxLines: 6,
+        minLines: 3,
+        decoration: const InputDecoration(labelText: 'Text'),
+        autofocus: note == null,
+      ),
+      DiagnosisPicker(
+        value: diagnosisId,
+        onChanged: (v) => setState(() => diagnosisId = v),
+      ),
+    ],
+  );
+  if (!ok || body.text.trim().isEmpty) return null;
+  if (note == null) {
+    return repo.createNote(
+      body: body.text.trim(),
+      relatedAppointmentId: relatedAppointmentId,
+      relatedDiagnosisId: diagnosisId,
+    );
+  }
+  await repo.updateNote(
+    id: note.id,
+    body: body.text.trim(),
+    relatedAppointmentId: note.relatedAppointmentId,
+    relatedDiagnosisId: diagnosisId,
+  );
+  return note.id;
+}
+
+Future<void> showReportRenameForm(BuildContext context, Report report) async {
+  final title = TextEditingController(text: report.title);
+  final repo = RecordsRepository(DatabaseScope.of(context));
+  final ok = await _showFormDialog(
+    context,
+    title: 'Bericht umbenennen',
+    fields: (_) => [
+      TextField(
+        controller: title,
+        autofocus: true,
+        decoration: const InputDecoration(labelText: 'Titel'),
+      ),
+    ],
+  );
+  if (!ok || title.text.trim().isEmpty) return;
+  await repo.updateReport(
+    id: report.id,
+    title: title.text.trim(),
+    appointmentId: report.appointmentId,
   );
 }
 
-Future<void> showCreateNoteDialog(BuildContext context) async {
-  final body = TextEditingController();
+/// Sicherheitsabfrage vor dem Löschen.
+Future<bool> confirmDelete(
+  BuildContext context, {
+  required String what,
+  String? detail,
+}) async {
   final ok = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Notiz anlegen'),
-      content: TextField(
-        controller: body,
-        maxLines: 5,
-        decoration: const InputDecoration(labelText: 'Text'),
-        autofocus: true,
-      ),
+      title: Text('$what löschen?'),
+      content: Text(detail ?? 'Das kann nicht rückgängig gemacht werden.'),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
           child: const Text('Abbrechen'),
         ),
         FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.error,
+            foregroundColor: Theme.of(context).colorScheme.onError,
+          ),
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Speichern'),
+          child: const Text('Löschen'),
         ),
       ],
     ),
   );
-  if (ok != true || !context.mounted) return;
-  if (body.text.trim().isEmpty) return;
-  await RecordsRepository(
-    DatabaseScope.of(context),
-  ).createNote(body: body.text.trim());
+  return ok == true;
 }
+
+// Bestehende Einstiegspunkte (Akte „+“-Menü).
+Future<void> showCreateDoctorDialog(BuildContext context) =>
+    showDoctorForm(context);
+Future<void> showCreateDiagnosisDialog(BuildContext context) =>
+    showDiagnosisForm(context);
+Future<void> showCreateSymptomDialog(BuildContext context) =>
+    showSymptomForm(context);
+Future<void> showCreateMedicationDialog(BuildContext context) =>
+    showMedicationForm(context);
+Future<void> showCreateNoteDialog(BuildContext context) => showNoteForm(context);
 
 /// Wählt eine Datei und legt sie als Bericht ab; Fehler landen als Snackbar.
 Future<ImportedReport?> importReport(

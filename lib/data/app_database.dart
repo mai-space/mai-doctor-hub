@@ -251,6 +251,17 @@ class AppDatabase extends _$AppDatabase {
     },
   );
 
+  /// Lädt [load] neu, sobald sich eine der [tables] ändert.
+  Stream<T> watchWith<T>(
+    Set<ResultSetImplementation<dynamic, dynamic>> tables,
+    Future<T> Function() load,
+  ) {
+    return customSelect(
+      'SELECT 1',
+      readsFrom: tables,
+    ).watch().asyncMap((_) => load());
+  }
+
   Future<void> upsertFts({
     required String entityType,
     required String entityId,

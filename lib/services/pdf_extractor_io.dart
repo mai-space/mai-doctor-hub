@@ -1,7 +1,31 @@
-/// Best-effort PDF-Text ohne Legacy-Plugin (AGP-9-/jcenter-frei).
+import 'package:pdfrx/pdfrx.dart';
+
+/// Obergrenze, damit sehr große Scans die App nicht blockieren.
+const maxExtractPages = 300;
+
+/// Extrahiert den Text aller Seiten (PDFium via pdfrx).
 ///
-/// Vollständige Extraktion folgt später mit einem AGP-9-kompatiblen Paket.
-/// Bis dahin bleiben Titel/Metadaten und manuelle Notizen in der FTS suchbar.
+/// Gescannte PDFs ohne Textebene liefern `text: null` — OCR folgt separat.
+/// Setzt voraus, dass pdfrx initialisiert ist (`pdfrxFlutterInitialize()` in
+/// `main`, in Tests `pdfrxInitialize()`).
 Future<({String? text, int? pageCount})> extractPdfText(String path) async {
-  return (text: null, pageCount: null);
+  final document = await PdfDocument.openFile(path);
+  try {
+    final buffer = StringBuffer();
+    final pages = document.pages.take(maxExtractPages);
+    for (final page in pages) {
+      final text = await page.loadText();
+      final content = text?.fullText.trim() ?? '';
+      if (content.isEmpty) continue;
+      if (buffer.isNotEmpty) buffer.write('\n\n');
+      buffer.write(content);
+    }
+    final text = buffer.toString();
+    return (
+      text: text.trim().isEmpty ? null : text,
+      pageCount: document.pages.length,
+    );
+  } finally {
+    await document.dispose();
+  }
 }
