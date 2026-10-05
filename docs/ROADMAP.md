@@ -11,6 +11,8 @@ jederzeit abschaltbar.
 
 ## 0. Umsetzungsstand
 
+Nächste Iteration: siehe [`TODO.md`](TODO.md).
+
 | Bereich | Status | Wo / Tests |
 |---------|--------|------------|
 | B1 Bericht anhängen | ✅ | `report_import_service.dart` · `report_import_test` |
