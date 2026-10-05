@@ -11,14 +11,14 @@ class SymptomRepository {
   final AppDatabase _db;
 
   Stream<List<Symptom>> watchOpen() {
-    return (_db.select(_db.symptoms)
+    return (_db.selectActive(_db.symptoms)
           ..where((t) => t.healedAt.isNull())
           ..orderBy([(t) => OrderingTerm.asc(t.label)]))
         .watch();
   }
 
   Stream<List<Symptom>> watchAll() {
-    return (_db.select(_db.symptoms)
+    return (_db.selectActive(_db.symptoms)
           ..orderBy([(t) => OrderingTerm.asc(t.label)]))
         .watch();
   }
@@ -170,7 +170,10 @@ class SymptomRepository {
         _db.doctors,
         _db.doctors.id.equalsExp(_db.doctorSymptoms.doctorId),
       ),
-    ])..where(_db.doctorSymptoms.symptomId.equals(symptomId))).get();
+    ])
+          ..where(_db.doctorSymptoms.symptomId.equals(symptomId))
+          ..where(_db.doctors.archivedAt.isNull()))
+        .get();
     return [for (final r in rows) r.readTable(_db.doctors)];
   }
 
@@ -212,7 +215,10 @@ class SymptomRepository {
         _db.symptoms,
         _db.symptoms.id.equalsExp(_db.doctorSymptoms.symptomId),
       ),
-    ])..where(_db.doctorSymptoms.doctorId.equals(doctorId))).get();
+    ])
+          ..where(_db.doctorSymptoms.doctorId.equals(doctorId))
+          ..where(_db.symptoms.archivedAt.isNull()))
+        .get();
     final viaAppointments = await (_db.select(_db.appointmentSymptoms).join([
       innerJoin(
         _db.appointments,
@@ -222,7 +228,11 @@ class SymptomRepository {
         _db.symptoms,
         _db.symptoms.id.equalsExp(_db.appointmentSymptoms.symptomId),
       ),
-    ])..where(_db.appointments.doctorId.equals(doctorId))).get();
+    ])
+          ..where(_db.appointments.doctorId.equals(doctorId))
+          ..where(_db.appointments.archivedAt.isNull())
+          ..where(_db.symptoms.archivedAt.isNull()))
+        .get();
     final result = <String, (Symptom, bool)>{};
     for (final r in viaAppointments) {
       final s = r.readTable(_db.symptoms);

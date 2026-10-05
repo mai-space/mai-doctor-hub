@@ -106,7 +106,7 @@ class AppointmentRepository {
     return _summaryChanges(clock: clock).asyncMap((_) async {
       final now = DateTime.now();
       final rows =
-          await (_db.select(_db.appointments)
+          await (_db.selectActive(_db.appointments)
                 ..where((t) => t.scheduledAt.isBiggerOrEqualValue(now))
                 ..where((t) => t.status.equalsValue(AppointmentStatus.planned))
                 ..orderBy([(t) => OrderingTerm.asc(t.scheduledAt)]))
@@ -120,7 +120,7 @@ class AppointmentRepository {
     return _summaryChanges(clock: clock).asyncMap((_) async {
       final now = DateTime.now();
       final rows =
-          await (_db.select(_db.appointments)
+          await (_db.selectActive(_db.appointments)
                 ..where((t) => t.scheduledAt.isSmallerThanValue(now))
                 ..orderBy([(t) => OrderingTerm.desc(t.scheduledAt)]))
               .get();
@@ -134,7 +134,7 @@ class AppointmentRepository {
 
   Stream<List<Appointment>> watchUpcoming({DateTime? from}) {
     final start = from ?? DateTime.now();
-    return (_db.select(_db.appointments)
+    return (_db.selectActive(_db.appointments)
           ..where((t) => t.scheduledAt.isBiggerOrEqualValue(start))
           ..where((t) => t.status.equalsValue(AppointmentStatus.planned))
           ..orderBy([(t) => OrderingTerm.asc(t.scheduledAt)]))
@@ -143,20 +143,20 @@ class AppointmentRepository {
 
   Stream<List<Appointment>> watchPast({DateTime? until}) {
     final end = until ?? DateTime.now();
-    return (_db.select(_db.appointments)
+    return (_db.selectActive(_db.appointments)
           ..where((t) => t.scheduledAt.isSmallerThanValue(end))
           ..orderBy([(t) => OrderingTerm.desc(t.scheduledAt)]))
         .watch();
   }
 
   Stream<List<Appointment>> watchAll() {
-    return (_db.select(_db.appointments)
+    return (_db.selectActive(_db.appointments)
           ..orderBy([(t) => OrderingTerm.desc(t.scheduledAt)]))
         .watch();
   }
 
   Stream<List<Appointment>> watchInRange(DateTime start, DateTime end) {
-    return (_db.select(_db.appointments)
+    return (_db.selectActive(_db.appointments)
           ..where((t) => t.scheduledAt.isBiggerOrEqualValue(start))
           ..where((t) => t.scheduledAt.isSmallerThanValue(end))
           ..orderBy([(t) => OrderingTerm.asc(t.scheduledAt)]))
@@ -166,7 +166,7 @@ class AppointmentRepository {
   Future<List<Appointment>> forDay(DateTime day) {
     final start = DateTime(day.year, day.month, day.day);
     final end = start.add(const Duration(days: 1));
-    return (_db.select(_db.appointments)
+    return (_db.selectActive(_db.appointments)
           ..where((t) => t.scheduledAt.isBiggerOrEqualValue(start))
           ..where((t) => t.scheduledAt.isSmallerThanValue(end))
           ..orderBy([(t) => OrderingTerm.asc(t.scheduledAt)]))
@@ -211,6 +211,7 @@ class AppointmentRepository {
                 ),
               ])
               ..where(_db.appointmentDiagnoses.appointmentId.isIn(ids))
+              ..where(_db.diagnoses.archivedAt.isNull())
               ..orderBy([OrderingTerm.asc(_db.diagnoses.title)]))
             .get();
     final diagnoses = <String, List<Diagnose>>{};
@@ -229,6 +230,7 @@ class AppointmentRepository {
                 ),
               ])
               ..where(_db.appointmentSymptoms.appointmentId.isIn(ids))
+              ..where(_db.symptoms.archivedAt.isNull())
               ..orderBy([OrderingTerm.asc(_db.symptoms.label)]))
             .get();
     final symptoms = <String, List<Symptom>>{};
@@ -244,6 +246,7 @@ class AppointmentRepository {
         await (_db.selectOnly(_db.reports)
               ..addColumns([_db.reports.appointmentId, count])
               ..where(_db.reports.appointmentId.isIn(ids))
+              ..where(_db.reports.archivedAt.isNull())
               ..groupBy([_db.reports.appointmentId]))
             .get();
     final reportCounts = {
@@ -414,7 +417,7 @@ class AppointmentRepository {
     DateTime? now,
   }) async {
     final previous =
-        await (_db.select(_db.appointments)
+        await (_db.selectActive(_db.appointments)
               ..where((t) => t.doctorId.equals(appointment.doctorId))
               ..where(
                 (t) => t.scheduledAt.isSmallerThanValue(appointment.scheduledAt),

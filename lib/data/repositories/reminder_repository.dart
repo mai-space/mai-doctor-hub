@@ -60,7 +60,7 @@ class ReminderRepository {
             _db.symptoms,
             _db.symptoms.id.equalsExp(_db.reminderSymptoms.symptomId),
           ),
-        ])).get();
+        ])..where(_db.symptoms.archivedAt.isNull())).get();
     final byReminder = <String, List<Symptom>>{};
     for (final row in links) {
       byReminder

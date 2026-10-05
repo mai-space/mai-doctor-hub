@@ -29,6 +29,18 @@ class MaiRecords {
   static int _limit(int? value, {int fallback = 20}) =>
       (value ?? fallback).clamp(1, maxLimit);
 
+  static const _entityTables = {
+    'doctor': 'doctors',
+    'diagnosis': 'diagnoses',
+    'symptom': 'symptoms',
+    'appointment': 'appointments',
+    'report': 'reports',
+    'medication': 'medications',
+    'note': 'notes',
+    'pharmacy': 'pharmacies',
+    'vaccination': 'vaccinations',
+  };
+
   /// Volltextsuche (FTS5) über Akte und Berichtstexte.
   List<Map<String, Object?>> searchRecords(
     String query, {
@@ -56,14 +68,22 @@ class MaiRecords {
       ''',
       [tokens, ...?types, _limit(limit)],
     );
+    // Archivierte Einträge stehen noch im Index — nur „lebende“ liefern.
+    bool exists(String type, String id) {
+      final table = _entityTables[type];
+      if (table == null) return true;
+      return _db.select('SELECT 1 FROM $table WHERE id = ?', [id]).isNotEmpty;
+    }
+
     return [
       for (final r in rows)
-        {
-          'type': r['entity_type'],
-          'id': r['entity_id'],
-          'title': r['title'],
-          'snippet': r['snippet'],
-        },
+        if (exists(r['entity_type'] as String, r['entity_id'] as String))
+          {
+            'type': r['entity_type'],
+            'id': r['entity_id'],
+            'title': r['title'],
+            'snippet': r['snippet'],
+          },
     ];
   }
 
@@ -97,7 +117,8 @@ class MaiRecords {
         args.add(index);
       }
     }
-    final rows = _db.select('''
+    final rows = _db.select(
+      '''
       SELECT a.id, a.scheduled_at, a.duration_min, a.title, a.status,
              d.name AS doctor, d.specialty,
              (SELECT COUNT(*) FROM reports r WHERE r.appointment_id = a.id)
@@ -111,7 +132,9 @@ class MaiRecords {
       ${where.isEmpty ? '' : 'WHERE ${where.join(' AND ')}'}
       ORDER BY a.scheduled_at DESC
       LIMIT ?
-      ''', [...args, _limit(limit)]);
+      ''',
+      [...args, _limit(limit)],
+    );
     return [for (final r in rows) _appointmentRow(r)];
   }
 
@@ -254,15 +277,12 @@ class MaiRecords {
       range += ' AND recorded_at < ?';
       args.add(_seconds(to));
     }
-    final observations = _db.select(
-      '''
+    final observations = _db.select('''
       SELECT recorded_at, kind, value_number, value_text, value_color, unit,
              note
       FROM symptom_observations WHERE symptom_id = ?$range
       ORDER BY recorded_at
-      ''',
-      args,
-    );
+      ''', args);
     final scale = [
       for (final o in observations)
         if (o['kind'] == 0 && o['value_number'] != null)

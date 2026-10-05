@@ -40,7 +40,7 @@ class RecordsRepository {
 
   final AppDatabase _db;
 
-  Future<List<QueryRow>> search(String query, {String? entityType}) {
+  Future<List<QueryRow>> search(String query, {String? entityType}) async {
     final tokens = query
         .trim()
         .split(RegExp(r'\s+'))
@@ -50,7 +50,26 @@ class RecordsRepository {
           return cleaned.endsWith('*') ? cleaned : '$cleaned*';
         })
         .join(' ');
-    return _db.searchFts(tokens, entityType: entityType);
+    final rows = await _db.searchFts(tokens, entityType: entityType, limit: 200);
+    // Archivierte Einträge bleiben im Index (für die Wiederherstellung),
+    // werden aber nicht gefunden.
+    final archived = <String>{};
+    for (final type in rows.map((r) => r.read<String>('entity_type')).toSet()) {
+      final table = AppDatabase.entityTables[type];
+      if (table == null) continue;
+      final ids = await _db
+          .customSelect('SELECT id FROM $table WHERE archived_at IS NOT NULL')
+          .get();
+      archived.addAll(ids.map((r) => '$type:${r.read<String>('id')}'));
+    }
+    return rows
+        .where(
+          (r) => !archived.contains(
+            '${r.read<String>('entity_type')}:${r.read<String>('entity_id')}',
+          ),
+        )
+        .take(50)
+        .toList();
   }
 
   /// Wie [listAll], aber reaktiv auf alle Akten-Tabellen.
@@ -78,31 +97,31 @@ class RecordsRepository {
   }
 
   Stream<List<Diagnose>> watchDiagnoses() {
-    return (_db.select(_db.diagnoses)
+    return (_db.selectActive(_db.diagnoses)
           ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]))
         .watch();
   }
 
   Stream<List<Medication>> watchMedications() {
-    return (_db.select(_db.medications)
+    return (_db.selectActive(_db.medications)
           ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
         .watch();
   }
 
   Stream<List<Note>> watchNotes() {
-    return (_db.select(_db.notes)
+    return (_db.selectActive(_db.notes)
           ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]))
         .watch();
   }
 
   Stream<List<Report>> watchReports() {
-    return (_db.select(_db.reports)
+    return (_db.selectActive(_db.reports)
           ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
         .watch();
   }
 
   Future<List<Report>> reportsForAppointment(String appointmentId) {
-    return (_db.select(_db.reports)
+    return (_db.selectActive(_db.reports)
           ..where((t) => t.appointmentId.equals(appointmentId))
           ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
         .get();
@@ -115,7 +134,7 @@ class RecordsRepository {
     final items = <RecordListItem>[];
 
     if (entityType == null || entityType == 'doctor') {
-      final doctors = await _db.select(_db.doctors).get();
+      final doctors = await _db.selectActive(_db.doctors).get();
       for (final d in doctors) {
         items.add(
           RecordListItem(
@@ -133,7 +152,7 @@ class RecordsRepository {
       }
     }
     if (entityType == null || entityType == 'diagnosis') {
-      final diagnoses = await _db.select(_db.diagnoses).get();
+      final diagnoses = await _db.selectActive(_db.diagnoses).get();
       for (final d in diagnoses) {
         items.add(
           RecordListItem(
@@ -148,7 +167,7 @@ class RecordsRepository {
       }
     }
     if (entityType == null || entityType == 'symptom') {
-      final symptoms = await _db.select(_db.symptoms).get();
+      final symptoms = await _db.selectActive(_db.symptoms).get();
       for (final s in symptoms) {
         items.add(
           RecordListItem(
@@ -165,7 +184,7 @@ class RecordsRepository {
       }
     }
     if (entityType == null || entityType == 'appointment') {
-      final appointments = await _db.select(_db.appointments).get();
+      final appointments = await _db.selectActive(_db.appointments).get();
       for (final a in appointments) {
         items.add(
           RecordListItem(
@@ -180,7 +199,7 @@ class RecordsRepository {
       }
     }
     if (entityType == null || entityType == 'report') {
-      final reports = await _db.select(_db.reports).get();
+      final reports = await _db.selectActive(_db.reports).get();
       for (final r in reports) {
         items.add(
           RecordListItem(
@@ -194,7 +213,7 @@ class RecordsRepository {
       }
     }
     if (entityType == null || entityType == 'medication') {
-      final meds = await _db.select(_db.medications).get();
+      final meds = await _db.selectActive(_db.medications).get();
       for (final m in meds) {
         items.add(
           RecordListItem(
@@ -212,7 +231,7 @@ class RecordsRepository {
       }
     }
     if (entityType == null || entityType == 'pharmacy') {
-      final pharmacies = await _db.select(_db.pharmacies).get();
+      final pharmacies = await _db.selectActive(_db.pharmacies).get();
       for (final p in pharmacies) {
         items.add(
           RecordListItem(
@@ -227,7 +246,7 @@ class RecordsRepository {
       }
     }
     if (entityType == null || entityType == 'vaccination') {
-      final vaccinations = await _db.select(_db.vaccinations).get();
+      final vaccinations = await _db.selectActive(_db.vaccinations).get();
       for (final v in vaccinations) {
         items.add(
           RecordListItem(
@@ -246,7 +265,7 @@ class RecordsRepository {
       }
     }
     if (entityType == null || entityType == 'note') {
-      final notes = await _db.select(_db.notes).get();
+      final notes = await _db.selectActive(_db.notes).get();
       for (final n in notes) {
         final preview = n.body.length > 48
             ? '${n.body.substring(0, 48)}…'

@@ -105,7 +105,7 @@ class AppointmentReminderService extends PlanSync {
            if (!settings.appointmentRemindersEnabled) return const [];
            final now = (clock ?? DateTime.now)();
            final rows =
-               await (db.select(db.appointments)
+               await (db.selectActive(db.appointments)
                      ..where((t) => t.scheduledAt.isBiggerOrEqualValue(now))
                      ..where(
                        (t) => t.status.equalsValue(AppointmentStatus.planned),

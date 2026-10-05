@@ -11,12 +11,12 @@ class VaccinationRepository {
   final AppDatabase _db;
 
   Future<List<Vaccination>> all() =>
-      (_db.select(_db.vaccinations)
+      (_db.selectActive(_db.vaccinations)
             ..orderBy([(t) => OrderingTerm.desc(t.administeredAt)]))
           .get();
 
   Stream<List<Vaccination>> watchAll() =>
-      (_db.select(_db.vaccinations)
+      (_db.selectActive(_db.vaccinations)
             ..orderBy([(t) => OrderingTerm.desc(t.administeredAt)]))
           .watch();
 
@@ -30,7 +30,7 @@ class VaccinationRepository {
     DateTime? now,
   }) async {
     final limit = (now ?? DateTime.now()).add(within);
-    final rows = await (_db.select(_db.vaccinations)
+    final rows = await (_db.selectActive(_db.vaccinations)
           ..where((t) => t.nextDueAt.isNotNull())
           ..where((t) => t.nextDueAt.isSmallerOrEqualValue(limit))
           ..orderBy([(t) => OrderingTerm.asc(t.nextDueAt)]))

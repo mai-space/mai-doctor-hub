@@ -15,6 +15,7 @@ import '../../data/repositories/symptom_repository.dart';
 import '../../services/calendar/calendar_sync_service.dart';
 import '../../services/calendar/ics.dart';
 import '../../widgets/symptom_report_card.dart';
+import '../archive/archive_page.dart';
 import '../records/detail_pages.dart';
 import '../summary/visit_summary_page.dart';
 import '../records/entity_forms.dart';
@@ -77,7 +78,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           db,
         ).reportsForAppointment(widget.appointmentId);
         final notes =
-            await (db.select(db.notes)
+            await (db.selectActive(db.notes)
                   ..where(
                     (t) => t.relatedAppointmentId.equals(widget.appointmentId),
                   )
@@ -103,7 +104,6 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
 
   Future<void> _onAction(_Action action, Appointment a) async {
     final repo = AppointmentRepository(DatabaseScope.of(context));
-    final messenger = ScaffoldMessenger.of(context);
     switch (action) {
       case _Action.done:
         await repo.updateStatus(a.id, AppointmentStatus.done);
@@ -121,18 +121,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
         );
       case _Action.delete:
         final navigator = Navigator.of(context);
-        if (!await confirmDelete(
-          context,
-          what: 'Termin',
-          detail:
-              'Zugehörige Berichte (inkl. Dateien) werden mitgelöscht. '
-              'Notizen bleiben erhalten.',
-        )) {
-          return;
+        // Berichte wandern mit ins Archiv; „Rückgängig“ holt alles zurück.
+        if (await archiveWithUndo(context, 'appointment', a.id)) {
+          navigator.pop();
         }
-        await repo.delete(a.id);
-        navigator.pop();
-        messenger.showSnackBar(const SnackBar(content: Text('Termin gelöscht')));
     }
   }
 

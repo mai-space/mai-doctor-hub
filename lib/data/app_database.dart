@@ -37,7 +37,13 @@ enum IntakeStatus { taken, skipped }
 /// Herkunft eines Berichts.
 enum ReportSource { pdf, scan, image }
 
-class Doctors extends Table {
+/// v9: Archiv statt endgültigem Löschen (Soft Delete).
+mixin Archivable on Table {
+  /// Gesetzt = im Archiv; überall ausgeblendet, wiederherstellbar.
+  DateTimeColumn get archivedAt => dateTime().nullable()();
+}
+
+class Doctors extends Table with Archivable {
   TextColumn get id => text()();
   TextColumn get name => text()();
   TextColumn get specialty => text().nullable()();
@@ -52,7 +58,7 @@ class Doctors extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-class Diagnoses extends Table {
+class Diagnoses extends Table with Archivable {
   TextColumn get id => text()();
   TextColumn get title => text()();
   TextColumn get notes => text().nullable()();
@@ -66,7 +72,7 @@ class Diagnoses extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-class Symptoms extends Table {
+class Symptoms extends Table with Archivable {
   TextColumn get id => text()();
   TextColumn get label => text()();
   TextColumn get diagnosisId => text().nullable().references(Diagnoses, #id)();
@@ -96,7 +102,7 @@ class SymptomObservations extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-class Appointments extends Table {
+class Appointments extends Table with Archivable {
   TextColumn get id => text()();
   TextColumn get doctorId => text().references(Doctors, #id)();
   DateTimeColumn get scheduledAt => dateTime()();
@@ -138,7 +144,7 @@ class DoctorSymptoms extends Table {
   Set<Column<Object>> get primaryKey => {doctorId, symptomId};
 }
 
-class Reports extends Table {
+class Reports extends Table with Archivable {
   TextColumn get id => text()();
   TextColumn get appointmentId =>
       text().nullable().references(Appointments, #id)();
@@ -154,7 +160,7 @@ class Reports extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-class Medications extends Table {
+class Medications extends Table with Archivable {
   TextColumn get id => text()();
   TextColumn get name => text()();
   TextColumn get dosage => text().nullable()();
@@ -185,7 +191,7 @@ class Medications extends Table {
 }
 
 /// v8: Impfung.
-class Vaccinations extends Table {
+class Vaccinations extends Table with Archivable {
   TextColumn get id => text()();
 
   /// Impfstoff bzw. Impfung, z. B. „Tetanus/Diphtherie/Pertussis“.
@@ -205,7 +211,7 @@ class Vaccinations extends Table {
 }
 
 /// v7: Apotheke (Bezug/Abholung von Medikamenten).
-class Pharmacies extends Table {
+class Pharmacies extends Table with Archivable {
   TextColumn get id => text()();
   TextColumn get name => text()();
   TextColumn get address => text().nullable()();
@@ -252,7 +258,7 @@ class MedicationIntakes extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-class Notes extends Table {
+class Notes extends Table with Archivable {
   TextColumn get id => text()();
   TextColumn get body => text()();
   TextColumn get relatedAppointmentId =>
@@ -373,7 +379,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'mai_doctor_hub'));
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -391,6 +397,7 @@ class AppDatabase extends _$AppDatabase {
       await into(appSettings).insert(AppSettingsCompanion.insert());
       await _insertDefaultReminders();
     },
+    // Schritte strikt aufsteigend: jeder Block bringt v(n-1) → v(n).
     onUpgrade: (migrator, from, to) async {
       if (from < 2) {
         await migrator.addColumn(appSettings, appSettings.calendarSyncEnabled);
@@ -401,37 +408,6 @@ class AppDatabase extends _$AppDatabase {
         );
         await migrator.addColumn(appSettings, appSettings.appLockEnabled);
         await migrator.createTable(calendarLinks);
-      }
-      if (from < 4) {
-        await migrator.addColumn(appSettings, appSettings.onboardingCompleted);
-      }
-      if (from < 6) {
-        await migrator.createTable(doctorSymptoms);
-      }
-      if (from < 8) {
-        await migrator.createTable(vaccinations);
-      }
-      if (from < 7) {
-        await migrator.createTable(pharmacies);
-        await migrator.addColumn(medications, medications.form);
-        await migrator.addColumn(medications, medications.doseAmount);
-        await migrator.addColumn(medications, medications.doseUnit);
-        await migrator.addColumn(medications, medications.instructions);
-        await migrator.addColumn(medications, medications.prescriberId);
-        await migrator.addColumn(medications, medications.pharmacyId);
-        await migrator.addColumn(medications, medications.remindersEnabled);
-        await migrator.createTable(medicationSchedules);
-        await migrator.createTable(medicationIntakes);
-      }
-      if (from < 5) {
-        await migrator.addColumn(
-          appSettings,
-          appSettings.appointmentRemindersEnabled,
-        );
-        await migrator.addColumn(
-          appSettings,
-          appSettings.appointmentReminderLeads,
-        );
       }
       if (from < 3) {
         await migrator.createTable(reminders);
@@ -459,6 +435,52 @@ class AppDatabase extends _$AppDatabase {
                 ),
         );
       }
+      if (from < 4) {
+        await migrator.addColumn(appSettings, appSettings.onboardingCompleted);
+      }
+      if (from < 5) {
+        await migrator.addColumn(
+          appSettings,
+          appSettings.appointmentRemindersEnabled,
+        );
+        await migrator.addColumn(
+          appSettings,
+          appSettings.appointmentReminderLeads,
+        );
+      }
+      if (from < 6) {
+        await migrator.createTable(doctorSymptoms);
+      }
+      if (from < 7) {
+        await migrator.createTable(pharmacies);
+        await migrator.addColumn(medications, medications.form);
+        await migrator.addColumn(medications, medications.doseAmount);
+        await migrator.addColumn(medications, medications.doseUnit);
+        await migrator.addColumn(medications, medications.instructions);
+        await migrator.addColumn(medications, medications.prescriberId);
+        await migrator.addColumn(medications, medications.pharmacyId);
+        await migrator.addColumn(medications, medications.remindersEnabled);
+        await migrator.createTable(medicationSchedules);
+        await migrator.createTable(medicationIntakes);
+      }
+      if (from < 8) {
+        await migrator.createTable(vaccinations);
+      }
+      if (from < 9) {
+        // createTable legt das aktuelle Schema an — in diesem Upgrade neu
+        // erstellte Tabellen haben archived_at also schon.
+        final createdNow = {
+          if (from < 7) pharmacies.actualTableName,
+          if (from < 8) vaccinations.actualTableName,
+        };
+        for (final table in archivableTables) {
+          if (createdNow.contains(table.actualTableName)) continue;
+          await migrator.addColumn(
+            table,
+            table.columnsByName['archived_at']!,
+          );
+        }
+      }
     },
     beforeOpen: (details) async {
       // Bestandsnutzer kennen die App schon → kein Onboarding nach Update;
@@ -472,6 +494,40 @@ class AppDatabase extends _$AppDatabase {
       await customStatement('INSERT OR IGNORE INTO app_settings (id) VALUES (1)');
     },
   );
+
+  /// `select` ohne archivierte Zeilen (nur für [Archivable]-Tabellen).
+  SimpleSelectStatement<T, R> selectActive<T extends HasResultSet, R>(
+    ResultSetImplementation<T, R> table,
+  ) {
+    return select(table)
+      ..where((t) => (t as Archivable).archivedAt.isNull());
+  }
+
+  /// FTS-`entity_type` → Tabelle.
+  static const entityTables = {
+    'doctor': 'doctors',
+    'diagnosis': 'diagnoses',
+    'symptom': 'symptoms',
+    'appointment': 'appointments',
+    'report': 'reports',
+    'medication': 'medications',
+    'note': 'notes',
+    'pharmacy': 'pharmacies',
+    'vaccination': 'vaccinations',
+  };
+
+  /// Alle Tabellen mit Archiv-Funktion.
+  List<TableInfo<Table, dynamic>> get archivableTables => [
+    doctors,
+    diagnoses,
+    symptoms,
+    appointments,
+    reports,
+    medications,
+    notes,
+    pharmacies,
+    vaccinations,
+  ];
 
   /// Standard: zwei Check-in-Erinnerungen (morgens/abends).
   Future<void> _insertDefaultReminders({

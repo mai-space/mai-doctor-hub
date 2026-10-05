@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:mai_mcp/mai_mcp.dart';
+import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
 
 import 'fixture.dart';
@@ -95,6 +96,22 @@ void main() {
     expect(d['medications'], [
       {'name': 'Nasenspray', 'dosage': '2x täglich'},
     ]);
+  });
+
+  test('archived entries are invisible', () async {
+    await snapshot.close();
+    final path = '${dir.path}/akte.sqlite';
+    final raw = sqlite3.open(path)
+      ..execute("UPDATE notes SET archived_at = 1 WHERE id = 'not1'")
+      ..execute("UPDATE appointments SET archived_at = 1 WHERE id = 'apt2'")
+      ..close();
+    expect(raw, isNotNull);
+    snapshot = MaiSnapshot.openSqlite(path);
+    records = MaiRecords(snapshot.db);
+    expect(records.searchRecords('OP sinnvoll'), isEmpty);
+    expect(records.listAppointments().map((a) => a['id']), ['apt1']);
+    expect(records.getDiagnosis('dia1')!['notes_linked'], isEmpty);
+    expect((records.summary()['next_appointments'] as List), isEmpty);
   });
 
   test('vaccinations with due flag', () {

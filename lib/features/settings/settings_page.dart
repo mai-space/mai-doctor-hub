@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
+import '../archive/archive_page.dart';
 import 'appointment_reminders_tile.dart';
 import 'backup_section.dart';
 import 'calendar_section.dart';
@@ -67,6 +68,18 @@ class SettingsPage extends StatelessWidget {
               const SecuritySection(),
               const SizedBox(height: 24),
               const BackupSection(),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.inventory_2_outlined),
+                title: const Text('Archiv'),
+                subtitle: const Text(
+                  'Gelöschte Einträge wiederherstellen oder endgültig löschen',
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const ArchivePage()),
+                ),
+              ),
               const SizedBox(height: 24),
               Text(
                 'App',

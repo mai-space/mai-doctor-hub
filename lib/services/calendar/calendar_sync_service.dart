@@ -101,7 +101,7 @@ class CalendarSyncService {
 
     // Abgesagte Termine gehören nicht (mehr) in den Kalender.
     final appointments =
-        await (_db.select(_db.appointments)..where(
+        await (_db.selectActive(_db.appointments)..where(
               (t) => t.status.equalsValue(AppointmentStatus.cancelled).not(),
             ))
             .get();

@@ -15,6 +15,7 @@ import '../../data/repositories/symptom_repository.dart';
 import '../../data/repositories/vaccination_repository.dart';
 import '../../widgets/observation_chart.dart';
 import '../../widgets/symptom_report_card.dart';
+import '../archive/archive_page.dart';
 import '../home/appointment_detail_page.dart';
 import '../medications/medication_form_page.dart';
 import '../medications/pharmacy_form.dart';
@@ -95,7 +96,7 @@ class _DetailScaffoldState<T> extends State<_DetailScaffold<T>> {
                       onPressed: () => widget.onEdit(context, value),
                     ),
                     IconButton(
-                      tooltip: 'Löschen',
+                      tooltip: 'Löschen (ins Archiv)',
                       icon: const Icon(Icons.delete_outline),
                       onPressed: () async {
                         final navigator = Navigator.of(context);
@@ -287,7 +288,7 @@ class DoctorDetailPage extends StatelessWidget {
         final doctor = await DoctorRepository(db).getById(doctorId);
         if (doctor == null) return null;
         final appointments =
-            await (db.select(db.appointments)
+            await (db.selectActive(db.appointments)
                   ..where((t) => t.doctorId.equals(doctorId))
                   ..orderBy([(t) => OrderingTerm.desc(t.scheduledAt)]))
                 .get();
@@ -298,21 +299,8 @@ class DoctorDetailPage extends StatelessWidget {
         );
       }),
       onEdit: (context, data) => showDoctorForm(context, doctor: data.doctor),
-      onDelete: (context, data) async {
-        if (data.appointments.isNotEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Arzt hat noch Termine — erst Termine löschen oder umhängen.',
-              ),
-            ),
-          );
-          return false;
-        }
-        final repo = DoctorRepository(DatabaseScope.of(context));
-        if (!await confirmDelete(context, what: 'Arzt')) return false;
-        return repo.delete(data.doctor.id);
-      },
+      onDelete: (context, data) =>
+          archiveWithUndo(context, 'doctor', data.doctor.id),
       body: (context, data) {
         final d = data.doctor;
         return [
@@ -436,20 +424,8 @@ class DiagnosisDetailPage extends StatelessWidget {
       watch: (db) => DiagnosisHubRepository(db).watch(diagnosisId),
       onEdit: (context, hub) =>
           showDiagnosisForm(context, diagnosis: hub.diagnosis),
-      onDelete: (context, hub) async {
-        final repo = RecordsRepository(DatabaseScope.of(context));
-        if (!await confirmDelete(
-          context,
-          what: 'Diagnose',
-          detail:
-              'Verknüpfte Termine, Symptome, Medikamente und Notizen bleiben '
-              'erhalten, verlieren aber den Bezug.',
-        )) {
-          return false;
-        }
-        await repo.deleteDiagnosis(hub.diagnosis.id);
-        return true;
-      },
+      onDelete: (context, hub) =>
+          archiveWithUndo(context, 'diagnosis', hub.diagnosis.id),
       body: (context, hub) {
         final d = hub.diagnosis;
         final period = [
@@ -606,6 +582,7 @@ class SymptomDetailPage extends StatelessWidget {
                       ),
                     ])
                     ..where(db.appointmentSymptoms.symptomId.equals(symptomId))
+                    ..where(db.appointments.archivedAt.isNull())
                     ..orderBy([OrderingTerm.desc(db.appointments.scheduledAt)]))
                   .get();
           return _SymptomData(
@@ -621,18 +598,8 @@ class SymptomDetailPage extends StatelessWidget {
       ),
       onEdit: (context, data) =>
           showSymptomForm(context, symptom: data.symptom),
-      onDelete: (context, data) async {
-        final repo = SymptomRepository(DatabaseScope.of(context));
-        if (!await confirmDelete(
-          context,
-          what: 'Symptom',
-          detail: 'Alle Check-in-Werte dieses Symptoms werden mitgelöscht.',
-        )) {
-          return false;
-        }
-        await repo.delete(data.symptom.id);
-        return true;
-      },
+      onDelete: (context, data) =>
+          archiveWithUndo(context, 'symptom', data.symptom.id),
       body: (context, data) {
         final s = data.symptom;
         final repo = SymptomRepository(DatabaseScope.of(context));
@@ -761,18 +728,8 @@ class MedicationDetailPage extends StatelessWidget {
         context,
         medicationId: data.details.medication.id,
       ),
-      onDelete: (context, data) async {
-        final repo = RecordsRepository(DatabaseScope.of(context));
-        if (!await confirmDelete(
-          context,
-          what: 'Medikament',
-          detail: 'Einnahmezeiten und Einnahme-Protokoll werden mitgelöscht.',
-        )) {
-          return false;
-        }
-        await repo.deleteMedication(data.details.medication.id);
-        return true;
-      },
+      onDelete: (context, data) =>
+          archiveWithUndo(context, 'medication', data.details.medication.id),
       body: (context, data) {
         final d = data.details;
         final m = d.medication;
@@ -927,12 +884,8 @@ class PharmacyDetailPage extends StatelessWidget {
       }),
       onEdit: (context, data) =>
           showPharmacyForm(context, pharmacy: data.pharmacy),
-      onDelete: (context, data) async {
-        final repo = PharmacyRepository(DatabaseScope.of(context));
-        if (!await confirmDelete(context, what: 'Apotheke')) return false;
-        await repo.delete(data.pharmacy.id);
-        return true;
-      },
+      onDelete: (context, data) =>
+          archiveWithUndo(context, 'pharmacy', data.pharmacy.id),
       body: (context, data) {
         final p = data.pharmacy;
         return [
@@ -994,12 +947,8 @@ class VaccinationDetailPage extends StatelessWidget {
       }),
       onEdit: (context, data) =>
           showVaccinationForm(context, vaccination: data.$1),
-      onDelete: (context, data) async {
-        final repo = VaccinationRepository(DatabaseScope.of(context));
-        if (!await confirmDelete(context, what: 'Impfung')) return false;
-        await repo.delete(data.$1.id);
-        return true;
-      },
+      onDelete: (context, data) =>
+          archiveWithUndo(context, 'vaccination', data.$1.id),
       body: (context, data) {
         final (v, doctor) = data;
         final due = v.nextDueAt;
@@ -1059,12 +1008,8 @@ class NoteDetailPage extends StatelessWidget {
       watch: (db) =>
           db.watchWith({db.notes}, () => RecordsRepository(db).getNote(noteId)),
       onEdit: (context, note) => showNoteForm(context, note: note),
-      onDelete: (context, note) async {
-        final repo = RecordsRepository(DatabaseScope.of(context));
-        if (!await confirmDelete(context, what: 'Notiz')) return false;
-        await repo.deleteNote(note.id);
-        return true;
-      },
+      onDelete: (context, note) =>
+          archiveWithUndo(context, 'note', note.id),
       body: (context, note) => [
         Text(
           'Zuletzt geändert ${_dateTime.format(note.updatedAt)}',

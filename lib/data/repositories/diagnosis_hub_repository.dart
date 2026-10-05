@@ -58,6 +58,7 @@ class DiagnosisHubRepository {
                 ),
               ])
               ..where(_db.appointmentDiagnoses.diagnosisId.equals(diagnosisId))
+              ..where(_db.appointments.archivedAt.isNull())
               ..orderBy([OrderingTerm.desc(_db.appointments.scheduledAt)]))
             .get();
     final appointments = [
@@ -71,23 +72,23 @@ class DiagnosisHubRepository {
         _db,
       ).summariesFor(appointments),
       symptoms:
-          await (_db.select(_db.symptoms)
+          await (_db.selectActive(_db.symptoms)
                 ..where((t) => t.diagnosisId.equals(diagnosisId))
                 ..orderBy([(t) => OrderingTerm.asc(t.label)]))
               .get(),
       medications:
-          await (_db.select(_db.medications)
+          await (_db.selectActive(_db.medications)
                 ..where((t) => t.diagnosisId.equals(diagnosisId))
                 ..orderBy([(t) => OrderingTerm.asc(t.name)]))
               .get(),
       notes:
-          await (_db.select(_db.notes)
+          await (_db.selectActive(_db.notes)
                 ..where((t) => t.relatedDiagnosisId.equals(diagnosisId))
                 ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]))
               .get(),
       reports: appointmentIds.isEmpty
           ? const []
-          : await (_db.select(_db.reports)
+          : await (_db.selectActive(_db.reports)
                   ..where((t) => t.appointmentId.isIn(appointmentIds))
                   ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
                 .get(),

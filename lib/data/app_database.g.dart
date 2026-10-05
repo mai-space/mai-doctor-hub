@@ -8,6 +8,17 @@ class $DoctorsTable extends Doctors with TableInfo<$DoctorsTable, Doctor> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $DoctorsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -101,6 +112,7 @@ class $DoctorsTable extends Doctors with TableInfo<$DoctorsTable, Doctor> {
   );
   @override
   List<GeneratedColumn> get $columns => [
+    archivedAt,
     id,
     name,
     specialty,
@@ -123,6 +135,12 @@ class $DoctorsTable extends Doctors with TableInfo<$DoctorsTable, Doctor> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -194,6 +212,10 @@ class $DoctorsTable extends Doctors with TableInfo<$DoctorsTable, Doctor> {
   Doctor map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Doctor(
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -240,6 +262,8 @@ class $DoctorsTable extends Doctors with TableInfo<$DoctorsTable, Doctor> {
 }
 
 class Doctor extends DataClass implements Insertable<Doctor> {
+  /// Gesetzt = im Archiv; überall ausgeblendet, wiederherstellbar.
+  final DateTime? archivedAt;
   final String id;
   final String name;
   final String? specialty;
@@ -250,6 +274,7 @@ class Doctor extends DataClass implements Insertable<Doctor> {
   final DateTime createdAt;
   final DateTime updatedAt;
   const Doctor({
+    this.archivedAt,
     required this.id,
     required this.name,
     this.specialty,
@@ -263,6 +288,9 @@ class Doctor extends DataClass implements Insertable<Doctor> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || specialty != null) {
@@ -287,6 +315,9 @@ class Doctor extends DataClass implements Insertable<Doctor> {
 
   DoctorsCompanion toCompanion(bool nullToAbsent) {
     return DoctorsCompanion(
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
       id: Value(id),
       name: Value(name),
       specialty: specialty == null && nullToAbsent
@@ -315,6 +346,7 @@ class Doctor extends DataClass implements Insertable<Doctor> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Doctor(
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       specialty: serializer.fromJson<String?>(json['specialty']),
@@ -330,6 +362,7 @@ class Doctor extends DataClass implements Insertable<Doctor> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'specialty': serializer.toJson<String?>(specialty),
@@ -343,6 +376,7 @@ class Doctor extends DataClass implements Insertable<Doctor> {
   }
 
   Doctor copyWith({
+    Value<DateTime?> archivedAt = const Value.absent(),
     String? id,
     String? name,
     Value<String?> specialty = const Value.absent(),
@@ -353,6 +387,7 @@ class Doctor extends DataClass implements Insertable<Doctor> {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Doctor(
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     id: id ?? this.id,
     name: name ?? this.name,
     specialty: specialty.present ? specialty.value : this.specialty,
@@ -365,6 +400,9 @@ class Doctor extends DataClass implements Insertable<Doctor> {
   );
   Doctor copyWithCompanion(DoctorsCompanion data) {
     return Doctor(
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       specialty: data.specialty.present ? data.specialty.value : this.specialty,
@@ -382,6 +420,7 @@ class Doctor extends DataClass implements Insertable<Doctor> {
   @override
   String toString() {
     return (StringBuffer('Doctor(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('specialty: $specialty, ')
@@ -397,6 +436,7 @@ class Doctor extends DataClass implements Insertable<Doctor> {
 
   @override
   int get hashCode => Object.hash(
+    archivedAt,
     id,
     name,
     specialty,
@@ -411,6 +451,7 @@ class Doctor extends DataClass implements Insertable<Doctor> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Doctor &&
+          other.archivedAt == this.archivedAt &&
           other.id == this.id &&
           other.name == this.name &&
           other.specialty == this.specialty &&
@@ -423,6 +464,7 @@ class Doctor extends DataClass implements Insertable<Doctor> {
 }
 
 class DoctorsCompanion extends UpdateCompanion<Doctor> {
+  final Value<DateTime?> archivedAt;
   final Value<String> id;
   final Value<String> name;
   final Value<String?> specialty;
@@ -434,6 +476,7 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const DoctorsCompanion({
+    this.archivedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.specialty = const Value.absent(),
@@ -446,6 +489,7 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
     this.rowid = const Value.absent(),
   });
   DoctorsCompanion.insert({
+    this.archivedAt = const Value.absent(),
     required String id,
     required String name,
     this.specialty = const Value.absent(),
@@ -461,6 +505,7 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
   static Insertable<Doctor> custom({
+    Expression<DateTime>? archivedAt,
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? specialty,
@@ -473,6 +518,7 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (archivedAt != null) 'archived_at': archivedAt,
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (specialty != null) 'specialty': specialty,
@@ -487,6 +533,7 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
   }
 
   DoctorsCompanion copyWith({
+    Value<DateTime?>? archivedAt,
     Value<String>? id,
     Value<String>? name,
     Value<String?>? specialty,
@@ -499,6 +546,7 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
     Value<int>? rowid,
   }) {
     return DoctorsCompanion(
+      archivedAt: archivedAt ?? this.archivedAt,
       id: id ?? this.id,
       name: name ?? this.name,
       specialty: specialty ?? this.specialty,
@@ -515,6 +563,9 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -551,6 +602,7 @@ class DoctorsCompanion extends UpdateCompanion<Doctor> {
   @override
   String toString() {
     return (StringBuffer('DoctorsCompanion(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('specialty: $specialty, ')
@@ -572,6 +624,17 @@ class $DiagnosesTable extends Diagnoses
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $DiagnosesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -654,6 +717,7 @@ class $DiagnosesTable extends Diagnoses
   );
   @override
   List<GeneratedColumn> get $columns => [
+    archivedAt,
     id,
     title,
     notes,
@@ -675,6 +739,12 @@ class $DiagnosesTable extends Diagnoses
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -731,6 +801,10 @@ class $DiagnosesTable extends Diagnoses
   Diagnose map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Diagnose(
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -778,6 +852,8 @@ class $DiagnosesTable extends Diagnoses
 }
 
 class Diagnose extends DataClass implements Insertable<Diagnose> {
+  /// Gesetzt = im Archiv; überall ausgeblendet, wiederherstellbar.
+  final DateTime? archivedAt;
   final String id;
   final String title;
   final String? notes;
@@ -787,6 +863,7 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
   final DateTime createdAt;
   final DateTime updatedAt;
   const Diagnose({
+    this.archivedAt,
     required this.id,
     required this.title,
     this.notes,
@@ -799,6 +876,9 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
     map['id'] = Variable<String>(id);
     map['title'] = Variable<String>(title);
     if (!nullToAbsent || notes != null) {
@@ -822,6 +902,9 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
 
   DiagnosesCompanion toCompanion(bool nullToAbsent) {
     return DiagnosesCompanion(
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
       id: Value(id),
       title: Value(title),
       notes: notes == null && nullToAbsent
@@ -845,6 +928,7 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Diagnose(
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       id: serializer.fromJson<String>(json['id']),
       title: serializer.fromJson<String>(json['title']),
       notes: serializer.fromJson<String?>(json['notes']),
@@ -861,6 +945,7 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'id': serializer.toJson<String>(id),
       'title': serializer.toJson<String>(title),
       'notes': serializer.toJson<String?>(notes),
@@ -875,6 +960,7 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
   }
 
   Diagnose copyWith({
+    Value<DateTime?> archivedAt = const Value.absent(),
     String? id,
     String? title,
     Value<String?> notes = const Value.absent(),
@@ -884,6 +970,7 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Diagnose(
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     id: id ?? this.id,
     title: title ?? this.title,
     notes: notes.present ? notes.value : this.notes,
@@ -895,6 +982,9 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
   );
   Diagnose copyWithCompanion(DiagnosesCompanion data) {
     return Diagnose(
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
       notes: data.notes.present ? data.notes.value : this.notes,
@@ -909,6 +999,7 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
   @override
   String toString() {
     return (StringBuffer('Diagnose(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
@@ -923,6 +1014,7 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
 
   @override
   int get hashCode => Object.hash(
+    archivedAt,
     id,
     title,
     notes,
@@ -936,6 +1028,7 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Diagnose &&
+          other.archivedAt == this.archivedAt &&
           other.id == this.id &&
           other.title == this.title &&
           other.notes == this.notes &&
@@ -947,6 +1040,7 @@ class Diagnose extends DataClass implements Insertable<Diagnose> {
 }
 
 class DiagnosesCompanion extends UpdateCompanion<Diagnose> {
+  final Value<DateTime?> archivedAt;
   final Value<String> id;
   final Value<String> title;
   final Value<String?> notes;
@@ -957,6 +1051,7 @@ class DiagnosesCompanion extends UpdateCompanion<Diagnose> {
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const DiagnosesCompanion({
+    this.archivedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.title = const Value.absent(),
     this.notes = const Value.absent(),
@@ -968,6 +1063,7 @@ class DiagnosesCompanion extends UpdateCompanion<Diagnose> {
     this.rowid = const Value.absent(),
   });
   DiagnosesCompanion.insert({
+    this.archivedAt = const Value.absent(),
     required String id,
     required String title,
     this.notes = const Value.absent(),
@@ -983,6 +1079,7 @@ class DiagnosesCompanion extends UpdateCompanion<Diagnose> {
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
   static Insertable<Diagnose> custom({
+    Expression<DateTime>? archivedAt,
     Expression<String>? id,
     Expression<String>? title,
     Expression<String>? notes,
@@ -994,6 +1091,7 @@ class DiagnosesCompanion extends UpdateCompanion<Diagnose> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (archivedAt != null) 'archived_at': archivedAt,
       if (id != null) 'id': id,
       if (title != null) 'title': title,
       if (notes != null) 'notes': notes,
@@ -1007,6 +1105,7 @@ class DiagnosesCompanion extends UpdateCompanion<Diagnose> {
   }
 
   DiagnosesCompanion copyWith({
+    Value<DateTime?>? archivedAt,
     Value<String>? id,
     Value<String>? title,
     Value<String?>? notes,
@@ -1018,6 +1117,7 @@ class DiagnosesCompanion extends UpdateCompanion<Diagnose> {
     Value<int>? rowid,
   }) {
     return DiagnosesCompanion(
+      archivedAt: archivedAt ?? this.archivedAt,
       id: id ?? this.id,
       title: title ?? this.title,
       notes: notes ?? this.notes,
@@ -1033,6 +1133,9 @@ class DiagnosesCompanion extends UpdateCompanion<Diagnose> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -1068,6 +1171,7 @@ class DiagnosesCompanion extends UpdateCompanion<Diagnose> {
   @override
   String toString() {
     return (StringBuffer('DiagnosesCompanion(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('notes: $notes, ')
@@ -1087,6 +1191,17 @@ class $SymptomsTable extends Symptoms with TableInfo<$SymptomsTable, Symptom> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $SymptomsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -1187,6 +1302,7 @@ class $SymptomsTable extends Symptoms with TableInfo<$SymptomsTable, Symptom> {
   );
   @override
   List<GeneratedColumn> get $columns => [
+    archivedAt,
     id,
     label,
     diagnosisId,
@@ -1209,6 +1325,12 @@ class $SymptomsTable extends Symptoms with TableInfo<$SymptomsTable, Symptom> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -1277,6 +1399,10 @@ class $SymptomsTable extends Symptoms with TableInfo<$SymptomsTable, Symptom> {
   Symptom map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Symptom(
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -1328,6 +1454,8 @@ class $SymptomsTable extends Symptoms with TableInfo<$SymptomsTable, Symptom> {
 }
 
 class Symptom extends DataClass implements Insertable<Symptom> {
+  /// Gesetzt = im Archiv; überall ausgeblendet, wiederherstellbar.
+  final DateTime? archivedAt;
   final String id;
   final String label;
   final String? diagnosisId;
@@ -1338,6 +1466,7 @@ class Symptom extends DataClass implements Insertable<Symptom> {
   final DateTime createdAt;
   final DateTime updatedAt;
   const Symptom({
+    this.archivedAt,
     required this.id,
     required this.label,
     this.diagnosisId,
@@ -1351,6 +1480,9 @@ class Symptom extends DataClass implements Insertable<Symptom> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
     map['id'] = Variable<String>(id);
     map['label'] = Variable<String>(label);
     if (!nullToAbsent || diagnosisId != null) {
@@ -1375,6 +1507,9 @@ class Symptom extends DataClass implements Insertable<Symptom> {
 
   SymptomsCompanion toCompanion(bool nullToAbsent) {
     return SymptomsCompanion(
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
       id: Value(id),
       label: Value(label),
       diagnosisId: diagnosisId == null && nullToAbsent
@@ -1399,6 +1534,7 @@ class Symptom extends DataClass implements Insertable<Symptom> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Symptom(
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       id: serializer.fromJson<String>(json['id']),
       label: serializer.fromJson<String>(json['label']),
       diagnosisId: serializer.fromJson<String?>(json['diagnosisId']),
@@ -1416,6 +1552,7 @@ class Symptom extends DataClass implements Insertable<Symptom> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'id': serializer.toJson<String>(id),
       'label': serializer.toJson<String>(label),
       'diagnosisId': serializer.toJson<String?>(diagnosisId),
@@ -1431,6 +1568,7 @@ class Symptom extends DataClass implements Insertable<Symptom> {
   }
 
   Symptom copyWith({
+    Value<DateTime?> archivedAt = const Value.absent(),
     String? id,
     String? label,
     Value<String?> diagnosisId = const Value.absent(),
@@ -1441,6 +1579,7 @@ class Symptom extends DataClass implements Insertable<Symptom> {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Symptom(
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     id: id ?? this.id,
     label: label ?? this.label,
     diagnosisId: diagnosisId.present ? diagnosisId.value : this.diagnosisId,
@@ -1453,6 +1592,9 @@ class Symptom extends DataClass implements Insertable<Symptom> {
   );
   Symptom copyWithCompanion(SymptomsCompanion data) {
     return Symptom(
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
       id: data.id.present ? data.id.value : this.id,
       label: data.label.present ? data.label.value : this.label,
       diagnosisId: data.diagnosisId.present
@@ -1476,6 +1618,7 @@ class Symptom extends DataClass implements Insertable<Symptom> {
   @override
   String toString() {
     return (StringBuffer('Symptom(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('label: $label, ')
           ..write('diagnosisId: $diagnosisId, ')
@@ -1491,6 +1634,7 @@ class Symptom extends DataClass implements Insertable<Symptom> {
 
   @override
   int get hashCode => Object.hash(
+    archivedAt,
     id,
     label,
     diagnosisId,
@@ -1505,6 +1649,7 @@ class Symptom extends DataClass implements Insertable<Symptom> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Symptom &&
+          other.archivedAt == this.archivedAt &&
           other.id == this.id &&
           other.label == this.label &&
           other.diagnosisId == this.diagnosisId &&
@@ -1517,6 +1662,7 @@ class Symptom extends DataClass implements Insertable<Symptom> {
 }
 
 class SymptomsCompanion extends UpdateCompanion<Symptom> {
+  final Value<DateTime?> archivedAt;
   final Value<String> id;
   final Value<String> label;
   final Value<String?> diagnosisId;
@@ -1528,6 +1674,7 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const SymptomsCompanion({
+    this.archivedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.label = const Value.absent(),
     this.diagnosisId = const Value.absent(),
@@ -1540,6 +1687,7 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
     this.rowid = const Value.absent(),
   });
   SymptomsCompanion.insert({
+    this.archivedAt = const Value.absent(),
     required String id,
     required String label,
     this.diagnosisId = const Value.absent(),
@@ -1556,6 +1704,7 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
   static Insertable<Symptom> custom({
+    Expression<DateTime>? archivedAt,
     Expression<String>? id,
     Expression<String>? label,
     Expression<String>? diagnosisId,
@@ -1568,6 +1717,7 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (archivedAt != null) 'archived_at': archivedAt,
       if (id != null) 'id': id,
       if (label != null) 'label': label,
       if (diagnosisId != null) 'diagnosis_id': diagnosisId,
@@ -1582,6 +1732,7 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
   }
 
   SymptomsCompanion copyWith({
+    Value<DateTime?>? archivedAt,
     Value<String>? id,
     Value<String>? label,
     Value<String?>? diagnosisId,
@@ -1594,6 +1745,7 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
     Value<int>? rowid,
   }) {
     return SymptomsCompanion(
+      archivedAt: archivedAt ?? this.archivedAt,
       id: id ?? this.id,
       label: label ?? this.label,
       diagnosisId: diagnosisId ?? this.diagnosisId,
@@ -1610,6 +1762,9 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -1648,6 +1803,7 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
   @override
   String toString() {
     return (StringBuffer('SymptomsCompanion(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('label: $label, ')
           ..write('diagnosisId: $diagnosisId, ')
@@ -2246,6 +2402,17 @@ class $AppointmentsTable extends Appointments
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $AppointmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -2342,6 +2509,7 @@ class $AppointmentsTable extends Appointments
   );
   @override
   List<GeneratedColumn> get $columns => [
+    archivedAt,
     id,
     doctorId,
     scheduledAt,
@@ -2364,6 +2532,12 @@ class $AppointmentsTable extends Appointments
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -2434,6 +2608,10 @@ class $AppointmentsTable extends Appointments
   Appointment map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Appointment(
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -2485,6 +2663,8 @@ class $AppointmentsTable extends Appointments
 }
 
 class Appointment extends DataClass implements Insertable<Appointment> {
+  /// Gesetzt = im Archiv; überall ausgeblendet, wiederherstellbar.
+  final DateTime? archivedAt;
   final String id;
   final String doctorId;
   final DateTime scheduledAt;
@@ -2495,6 +2675,7 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   final DateTime createdAt;
   final DateTime updatedAt;
   const Appointment({
+    this.archivedAt,
     required this.id,
     required this.doctorId,
     required this.scheduledAt,
@@ -2508,6 +2689,9 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
     map['id'] = Variable<String>(id);
     map['doctor_id'] = Variable<String>(doctorId);
     map['scheduled_at'] = Variable<DateTime>(scheduledAt);
@@ -2532,6 +2716,9 @@ class Appointment extends DataClass implements Insertable<Appointment> {
 
   AppointmentsCompanion toCompanion(bool nullToAbsent) {
     return AppointmentsCompanion(
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
       id: Value(id),
       doctorId: Value(doctorId),
       scheduledAt: Value(scheduledAt),
@@ -2556,6 +2743,7 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Appointment(
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       id: serializer.fromJson<String>(json['id']),
       doctorId: serializer.fromJson<String>(json['doctorId']),
       scheduledAt: serializer.fromJson<DateTime>(json['scheduledAt']),
@@ -2573,6 +2761,7 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'id': serializer.toJson<String>(id),
       'doctorId': serializer.toJson<String>(doctorId),
       'scheduledAt': serializer.toJson<DateTime>(scheduledAt),
@@ -2588,6 +2777,7 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   }
 
   Appointment copyWith({
+    Value<DateTime?> archivedAt = const Value.absent(),
     String? id,
     String? doctorId,
     DateTime? scheduledAt,
@@ -2598,6 +2788,7 @@ class Appointment extends DataClass implements Insertable<Appointment> {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Appointment(
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     id: id ?? this.id,
     doctorId: doctorId ?? this.doctorId,
     scheduledAt: scheduledAt ?? this.scheduledAt,
@@ -2610,6 +2801,9 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   );
   Appointment copyWithCompanion(AppointmentsCompanion data) {
     return Appointment(
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
       id: data.id.present ? data.id.value : this.id,
       doctorId: data.doctorId.present ? data.doctorId.value : this.doctorId,
       scheduledAt: data.scheduledAt.present
@@ -2629,6 +2823,7 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   @override
   String toString() {
     return (StringBuffer('Appointment(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('doctorId: $doctorId, ')
           ..write('scheduledAt: $scheduledAt, ')
@@ -2644,6 +2839,7 @@ class Appointment extends DataClass implements Insertable<Appointment> {
 
   @override
   int get hashCode => Object.hash(
+    archivedAt,
     id,
     doctorId,
     scheduledAt,
@@ -2658,6 +2854,7 @@ class Appointment extends DataClass implements Insertable<Appointment> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Appointment &&
+          other.archivedAt == this.archivedAt &&
           other.id == this.id &&
           other.doctorId == this.doctorId &&
           other.scheduledAt == this.scheduledAt &&
@@ -2670,6 +2867,7 @@ class Appointment extends DataClass implements Insertable<Appointment> {
 }
 
 class AppointmentsCompanion extends UpdateCompanion<Appointment> {
+  final Value<DateTime?> archivedAt;
   final Value<String> id;
   final Value<String> doctorId;
   final Value<DateTime> scheduledAt;
@@ -2681,6 +2879,7 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const AppointmentsCompanion({
+    this.archivedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.doctorId = const Value.absent(),
     this.scheduledAt = const Value.absent(),
@@ -2693,6 +2892,7 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
     this.rowid = const Value.absent(),
   });
   AppointmentsCompanion.insert({
+    this.archivedAt = const Value.absent(),
     required String id,
     required String doctorId,
     required DateTime scheduledAt,
@@ -2710,6 +2910,7 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
   static Insertable<Appointment> custom({
+    Expression<DateTime>? archivedAt,
     Expression<String>? id,
     Expression<String>? doctorId,
     Expression<DateTime>? scheduledAt,
@@ -2722,6 +2923,7 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (archivedAt != null) 'archived_at': archivedAt,
       if (id != null) 'id': id,
       if (doctorId != null) 'doctor_id': doctorId,
       if (scheduledAt != null) 'scheduled_at': scheduledAt,
@@ -2736,6 +2938,7 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
   }
 
   AppointmentsCompanion copyWith({
+    Value<DateTime?>? archivedAt,
     Value<String>? id,
     Value<String>? doctorId,
     Value<DateTime>? scheduledAt,
@@ -2748,6 +2951,7 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
     Value<int>? rowid,
   }) {
     return AppointmentsCompanion(
+      archivedAt: archivedAt ?? this.archivedAt,
       id: id ?? this.id,
       doctorId: doctorId ?? this.doctorId,
       scheduledAt: scheduledAt ?? this.scheduledAt,
@@ -2764,6 +2968,9 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -2802,6 +3009,7 @@ class AppointmentsCompanion extends UpdateCompanion<Appointment> {
   @override
   String toString() {
     return (StringBuffer('AppointmentsCompanion(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('doctorId: $doctorId, ')
           ..write('scheduledAt: $scheduledAt, ')
@@ -3294,6 +3502,17 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $ReportsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -3392,6 +3611,7 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
   );
   @override
   List<GeneratedColumn> get $columns => [
+    archivedAt,
     id,
     appointmentId,
     title,
@@ -3414,6 +3634,12 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -3484,6 +3710,10 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
   Report map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Report(
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -3535,6 +3765,8 @@ class $ReportsTable extends Reports with TableInfo<$ReportsTable, Report> {
 }
 
 class Report extends DataClass implements Insertable<Report> {
+  /// Gesetzt = im Archiv; überall ausgeblendet, wiederherstellbar.
+  final DateTime? archivedAt;
   final String id;
   final String? appointmentId;
   final String title;
@@ -3545,6 +3777,7 @@ class Report extends DataClass implements Insertable<Report> {
   final ReportSource source;
   final DateTime createdAt;
   const Report({
+    this.archivedAt,
     required this.id,
     this.appointmentId,
     required this.title,
@@ -3558,6 +3791,9 @@ class Report extends DataClass implements Insertable<Report> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
     map['id'] = Variable<String>(id);
     if (!nullToAbsent || appointmentId != null) {
       map['appointment_id'] = Variable<String>(appointmentId);
@@ -3582,6 +3818,9 @@ class Report extends DataClass implements Insertable<Report> {
 
   ReportsCompanion toCompanion(bool nullToAbsent) {
     return ReportsCompanion(
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
       id: Value(id),
       appointmentId: appointmentId == null && nullToAbsent
           ? const Value.absent()
@@ -3606,6 +3845,7 @@ class Report extends DataClass implements Insertable<Report> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Report(
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       id: serializer.fromJson<String>(json['id']),
       appointmentId: serializer.fromJson<String?>(json['appointmentId']),
       title: serializer.fromJson<String>(json['title']),
@@ -3623,6 +3863,7 @@ class Report extends DataClass implements Insertable<Report> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'id': serializer.toJson<String>(id),
       'appointmentId': serializer.toJson<String?>(appointmentId),
       'title': serializer.toJson<String>(title),
@@ -3638,6 +3879,7 @@ class Report extends DataClass implements Insertable<Report> {
   }
 
   Report copyWith({
+    Value<DateTime?> archivedAt = const Value.absent(),
     String? id,
     Value<String?> appointmentId = const Value.absent(),
     String? title,
@@ -3648,6 +3890,7 @@ class Report extends DataClass implements Insertable<Report> {
     ReportSource? source,
     DateTime? createdAt,
   }) => Report(
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     id: id ?? this.id,
     appointmentId: appointmentId.present
         ? appointmentId.value
@@ -3664,6 +3907,9 @@ class Report extends DataClass implements Insertable<Report> {
   );
   Report copyWithCompanion(ReportsCompanion data) {
     return Report(
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
       id: data.id.present ? data.id.value : this.id,
       appointmentId: data.appointmentId.present
           ? data.appointmentId.value
@@ -3683,6 +3929,7 @@ class Report extends DataClass implements Insertable<Report> {
   @override
   String toString() {
     return (StringBuffer('Report(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('appointmentId: $appointmentId, ')
           ..write('title: $title, ')
@@ -3698,6 +3945,7 @@ class Report extends DataClass implements Insertable<Report> {
 
   @override
   int get hashCode => Object.hash(
+    archivedAt,
     id,
     appointmentId,
     title,
@@ -3712,6 +3960,7 @@ class Report extends DataClass implements Insertable<Report> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Report &&
+          other.archivedAt == this.archivedAt &&
           other.id == this.id &&
           other.appointmentId == this.appointmentId &&
           other.title == this.title &&
@@ -3724,6 +3973,7 @@ class Report extends DataClass implements Insertable<Report> {
 }
 
 class ReportsCompanion extends UpdateCompanion<Report> {
+  final Value<DateTime?> archivedAt;
   final Value<String> id;
   final Value<String?> appointmentId;
   final Value<String> title;
@@ -3735,6 +3985,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const ReportsCompanion({
+    this.archivedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.appointmentId = const Value.absent(),
     this.title = const Value.absent(),
@@ -3747,6 +3998,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     this.rowid = const Value.absent(),
   });
   ReportsCompanion.insert({
+    this.archivedAt = const Value.absent(),
     required String id,
     this.appointmentId = const Value.absent(),
     required String title,
@@ -3764,6 +4016,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
        source = Value(source),
        createdAt = Value(createdAt);
   static Insertable<Report> custom({
+    Expression<DateTime>? archivedAt,
     Expression<String>? id,
     Expression<String>? appointmentId,
     Expression<String>? title,
@@ -3776,6 +4029,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (archivedAt != null) 'archived_at': archivedAt,
       if (id != null) 'id': id,
       if (appointmentId != null) 'appointment_id': appointmentId,
       if (title != null) 'title': title,
@@ -3790,6 +4044,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
   }
 
   ReportsCompanion copyWith({
+    Value<DateTime?>? archivedAt,
     Value<String>? id,
     Value<String?>? appointmentId,
     Value<String>? title,
@@ -3802,6 +4057,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     Value<int>? rowid,
   }) {
     return ReportsCompanion(
+      archivedAt: archivedAt ?? this.archivedAt,
       id: id ?? this.id,
       appointmentId: appointmentId ?? this.appointmentId,
       title: title ?? this.title,
@@ -3818,6 +4074,9 @@ class ReportsCompanion extends UpdateCompanion<Report> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -3856,6 +4115,7 @@ class ReportsCompanion extends UpdateCompanion<Report> {
   @override
   String toString() {
     return (StringBuffer('ReportsCompanion(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('appointmentId: $appointmentId, ')
           ..write('title: $title, ')
@@ -3877,6 +4137,17 @@ class $PharmaciesTable extends Pharmacies
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $PharmaciesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -3948,6 +4219,7 @@ class $PharmaciesTable extends Pharmacies
   );
   @override
   List<GeneratedColumn> get $columns => [
+    archivedAt,
     id,
     name,
     address,
@@ -3968,6 +4240,12 @@ class $PharmaciesTable extends Pharmacies
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -4024,6 +4302,10 @@ class $PharmaciesTable extends Pharmacies
   Pharmacy map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Pharmacy(
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -4062,6 +4344,8 @@ class $PharmaciesTable extends Pharmacies
 }
 
 class Pharmacy extends DataClass implements Insertable<Pharmacy> {
+  /// Gesetzt = im Archiv; überall ausgeblendet, wiederherstellbar.
+  final DateTime? archivedAt;
   final String id;
   final String name;
   final String? address;
@@ -4070,6 +4354,7 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
   final DateTime createdAt;
   final DateTime updatedAt;
   const Pharmacy({
+    this.archivedAt,
     required this.id,
     required this.name,
     this.address,
@@ -4081,6 +4366,9 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || address != null) {
@@ -4099,6 +4387,9 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
 
   PharmaciesCompanion toCompanion(bool nullToAbsent) {
     return PharmaciesCompanion(
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
       id: Value(id),
       name: Value(name),
       address: address == null && nullToAbsent
@@ -4121,6 +4412,7 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Pharmacy(
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       address: serializer.fromJson<String?>(json['address']),
@@ -4134,6 +4426,7 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'address': serializer.toJson<String?>(address),
@@ -4145,6 +4438,7 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
   }
 
   Pharmacy copyWith({
+    Value<DateTime?> archivedAt = const Value.absent(),
     String? id,
     String? name,
     Value<String?> address = const Value.absent(),
@@ -4153,6 +4447,7 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Pharmacy(
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     id: id ?? this.id,
     name: name ?? this.name,
     address: address.present ? address.value : this.address,
@@ -4163,6 +4458,9 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
   );
   Pharmacy copyWithCompanion(PharmaciesCompanion data) {
     return Pharmacy(
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       address: data.address.present ? data.address.value : this.address,
@@ -4176,6 +4474,7 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
   @override
   String toString() {
     return (StringBuffer('Pharmacy(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('address: $address, ')
@@ -4188,12 +4487,21 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, address, phone, notes, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+    archivedAt,
+    id,
+    name,
+    address,
+    phone,
+    notes,
+    createdAt,
+    updatedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Pharmacy &&
+          other.archivedAt == this.archivedAt &&
           other.id == this.id &&
           other.name == this.name &&
           other.address == this.address &&
@@ -4204,6 +4512,7 @@ class Pharmacy extends DataClass implements Insertable<Pharmacy> {
 }
 
 class PharmaciesCompanion extends UpdateCompanion<Pharmacy> {
+  final Value<DateTime?> archivedAt;
   final Value<String> id;
   final Value<String> name;
   final Value<String?> address;
@@ -4213,6 +4522,7 @@ class PharmaciesCompanion extends UpdateCompanion<Pharmacy> {
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const PharmaciesCompanion({
+    this.archivedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.address = const Value.absent(),
@@ -4223,6 +4533,7 @@ class PharmaciesCompanion extends UpdateCompanion<Pharmacy> {
     this.rowid = const Value.absent(),
   });
   PharmaciesCompanion.insert({
+    this.archivedAt = const Value.absent(),
     required String id,
     required String name,
     this.address = const Value.absent(),
@@ -4236,6 +4547,7 @@ class PharmaciesCompanion extends UpdateCompanion<Pharmacy> {
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
   static Insertable<Pharmacy> custom({
+    Expression<DateTime>? archivedAt,
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? address,
@@ -4246,6 +4558,7 @@ class PharmaciesCompanion extends UpdateCompanion<Pharmacy> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (archivedAt != null) 'archived_at': archivedAt,
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (address != null) 'address': address,
@@ -4258,6 +4571,7 @@ class PharmaciesCompanion extends UpdateCompanion<Pharmacy> {
   }
 
   PharmaciesCompanion copyWith({
+    Value<DateTime?>? archivedAt,
     Value<String>? id,
     Value<String>? name,
     Value<String?>? address,
@@ -4268,6 +4582,7 @@ class PharmaciesCompanion extends UpdateCompanion<Pharmacy> {
     Value<int>? rowid,
   }) {
     return PharmaciesCompanion(
+      archivedAt: archivedAt ?? this.archivedAt,
       id: id ?? this.id,
       name: name ?? this.name,
       address: address ?? this.address,
@@ -4282,6 +4597,9 @@ class PharmaciesCompanion extends UpdateCompanion<Pharmacy> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -4312,6 +4630,7 @@ class PharmaciesCompanion extends UpdateCompanion<Pharmacy> {
   @override
   String toString() {
     return (StringBuffer('PharmaciesCompanion(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('address: $address, ')
@@ -4331,6 +4650,17 @@ class $MedicationsTable extends Medications
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $MedicationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -4512,6 +4842,7 @@ class $MedicationsTable extends Medications
   );
   @override
   List<GeneratedColumn> get $columns => [
+    archivedAt,
     id,
     name,
     dosage,
@@ -4541,6 +4872,12 @@ class $MedicationsTable extends Medications
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -4658,6 +4995,10 @@ class $MedicationsTable extends Medications
   Medication map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Medication(
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -4739,6 +5080,8 @@ class $MedicationsTable extends Medications
 }
 
 class Medication extends DataClass implements Insertable<Medication> {
+  /// Gesetzt = im Archiv; überall ausgeblendet, wiederherstellbar.
+  final DateTime? archivedAt;
   final String id;
   final String name;
   final String? dosage;
@@ -4762,6 +5105,7 @@ class Medication extends DataClass implements Insertable<Medication> {
   final String? pharmacyId;
   final bool remindersEnabled;
   const Medication({
+    this.archivedAt,
     required this.id,
     required this.name,
     this.dosage,
@@ -4782,6 +5126,9 @@ class Medication extends DataClass implements Insertable<Medication> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
     map['id'] = Variable<String>(id);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || dosage != null) {
@@ -4829,6 +5176,9 @@ class Medication extends DataClass implements Insertable<Medication> {
 
   MedicationsCompanion toCompanion(bool nullToAbsent) {
     return MedicationsCompanion(
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
       id: Value(id),
       name: Value(name),
       dosage: dosage == null && nullToAbsent
@@ -4876,6 +5226,7 @@ class Medication extends DataClass implements Insertable<Medication> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Medication(
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       dosage: serializer.fromJson<String?>(json['dosage']),
@@ -4900,6 +5251,7 @@ class Medication extends DataClass implements Insertable<Medication> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'dosage': serializer.toJson<String?>(dosage),
@@ -4922,6 +5274,7 @@ class Medication extends DataClass implements Insertable<Medication> {
   }
 
   Medication copyWith({
+    Value<DateTime?> archivedAt = const Value.absent(),
     String? id,
     String? name,
     Value<String?> dosage = const Value.absent(),
@@ -4939,6 +5292,7 @@ class Medication extends DataClass implements Insertable<Medication> {
     Value<String?> pharmacyId = const Value.absent(),
     bool? remindersEnabled,
   }) => Medication(
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     id: id ?? this.id,
     name: name ?? this.name,
     dosage: dosage.present ? dosage.value : this.dosage,
@@ -4958,6 +5312,9 @@ class Medication extends DataClass implements Insertable<Medication> {
   );
   Medication copyWithCompanion(MedicationsCompanion data) {
     return Medication(
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       dosage: data.dosage.present ? data.dosage.value : this.dosage,
@@ -4994,6 +5351,7 @@ class Medication extends DataClass implements Insertable<Medication> {
   @override
   String toString() {
     return (StringBuffer('Medication(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('dosage: $dosage, ')
@@ -5016,6 +5374,7 @@ class Medication extends DataClass implements Insertable<Medication> {
 
   @override
   int get hashCode => Object.hash(
+    archivedAt,
     id,
     name,
     dosage,
@@ -5037,6 +5396,7 @@ class Medication extends DataClass implements Insertable<Medication> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Medication &&
+          other.archivedAt == this.archivedAt &&
           other.id == this.id &&
           other.name == this.name &&
           other.dosage == this.dosage &&
@@ -5056,6 +5416,7 @@ class Medication extends DataClass implements Insertable<Medication> {
 }
 
 class MedicationsCompanion extends UpdateCompanion<Medication> {
+  final Value<DateTime?> archivedAt;
   final Value<String> id;
   final Value<String> name;
   final Value<String?> dosage;
@@ -5074,6 +5435,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
   final Value<bool> remindersEnabled;
   final Value<int> rowid;
   const MedicationsCompanion({
+    this.archivedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.dosage = const Value.absent(),
@@ -5093,6 +5455,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
     this.rowid = const Value.absent(),
   });
   MedicationsCompanion.insert({
+    this.archivedAt = const Value.absent(),
     required String id,
     required String name,
     this.dosage = const Value.absent(),
@@ -5114,6 +5477,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
        name = Value(name),
        createdAt = Value(createdAt);
   static Insertable<Medication> custom({
+    Expression<DateTime>? archivedAt,
     Expression<String>? id,
     Expression<String>? name,
     Expression<String>? dosage,
@@ -5133,6 +5497,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (archivedAt != null) 'archived_at': archivedAt,
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (dosage != null) 'dosage': dosage,
@@ -5154,6 +5519,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
   }
 
   MedicationsCompanion copyWith({
+    Value<DateTime?>? archivedAt,
     Value<String>? id,
     Value<String>? name,
     Value<String?>? dosage,
@@ -5173,6 +5539,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
     Value<int>? rowid,
   }) {
     return MedicationsCompanion(
+      archivedAt: archivedAt ?? this.archivedAt,
       id: id ?? this.id,
       name: name ?? this.name,
       dosage: dosage ?? this.dosage,
@@ -5196,6 +5563,9 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -5255,6 +5625,7 @@ class MedicationsCompanion extends UpdateCompanion<Medication> {
   @override
   String toString() {
     return (StringBuffer('MedicationsCompanion(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('dosage: $dosage, ')
@@ -5282,6 +5653,17 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $NotesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -5352,6 +5734,7 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
   );
   @override
   List<GeneratedColumn> get $columns => [
+    archivedAt,
     id,
     body,
     relatedAppointmentId,
@@ -5371,6 +5754,12 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -5427,6 +5816,10 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
   Note map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Note(
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -5461,6 +5854,8 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
 }
 
 class Note extends DataClass implements Insertable<Note> {
+  /// Gesetzt = im Archiv; überall ausgeblendet, wiederherstellbar.
+  final DateTime? archivedAt;
   final String id;
   final String body;
   final String? relatedAppointmentId;
@@ -5468,6 +5863,7 @@ class Note extends DataClass implements Insertable<Note> {
   final DateTime createdAt;
   final DateTime updatedAt;
   const Note({
+    this.archivedAt,
     required this.id,
     required this.body,
     this.relatedAppointmentId,
@@ -5478,6 +5874,9 @@ class Note extends DataClass implements Insertable<Note> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
     map['id'] = Variable<String>(id);
     map['body'] = Variable<String>(body);
     if (!nullToAbsent || relatedAppointmentId != null) {
@@ -5493,6 +5892,9 @@ class Note extends DataClass implements Insertable<Note> {
 
   NotesCompanion toCompanion(bool nullToAbsent) {
     return NotesCompanion(
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
       id: Value(id),
       body: Value(body),
       relatedAppointmentId: relatedAppointmentId == null && nullToAbsent
@@ -5512,6 +5914,7 @@ class Note extends DataClass implements Insertable<Note> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Note(
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       id: serializer.fromJson<String>(json['id']),
       body: serializer.fromJson<String>(json['body']),
       relatedAppointmentId: serializer.fromJson<String?>(
@@ -5528,6 +5931,7 @@ class Note extends DataClass implements Insertable<Note> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'id': serializer.toJson<String>(id),
       'body': serializer.toJson<String>(body),
       'relatedAppointmentId': serializer.toJson<String?>(relatedAppointmentId),
@@ -5538,6 +5942,7 @@ class Note extends DataClass implements Insertable<Note> {
   }
 
   Note copyWith({
+    Value<DateTime?> archivedAt = const Value.absent(),
     String? id,
     String? body,
     Value<String?> relatedAppointmentId = const Value.absent(),
@@ -5545,6 +5950,7 @@ class Note extends DataClass implements Insertable<Note> {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Note(
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     id: id ?? this.id,
     body: body ?? this.body,
     relatedAppointmentId: relatedAppointmentId.present
@@ -5558,6 +5964,9 @@ class Note extends DataClass implements Insertable<Note> {
   );
   Note copyWithCompanion(NotesCompanion data) {
     return Note(
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
       id: data.id.present ? data.id.value : this.id,
       body: data.body.present ? data.body.value : this.body,
       relatedAppointmentId: data.relatedAppointmentId.present
@@ -5574,6 +5983,7 @@ class Note extends DataClass implements Insertable<Note> {
   @override
   String toString() {
     return (StringBuffer('Note(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('body: $body, ')
           ..write('relatedAppointmentId: $relatedAppointmentId, ')
@@ -5586,6 +5996,7 @@ class Note extends DataClass implements Insertable<Note> {
 
   @override
   int get hashCode => Object.hash(
+    archivedAt,
     id,
     body,
     relatedAppointmentId,
@@ -5597,6 +6008,7 @@ class Note extends DataClass implements Insertable<Note> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Note &&
+          other.archivedAt == this.archivedAt &&
           other.id == this.id &&
           other.body == this.body &&
           other.relatedAppointmentId == this.relatedAppointmentId &&
@@ -5606,6 +6018,7 @@ class Note extends DataClass implements Insertable<Note> {
 }
 
 class NotesCompanion extends UpdateCompanion<Note> {
+  final Value<DateTime?> archivedAt;
   final Value<String> id;
   final Value<String> body;
   final Value<String?> relatedAppointmentId;
@@ -5614,6 +6027,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const NotesCompanion({
+    this.archivedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.body = const Value.absent(),
     this.relatedAppointmentId = const Value.absent(),
@@ -5623,6 +6037,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
     this.rowid = const Value.absent(),
   });
   NotesCompanion.insert({
+    this.archivedAt = const Value.absent(),
     required String id,
     required String body,
     this.relatedAppointmentId = const Value.absent(),
@@ -5635,6 +6050,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
   static Insertable<Note> custom({
+    Expression<DateTime>? archivedAt,
     Expression<String>? id,
     Expression<String>? body,
     Expression<String>? relatedAppointmentId,
@@ -5644,6 +6060,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (archivedAt != null) 'archived_at': archivedAt,
       if (id != null) 'id': id,
       if (body != null) 'body': body,
       if (relatedAppointmentId != null)
@@ -5657,6 +6074,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
   }
 
   NotesCompanion copyWith({
+    Value<DateTime?>? archivedAt,
     Value<String>? id,
     Value<String>? body,
     Value<String?>? relatedAppointmentId,
@@ -5666,6 +6084,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
     Value<int>? rowid,
   }) {
     return NotesCompanion(
+      archivedAt: archivedAt ?? this.archivedAt,
       id: id ?? this.id,
       body: body ?? this.body,
       relatedAppointmentId: relatedAppointmentId ?? this.relatedAppointmentId,
@@ -5679,6 +6098,9 @@ class NotesCompanion extends UpdateCompanion<Note> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -5708,6 +6130,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
   @override
   String toString() {
     return (StringBuffer('NotesCompanion(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('body: $body, ')
           ..write('relatedAppointmentId: $relatedAppointmentId, ')
@@ -9066,6 +9489,17 @@ class $VaccinationsTable extends Vaccinations
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VaccinationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -9187,6 +9621,7 @@ class $VaccinationsTable extends Vaccinations
   );
   @override
   List<GeneratedColumn> get $columns => [
+    archivedAt,
     id,
     vaccine,
     product,
@@ -9211,6 +9646,12 @@ class $VaccinationsTable extends Vaccinations
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -9296,6 +9737,10 @@ class $VaccinationsTable extends Vaccinations
   Vaccination map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Vaccination(
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -9350,6 +9795,8 @@ class $VaccinationsTable extends Vaccinations
 }
 
 class Vaccination extends DataClass implements Insertable<Vaccination> {
+  /// Gesetzt = im Archiv; überall ausgeblendet, wiederherstellbar.
+  final DateTime? archivedAt;
   final String id;
 
   /// Impfstoff bzw. Impfung, z. B. „Tetanus/Diphtherie/Pertussis“.
@@ -9364,6 +9811,7 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
   final DateTime createdAt;
   final DateTime updatedAt;
   const Vaccination({
+    this.archivedAt,
     required this.id,
     required this.vaccine,
     this.product,
@@ -9379,6 +9827,9 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
     map['id'] = Variable<String>(id);
     map['vaccine'] = Variable<String>(vaccine);
     if (!nullToAbsent || product != null) {
@@ -9407,6 +9858,9 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
 
   VaccinationsCompanion toCompanion(bool nullToAbsent) {
     return VaccinationsCompanion(
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
       id: Value(id),
       vaccine: Value(vaccine),
       product: product == null && nullToAbsent
@@ -9439,6 +9893,7 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Vaccination(
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       id: serializer.fromJson<String>(json['id']),
       vaccine: serializer.fromJson<String>(json['vaccine']),
       product: serializer.fromJson<String?>(json['product']),
@@ -9456,6 +9911,7 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'id': serializer.toJson<String>(id),
       'vaccine': serializer.toJson<String>(vaccine),
       'product': serializer.toJson<String?>(product),
@@ -9471,6 +9927,7 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
   }
 
   Vaccination copyWith({
+    Value<DateTime?> archivedAt = const Value.absent(),
     String? id,
     String? vaccine,
     Value<String?> product = const Value.absent(),
@@ -9483,6 +9940,7 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Vaccination(
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     id: id ?? this.id,
     vaccine: vaccine ?? this.vaccine,
     product: product.present ? product.value : this.product,
@@ -9497,6 +9955,9 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
   );
   Vaccination copyWithCompanion(VaccinationsCompanion data) {
     return Vaccination(
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
       id: data.id.present ? data.id.value : this.id,
       vaccine: data.vaccine.present ? data.vaccine.value : this.vaccine,
       product: data.product.present ? data.product.value : this.product,
@@ -9518,6 +9979,7 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
   @override
   String toString() {
     return (StringBuffer('Vaccination(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('vaccine: $vaccine, ')
           ..write('product: $product, ')
@@ -9535,6 +9997,7 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
 
   @override
   int get hashCode => Object.hash(
+    archivedAt,
     id,
     vaccine,
     product,
@@ -9551,6 +10014,7 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Vaccination &&
+          other.archivedAt == this.archivedAt &&
           other.id == this.id &&
           other.vaccine == this.vaccine &&
           other.product == this.product &&
@@ -9565,6 +10029,7 @@ class Vaccination extends DataClass implements Insertable<Vaccination> {
 }
 
 class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
+  final Value<DateTime?> archivedAt;
   final Value<String> id;
   final Value<String> vaccine;
   final Value<String?> product;
@@ -9578,6 +10043,7 @@ class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const VaccinationsCompanion({
+    this.archivedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.vaccine = const Value.absent(),
     this.product = const Value.absent(),
@@ -9592,6 +10058,7 @@ class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
     this.rowid = const Value.absent(),
   });
   VaccinationsCompanion.insert({
+    this.archivedAt = const Value.absent(),
     required String id,
     required String vaccine,
     this.product = const Value.absent(),
@@ -9610,6 +10077,7 @@ class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
   static Insertable<Vaccination> custom({
+    Expression<DateTime>? archivedAt,
     Expression<String>? id,
     Expression<String>? vaccine,
     Expression<String>? product,
@@ -9624,6 +10092,7 @@ class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (archivedAt != null) 'archived_at': archivedAt,
       if (id != null) 'id': id,
       if (vaccine != null) 'vaccine': vaccine,
       if (product != null) 'product': product,
@@ -9640,6 +10109,7 @@ class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
   }
 
   VaccinationsCompanion copyWith({
+    Value<DateTime?>? archivedAt,
     Value<String>? id,
     Value<String>? vaccine,
     Value<String?>? product,
@@ -9654,6 +10124,7 @@ class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
     Value<int>? rowid,
   }) {
     return VaccinationsCompanion(
+      archivedAt: archivedAt ?? this.archivedAt,
       id: id ?? this.id,
       vaccine: vaccine ?? this.vaccine,
       product: product ?? this.product,
@@ -9672,6 +10143,9 @@ class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -9714,6 +10188,7 @@ class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
   @override
   String toString() {
     return (StringBuffer('VaccinationsCompanion(')
+          ..write('archivedAt: $archivedAt, ')
           ..write('id: $id, ')
           ..write('vaccine: $vaccine, ')
           ..write('product: $product, ')
@@ -9788,6 +10263,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 }
 
 typedef $$DoctorsTableCreateCompanionBuilder = DoctorsCompanion Function({
+  Value<DateTime?> archivedAt,
   required String id,
   required String name,
   Value<String?> specialty,
@@ -9800,6 +10276,7 @@ typedef $$DoctorsTableCreateCompanionBuilder = DoctorsCompanion Function({
   Value<int> rowid,
 });
 typedef $$DoctorsTableUpdateCompanionBuilder = DoctorsCompanion Function({
+  Value<DateTime?> archivedAt,
   Value<String> id,
   Value<String> name,
   Value<String?> specialty,
@@ -9898,6 +10375,11 @@ class $$DoctorsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -10053,6 +10535,11 @@ class $$DoctorsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -10108,6 +10595,11 @@ class $$DoctorsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -10271,6 +10763,7 @@ class $$DoctorsTableTableManager
               $$DoctorsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> specialty = const Value.absent(),
@@ -10282,6 +10775,7 @@ class $$DoctorsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DoctorsCompanion(
+                archivedAt: archivedAt,
                 id: id,
                 name: name,
                 specialty: specialty,
@@ -10295,6 +10789,7 @@ class $$DoctorsTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 required String id,
                 required String name,
                 Value<String?> specialty = const Value.absent(),
@@ -10306,6 +10801,7 @@ class $$DoctorsTableTableManager
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => DoctorsCompanion.insert(
+                archivedAt: archivedAt,
                 id: id,
                 name: name,
                 specialty: specialty,
@@ -10455,6 +10951,7 @@ typedef $$DoctorsTableProcessedTableManager =
       })
     >;
 typedef $$DiagnosesTableCreateCompanionBuilder = DiagnosesCompanion Function({
+  Value<DateTime?> archivedAt,
   required String id,
   required String title,
   Value<String?> notes,
@@ -10466,6 +10963,7 @@ typedef $$DiagnosesTableCreateCompanionBuilder = DiagnosesCompanion Function({
   Value<int> rowid,
 });
 typedef $$DiagnosesTableUpdateCompanionBuilder = DiagnosesCompanion Function({
+  Value<DateTime?> archivedAt,
   Value<String> id,
   Value<String> title,
   Value<String?> notes,
@@ -10571,6 +11069,11 @@ class $$DiagnosesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -10722,6 +11225,11 @@ class $$DiagnosesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -10772,6 +11280,11 @@ class $$DiagnosesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -10931,6 +11444,7 @@ class $$DiagnosesTableTableManager
               $$DiagnosesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
@@ -10941,6 +11455,7 @@ class $$DiagnosesTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DiagnosesCompanion(
+                archivedAt: archivedAt,
                 id: id,
                 title: title,
                 notes: notes,
@@ -10953,6 +11468,7 @@ class $$DiagnosesTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 required String id,
                 required String title,
                 Value<String?> notes = const Value.absent(),
@@ -10963,6 +11479,7 @@ class $$DiagnosesTableTableManager
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => DiagnosesCompanion.insert(
+                archivedAt: archivedAt,
                 id: id,
                 title: title,
                 notes: notes,
@@ -11111,6 +11628,7 @@ typedef $$DiagnosesTableProcessedTableManager =
       })
     >;
 typedef $$SymptomsTableCreateCompanionBuilder = SymptomsCompanion Function({
+  Value<DateTime?> archivedAt,
   required String id,
   required String label,
   Value<String?> diagnosisId,
@@ -11123,6 +11641,7 @@ typedef $$SymptomsTableCreateCompanionBuilder = SymptomsCompanion Function({
   Value<int> rowid,
 });
 typedef $$SymptomsTableUpdateCompanionBuilder = SymptomsCompanion Function({
+  Value<DateTime?> archivedAt,
   Value<String> id,
   Value<String> label,
   Value<String?> diagnosisId,
@@ -11252,6 +11771,11 @@ class $$SymptomsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -11426,6 +11950,11 @@ class $$SymptomsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -11499,6 +12028,11 @@ class $$SymptomsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -11690,6 +12224,7 @@ class $$SymptomsTableTableManager
               $$SymptomsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> label = const Value.absent(),
                 Value<String?> diagnosisId = const Value.absent(),
@@ -11701,6 +12236,7 @@ class $$SymptomsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SymptomsCompanion(
+                archivedAt: archivedAt,
                 id: id,
                 label: label,
                 diagnosisId: diagnosisId,
@@ -11714,6 +12250,7 @@ class $$SymptomsTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 required String id,
                 required String label,
                 Value<String?> diagnosisId = const Value.absent(),
@@ -11725,6 +12262,7 @@ class $$SymptomsTableTableManager
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => SymptomsCompanion.insert(
+                archivedAt: archivedAt,
                 id: id,
                 label: label,
                 diagnosisId: diagnosisId,
@@ -12323,6 +12861,7 @@ typedef $$SymptomObservationsTableProcessedTableManager =
     >;
 typedef $$AppointmentsTableCreateCompanionBuilder =
     AppointmentsCompanion Function({
+      Value<DateTime?> archivedAt,
       required String id,
       required String doctorId,
       required DateTime scheduledAt,
@@ -12336,6 +12875,7 @@ typedef $$AppointmentsTableCreateCompanionBuilder =
     });
 typedef $$AppointmentsTableUpdateCompanionBuilder =
     AppointmentsCompanion Function({
+      Value<DateTime?> archivedAt,
       Value<String> id,
       Value<String> doctorId,
       Value<DateTime> scheduledAt,
@@ -12465,6 +13005,11 @@ class $$AppointmentsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -12639,6 +13184,11 @@ class $$AppointmentsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -12712,6 +13262,11 @@ class $$AppointmentsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -12900,6 +13455,7 @@ class $$AppointmentsTableTableManager
               $$AppointmentsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> doctorId = const Value.absent(),
                 Value<DateTime> scheduledAt = const Value.absent(),
@@ -12911,6 +13467,7 @@ class $$AppointmentsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppointmentsCompanion(
+                archivedAt: archivedAt,
                 id: id,
                 doctorId: doctorId,
                 scheduledAt: scheduledAt,
@@ -12924,6 +13481,7 @@ class $$AppointmentsTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 required String id,
                 required String doctorId,
                 required DateTime scheduledAt,
@@ -12935,6 +13493,7 @@ class $$AppointmentsTableTableManager
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => AppointmentsCompanion.insert(
+                archivedAt: archivedAt,
                 id: id,
                 doctorId: doctorId,
                 scheduledAt: scheduledAt,
@@ -13844,6 +14403,7 @@ typedef $$AppointmentSymptomsTableProcessedTableManager =
       PrefetchHooks Function({bool appointmentId, bool symptomId})
     >;
 typedef $$ReportsTableCreateCompanionBuilder = ReportsCompanion Function({
+  Value<DateTime?> archivedAt,
   required String id,
   Value<String?> appointmentId,
   required String title,
@@ -13856,6 +14416,7 @@ typedef $$ReportsTableCreateCompanionBuilder = ReportsCompanion Function({
   Value<int> rowid,
 });
 typedef $$ReportsTableUpdateCompanionBuilder = ReportsCompanion Function({
+  Value<DateTime?> archivedAt,
   Value<String> id,
   Value<String?> appointmentId,
   Value<String> title,
@@ -13899,6 +14460,11 @@ class $$ReportsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -13973,6 +14539,11 @@ class $$ReportsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -14046,6 +14617,11 @@ class $$ReportsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -14124,6 +14700,7 @@ class $$ReportsTableTableManager
               $$ReportsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String?> appointmentId = const Value.absent(),
                 Value<String> title = const Value.absent(),
@@ -14135,6 +14712,7 @@ class $$ReportsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ReportsCompanion(
+                archivedAt: archivedAt,
                 id: id,
                 appointmentId: appointmentId,
                 title: title,
@@ -14148,6 +14726,7 @@ class $$ReportsTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 required String id,
                 Value<String?> appointmentId = const Value.absent(),
                 required String title,
@@ -14159,6 +14738,7 @@ class $$ReportsTableTableManager
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
               }) => ReportsCompanion.insert(
+                archivedAt: archivedAt,
                 id: id,
                 appointmentId: appointmentId,
                 title: title,
@@ -14236,6 +14816,7 @@ typedef $$ReportsTableProcessedTableManager =
       PrefetchHooks Function({bool appointmentId})
     >;
 typedef $$PharmaciesTableCreateCompanionBuilder = PharmaciesCompanion Function({
+  Value<DateTime?> archivedAt,
   required String id,
   required String name,
   Value<String?> address,
@@ -14246,6 +14827,7 @@ typedef $$PharmaciesTableCreateCompanionBuilder = PharmaciesCompanion Function({
   Value<int> rowid,
 });
 typedef $$PharmaciesTableUpdateCompanionBuilder = PharmaciesCompanion Function({
+  Value<DateTime?> archivedAt,
   Value<String> id,
   Value<String> name,
   Value<String?> address,
@@ -14288,6 +14870,11 @@ class $$PharmaciesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -14358,6 +14945,11 @@ class $$PharmaciesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -14403,6 +14995,11 @@ class $$PharmaciesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -14478,6 +15075,7 @@ class $$PharmaciesTableTableManager
               $$PharmaciesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> address = const Value.absent(),
@@ -14487,6 +15085,7 @@ class $$PharmaciesTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PharmaciesCompanion(
+                archivedAt: archivedAt,
                 id: id,
                 name: name,
                 address: address,
@@ -14498,6 +15097,7 @@ class $$PharmaciesTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 required String id,
                 required String name,
                 Value<String?> address = const Value.absent(),
@@ -14507,6 +15107,7 @@ class $$PharmaciesTableTableManager
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => PharmaciesCompanion.insert(
+                archivedAt: archivedAt,
                 id: id,
                 name: name,
                 address: address,
@@ -14574,6 +15175,7 @@ typedef $$PharmaciesTableProcessedTableManager =
     >;
 typedef $$MedicationsTableCreateCompanionBuilder =
     MedicationsCompanion Function({
+      Value<DateTime?> archivedAt,
       required String id,
       required String name,
       Value<String?> dosage,
@@ -14594,6 +15196,7 @@ typedef $$MedicationsTableCreateCompanionBuilder =
     });
 typedef $$MedicationsTableUpdateCompanionBuilder =
     MedicationsCompanion Function({
+      Value<DateTime?> archivedAt,
       Value<String> id,
       Value<String> name,
       Value<String?> dosage,
@@ -14723,6 +15326,11 @@ class $$MedicationsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -14918,6 +15526,11 @@ class $$MedicationsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -15062,6 +15675,11 @@ class $$MedicationsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -15265,6 +15883,7 @@ class $$MedicationsTableTableManager
               $$MedicationsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String?> dosage = const Value.absent(),
@@ -15283,6 +15902,7 @@ class $$MedicationsTableTableManager
                 Value<bool> remindersEnabled = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MedicationsCompanion(
+                archivedAt: archivedAt,
                 id: id,
                 name: name,
                 dosage: dosage,
@@ -15303,6 +15923,7 @@ class $$MedicationsTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 required String id,
                 required String name,
                 Value<String?> dosage = const Value.absent(),
@@ -15321,6 +15942,7 @@ class $$MedicationsTableTableManager
                 Value<bool> remindersEnabled = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MedicationsCompanion.insert(
+                archivedAt: archivedAt,
                 id: id,
                 name: name,
                 dosage: dosage,
@@ -15486,6 +16108,7 @@ typedef $$MedicationsTableProcessedTableManager =
       })
     >;
 typedef $$NotesTableCreateCompanionBuilder = NotesCompanion Function({
+  Value<DateTime?> archivedAt,
   required String id,
   required String body,
   Value<String?> relatedAppointmentId,
@@ -15495,6 +16118,7 @@ typedef $$NotesTableCreateCompanionBuilder = NotesCompanion Function({
   Value<int> rowid,
 });
 typedef $$NotesTableUpdateCompanionBuilder = NotesCompanion Function({
+  Value<DateTime?> archivedAt,
   Value<String> id,
   Value<String> body,
   Value<String?> relatedAppointmentId,
@@ -15554,6 +16178,11 @@ class $$NotesTableFilterComposer extends Composer<_$AppDatabase, $NotesTable> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -15630,6 +16259,11 @@ class $$NotesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -15706,6 +16340,11 @@ class $$NotesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -15796,6 +16435,7 @@ class $$NotesTableTableManager
               $$NotesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> body = const Value.absent(),
                 Value<String?> relatedAppointmentId = const Value.absent(),
@@ -15804,6 +16444,7 @@ class $$NotesTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NotesCompanion(
+                archivedAt: archivedAt,
                 id: id,
                 body: body,
                 relatedAppointmentId: relatedAppointmentId,
@@ -15814,6 +16455,7 @@ class $$NotesTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 required String id,
                 required String body,
                 Value<String?> relatedAppointmentId = const Value.absent(),
@@ -15822,6 +16464,7 @@ class $$NotesTableTableManager
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => NotesCompanion.insert(
+                archivedAt: archivedAt,
                 id: id,
                 body: body,
                 relatedAppointmentId: relatedAppointmentId,
@@ -18393,6 +19036,7 @@ typedef $$MedicationIntakesTableProcessedTableManager =
     >;
 typedef $$VaccinationsTableCreateCompanionBuilder =
     VaccinationsCompanion Function({
+      Value<DateTime?> archivedAt,
       required String id,
       required String vaccine,
       Value<String?> product,
@@ -18408,6 +19052,7 @@ typedef $$VaccinationsTableCreateCompanionBuilder =
     });
 typedef $$VaccinationsTableUpdateCompanionBuilder =
     VaccinationsCompanion Function({
+      Value<DateTime?> archivedAt,
       Value<String> id,
       Value<String> vaccine,
       Value<String?> product,
@@ -18453,6 +19098,11 @@ class $$VaccinationsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -18536,6 +19186,11 @@ class $$VaccinationsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -18619,6 +19274,11 @@ class $$VaccinationsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -18705,6 +19365,7 @@ class $$VaccinationsTableTableManager
               $$VaccinationsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> vaccine = const Value.absent(),
                 Value<String?> product = const Value.absent(),
@@ -18718,6 +19379,7 @@ class $$VaccinationsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VaccinationsCompanion(
+                archivedAt: archivedAt,
                 id: id,
                 vaccine: vaccine,
                 product: product,
@@ -18733,6 +19395,7 @@ class $$VaccinationsTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<DateTime?> archivedAt = const Value.absent(),
                 required String id,
                 required String vaccine,
                 Value<String?> product = const Value.absent(),
@@ -18746,6 +19409,7 @@ class $$VaccinationsTableTableManager
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => VaccinationsCompanion.insert(
+                archivedAt: archivedAt,
                 id: id,
                 vaccine: vaccine,
                 product: product,

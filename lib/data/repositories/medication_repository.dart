@@ -136,7 +136,7 @@ class MedicationRepository {
 
   Future<List<MedicationDetails>> all() async {
     final meds =
-        await (_db.select(_db.medications)
+        await (_db.selectActive(_db.medications)
               ..orderBy([(t) => OrderingTerm.asc(t.name)]))
             .get();
     return _details(meds);
@@ -405,7 +405,8 @@ class PharmacyRepository {
   final AppDatabase _db;
 
   Stream<List<Pharmacy>> watchAll() =>
-      (_db.select(_db.pharmacies)..orderBy([(t) => OrderingTerm.asc(t.name)]))
+      (_db.selectActive(_db.pharmacies)
+            ..orderBy([(t) => OrderingTerm.asc(t.name)]))
           .watch();
 
   Future<Pharmacy?> get(String id) => (_db.select(
@@ -457,7 +458,7 @@ class PharmacyRepository {
   });
 
   Future<List<Medication>> medicationsFor(String pharmacyId) =>
-      (_db.select(_db.medications)
+      (_db.selectActive(_db.medications)
             ..where((t) => t.pharmacyId.equals(pharmacyId))
             ..orderBy([(t) => OrderingTerm.asc(t.name)]))
           .get();

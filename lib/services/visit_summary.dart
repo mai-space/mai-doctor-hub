@@ -111,7 +111,7 @@ class VisitSummaryBuilder {
       for (final line in options.questions.split('\n'))
         if (line.trim().isNotEmpty) line.trim(),
       if (appointment != null)
-        for (final n in await (_db.select(_db.notes)
+        for (final n in await (_db.selectActive(_db.notes)
               ..where(
                 (t) => t.relatedAppointmentId.equals(appointment.appointment.id),
               ))
@@ -146,7 +146,7 @@ class VisitSummaryBuilder {
           : options.patientName?.trim(),
       questions: questions,
       diagnoses: options.includeDiagnoses
-          ? await (_db.select(_db.diagnoses)
+          ? await (_db.selectActive(_db.diagnoses)
                   ..where((t) => t.status.equalsValue(DiagnosisStatus.active))
                   ..orderBy([(t) => OrderingTerm.asc(t.title)]))
                 .get()
@@ -352,7 +352,7 @@ Future<(List<Symptom>, List<MedicationDetails>, List<AppointmentSummary>)>
 loadSummaryChoices(AppDatabase db, {DateTime? now}) async {
   final current = now ?? DateTime.now();
   final appointments =
-      await (db.select(db.appointments)
+      await (db.selectActive(db.appointments)
             ..where(
               (t) => t.status.equalsValue(AppointmentStatus.cancelled).not(),
             )

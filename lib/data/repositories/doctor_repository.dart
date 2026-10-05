@@ -11,7 +11,7 @@ class DoctorRepository {
   final AppDatabase _db;
 
   Stream<List<Doctor>> watchAll() {
-    return (_db.select(_db.doctors)
+    return (_db.selectActive(_db.doctors)
           ..orderBy([(t) => OrderingTerm.asc(t.name)]))
         .watch();
   }

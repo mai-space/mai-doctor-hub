@@ -4,7 +4,7 @@ import 'package:mai_backup_format/mai_backup_format.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 /// Höchste Schema-Version der App, die dieser Server versteht.
-const supportedSchemaVersion = 8;
+const supportedSchemaVersion = 9;
 
 /// Read-only-Zugriff auf einen Akten-Snapshot.
 ///
@@ -51,7 +51,35 @@ class MaiSnapshot {
         '(erwartet 1–$supportedSchemaVersion). mai_mcp aktualisieren?',
       );
     }
+    _hideArchived(db);
     return db;
+  }
+
+  /// Tabellen mit Archiv (Soft Delete, App-Schema ≥ 9).
+  static const archivableTables = [
+    'doctors',
+    'diagnoses',
+    'symptoms',
+    'appointments',
+    'reports',
+    'medications',
+    'notes',
+    'pharmacies',
+    'vaccinations',
+  ];
+
+  /// Archivierte Einträge sind „gelöscht“: TEMP-Views gleichen Namens
+  /// verdecken die Tabellen (SQLite sucht unqualifizierte Namen zuerst im
+  /// temp-Schema) — so filtern alle Abfragen automatisch.
+  static void _hideArchived(Database db) {
+    for (final table in archivableTables) {
+      final columns = db.select('PRAGMA main.table_info("$table")');
+      if (!columns.any((c) => c['name'] == 'archived_at')) continue;
+      db.execute(
+        'CREATE TEMP VIEW "$table" AS '
+        'SELECT * FROM main."$table" WHERE archived_at IS NULL',
+      );
+    }
   }
 
   Future<void> close() async {

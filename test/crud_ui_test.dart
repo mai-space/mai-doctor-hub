@@ -48,7 +48,7 @@ void main() {
     await settle(tester);
   }
 
-  testWidgets('Akte: open diagnosis hub, edit title, delete', (tester) async {
+  testWidgets('Akte: open diagnosis hub, edit title, archive, undo', (tester) async {
     late String diagnosisId;
     await tester.runAsync(() async {
       final records = RecordsRepository(db);
@@ -78,17 +78,26 @@ void main() {
     await settle(tester);
     expect(inHub(find.text('Migräne mit Aura')), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Löschen'));
-    await settle(tester);
-    await tester.tap(find.widgetWithText(FilledButton, 'Löschen'));
+    await tester.tap(find.byTooltip('Löschen (ins Archiv)'));
     await settle(tester);
     await tester.pump(const Duration(seconds: 1)); // Route-Animation
 
     expect(find.byType(DiagnosisDetailPage), findsNothing);
-    final left = await tester.runAsync(
+    expect(find.text('Diagnose im Archiv'), findsOneWidget);
+    // Aus der Akte verschwunden, aber nicht gelöscht.
+    expect(find.text('Migräne mit Aura'), findsNothing);
+    var row = await tester.runAsync(
       () => RecordsRepository(db).getDiagnosis(diagnosisId),
     );
-    expect(left, isNull);
+    expect(row!.archivedAt, isNotNull);
+
+    await tester.tap(find.text('Rückgängig'));
+    await settle(tester);
+    row = await tester.runAsync(
+      () => RecordsRepository(db).getDiagnosis(diagnosisId),
+    );
+    expect(row!.archivedAt, isNull);
+    expect(find.text('Migräne mit Aura'), findsOneWidget);
     await disposeApp(tester);
   });
 

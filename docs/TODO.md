@@ -54,7 +54,7 @@ Status: ☐ offen · ◐ in Arbeit · ☑ erledigt
 - On-Device-Texterkennung für Fotos/Scans und für PDFs ohne Textebene →
   durchsuchbar. Keine Cloud.
 
-## 8. ☐ Papierkorb / Archiv (Soft Delete + Rückgängig)
+## 8. ☑ Papierkorb / Archiv (Soft Delete + Rückgängig)
 - Löschen verschiebt ins Archiv (Soft Delete) mit „Rückgängig“-Snackbar.
 - Archiv-Ansicht: wiederherstellen oder endgültig löschen.
 - Archivierte Einträge erscheinen nirgends sonst (Listen, Suche,

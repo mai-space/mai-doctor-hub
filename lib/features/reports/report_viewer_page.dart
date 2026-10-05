@@ -9,6 +9,7 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../services/report_import_service.dart';
+import '../archive/archive_page.dart';
 import '../records/entity_forms.dart';
 
 /// Zeigt einen Bericht (PDF oder Bild) inkl. erkanntem Text.
@@ -61,10 +62,9 @@ class _ReportViewerPageState extends State<ReportViewerPage> {
         );
       case _ReportAction.delete:
         final navigator = Navigator.of(context);
-        if (!await confirmDelete(context, what: 'Bericht')) return;
-        await records.deleteReport(report.id);
-        navigator.pop();
-        messenger.showSnackBar(const SnackBar(content: Text('Bericht gelöscht')));
+        if (await archiveWithUndo(context, 'report', report.id)) {
+          navigator.pop();
+        }
     }
   }
 
