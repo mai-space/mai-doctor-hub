@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:drift/drift.dart' show OrderingTerm;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -6,6 +10,9 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/records_repository.dart';
+import '../../data/repositories/settings_repository.dart';
+import '../../services/calendar/calendar_sync_service.dart';
+import '../../services/calendar/ics.dart';
 import '../records/detail_pages.dart';
 import '../records/entity_forms.dart';
 import 'add_appointment_sheet.dart';
@@ -18,7 +25,7 @@ class _AppointmentData {
   final List<Note> notes;
 }
 
-enum _Action { done, cancel, reopen, delete }
+enum _Action { done, cancel, reopen, ics, delete }
 
 class AppointmentDetailPage extends StatefulWidget {
   const AppointmentDetailPage({super.key, required this.appointmentId});
@@ -77,6 +84,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
         await repo.updateStatus(a.id, AppointmentStatus.cancelled);
       case _Action.reopen:
         await repo.updateStatus(a.id, AppointmentStatus.planned);
+      case _Action.ics:
+        await _exportIcs(a.id);
       case _Action.delete:
         final navigator = Navigator.of(context);
         if (!await confirmDelete(
@@ -91,6 +100,35 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
         await repo.delete(a.id);
         navigator.pop();
         messenger.showSnackBar(const SnackBar(content: Text('Termin gelöscht')));
+    }
+  }
+
+  /// Fallback ohne Dauer-Export: einzelne .ics-Datei (auch im Web).
+  Future<void> _exportIcs(String id) async {
+    final db = DatabaseScope.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final summary = await AppointmentRepository(db).summaryFor(id);
+    if (summary == null) return;
+    final settings = await SettingsRepository(db).get();
+    final ics = Ics.event(
+      uid: id,
+      event: CalendarSyncService.eventFor(
+        summary,
+        includeTitle: settings.calendarIncludeTitle,
+      ),
+    );
+    final saved = await FilePicker.saveFile(
+      fileName: 'termin-${DateFormat('yyyy-MM-dd').format(summary.appointment.scheduledAt)}.ics',
+      bytes: Uint8List.fromList(utf8.encode(ics)),
+      mimeType: 'text/calendar',
+      dialogTitle: 'Kalenderdatei speichern',
+    );
+    if (saved != null) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Kalenderdatei gespeichert — mit Kalender-App öffnen.'),
+        ),
+      );
     }
   }
 
@@ -140,6 +178,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                       value: _Action.reopen,
                       child: Text('Wieder planen'),
                     ),
+                  const PopupMenuItem(
+                    value: _Action.ics,
+                    child: Text('Als Kalenderdatei (.ics)'),
+                  ),
                   const PopupMenuItem(
                     value: _Action.delete,
                     child: Text('Löschen'),

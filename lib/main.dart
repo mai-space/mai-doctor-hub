@@ -7,6 +7,8 @@ import 'data/database_provider.dart';
 import 'data/repositories/settings_repository.dart';
 import 'features/check_in/check_in_sheet.dart';
 import 'services/app_lock.dart';
+import 'services/calendar/calendar_gateway.dart';
+import 'services/calendar/calendar_sync_service.dart';
 import 'services/notification_service.dart';
 import 'shell/app_shell.dart';
 import 'theme/app_theme.dart';
@@ -45,6 +47,12 @@ Future<void> main() async {
     enabled: lockEnabled,
   )..attach();
   if (lockEnabled) await SecureWindow.setSecure(true);
+
+  // Einseitiger Kalender-Export: gleicht bei Änderungen automatisch ab.
+  final calendar = AndroidCalendarGateway();
+  if (calendar.isSupported) {
+    CalendarAutoSync(database, CalendarSyncService(database, calendar)).start();
+  }
 
   runApp(MaiDoctorHubApp(database: database, appLock: appLock));
 }

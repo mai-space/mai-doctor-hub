@@ -6,6 +6,7 @@ import '../../data/repositories/settings_repository.dart';
 import '../../services/notification_service.dart';
 import '../check_in/check_in_sheet.dart';
 import 'backup_section.dart';
+import 'calendar_section.dart';
 import 'security_section.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -139,6 +140,8 @@ class SettingsPage extends StatelessWidget {
                 icon: const Icon(Icons.favorite_outline),
                 label: const Text('Check-in jetzt öffnen'),
               ),
+              const SizedBox(height: 24),
+              CalendarSection(settings: settings),
               const SizedBox(height: 24),
               const SecuritySection(),
               const SizedBox(height: 24),
