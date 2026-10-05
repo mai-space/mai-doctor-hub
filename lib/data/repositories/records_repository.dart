@@ -78,21 +78,17 @@ class RecordsRepository {
     String? entityType,
   }) {
     return _db
-        .customSelect(
-          'SELECT 1',
-          readsFrom: {
-            _db.doctors,
-            _db.diagnoses,
-            _db.symptoms,
-            _db.appointments,
-            _db.reports,
-            _db.medications,
-            _db.notes,
-            _db.pharmacies,
-            _db.vaccinations,
-          },
-        )
-        .watch()
+        .watchTables({
+          _db.doctors,
+          _db.diagnoses,
+          _db.symptoms,
+          _db.appointments,
+          _db.reports,
+          _db.medications,
+          _db.notes,
+          _db.pharmacies,
+          _db.vaccinations,
+        })
         .asyncMap((_) => listAll(sort: sort, entityType: entityType));
   }
 

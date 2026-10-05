@@ -28,6 +28,26 @@ void main() {
 
   tearDown(() => db.close());
 
+  test('watchers with different tables do not share one stream', () async {
+    // Home abonniert zuerst (Termine …), danach die Akte (alle Einträge).
+    final home = appointments.watchUpcomingSummaries().listen((_) {});
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    final akte = StreamIterator(
+      records.watchAll(sort: RecordSort.name, entityType: 'note'),
+    );
+    expect(await akte.moveNext(), isTrue);
+    expect(akte.current, isEmpty);
+
+    await records.createNote(body: 'Fragen an Dr. Weiß');
+    expect(
+      await akte.moveNext().timeout(const Duration(seconds: 2)),
+      isTrue,
+    );
+    expect(akte.current, hasLength(1));
+    await akte.cancel();
+    await home.cancel();
+  });
+
   group('AppointmentRepository', () {
     test('summaries batch-load doctor, links and report count', () async {
       final diagnosisId = await records.createDiagnosis(title: 'Sinusitis');

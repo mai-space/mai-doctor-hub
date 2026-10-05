@@ -561,15 +561,26 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
+  /// Feuert sofort und bei jeder Änderung an einer der [tables].
+  Stream<void> watchTables(
+    Set<ResultSetImplementation<dynamic, dynamic>> tables,
+  ) {
+    // drift teilt Watch-Streams mit gleichem SQL + Variablen, ohne readsFrom
+    // zu vergleichen. Die Tabellennamen gehören deshalb in den Schlüssel.
+    final key = [for (final t in tables) t.entityName]..sort();
+    return customSelect(
+      'SELECT ?',
+      variables: [Variable.withString(key.join(','))],
+      readsFrom: tables,
+    ).watch().map((_) {});
+  }
+
   /// Lädt [load] neu, sobald sich eine der [tables] ändert.
   Stream<T> watchWith<T>(
     Set<ResultSetImplementation<dynamic, dynamic>> tables,
     Future<T> Function() load,
   ) {
-    return customSelect(
-      'SELECT 1',
-      readsFrom: tables,
-    ).watch().asyncMap((_) => load());
+    return watchTables(tables).asyncMap((_) => load());
   }
 
   Future<void> upsertFts({

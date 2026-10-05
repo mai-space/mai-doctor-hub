@@ -46,10 +46,7 @@ class PlanSync {
   }
 
   void start() {
-    _subscription ??= db
-        .customSelect('SELECT 1', readsFrom: tables)
-        .watch()
-        .listen((_) {
+    _subscription ??= db.watchTables(tables).listen((_) {
           _timer?.cancel();
           _timer = Timer(debounce, () {
             sync().catchError((Object e) {

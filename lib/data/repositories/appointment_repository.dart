@@ -63,10 +63,7 @@ class AppointmentRepository {
   /// Feuert bei jeder Änderung an Terminen und allem, was eine
   /// [AppointmentSummary] beeinflusst (Arzt, Diagnosen, Berichte …).
   Stream<void> _summaryChanges({Stream<void>? clock}) {
-    final changes = _db
-        .customSelect('SELECT 1', readsFrom: _summaryTables)
-        .watch()
-        .map((_) {});
+    final changes = _db.watchTables(_summaryTables);
     return clock == null ? changes : _merge(changes, clock);
   }
 

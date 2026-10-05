@@ -248,11 +248,7 @@ class CalendarAutoSync {
 
   void start() {
     _subscription ??= _db
-        .customSelect(
-          'SELECT 1',
-          readsFrom: {_db.appointments, _db.doctors, _db.appSettings},
-        )
-        .watch()
+        .watchTables({_db.appointments, _db.doctors, _db.appSettings})
         .listen((_) => _schedule());
   }
 
