@@ -17,7 +17,7 @@ abstract final class IconMappings {
     // Primary care
     'Allgemeinmedizin (Hausarzt)': Icons.home_health_outlined,
     'Innere Medizin (hausärztlich)': Icons.home_health_outlined,
-    'Kinder- und Jugendmedizin': Icons.child_care,
+    'Kinder- und Jugendmedizin': Icons.accessibility,
 
     // Internal medicine specialties
     'Innere Medizin': Icons.medical_services_outlined,
@@ -39,8 +39,8 @@ abstract final class IconMappings {
     'Gefäßchirurgie': Icons.favorite_outlined,
     'Herzchirurgie': Icons.favorite_outlined,
     'Thoraxchirurgie': Icons.air_outlined,
-    'Kinderchirurgie': Icons.child_care,
-    'Plastische und Ästhetische Chirurgie': Icons.face_retouching_natural,
+    'Kinderchirurgie': Icons.accessibility,
+    'Plastische und Ästhetische Chirurgie': Icons.face_outlined,
     'Handchirurgie': Icons.pan_tool_outlined,
     'Neurochirurgie': Icons.psychology_outlined,
     'Orthopädie und Unfallchirurgie': Icons.healing_outlined,
@@ -48,7 +48,7 @@ abstract final class IconMappings {
     'Unfallchirurgie': Icons.healing_outlined,
     'Mund-Kiefer-Gesichtschirurgie': Icons.dentistry_outlined,
     'Urologie': Icons.wc_outlined,
-    'Frauenheilkunde und Geburtshilfe (Gynäkologie)': Icons.pregnant_woman,
+    'Frauenheilkunde und Geburtshilfe (Gynäkologie)': Icons.favorite_outlined,
 
     // Sensory and skin
     'Augenheilkunde': Icons.visibility_outlined,
@@ -58,7 +58,7 @@ abstract final class IconMappings {
     'Allergologie': Icons.allergy_outlined,
 
     // Neurology and psychiatry
-    'Neurologie': Icons.neurology_outlined,
+    'Neurologie': Icons.psychology_outlined,
     'Psychiatrie und Psychotherapie': Icons.psychology_outlined,
     'Kinder- und Jugendpsychiatrie': Icons.psychology_outlined,
     'Psychosomatische Medizin': Icons.psychology_outlined,
@@ -98,7 +98,7 @@ abstract final class IconMappings {
     'Logopädie': Icons.hearing_outlined,
     'Osteopathie': Icons.healing_outlined,
     'Heilpraktiker': Icons.eco_outlined,
-    'Hebamme': Icons.pregnant_woman,
+    'Hebamme': Icons.favorite_outlined,
     'Ernährungsberatung': Icons.restaurant_outlined,
     'Podologie': Icons.accessibility,
   };
