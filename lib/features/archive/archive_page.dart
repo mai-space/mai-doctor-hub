@@ -50,6 +50,8 @@ Future<bool> archiveWithUndo(
       SnackBar(
         content: Text('${label ?? _typeLabels[type] ?? 'Eintrag'} im Archiv'),
         duration: const Duration(seconds: 6),
+        // Mit Action bleibt eine SnackBar sonst stehen, bis man sie wegwischt.
+        persist: false,
         action: SnackBarAction(
           label: 'Rückgängig',
           onPressed: () => repo.restore(type, id),

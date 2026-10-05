@@ -48,6 +48,25 @@ void main() {
     await settle(tester);
   }
 
+  testWidgets('archive undo snackbar dismisses itself', (tester) async {
+    await tester.runAsync(
+      () => RecordsRepository(db).createDiagnosis(title: 'Asthma'),
+    );
+    await pumpApp(tester);
+    await openAkte(tester);
+    await tester.tap(find.text('Asthma'));
+    await settle(tester);
+    await tester.tap(find.byTooltip('Löschen (ins Archiv)'));
+    await settle(tester);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('Diagnose im Archiv'), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 7));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('Diagnose im Archiv'), findsNothing);
+    await disposeApp(tester);
+  });
+
   testWidgets('Akte: open diagnosis hub, edit title, archive, undo', (tester) async {
     late String diagnosisId;
     await tester.runAsync(() async {
