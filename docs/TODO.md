@@ -49,7 +49,7 @@ Status: ☐ offen · ◐ in Arbeit · ☑ erledigt
   Symptom-Verläufe, aktuelle Medikamente, Impfungen — Auswahl „alle“
   oder einzelne Symptome/Medikamente.
 
-## 7. ☐ Kamera-Scan + Texterkennung (OCR)
+## 7. ☑ Kamera-Scan + Texterkennung (OCR)
 - Berichte per Kamera scannen (Quelle `scan`).
 - On-Device-Texterkennung für Fotos/Scans und für PDFs ohne Textebene →
   durchsuchbar. Keine Cloud.

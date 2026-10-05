@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../data/app_database.dart';
 import '../data/repositories/records_repository.dart';
+import 'ocr/ocr_service.dart';
 import 'pdf_extractor.dart';
 
 class ImportedReport {
@@ -36,8 +37,14 @@ const allowedReportExtensions = ['pdf', 'png', 'jpg', 'jpeg', 'webp'];
 
 /// Wählt eine Datei, speichert sie lokal und indexiert PDF-Text in FTS.
 class ReportImportService {
-  ReportImportService(this._records, {Future<Directory> Function()? baseDir})
-    : _baseDir = baseDir ?? getApplicationDocumentsDirectory;
+  ReportImportService(
+    this._records, {
+    Future<Directory> Function()? baseDir,
+    OcrService? ocr,
+  }) : _baseDir = baseDir ?? getApplicationDocumentsDirectory,
+       _ocr = ocr ?? OcrService(TextRecognizerApi.current);
+
+  final OcrService _ocr;
 
   final RecordsRepository _records;
   final Future<Directory> Function() _baseDir;
@@ -67,11 +74,16 @@ class ReportImportService {
   ///
   /// [sourcePath] wird bevorzugt kopiert; ohne lokalen Pfad (Web, SAF-URI)
   /// werden die Bytes über [readBytes] geschrieben.
+  ///
+  /// Ohne Textebene (Fotos, Scans) wird der Text per On-Device-OCR
+  /// erkannt — bei Scans aus den Seitenbildern [ocrImages].
   Future<ImportedReport> importFile({
     required String name,
     required Future<Uint8List> Function() readBytes,
     String? sourcePath,
     String? appointmentId,
+    ReportSource? source,
+    List<String> ocrImages = const [],
   }) async {
     final ext = p.extension(name).toLowerCase();
     if (!allowedReportExtensions.contains(ext.replaceFirst('.', ''))) {
@@ -80,7 +92,8 @@ class ReportImportService {
       );
     }
     final mimeType = _mimeForExtension(ext);
-    final source = ext == '.pdf' ? ReportSource.pdf : ReportSource.image;
+    final reportSource =
+        source ?? (ext == '.pdf' ? ReportSource.pdf : ReportSource.image);
 
     final String localPath;
     try {
@@ -103,13 +116,20 @@ class ReportImportService {
         // Best effort: Bericht bleibt ohne Volltext gespeichert.
       }
     }
+    if (extracted == null && !kIsWeb) {
+      extracted = await _recognize(
+        localPath,
+        isPdf: ext == '.pdf',
+        images: ocrImages,
+      );
+    }
 
     try {
       final id = await _records.createReport(
         title: name,
         mimeType: mimeType,
         localPath: localPath,
-        source: source,
+        source: reportSource,
         appointmentId: appointmentId,
         extractedText: extracted,
         pageCount: pageCount,
@@ -131,15 +151,39 @@ class ReportImportService {
   /// Extrahiert den Text eines gespeicherten PDF-Berichts (erneut) und
   /// aktualisiert den Suchindex. Gibt `true` zurück, wenn Text gefunden wurde.
   Future<bool> reindex(Report report) async {
-    if (kIsWeb || report.mimeType != 'application/pdf') return false;
-    if (!await File(report.localPath).exists()) return false;
+    if (kIsWeb || !await File(report.localPath).exists()) return false;
+    final isPdf = report.mimeType == 'application/pdf';
+    String? text;
+    int? pageCount = report.pageCount;
+    if (isPdf) {
+      try {
+        final result = await extractPdfText(report.localPath);
+        text = result.text;
+        pageCount = result.pageCount;
+      } catch (e) {
+        debugPrint('PDF-Text für ${report.id} fehlgeschlagen: $e');
+      }
+    }
+    text ??= await _recognize(report.localPath, isPdf: isPdf);
+    await _records.setReportText(report.id, text, pageCount);
+    return text != null;
+  }
+
+  /// OCR als Best Effort — ohne Erkennung bleibt der Bericht trotzdem.
+  Future<String?> _recognize(
+    String path, {
+    required bool isPdf,
+    List<String> images = const [],
+  }) async {
+    if (!_ocr.isSupported) return null;
     try {
-      final result = await extractPdfText(report.localPath);
-      await _records.setReportText(report.id, result.text, result.pageCount);
-      return result.text != null;
+      if (images.isNotEmpty) return await _ocr.recognizeImages(images);
+      return isPdf
+          ? await _ocr.recognizePdf(path)
+          : await _ocr.recognizeImages([path]);
     } catch (e) {
-      debugPrint('PDF-Text für ${report.id} fehlgeschlagen: $e');
-      return false;
+      debugPrint('Texterkennung fehlgeschlagen: $e');
+      return null;
     }
   }
 

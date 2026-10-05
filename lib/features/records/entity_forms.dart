@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -7,6 +9,7 @@ import '../../data/repositories/doctor_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/suggestion_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
+import '../../services/ocr/document_scanner.dart';
 import '../../services/report_import_service.dart';
 import '../../widgets/suggestion_text_field.dart';
 import '../medications/medication_form_page.dart';
@@ -463,8 +466,87 @@ Future<void> showCreateMedicationDialog(BuildContext context) =>
     showMedicationForm(context);
 Future<void> showCreateNoteDialog(BuildContext context) => showNoteForm(context);
 
-/// Wählt eine Datei und legt sie als Bericht ab; Fehler landen als Snackbar.
+/// Bericht hinzufügen: scannen (Kamera) oder Datei wählen.
 Future<ImportedReport?> importReport(
+  BuildContext context, {
+  String? appointmentId,
+}) async {
+  final scanner = DocumentScannerApi.current;
+  if (!scanner.isSupported) {
+    return pickReportFile(context, appointmentId: appointmentId);
+  }
+  final choice = await showModalBottomSheet<String>(
+    context: context,
+    showDragHandle: true,
+    builder: (context) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.document_scanner_outlined),
+            title: const Text('Dokument scannen'),
+            subtitle: const Text('Kamera · Text wird erkannt und durchsuchbar'),
+            onTap: () => Navigator.pop(context, 'scan'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.upload_file),
+            title: const Text('Datei wählen'),
+            subtitle: const Text('PDF oder Bild'),
+            onTap: () => Navigator.pop(context, 'file'),
+          ),
+        ],
+      ),
+    ),
+  );
+  if (!context.mounted || choice == null) return null;
+  return choice == 'scan'
+      ? scanReport(context, appointmentId: appointmentId)
+      : pickReportFile(context, appointmentId: appointmentId);
+}
+
+/// Scannt ein Dokument und legt es als PDF-Bericht (Quelle „Scan“) ab.
+Future<ImportedReport?> scanReport(
+  BuildContext context, {
+  String? appointmentId,
+}) async {
+  final records = RecordsRepository(DatabaseScope.of(context));
+  final messenger = ScaffoldMessenger.of(context);
+  final scan = await DocumentScannerApi.current.scan();
+  if (scan == null) return null;
+  messenger.showSnackBar(
+    const SnackBar(content: Text('Scan wird gespeichert, Text wird erkannt…')),
+  );
+  try {
+    final name =
+        'Scan ${DateFormat('dd.MM.yyyy HH-mm', 'de').format(DateTime.now())}.pdf';
+    final imported = await ReportImportService(records).importFile(
+      name: name,
+      sourcePath: scan.pdfPath,
+      readBytes: () => File(scan.pdfPath).readAsBytes(),
+      appointmentId: appointmentId,
+      source: ReportSource.scan,
+      ocrImages: scan.imagePaths,
+    );
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            imported.extractedText == null
+                ? 'Scan gespeichert (kein Text erkannt)'
+                : 'Scan gespeichert — Text durchsuchbar',
+          ),
+        ),
+      );
+    return imported;
+  } on ReportImportException catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    return null;
+  }
+}
+
+/// Wählt eine Datei und legt sie als Bericht ab; Fehler landen als Snackbar.
+Future<ImportedReport?> pickReportFile(
   BuildContext context, {
   String? appointmentId,
 }) async {

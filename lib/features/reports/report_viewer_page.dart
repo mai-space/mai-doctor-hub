@@ -55,7 +55,7 @@ class _ReportViewerPageState extends State<ReportViewerPage> {
             content: Text(
               found
                   ? 'Text erkannt und durchsuchbar'
-                  : 'Kein Text gefunden (Scan ohne Textebene?)',
+                  : 'Kein Text erkannt',
             ),
           ),
         );
@@ -112,7 +112,6 @@ class _ReportViewerPageState extends State<ReportViewerPage> {
             ),
           );
         }
-        final isPdf = report.mimeType == 'application/pdf';
         return Scaffold(
           appBar: AppBar(
             title: Text(report.title, overflow: TextOverflow.ellipsis),
@@ -130,16 +129,14 @@ class _ReportViewerPageState extends State<ReportViewerPage> {
                     value: _ReportAction.rename,
                     child: Text('Umbenennen'),
                   ),
-                  if (isPdf) ...[
-                    const PopupMenuItem(
-                      value: _ReportAction.text,
-                      child: Text('Erkannten Text zeigen'),
-                    ),
-                    const PopupMenuItem(
-                      value: _ReportAction.reindex,
-                      child: Text('Text neu erkennen'),
-                    ),
-                  ],
+                  const PopupMenuItem(
+                    value: _ReportAction.text,
+                    child: Text('Erkannten Text zeigen'),
+                  ),
+                  const PopupMenuItem(
+                    value: _ReportAction.reindex,
+                    child: Text('Text neu erkennen'),
+                  ),
                   const PopupMenuItem(
                     value: _ReportAction.delete,
                     child: Text('Löschen'),

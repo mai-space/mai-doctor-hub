@@ -328,17 +328,20 @@ class _AppointmentBody extends StatelessWidget {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(
-                  report.mimeType == 'application/pdf'
-                      ? Icons.picture_as_pdf_outlined
-                      : Icons.image_outlined,
+                  switch (report.source) {
+                    ReportSource.scan => Icons.document_scanner_outlined,
+                    ReportSource.image => Icons.image_outlined,
+                    ReportSource.pdf => Icons.picture_as_pdf_outlined,
+                  },
                 ),
                 title: Text(report.title),
                 subtitle: Text(
-                  report.extractedText?.isNotEmpty == true
-                      ? 'Text durchsuchbar'
-                      : report.mimeType == 'application/pdf'
-                      ? 'Kein Text erkannt'
-                      : 'Bild',
+                  [
+                    if (report.source == ReportSource.scan) 'Scan',
+                    report.extractedText?.isNotEmpty == true
+                        ? 'Text durchsuchbar'
+                        : 'Kein Text erkannt',
+                  ].join(' · '),
                 ),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => openRecord(context, 'report', report.id),
