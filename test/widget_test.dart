@@ -8,6 +8,8 @@ import 'package:mai_doctor_hub/data/repositories/doctor_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/records_repository.dart';
 import 'package:mai_doctor_hub/main.dart';
 
+import 'helpers/test_env.dart';
+
 void main() {
   late AppDatabase database;
 
@@ -24,6 +26,8 @@ void main() {
   });
 
   Future<void> pumpApp(WidgetTester tester) async {
+    useFakePermissions();
+    await tester.runAsync(() => markOnboarded(database));
     await tester.pumpWidget(MaiDoctorHubApp(database: database));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));

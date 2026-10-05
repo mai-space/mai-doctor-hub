@@ -178,6 +178,10 @@ class AppSettings extends Table {
   BoolColumn get appLockEnabled =>
       boolean().withDefault(const Constant(false))();
 
+  // v4: Onboarding gesehen (Berechtigungen werden dort erklärt/angefragt).
+  BoolColumn get onboardingCompleted =>
+      boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -247,7 +251,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'mai_doctor_hub'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -275,6 +279,9 @@ class AppDatabase extends _$AppDatabase {
         );
         await migrator.addColumn(appSettings, appSettings.appLockEnabled);
         await migrator.createTable(calendarLinks);
+      }
+      if (from < 4) {
+        await migrator.addColumn(appSettings, appSettings.onboardingCompleted);
       }
       if (from < 3) {
         await migrator.createTable(reminders);
@@ -304,6 +311,13 @@ class AppDatabase extends _$AppDatabase {
       }
     },
     beforeOpen: (details) async {
+      // Bestandsnutzer kennen die App schon → kein Onboarding nach Update;
+      // die Berechtigung wird bei Bedarf in den Erinnerungen angefragt.
+      if (details.hadUpgrade && details.versionBefore! < 4) {
+        await customStatement(
+          'UPDATE app_settings SET onboarding_completed = 1',
+        );
+      }
       // Settings-Zeile garantieren (z. B. nach Restore eines Fremd-Backups).
       await customStatement('INSERT OR IGNORE INTO app_settings (id) VALUES (1)');
     },

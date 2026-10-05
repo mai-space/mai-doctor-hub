@@ -15,7 +15,7 @@ Status: ☐ offen · ◐ in Arbeit · ☑ erledigt
 - Optional einem oder mehreren Symptomen zugeordnet → individueller
   Check-in-Rhythmus pro Symptom.
 
-## 2. ☐ Onboarding + Benachrichtigungs-Berechtigung
+## 2. ☑ Onboarding + Benachrichtigungs-Berechtigung
 - Keine Berechtigungsabfrage mehr beim ersten App-Start.
 - Kurzes Onboarding (wenige Seiten): Privacy-Versprechen, Funktionen,
   Erinnerungen — dort wird die Benachrichtigungs-Berechtigung mit

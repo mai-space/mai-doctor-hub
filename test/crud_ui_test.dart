@@ -10,6 +10,8 @@ import 'package:mai_doctor_hub/data/repositories/symptom_repository.dart';
 import 'package:mai_doctor_hub/features/records/detail_pages.dart';
 import 'package:mai_doctor_hub/main.dart';
 
+import 'helpers/test_env.dart';
+
 void main() {
   late AppDatabase db;
 
@@ -30,6 +32,8 @@ void main() {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.5;
     addTearDown(tester.view.reset);
+    useFakePermissions();
+    await tester.runAsync(() => markOnboarded(db));
     await tester.pumpWidget(MaiDoctorHubApp(database: db));
     await settle(tester);
   }

@@ -13,6 +13,8 @@ import 'package:mai_doctor_hub/services/notifications/reminder_service.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
+import 'helpers/test_env.dart';
+
 class FakeScheduler implements NotificationScheduler {
   final groups = <NotificationGroup, List<PlannedNotification>>{};
   int calls = 0;
@@ -36,6 +38,7 @@ void main() {
     await initializeDateFormatting('de');
   });
   setUp(() {
+    useFakePermissions();
     db = AppDatabase(NativeDatabase.memory());
     repo = ReminderRepository(db);
   });

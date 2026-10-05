@@ -6,6 +6,7 @@ import 'data/app_database.dart';
 import 'data/database_provider.dart';
 import 'data/repositories/settings_repository.dart';
 import 'features/check_in/check_in_sheet.dart';
+import 'features/onboarding/onboarding_page.dart';
 import 'services/app_lock.dart';
 import 'services/calendar/calendar_gateway.dart';
 import 'services/calendar/calendar_sync_service.dart';
@@ -27,8 +28,7 @@ Future<void> main() async {
   final notifications = NotificationService.instance;
   await notifications.initialize();
   notifications.onNotificationTap = _openFromNotification;
-  // TODO(onboarding): Berechtigung erst im Onboarding anfragen.
-  await notifications.requestPermission();
+  // Keine Berechtigungsabfrage beim Start — das passiert im Onboarding.
 
   // Erinnerungen sind eigene Einträge; Änderungen planen automatisch neu.
   final reminders = ReminderService(database, notifications)..start();
@@ -114,9 +114,29 @@ class _MaiDoctorHubAppState extends State<MaiDoctorHubApp> {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light(),
           builder: (context, child) => AppLockGate(child: child!),
-          home: const AppShell(),
+          home: const _Home(),
         ),
       ),
+    );
+  }
+}
+
+/// Onboarding beim ersten Start, danach die App.
+class _Home extends StatelessWidget {
+  const _Home();
+
+  @override
+  Widget build(BuildContext context) {
+    final db = DatabaseScope.of(context);
+    return StreamBuilder<bool>(
+      stream: SettingsRepository(
+        db,
+      ).watch().map((s) => s.onboardingCompleted).distinct(),
+      builder: (context, snapshot) => switch (snapshot.data) {
+        null => const Scaffold(body: SizedBox.shrink()),
+        false => const OnboardingPage(),
+        true => const AppShell(),
+      },
     );
   }
 }

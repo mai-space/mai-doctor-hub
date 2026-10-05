@@ -38,6 +38,7 @@ void main() {
     expect(settings.calendarSyncEnabled, isFalse);
     expect(settings.calendarIncludeTitle, isFalse);
     expect(settings.appLockEnabled, isFalse);
+    expect(settings.onboardingCompleted, isTrue, reason: 'Bestandsnutzer');
     expect(settings.calendarId, isNull);
 
     final appointments = await db.select(db.appointments).get();

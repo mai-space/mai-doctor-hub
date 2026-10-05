@@ -6,11 +6,21 @@ import 'package:timezone/timezone.dart' as tz;
 import 'device_time.dart';
 import 'notifications/notification_plan.dart';
 
+/// Benachrichtigungs-Berechtigung — austauschbar für Tests.
+abstract interface class NotificationPermissions {
+  Future<bool> has();
+  Future<bool> request();
+
+  /// Standard: das Plugin; Tests setzen eine Attrappe.
+  static NotificationPermissions current = NotificationService.instance;
+}
+
 /// Lokale Benachrichtigungen (kein Server, kein FCM).
 ///
 /// Plant inexakt (`inexactAllowWhileIdle`) — dafür braucht es keine
 /// „Exakte Wecker“-Berechtigung; wenige Minuten Versatz sind unkritisch.
-class NotificationService implements NotificationScheduler {
+class NotificationService
+    implements NotificationScheduler, NotificationPermissions {
   NotificationService._();
 
   static final NotificationService instance = NotificationService._();
@@ -76,6 +86,12 @@ class NotificationService implements NotificationScheduler {
     return await ios?.requestPermissions(alert: true, badge: true, sound: true) ??
         false;
   }
+
+  @override
+  Future<bool> has() => hasPermission();
+
+  @override
+  Future<bool> request() => requestPermission();
 
   Future<bool> hasPermission() async {
     if (kIsWeb) return false;

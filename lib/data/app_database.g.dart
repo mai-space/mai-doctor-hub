@@ -5035,6 +5035,20 @@ class $AppSettingsTable extends AppSettings
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _onboardingCompletedMeta =
+      const VerificationMeta('onboardingCompleted');
+  @override
+  late final GeneratedColumn<bool> onboardingCompleted = GeneratedColumn<bool>(
+    'onboarding_completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("onboarding_completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5048,6 +5062,7 @@ class $AppSettingsTable extends AppSettings
     calendarId,
     calendarIncludeTitle,
     appLockEnabled,
+    onboardingCompleted,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5151,6 +5166,15 @@ class $AppSettingsTable extends AppSettings
         ),
       );
     }
+    if (data.containsKey('onboarding_completed')) {
+      context.handle(
+        _onboardingCompletedMeta,
+        onboardingCompleted.isAcceptableOrUnknown(
+          data['onboarding_completed']!,
+          _onboardingCompletedMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -5204,6 +5228,10 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.bool,
         data['${effectivePrefix}app_lock_enabled'],
       )!,
+      onboardingCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}onboarding_completed'],
+      )!,
     );
   }
 
@@ -5225,6 +5253,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final String? calendarId;
   final bool calendarIncludeTitle;
   final bool appLockEnabled;
+  final bool onboardingCompleted;
   const AppSetting({
     required this.id,
     required this.morningReminderEnabled,
@@ -5237,6 +5266,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     this.calendarId,
     required this.calendarIncludeTitle,
     required this.appLockEnabled,
+    required this.onboardingCompleted,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5254,6 +5284,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     }
     map['calendar_include_title'] = Variable<bool>(calendarIncludeTitle);
     map['app_lock_enabled'] = Variable<bool>(appLockEnabled);
+    map['onboarding_completed'] = Variable<bool>(onboardingCompleted);
     return map;
   }
 
@@ -5272,6 +5303,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           : Value(calendarId),
       calendarIncludeTitle: Value(calendarIncludeTitle),
       appLockEnabled: Value(appLockEnabled),
+      onboardingCompleted: Value(onboardingCompleted),
     );
   }
 
@@ -5300,6 +5332,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
         json['calendarIncludeTitle'],
       ),
       appLockEnabled: serializer.fromJson<bool>(json['appLockEnabled']),
+      onboardingCompleted: serializer.fromJson<bool>(
+        json['onboardingCompleted'],
+      ),
     );
   }
   @override
@@ -5317,6 +5352,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'calendarId': serializer.toJson<String?>(calendarId),
       'calendarIncludeTitle': serializer.toJson<bool>(calendarIncludeTitle),
       'appLockEnabled': serializer.toJson<bool>(appLockEnabled),
+      'onboardingCompleted': serializer.toJson<bool>(onboardingCompleted),
     };
   }
 
@@ -5332,6 +5368,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     Value<String?> calendarId = const Value.absent(),
     bool? calendarIncludeTitle,
     bool? appLockEnabled,
+    bool? onboardingCompleted,
   }) => AppSetting(
     id: id ?? this.id,
     morningReminderEnabled:
@@ -5346,6 +5383,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     calendarId: calendarId.present ? calendarId.value : this.calendarId,
     calendarIncludeTitle: calendarIncludeTitle ?? this.calendarIncludeTitle,
     appLockEnabled: appLockEnabled ?? this.appLockEnabled,
+    onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -5380,6 +5418,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       appLockEnabled: data.appLockEnabled.present
           ? data.appLockEnabled.value
           : this.appLockEnabled,
+      onboardingCompleted: data.onboardingCompleted.present
+          ? data.onboardingCompleted.value
+          : this.onboardingCompleted,
     );
   }
 
@@ -5396,7 +5437,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('calendarSyncEnabled: $calendarSyncEnabled, ')
           ..write('calendarId: $calendarId, ')
           ..write('calendarIncludeTitle: $calendarIncludeTitle, ')
-          ..write('appLockEnabled: $appLockEnabled')
+          ..write('appLockEnabled: $appLockEnabled, ')
+          ..write('onboardingCompleted: $onboardingCompleted')
           ..write(')'))
         .toString();
   }
@@ -5414,6 +5456,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     calendarId,
     calendarIncludeTitle,
     appLockEnabled,
+    onboardingCompleted,
   );
   @override
   bool operator ==(Object other) =>
@@ -5429,7 +5472,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.calendarSyncEnabled == this.calendarSyncEnabled &&
           other.calendarId == this.calendarId &&
           other.calendarIncludeTitle == this.calendarIncludeTitle &&
-          other.appLockEnabled == this.appLockEnabled);
+          other.appLockEnabled == this.appLockEnabled &&
+          other.onboardingCompleted == this.onboardingCompleted);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -5444,6 +5488,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<String?> calendarId;
   final Value<bool> calendarIncludeTitle;
   final Value<bool> appLockEnabled;
+  final Value<bool> onboardingCompleted;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.morningReminderEnabled = const Value.absent(),
@@ -5456,6 +5501,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.calendarId = const Value.absent(),
     this.calendarIncludeTitle = const Value.absent(),
     this.appLockEnabled = const Value.absent(),
+    this.onboardingCompleted = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -5469,6 +5515,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.calendarId = const Value.absent(),
     this.calendarIncludeTitle = const Value.absent(),
     this.appLockEnabled = const Value.absent(),
+    this.onboardingCompleted = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -5482,6 +5529,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<String>? calendarId,
     Expression<bool>? calendarIncludeTitle,
     Expression<bool>? appLockEnabled,
+    Expression<bool>? onboardingCompleted,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -5499,6 +5547,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (calendarIncludeTitle != null)
         'calendar_include_title': calendarIncludeTitle,
       if (appLockEnabled != null) 'app_lock_enabled': appLockEnabled,
+      if (onboardingCompleted != null)
+        'onboarding_completed': onboardingCompleted,
     });
   }
 
@@ -5514,6 +5564,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<String?>? calendarId,
     Value<bool>? calendarIncludeTitle,
     Value<bool>? appLockEnabled,
+    Value<bool>? onboardingCompleted,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -5529,6 +5580,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       calendarId: calendarId ?? this.calendarId,
       calendarIncludeTitle: calendarIncludeTitle ?? this.calendarIncludeTitle,
       appLockEnabled: appLockEnabled ?? this.appLockEnabled,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
     );
   }
 
@@ -5574,6 +5626,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (appLockEnabled.present) {
       map['app_lock_enabled'] = Variable<bool>(appLockEnabled.value);
     }
+    if (onboardingCompleted.present) {
+      map['onboarding_completed'] = Variable<bool>(onboardingCompleted.value);
+    }
     return map;
   }
 
@@ -5590,7 +5645,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('calendarSyncEnabled: $calendarSyncEnabled, ')
           ..write('calendarId: $calendarId, ')
           ..write('calendarIncludeTitle: $calendarIncludeTitle, ')
-          ..write('appLockEnabled: $appLockEnabled')
+          ..write('appLockEnabled: $appLockEnabled, ')
+          ..write('onboardingCompleted: $onboardingCompleted')
           ..write(')'))
         .toString();
   }
@@ -11804,6 +11860,7 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<String?> calendarId,
       Value<bool> calendarIncludeTitle,
       Value<bool> appLockEnabled,
+      Value<bool> onboardingCompleted,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -11818,6 +11875,7 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<String?> calendarId,
       Value<bool> calendarIncludeTitle,
       Value<bool> appLockEnabled,
+      Value<bool> onboardingCompleted,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -11881,6 +11939,11 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<bool> get appLockEnabled => $composableBuilder(
     column: $table.appLockEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -11948,6 +12011,11 @@ class $$AppSettingsTableOrderingComposer
     column: $table.appLockEnabled,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -12011,6 +12079,11 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.appLockEnabled,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -12055,6 +12128,7 @@ class $$AppSettingsTableTableManager
                 Value<String?> calendarId = const Value.absent(),
                 Value<bool> calendarIncludeTitle = const Value.absent(),
                 Value<bool> appLockEnabled = const Value.absent(),
+                Value<bool> onboardingCompleted = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -12067,6 +12141,7 @@ class $$AppSettingsTableTableManager
                 calendarId: calendarId,
                 calendarIncludeTitle: calendarIncludeTitle,
                 appLockEnabled: appLockEnabled,
+                onboardingCompleted: onboardingCompleted,
               ),
           createCompanionCallback:
               ({
@@ -12081,6 +12156,7 @@ class $$AppSettingsTableTableManager
                 Value<String?> calendarId = const Value.absent(),
                 Value<bool> calendarIncludeTitle = const Value.absent(),
                 Value<bool> appLockEnabled = const Value.absent(),
+                Value<bool> onboardingCompleted = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -12093,6 +12169,7 @@ class $$AppSettingsTableTableManager
                 calendarId: calendarId,
                 calendarIncludeTitle: calendarIncludeTitle,
                 appLockEnabled: appLockEnabled,
+                onboardingCompleted: onboardingCompleted,
               ),
           withReferenceMapper: (p0) => p0
               .map(

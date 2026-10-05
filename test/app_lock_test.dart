@@ -7,6 +7,8 @@ import 'package:mai_doctor_hub/data/repositories/settings_repository.dart';
 import 'package:mai_doctor_hub/main.dart';
 import 'package:mai_doctor_hub/services/app_lock.dart';
 
+import 'helpers/test_env.dart';
+
 class FakeAuthenticator implements LockAuthenticator {
   bool available = true;
   bool succeed = true;
@@ -107,6 +109,8 @@ void main() {
       auth.succeed = false;
       final lock = AppLockController(authenticator: auth, enabled: true);
       addTearDown(lock.dispose);
+      useFakePermissions();
+      await tester.runAsync(() => markOnboarded(db));
       await tester.pumpWidget(MaiDoctorHubApp(database: db, appLock: lock));
       await settle(tester);
 
@@ -130,6 +134,8 @@ void main() {
       addTearDown(tester.view.reset);
       final lock = AppLockController(authenticator: auth);
       addTearDown(lock.dispose);
+      useFakePermissions();
+      await tester.runAsync(() => markOnboarded(db));
       await tester.pumpWidget(MaiDoctorHubApp(database: db, appLock: lock));
       await settle(tester);
       await tester.tap(find.text('Einstellungen'));

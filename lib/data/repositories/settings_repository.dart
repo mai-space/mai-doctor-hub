@@ -36,4 +36,10 @@ class SettingsRepository {
       ),
     );
   }
+
+  Future<void> completeOnboarding() {
+    return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
+      const AppSettingsCompanion(onboardingCompleted: Value(true)),
+    );
+  }
 }

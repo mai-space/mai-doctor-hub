@@ -4,6 +4,7 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/reminder_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
+import '../../services/notification_service.dart';
 import '../check_in/check_in_sheet.dart';
 import '../records/entity_forms.dart';
 
@@ -17,11 +18,29 @@ class RemindersSection extends StatefulWidget {
 
 class _RemindersSectionState extends State<RemindersSection> {
   Stream<List<ReminderWithSymptoms>>? _stream;
+  bool? _permitted;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkPermission();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _stream ??= ReminderRepository(DatabaseScope.of(context)).watchAll();
+  }
+
+  Future<void> _checkPermission() async {
+    final ok = await NotificationPermissions.current.has();
+    if (mounted) setState(() => _permitted = ok);
+  }
+
+  Future<void> _ensurePermission() async {
+    if (_permitted == true) return;
+    final ok = await ensureNotificationPermission(context);
+    if (mounted) setState(() => _permitted = ok);
   }
 
   @override
@@ -42,12 +61,38 @@ class _RemindersSectionState extends State<RemindersSection> {
               ),
             ),
             TextButton.icon(
-              onPressed: () => showReminderForm(context),
+              onPressed: () async {
+                await showReminderForm(context);
+                await _ensurePermission();
+              },
               icon: const Icon(Icons.add_alarm),
               label: const Text('Neu'),
             ),
           ],
         ),
+        if (_permitted == false)
+          Card(
+            elevation: 0,
+            color: theme.colorScheme.errorContainer,
+            child: ListTile(
+              leading: Icon(
+                Icons.notifications_off_outlined,
+                color: theme.colorScheme.onErrorContainer,
+              ),
+              title: Text(
+                'Benachrichtigungen sind aus',
+                style: TextStyle(color: theme.colorScheme.onErrorContainer),
+              ),
+              subtitle: Text(
+                'Erinnerungen werden geplant, aber nicht angezeigt.',
+                style: TextStyle(color: theme.colorScheme.onErrorContainer),
+              ),
+              trailing: TextButton(
+                onPressed: _ensurePermission,
+                child: const Text('Erlauben'),
+              ),
+            ),
+          ),
         StreamBuilder<List<ReminderWithSymptoms>>(
           stream: _stream,
           builder: (context, snapshot) {
@@ -68,7 +113,10 @@ class _RemindersSectionState extends State<RemindersSection> {
                 for (final item in items)
                   _ReminderTile(
                     item: item,
-                    onToggle: (v) => repo.setEnabled(item.reminder.id, v),
+                    onToggle: (v) async {
+                      await repo.setEnabled(item.reminder.id, v);
+                      if (v) await _ensurePermission();
+                    },
                     onTap: () => showReminderForm(context, existing: item),
                   ),
               ],
@@ -120,6 +168,36 @@ class _ReminderTile extends StatelessWidget {
 extension on Widget {
   Widget withTap(VoidCallback onTap) =>
       InkWell(onTap: onTap, borderRadius: BorderRadius.circular(12), child: this);
+}
+
+/// Erklärt kurz und fragt dann die Benachrichtigungs-Berechtigung an.
+Future<bool> ensureNotificationPermission(BuildContext context) async {
+  final permissions = NotificationPermissions.current;
+  if (await permissions.has()) return true;
+  if (!context.mounted) return false;
+  final ask = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      icon: const Icon(Icons.notifications_active_outlined),
+      title: const Text('Benachrichtigungen erlauben?'),
+      content: const Text(
+        'Damit Erinnerungen erscheinen, braucht die App die Erlaubnis für '
+        'Benachrichtigungen. Sie werden lokal geplant — ohne Server.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Später'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Erlauben'),
+        ),
+      ],
+    ),
+  );
+  if (ask != true) return false;
+  return permissions.request();
 }
 
 /// Anlegen/Bearbeiten einer Erinnerung.
