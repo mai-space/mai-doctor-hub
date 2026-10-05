@@ -1,4 +1,4 @@
--- schemaVersion 7
+-- schemaVersion 8
 ---
 CREATE TABLE "app_settings" ("id" INTEGER NOT NULL DEFAULT 1, "morning_reminder_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("morning_reminder_enabled" IN (0, 1)), "evening_reminder_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("evening_reminder_enabled" IN (0, 1)), "morning_hour" INTEGER NOT NULL DEFAULT 8, "morning_minute" INTEGER NOT NULL DEFAULT 0, "evening_hour" INTEGER NOT NULL DEFAULT 20, "evening_minute" INTEGER NOT NULL DEFAULT 0, "calendar_sync_enabled" INTEGER NOT NULL DEFAULT 0 CHECK ("calendar_sync_enabled" IN (0, 1)), "calendar_id" TEXT NULL, "calendar_include_title" INTEGER NOT NULL DEFAULT 0 CHECK ("calendar_include_title" IN (0, 1)), "app_lock_enabled" INTEGER NOT NULL DEFAULT 0 CHECK ("app_lock_enabled" IN (0, 1)), "onboarding_completed" INTEGER NOT NULL DEFAULT 0 CHECK ("onboarding_completed" IN (0, 1)), "appointment_reminders_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("appointment_reminders_enabled" IN (0, 1)), "appointment_reminder_leads" TEXT NOT NULL DEFAULT '1440,60', PRIMARY KEY ("id"));
 ---
@@ -43,3 +43,5 @@ CREATE TABLE "reports" ("id" TEXT NOT NULL, "appointment_id" TEXT NULL REFERENCE
 CREATE TABLE "symptom_observations" ("id" TEXT NOT NULL, "symptom_id" TEXT NOT NULL REFERENCES symptoms (id), "recorded_at" INTEGER NOT NULL, "kind" INTEGER NOT NULL, "value_number" REAL NULL, "value_text" TEXT NULL, "value_color" TEXT NULL, "unit" TEXT NULL, "note" TEXT NULL, PRIMARY KEY ("id"));
 ---
 CREATE TABLE "symptoms" ("id" TEXT NOT NULL, "label" TEXT NOT NULL, "diagnosis_id" TEXT NULL REFERENCES diagnoses (id), "body_region" TEXT NULL, "healed_at" INTEGER NULL, "check_in_cadence" INTEGER NOT NULL, "reminder_times_json" TEXT NOT NULL DEFAULT '[]', "created_at" INTEGER NOT NULL, "updated_at" INTEGER NOT NULL, PRIMARY KEY ("id"));
+---
+CREATE TABLE "vaccinations" ("id" TEXT NOT NULL, "vaccine" TEXT NOT NULL, "product" TEXT NULL, "administered_at" INTEGER NOT NULL, "dose_number" INTEGER NULL, "batch" TEXT NULL, "doctor_id" TEXT NULL REFERENCES doctors (id), "next_due_at" INTEGER NULL, "notes" TEXT NULL, "created_at" INTEGER NOT NULL, "updated_at" INTEGER NOT NULL, PRIMARY KEY ("id"));

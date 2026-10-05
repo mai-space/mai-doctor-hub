@@ -9,7 +9,7 @@ import 'records.dart';
 const _instructions = '''
 Du hast lesenden Zugriff auf die persönliche Gesundheitsakte des Nutzers
 (Mai Doctor Hub): Termine, Ärzte, Diagnosen, Symptome mit Check-in-Verlauf,
-Medikamente, Notizen und den erkannten Text von Arztberichten.
+Medikamente, Impfungen, Notizen und den erkannten Text von Arztberichten.
 
 - Lies zuerst die Resource `mai://summary` für einen Überblick.
 - Nutze `search_records` für Freitext, dann die Detail-Tools per ID.
@@ -214,6 +214,18 @@ base class MaiMcpServer extends MCPServer with ToolsSupport, ResourcesSupport {
           activeOnly: args['active_only'] as bool? ?? true,
         ),
       ),
+    );
+
+    registerTool(
+      Tool(
+        name: 'list_vaccinations',
+        description:
+            'Impfungen (neueste zuerst) mit Charge, Arzt und nächster '
+            'Fälligkeit; due=true bei überfälliger Auffrischung.',
+        annotations: _readOnly,
+        inputSchema: Schema.object(properties: {}),
+      ),
+      (request) => _call(request, (_) => _records.listVaccinations()),
     );
 
     registerTool(

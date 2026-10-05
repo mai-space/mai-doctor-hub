@@ -59,7 +59,8 @@ mai_mcp --backup ~/Akte/mai-doctor-hub-2026-10-05.maibackup
 | `get_appointment(id)` | Termindetails, Notizen, Symptome, Berichts-IDs |
 | `get_report_text(id, max_chars?)` | Erkannter Berichtstext (gekürzt, Std. 8000 Zeichen) |
 | `symptom_timeline(symptom, from?, to?)` | Check-in-Verlauf + Statistik (min/max/Ø/letzter Wert) |
-| `list_medications(active_only?)` | Medikationsplan |
+| `list_medications(active_only?)` | Medikationsplan (Form, Dosis, Einnahme, Arzt, Apotheke) |
+| `list_vaccinations()` | Impfungen mit Charge und Fälligkeit |
 | `get_diagnosis(diagnosis)` | Diagnose (ID oder Titel) mit allem Verknüpften |
 
 Resource `mai://summary`: aktive Diagnosen, offene Symptome, aktuelle

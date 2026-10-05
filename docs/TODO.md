@@ -42,7 +42,7 @@ Status: ☐ offen · ◐ in Arbeit · ☑ erledigt
   Dosis (Menge + Einheit), Einnahmezeiten, Zeitraum (von/bis bzw. Dauer).
 - Einnahme-Erinnerungen und Einnahme-Protokoll (genommen/ausgelassen).
 
-## 6. ☐ Impfungen + Zusammenfassung für den Arztbesuch
+## 6. ☑ Impfungen + Zusammenfassung für den Arztbesuch
 - Neue Entität **Impfung** (Impfstoff, Datum, Dosis-Nr., Charge, Arzt,
   nächste Fälligkeit).
 - Teilbares Dokument (PDF) für den Arztbesuch: Fragen/Notizen,

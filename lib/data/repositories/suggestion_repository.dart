@@ -11,6 +11,7 @@ enum SuggestionField {
   dosage,
   medicationSchedule,
   appointmentTitle,
+  vaccine,
 }
 
 /// Liefert früher eingegebene Werte eines Feldes — häufigste zuerst,
@@ -34,6 +35,7 @@ class SuggestionRepository {
       'created_at',
     ),
     SuggestionField.appointmentTitle: ('appointments', 'title', 'updated_at'),
+    SuggestionField.vaccine: ('vaccinations', 'vaccine', 'updated_at'),
   };
 
   /// Statische Vorschläge — nach den eigenen Werten angehängt.
@@ -41,6 +43,7 @@ class SuggestionRepository {
     SuggestionField.bodyRegion: bodyRegionCatalog,
     SuggestionField.specialty: specialtyCatalog,
     SuggestionField.symptomLabel: symptomCatalog,
+    SuggestionField.vaccine: vaccineCatalog,
   };
 
   Future<List<String>> valuesFor(SuggestionField field) async {

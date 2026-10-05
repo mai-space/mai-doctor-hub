@@ -97,6 +97,13 @@ void main() {
     ]);
   });
 
+  test('vaccinations with due flag', () {
+    final v = records.listVaccinations().single;
+    expect(v['vaccine'], 'Tetanus');
+    expect(v['batch'], 'X1');
+    expect(v['due'], isTrue);
+  });
+
   test('summary lists active items and next appointments', () {
     final summary = records.summary();
     expect(summary['active_diagnoses'], [

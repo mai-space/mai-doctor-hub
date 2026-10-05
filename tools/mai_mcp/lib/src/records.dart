@@ -351,6 +351,34 @@ class MaiRecords {
     ];
   }
 
+  /// Impfungen, neueste zuerst; `due` markiert fällige Auffrischungen.
+  List<Map<String, Object?>> listVaccinations() {
+    final now = DateTime.now();
+    final rows = _db.select('''
+      SELECT v.*, d.name AS doctor FROM vaccinations v
+      LEFT JOIN doctors d ON d.id = v.doctor_id
+      ORDER BY v.administered_at DESC
+      ''');
+    final seen = <String>{};
+    return [
+      for (final v in rows)
+        {
+          'vaccine': v['vaccine'],
+          'product': v['product'],
+          'date': _iso(v['administered_at']),
+          'dose_number': v['dose_number'],
+          'batch': v['batch'],
+          'doctor': v['doctor'],
+          'next_due': _iso(v['next_due_at']),
+          // Nur die jüngste Impfung je Impfstoff bestimmt die Fälligkeit.
+          'due':
+              seen.add((v['vaccine'] as String).toLowerCase()) &&
+              v['next_due_at'] != null &&
+              (v['next_due_at'] as int) <= _seconds(now),
+        },
+    ];
+  }
+
   /// Diagnose mit allem, was daran hängt (per ID oder Titel).
   Map<String, Object?>? getDiagnosis(String diagnosis) {
     final rows = _db.select(

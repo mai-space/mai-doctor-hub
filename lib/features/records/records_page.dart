@@ -8,6 +8,8 @@ import '../../theme/app_theme.dart';
 import '../home/add_appointment_sheet.dart';
 import 'detail_pages.dart';
 import '../medications/pharmacy_form.dart';
+import '../medications/vaccination_form.dart';
+import '../summary/visit_summary_page.dart';
 import 'entity_forms.dart';
 
 enum RecordEntityFilter {
@@ -19,6 +21,7 @@ enum RecordEntityFilter {
   reports,
   medications,
   pharmacies,
+  vaccinations,
   notes,
 }
 
@@ -52,6 +55,7 @@ class _RecordsPageState extends State<RecordsPage> {
     RecordEntityFilter.reports => 'report',
     RecordEntityFilter.medications => 'medication',
     RecordEntityFilter.pharmacies => 'pharmacy',
+    RecordEntityFilter.vaccinations => 'vaccination',
     RecordEntityFilter.notes => 'note',
   };
 
@@ -72,6 +76,7 @@ class _RecordsPageState extends State<RecordsPage> {
         db.medications,
         db.notes,
         db.pharmacies,
+        db.vaccinations,
       },
       () async {
         final rows = await repo.search(query, entityType: type);
@@ -132,6 +137,8 @@ class _RecordsPageState extends State<RecordsPage> {
         await showCreateMedicationDialog(context);
       case RecordEntityFilter.pharmacies:
         await showPharmacyForm(context);
+      case RecordEntityFilter.vaccinations:
+        await showVaccinationForm(context);
       case RecordEntityFilter.notes:
         await showCreateNoteDialog(context);
       case RecordEntityFilter.all:
@@ -183,6 +190,15 @@ class _RecordsPageState extends State<RecordsPage> {
                     'Meine Akte',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Zusammenfassung für den Arztbesuch',
+                  icon: const Icon(Icons.summarize_outlined),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const VisitSummaryPage(),
                     ),
                   ),
                 ),
@@ -352,6 +368,7 @@ IconData _iconFor(String type) => switch (type) {
   'report' => Icons.description_outlined,
   'medication' => Icons.medication_outlined,
   'pharmacy' => Icons.local_pharmacy_outlined,
+  'vaccination' => Icons.vaccines_outlined,
   'note' => Icons.sticky_note_2_outlined,
   _ => Icons.folder_outlined,
 };
@@ -364,6 +381,7 @@ String _typeLabel(String type) => switch (type) {
   'report' => 'Bericht',
   'medication' => 'Medikament',
   'pharmacy' => 'Apotheke',
+  'vaccination' => 'Impfung',
   'note' => 'Notiz',
   _ => type,
 };
@@ -377,5 +395,6 @@ const _filterLabels = <RecordEntityFilter, String>{
   RecordEntityFilter.reports: 'Berichte',
   RecordEntityFilter.medications: 'Medikamente',
   RecordEntityFilter.pharmacies: 'Apotheken',
+  RecordEntityFilter.vaccinations: 'Impfungen',
   RecordEntityFilter.notes: 'Notizen',
 };

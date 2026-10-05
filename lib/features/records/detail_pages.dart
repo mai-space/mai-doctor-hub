@@ -12,11 +12,13 @@ import '../../data/repositories/medication_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/reminder_repository.dart' show Weekdays;
 import '../../data/repositories/symptom_repository.dart';
+import '../../data/repositories/vaccination_repository.dart';
 import '../../widgets/observation_chart.dart';
 import '../../widgets/symptom_report_card.dart';
 import '../home/appointment_detail_page.dart';
 import '../medications/medication_form_page.dart';
 import '../medications/pharmacy_form.dart';
+import '../medications/vaccination_form.dart';
 import '../settings/reminders_section.dart' show ensureNotificationPermission;
 import '../reports/report_viewer_page.dart';
 import 'entity_forms.dart';
@@ -34,6 +36,7 @@ void openRecord(BuildContext context, String entityType, String id) {
     'symptom' => SymptomDetailPage(symptomId: id),
     'medication' => MedicationDetailPage(medicationId: id),
     'pharmacy' => PharmacyDetailPage(pharmacyId: id),
+    'vaccination' => VaccinationDetailPage(vaccinationId: id),
     'note' => NoteDetailPage(noteId: id),
     _ => throw ArgumentError('Unbekannter Typ $entityType'),
   };
@@ -964,6 +967,78 @@ class PharmacyDetailPage extends StatelessWidget {
                 ),
             ],
           ),
+        ];
+      },
+    );
+  }
+}
+
+// --- Impfung --------------------------------------------------------------
+
+class VaccinationDetailPage extends StatelessWidget {
+  const VaccinationDetailPage({super.key, required this.vaccinationId});
+
+  final String vaccinationId;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DetailScaffold<(Vaccination, Doctor?)>(
+      title: 'Impfung',
+      watch: (db) => db.watchWith({db.vaccinations, db.doctors}, () async {
+        final v = await VaccinationRepository(db).get(vaccinationId);
+        if (v == null) return null;
+        final doctor = v.doctorId == null
+            ? null
+            : await DoctorRepository(db).getById(v.doctorId!);
+        return (v, doctor);
+      }),
+      onEdit: (context, data) =>
+          showVaccinationForm(context, vaccination: data.$1),
+      onDelete: (context, data) async {
+        final repo = VaccinationRepository(DatabaseScope.of(context));
+        if (!await confirmDelete(context, what: 'Impfung')) return false;
+        await repo.delete(data.$1.id);
+        return true;
+      },
+      body: (context, data) {
+        final (v, doctor) = data;
+        final due = v.nextDueAt;
+        return [
+          DetailHeader(
+            title: v.vaccine,
+            subtitle: [
+              _date.format(v.administeredAt),
+              if (v.doseNumber != null) '${v.doseNumber}. Dosis',
+            ].join(' · '),
+          ),
+          _infoTile(Icons.vaccines_outlined, 'Impfstoff', v.product),
+          _infoTile(Icons.qr_code_2, 'Charge', v.batch),
+          if (due != null)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(
+                Icons.event_repeat,
+                color: due.isBefore(DateTime.now())
+                    ? Theme.of(context).colorScheme.error
+                    : null,
+              ),
+              title: Text(_date.format(due)),
+              subtitle: Text(
+                due.isBefore(DateTime.now())
+                    ? 'Auffrischung überfällig'
+                    : 'Nächste Impfung fällig',
+              ),
+            ),
+          if (doctor != null)
+            _linkTile(
+              context,
+              icon: Icons.medical_services_outlined,
+              title: doctor.name,
+              subtitle: 'Geimpft von',
+              entityType: 'doctor',
+              id: doctor.id,
+            ),
+          _infoTile(Icons.notes_outlined, 'Notizen', v.notes),
         ];
       },
     );

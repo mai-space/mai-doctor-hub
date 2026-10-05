@@ -70,6 +70,7 @@ class RecordsRepository {
             _db.medications,
             _db.notes,
             _db.pharmacies,
+            _db.vaccinations,
           },
         )
         .watch()
@@ -221,6 +222,25 @@ class RecordsRepository {
             subtitle: ['Apotheke', ?p.address].join(' · '),
             sortDate: p.createdAt,
             updatedAt: p.updatedAt,
+          ),
+        );
+      }
+    }
+    if (entityType == null || entityType == 'vaccination') {
+      final vaccinations = await _db.select(_db.vaccinations).get();
+      for (final v in vaccinations) {
+        items.add(
+          RecordListItem(
+            entityType: 'vaccination',
+            entityId: v.id,
+            title: v.vaccine,
+            subtitle: [
+              'Impfung',
+              _formatDate(v.administeredAt),
+              if (v.doseNumber != null) '${v.doseNumber}. Dosis',
+            ].join(' · '),
+            sortDate: v.administeredAt,
+            updatedAt: v.updatedAt,
           ),
         );
       }

@@ -69,6 +69,11 @@ String buildFixtureDb(Directory dir, {int userVersion = supportedSchemaVersion})
       'INSERT INTO notes (id, body, related_diagnosis_id, created_at, '
       "updated_at) VALUES ('not1', 'Frage: OP sinnvoll?', 'dia1', 0, 0)",
     );
+  db.execute(
+    'INSERT INTO vaccinations (id, vaccine, administered_at, next_due_at, '
+    "batch, created_at, updated_at) VALUES ('vac1', 'Tetanus', "
+    "${s(DateTime(2014))}, ${s(DateTime(2024))}, 'X1', 0, 0)",
+  );
   for (final (i, v) in [7, 5, 3].indexed) {
     db.execute(
       'INSERT INTO symptom_observations (id, symptom_id, recorded_at, kind, '

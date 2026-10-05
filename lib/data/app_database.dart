@@ -184,6 +184,26 @@ class Medications extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+/// v8: Impfung.
+class Vaccinations extends Table {
+  TextColumn get id => text()();
+
+  /// Impfstoff bzw. Impfung, z. B. „Tetanus/Diphtherie/Pertussis“.
+  TextColumn get vaccine => text()();
+  TextColumn get product => text().nullable()();
+  DateTimeColumn get administeredAt => dateTime()();
+  IntColumn get doseNumber => integer().nullable()();
+  TextColumn get batch => text().nullable()();
+  TextColumn get doctorId => text().nullable().references(Doctors, #id)();
+  DateTimeColumn get nextDueAt => dateTime().nullable()();
+  TextColumn get notes => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 /// v7: Apotheke (Bezug/Abholung von Medikamenten).
 class Pharmacies extends Table {
   TextColumn get id => text()();
@@ -345,6 +365,7 @@ class CalendarLinks extends Table {
     Pharmacies,
     MedicationSchedules,
     MedicationIntakes,
+    Vaccinations,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -352,7 +373,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'mai_doctor_hub'));
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -386,6 +407,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 6) {
         await migrator.createTable(doctorSymptoms);
+      }
+      if (from < 8) {
+        await migrator.createTable(vaccinations);
       }
       if (from < 7) {
         await migrator.createTable(pharmacies);

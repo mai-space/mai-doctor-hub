@@ -54,6 +54,7 @@ void main() {
       'symptom_timeline',
       'list_medications',
       'get_diagnosis',
+      'list_vaccinations',
     ]));
     expect(tools.every((t) => t.toolAnnotations?.readOnlyHint == true), isTrue);
 

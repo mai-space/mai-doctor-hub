@@ -16,6 +16,7 @@ import '../../services/calendar/calendar_sync_service.dart';
 import '../../services/calendar/ics.dart';
 import '../../widgets/symptom_report_card.dart';
 import '../records/detail_pages.dart';
+import '../summary/visit_summary_page.dart';
 import '../records/entity_forms.dart';
 import 'add_appointment_sheet.dart';
 
@@ -37,7 +38,7 @@ class _AppointmentData {
   final (DateTime, DateTime) window;
 }
 
-enum _Action { done, cancel, reopen, ics, delete }
+enum _Action { done, cancel, reopen, summary, ics, delete }
 
 class AppointmentDetailPage extends StatefulWidget {
   const AppointmentDetailPage({super.key, required this.appointmentId});
@@ -112,6 +113,12 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
         await repo.updateStatus(a.id, AppointmentStatus.planned);
       case _Action.ics:
         await _exportIcs(a.id);
+      case _Action.summary:
+        await Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => VisitSummaryPage(appointmentId: a.id),
+          ),
+        );
       case _Action.delete:
         final navigator = Navigator.of(context);
         if (!await confirmDelete(
@@ -204,6 +211,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                       value: _Action.reopen,
                       child: Text('Wieder planen'),
                     ),
+                  const PopupMenuItem(
+                    value: _Action.summary,
+                    child: Text('Zusammenfassung für Arzt (PDF)'),
+                  ),
                   const PopupMenuItem(
                     value: _Action.ics,
                     child: Text('Als Kalenderdatei (.ics)'),

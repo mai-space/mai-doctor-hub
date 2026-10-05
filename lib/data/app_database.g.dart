@@ -9060,6 +9060,677 @@ class MedicationIntakesCompanion extends UpdateCompanion<MedicationIntake> {
   }
 }
 
+class $VaccinationsTable extends Vaccinations
+    with TableInfo<$VaccinationsTable, Vaccination> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $VaccinationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _vaccineMeta = const VerificationMeta(
+    'vaccine',
+  );
+  @override
+  late final GeneratedColumn<String> vaccine = GeneratedColumn<String>(
+    'vaccine',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productMeta = const VerificationMeta(
+    'product',
+  );
+  @override
+  late final GeneratedColumn<String> product = GeneratedColumn<String>(
+    'product',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _administeredAtMeta = const VerificationMeta(
+    'administeredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> administeredAt =
+      GeneratedColumn<DateTime>(
+        'administered_at',
+        aliasedName,
+        false,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _doseNumberMeta = const VerificationMeta(
+    'doseNumber',
+  );
+  @override
+  late final GeneratedColumn<int> doseNumber = GeneratedColumn<int>(
+    'dose_number',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _batchMeta = const VerificationMeta('batch');
+  @override
+  late final GeneratedColumn<String> batch = GeneratedColumn<String>(
+    'batch',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _doctorIdMeta = const VerificationMeta(
+    'doctorId',
+  );
+  @override
+  late final GeneratedColumn<String> doctorId = GeneratedColumn<String>(
+    'doctor_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES doctors (id)',
+    ),
+  );
+  static const VerificationMeta _nextDueAtMeta = const VerificationMeta(
+    'nextDueAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> nextDueAt = GeneratedColumn<DateTime>(
+    'next_due_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    vaccine,
+    product,
+    administeredAt,
+    doseNumber,
+    batch,
+    doctorId,
+    nextDueAt,
+    notes,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'vaccinations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Vaccination> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('vaccine')) {
+      context.handle(
+        _vaccineMeta,
+        vaccine.isAcceptableOrUnknown(data['vaccine']!, _vaccineMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_vaccineMeta);
+    }
+    if (data.containsKey('product')) {
+      context.handle(
+        _productMeta,
+        product.isAcceptableOrUnknown(data['product']!, _productMeta),
+      );
+    }
+    if (data.containsKey('administered_at')) {
+      context.handle(
+        _administeredAtMeta,
+        administeredAt.isAcceptableOrUnknown(
+          data['administered_at']!,
+          _administeredAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_administeredAtMeta);
+    }
+    if (data.containsKey('dose_number')) {
+      context.handle(
+        _doseNumberMeta,
+        doseNumber.isAcceptableOrUnknown(data['dose_number']!, _doseNumberMeta),
+      );
+    }
+    if (data.containsKey('batch')) {
+      context.handle(
+        _batchMeta,
+        batch.isAcceptableOrUnknown(data['batch']!, _batchMeta),
+      );
+    }
+    if (data.containsKey('doctor_id')) {
+      context.handle(
+        _doctorIdMeta,
+        doctorId.isAcceptableOrUnknown(data['doctor_id']!, _doctorIdMeta),
+      );
+    }
+    if (data.containsKey('next_due_at')) {
+      context.handle(
+        _nextDueAtMeta,
+        nextDueAt.isAcceptableOrUnknown(data['next_due_at']!, _nextDueAtMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Vaccination map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Vaccination(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      vaccine: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}vaccine'],
+      )!,
+      product: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product'],
+      ),
+      administeredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}administered_at'],
+      )!,
+      doseNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}dose_number'],
+      ),
+      batch: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}batch'],
+      ),
+      doctorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}doctor_id'],
+      ),
+      nextDueAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}next_due_at'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $VaccinationsTable createAlias(String alias) {
+    return $VaccinationsTable(attachedDatabase, alias);
+  }
+}
+
+class Vaccination extends DataClass implements Insertable<Vaccination> {
+  final String id;
+
+  /// Impfstoff bzw. Impfung, z. B. „Tetanus/Diphtherie/Pertussis“.
+  final String vaccine;
+  final String? product;
+  final DateTime administeredAt;
+  final int? doseNumber;
+  final String? batch;
+  final String? doctorId;
+  final DateTime? nextDueAt;
+  final String? notes;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const Vaccination({
+    required this.id,
+    required this.vaccine,
+    this.product,
+    required this.administeredAt,
+    this.doseNumber,
+    this.batch,
+    this.doctorId,
+    this.nextDueAt,
+    this.notes,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['vaccine'] = Variable<String>(vaccine);
+    if (!nullToAbsent || product != null) {
+      map['product'] = Variable<String>(product);
+    }
+    map['administered_at'] = Variable<DateTime>(administeredAt);
+    if (!nullToAbsent || doseNumber != null) {
+      map['dose_number'] = Variable<int>(doseNumber);
+    }
+    if (!nullToAbsent || batch != null) {
+      map['batch'] = Variable<String>(batch);
+    }
+    if (!nullToAbsent || doctorId != null) {
+      map['doctor_id'] = Variable<String>(doctorId);
+    }
+    if (!nullToAbsent || nextDueAt != null) {
+      map['next_due_at'] = Variable<DateTime>(nextDueAt);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  VaccinationsCompanion toCompanion(bool nullToAbsent) {
+    return VaccinationsCompanion(
+      id: Value(id),
+      vaccine: Value(vaccine),
+      product: product == null && nullToAbsent
+          ? const Value.absent()
+          : Value(product),
+      administeredAt: Value(administeredAt),
+      doseNumber: doseNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(doseNumber),
+      batch: batch == null && nullToAbsent
+          ? const Value.absent()
+          : Value(batch),
+      doctorId: doctorId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(doctorId),
+      nextDueAt: nextDueAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nextDueAt),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Vaccination.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Vaccination(
+      id: serializer.fromJson<String>(json['id']),
+      vaccine: serializer.fromJson<String>(json['vaccine']),
+      product: serializer.fromJson<String?>(json['product']),
+      administeredAt: serializer.fromJson<DateTime>(json['administeredAt']),
+      doseNumber: serializer.fromJson<int?>(json['doseNumber']),
+      batch: serializer.fromJson<String?>(json['batch']),
+      doctorId: serializer.fromJson<String?>(json['doctorId']),
+      nextDueAt: serializer.fromJson<DateTime?>(json['nextDueAt']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'vaccine': serializer.toJson<String>(vaccine),
+      'product': serializer.toJson<String?>(product),
+      'administeredAt': serializer.toJson<DateTime>(administeredAt),
+      'doseNumber': serializer.toJson<int?>(doseNumber),
+      'batch': serializer.toJson<String?>(batch),
+      'doctorId': serializer.toJson<String?>(doctorId),
+      'nextDueAt': serializer.toJson<DateTime?>(nextDueAt),
+      'notes': serializer.toJson<String?>(notes),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  Vaccination copyWith({
+    String? id,
+    String? vaccine,
+    Value<String?> product = const Value.absent(),
+    DateTime? administeredAt,
+    Value<int?> doseNumber = const Value.absent(),
+    Value<String?> batch = const Value.absent(),
+    Value<String?> doctorId = const Value.absent(),
+    Value<DateTime?> nextDueAt = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => Vaccination(
+    id: id ?? this.id,
+    vaccine: vaccine ?? this.vaccine,
+    product: product.present ? product.value : this.product,
+    administeredAt: administeredAt ?? this.administeredAt,
+    doseNumber: doseNumber.present ? doseNumber.value : this.doseNumber,
+    batch: batch.present ? batch.value : this.batch,
+    doctorId: doctorId.present ? doctorId.value : this.doctorId,
+    nextDueAt: nextDueAt.present ? nextDueAt.value : this.nextDueAt,
+    notes: notes.present ? notes.value : this.notes,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Vaccination copyWithCompanion(VaccinationsCompanion data) {
+    return Vaccination(
+      id: data.id.present ? data.id.value : this.id,
+      vaccine: data.vaccine.present ? data.vaccine.value : this.vaccine,
+      product: data.product.present ? data.product.value : this.product,
+      administeredAt: data.administeredAt.present
+          ? data.administeredAt.value
+          : this.administeredAt,
+      doseNumber: data.doseNumber.present
+          ? data.doseNumber.value
+          : this.doseNumber,
+      batch: data.batch.present ? data.batch.value : this.batch,
+      doctorId: data.doctorId.present ? data.doctorId.value : this.doctorId,
+      nextDueAt: data.nextDueAt.present ? data.nextDueAt.value : this.nextDueAt,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Vaccination(')
+          ..write('id: $id, ')
+          ..write('vaccine: $vaccine, ')
+          ..write('product: $product, ')
+          ..write('administeredAt: $administeredAt, ')
+          ..write('doseNumber: $doseNumber, ')
+          ..write('batch: $batch, ')
+          ..write('doctorId: $doctorId, ')
+          ..write('nextDueAt: $nextDueAt, ')
+          ..write('notes: $notes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    vaccine,
+    product,
+    administeredAt,
+    doseNumber,
+    batch,
+    doctorId,
+    nextDueAt,
+    notes,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Vaccination &&
+          other.id == this.id &&
+          other.vaccine == this.vaccine &&
+          other.product == this.product &&
+          other.administeredAt == this.administeredAt &&
+          other.doseNumber == this.doseNumber &&
+          other.batch == this.batch &&
+          other.doctorId == this.doctorId &&
+          other.nextDueAt == this.nextDueAt &&
+          other.notes == this.notes &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
+  final Value<String> id;
+  final Value<String> vaccine;
+  final Value<String?> product;
+  final Value<DateTime> administeredAt;
+  final Value<int?> doseNumber;
+  final Value<String?> batch;
+  final Value<String?> doctorId;
+  final Value<DateTime?> nextDueAt;
+  final Value<String?> notes;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const VaccinationsCompanion({
+    this.id = const Value.absent(),
+    this.vaccine = const Value.absent(),
+    this.product = const Value.absent(),
+    this.administeredAt = const Value.absent(),
+    this.doseNumber = const Value.absent(),
+    this.batch = const Value.absent(),
+    this.doctorId = const Value.absent(),
+    this.nextDueAt = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  VaccinationsCompanion.insert({
+    required String id,
+    required String vaccine,
+    this.product = const Value.absent(),
+    required DateTime administeredAt,
+    this.doseNumber = const Value.absent(),
+    this.batch = const Value.absent(),
+    this.doctorId = const Value.absent(),
+    this.nextDueAt = const Value.absent(),
+    this.notes = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       vaccine = Value(vaccine),
+       administeredAt = Value(administeredAt),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<Vaccination> custom({
+    Expression<String>? id,
+    Expression<String>? vaccine,
+    Expression<String>? product,
+    Expression<DateTime>? administeredAt,
+    Expression<int>? doseNumber,
+    Expression<String>? batch,
+    Expression<String>? doctorId,
+    Expression<DateTime>? nextDueAt,
+    Expression<String>? notes,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (vaccine != null) 'vaccine': vaccine,
+      if (product != null) 'product': product,
+      if (administeredAt != null) 'administered_at': administeredAt,
+      if (doseNumber != null) 'dose_number': doseNumber,
+      if (batch != null) 'batch': batch,
+      if (doctorId != null) 'doctor_id': doctorId,
+      if (nextDueAt != null) 'next_due_at': nextDueAt,
+      if (notes != null) 'notes': notes,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  VaccinationsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? vaccine,
+    Value<String?>? product,
+    Value<DateTime>? administeredAt,
+    Value<int?>? doseNumber,
+    Value<String?>? batch,
+    Value<String?>? doctorId,
+    Value<DateTime?>? nextDueAt,
+    Value<String?>? notes,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return VaccinationsCompanion(
+      id: id ?? this.id,
+      vaccine: vaccine ?? this.vaccine,
+      product: product ?? this.product,
+      administeredAt: administeredAt ?? this.administeredAt,
+      doseNumber: doseNumber ?? this.doseNumber,
+      batch: batch ?? this.batch,
+      doctorId: doctorId ?? this.doctorId,
+      nextDueAt: nextDueAt ?? this.nextDueAt,
+      notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (vaccine.present) {
+      map['vaccine'] = Variable<String>(vaccine.value);
+    }
+    if (product.present) {
+      map['product'] = Variable<String>(product.value);
+    }
+    if (administeredAt.present) {
+      map['administered_at'] = Variable<DateTime>(administeredAt.value);
+    }
+    if (doseNumber.present) {
+      map['dose_number'] = Variable<int>(doseNumber.value);
+    }
+    if (batch.present) {
+      map['batch'] = Variable<String>(batch.value);
+    }
+    if (doctorId.present) {
+      map['doctor_id'] = Variable<String>(doctorId.value);
+    }
+    if (nextDueAt.present) {
+      map['next_due_at'] = Variable<DateTime>(nextDueAt.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VaccinationsCompanion(')
+          ..write('id: $id, ')
+          ..write('vaccine: $vaccine, ')
+          ..write('product: $product, ')
+          ..write('administeredAt: $administeredAt, ')
+          ..write('doseNumber: $doseNumber, ')
+          ..write('batch: $batch, ')
+          ..write('doctorId: $doctorId, ')
+          ..write('nextDueAt: $nextDueAt, ')
+          ..write('notes: $notes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -9088,6 +9759,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MedicationSchedulesTable(this);
   late final $MedicationIntakesTable medicationIntakes =
       $MedicationIntakesTable(this);
+  late final $VaccinationsTable vaccinations = $VaccinationsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -9111,6 +9783,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     doctorSymptoms,
     medicationSchedules,
     medicationIntakes,
+    vaccinations,
   ];
 }
 
@@ -9192,6 +9865,24 @@ final class $$DoctorsTableReferences
     ).filter((f) => f.doctorId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_doctorSymptomsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$VaccinationsTable, List<Vaccination>>
+  _vaccinationsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.vaccinations,
+    aliasName: 'doctors__id__vaccinations__doctor_id',
+  );
+
+  $$VaccinationsTableProcessedTableManager get vaccinationsRefs {
+    final manager = $$VaccinationsTableTableManager(
+      $_db,
+      $_db.vaccinations,
+    ).filter((f) => f.doctorId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_vaccinationsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -9318,6 +10009,31 @@ class $$DoctorsTableFilterComposer
           }) => $$DoctorSymptomsTableFilterComposer(
             $db: $db,
             $table: $db.doctorSymptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> vaccinationsRefs(
+    Expression<bool> Function($$VaccinationsTableFilterComposer f) f,
+  ) {
+    final $$VaccinationsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.vaccinations,
+      getReferencedColumn: (t) => t.doctorId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VaccinationsTableFilterComposer(
+            $db: $db,
+            $table: $db.vaccinations,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -9495,6 +10211,31 @@ class $$DoctorsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> vaccinationsRefs<T extends Object>(
+    Expression<T> Function($$VaccinationsTableAnnotationComposer a) f,
+  ) {
+    final $$VaccinationsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.vaccinations,
+      getReferencedColumn: (t) => t.doctorId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VaccinationsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.vaccinations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$DoctorsTableTableManager
@@ -9514,6 +10255,7 @@ class $$DoctorsTableTableManager
             bool appointmentsRefs,
             bool medicationsRefs,
             bool doctorSymptomsRefs,
+            bool vaccinationsRefs,
           })
         > {
   $$DoctorsTableTableManager(_$AppDatabase db, $DoctorsTable table)
@@ -9588,6 +10330,7 @@ class $$DoctorsTableTableManager
                 appointmentsRefs = false,
                 medicationsRefs = false,
                 doctorSymptomsRefs = false,
+                vaccinationsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -9595,6 +10338,7 @@ class $$DoctorsTableTableManager
                     if (appointmentsRefs) db.appointments,
                     if (medicationsRefs) db.medications,
                     if (doctorSymptomsRefs) db.doctorSymptoms,
+                    if (vaccinationsRefs) db.vaccinations,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -9662,6 +10406,27 @@ class $$DoctorsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (vaccinationsRefs)
+                        await $_getPrefetchedData<
+                          Doctor,
+                          $DoctorsTable,
+                          Vaccination
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DoctorsTableReferences
+                              ._vaccinationsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DoctorsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).vaccinationsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.doctorId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -9686,6 +10451,7 @@ typedef $$DoctorsTableProcessedTableManager =
         bool appointmentsRefs,
         bool medicationsRefs,
         bool doctorSymptomsRefs,
+        bool vaccinationsRefs,
       })
     >;
 typedef $$DiagnosesTableCreateCompanionBuilder = DiagnosesCompanion Function({
@@ -17625,6 +18391,439 @@ typedef $$MedicationIntakesTableProcessedTableManager =
       MedicationIntake,
       PrefetchHooks Function({bool medicationId})
     >;
+typedef $$VaccinationsTableCreateCompanionBuilder =
+    VaccinationsCompanion Function({
+      required String id,
+      required String vaccine,
+      Value<String?> product,
+      required DateTime administeredAt,
+      Value<int?> doseNumber,
+      Value<String?> batch,
+      Value<String?> doctorId,
+      Value<DateTime?> nextDueAt,
+      Value<String?> notes,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$VaccinationsTableUpdateCompanionBuilder =
+    VaccinationsCompanion Function({
+      Value<String> id,
+      Value<String> vaccine,
+      Value<String?> product,
+      Value<DateTime> administeredAt,
+      Value<int?> doseNumber,
+      Value<String?> batch,
+      Value<String?> doctorId,
+      Value<DateTime?> nextDueAt,
+      Value<String?> notes,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$VaccinationsTableReferences
+    extends BaseReferences<_$AppDatabase, $VaccinationsTable, Vaccination> {
+  $$VaccinationsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $DoctorsTable _doctorIdTable(_$AppDatabase db) =>
+      db.doctors.createAlias('vaccinations__doctor_id__doctors__id');
+
+  $$DoctorsTableProcessedTableManager? get doctorId {
+    final $_column = $_itemColumn<String>('doctor_id');
+    if ($_column == null) return null;
+    final manager = $$DoctorsTableTableManager(
+      $_db,
+      $_db.doctors,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_doctorIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$VaccinationsTableFilterComposer
+    extends Composer<_$AppDatabase, $VaccinationsTable> {
+  $$VaccinationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get vaccine => $composableBuilder(
+    column: $table.vaccine,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get product => $composableBuilder(
+    column: $table.product,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get administeredAt => $composableBuilder(
+    column: $table.administeredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get doseNumber => $composableBuilder(
+    column: $table.doseNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get batch => $composableBuilder(
+    column: $table.batch,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get nextDueAt => $composableBuilder(
+    column: $table.nextDueAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$DoctorsTableFilterComposer get doctorId {
+    final $$DoctorsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.doctorId,
+      referencedTable: $db.doctors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoctorsTableFilterComposer(
+            $db: $db,
+            $table: $db.doctors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VaccinationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $VaccinationsTable> {
+  $$VaccinationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get vaccine => $composableBuilder(
+    column: $table.vaccine,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get product => $composableBuilder(
+    column: $table.product,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get administeredAt => $composableBuilder(
+    column: $table.administeredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get doseNumber => $composableBuilder(
+    column: $table.doseNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get batch => $composableBuilder(
+    column: $table.batch,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get nextDueAt => $composableBuilder(
+    column: $table.nextDueAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$DoctorsTableOrderingComposer get doctorId {
+    final $$DoctorsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.doctorId,
+      referencedTable: $db.doctors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoctorsTableOrderingComposer(
+            $db: $db,
+            $table: $db.doctors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VaccinationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $VaccinationsTable> {
+  $$VaccinationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get vaccine =>
+      $composableBuilder(column: $table.vaccine, builder: (column) => column);
+
+  GeneratedColumn<String> get product =>
+      $composableBuilder(column: $table.product, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get administeredAt => $composableBuilder(
+    column: $table.administeredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get doseNumber => $composableBuilder(
+    column: $table.doseNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get batch =>
+      $composableBuilder(column: $table.batch, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get nextDueAt =>
+      $composableBuilder(column: $table.nextDueAt, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$DoctorsTableAnnotationComposer get doctorId {
+    final $$DoctorsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.doctorId,
+      referencedTable: $db.doctors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoctorsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.doctors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VaccinationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $VaccinationsTable,
+          Vaccination,
+          $$VaccinationsTableFilterComposer,
+          $$VaccinationsTableOrderingComposer,
+          $$VaccinationsTableAnnotationComposer,
+          $$VaccinationsTableCreateCompanionBuilder,
+          $$VaccinationsTableUpdateCompanionBuilder,
+          (Vaccination, $$VaccinationsTableReferences),
+          Vaccination,
+          PrefetchHooks Function({bool doctorId})
+        > {
+  $$VaccinationsTableTableManager(_$AppDatabase db, $VaccinationsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$VaccinationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$VaccinationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$VaccinationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> vaccine = const Value.absent(),
+                Value<String?> product = const Value.absent(),
+                Value<DateTime> administeredAt = const Value.absent(),
+                Value<int?> doseNumber = const Value.absent(),
+                Value<String?> batch = const Value.absent(),
+                Value<String?> doctorId = const Value.absent(),
+                Value<DateTime?> nextDueAt = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => VaccinationsCompanion(
+                id: id,
+                vaccine: vaccine,
+                product: product,
+                administeredAt: administeredAt,
+                doseNumber: doseNumber,
+                batch: batch,
+                doctorId: doctorId,
+                nextDueAt: nextDueAt,
+                notes: notes,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String vaccine,
+                Value<String?> product = const Value.absent(),
+                required DateTime administeredAt,
+                Value<int?> doseNumber = const Value.absent(),
+                Value<String?> batch = const Value.absent(),
+                Value<String?> doctorId = const Value.absent(),
+                Value<DateTime?> nextDueAt = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => VaccinationsCompanion.insert(
+                id: id,
+                vaccine: vaccine,
+                product: product,
+                administeredAt: administeredAt,
+                doseNumber: doseNumber,
+                batch: batch,
+                doctorId: doctorId,
+                nextDueAt: nextDueAt,
+                notes: notes,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$VaccinationsTable, Vaccination>(table),
+                  $$VaccinationsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({doctorId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (doctorId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.doctorId,
+                        referencedTable: $$VaccinationsTableReferences
+                            ._doctorIdTable(db),
+                        referencedColumn: $$VaccinationsTableReferences
+                            ._doctorIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$VaccinationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $VaccinationsTable,
+      Vaccination,
+      $$VaccinationsTableFilterComposer,
+      $$VaccinationsTableOrderingComposer,
+      $$VaccinationsTableAnnotationComposer,
+      $$VaccinationsTableCreateCompanionBuilder,
+      $$VaccinationsTableUpdateCompanionBuilder,
+      (Vaccination, $$VaccinationsTableReferences),
+      Vaccination,
+      PrefetchHooks Function({bool doctorId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -17665,4 +18864,6 @@ class $AppDatabaseManager {
       $$MedicationSchedulesTableTableManager(_db, _db.medicationSchedules);
   $$MedicationIntakesTableTableManager get medicationIntakes =>
       $$MedicationIntakesTableTableManager(_db, _db.medicationIntakes);
+  $$VaccinationsTableTableManager get vaccinations =>
+      $$VaccinationsTableTableManager(_db, _db.vaccinations);
 }
