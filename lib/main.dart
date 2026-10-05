@@ -10,6 +10,7 @@ import 'services/app_lock.dart';
 import 'services/calendar/calendar_gateway.dart';
 import 'services/calendar/calendar_sync_service.dart';
 import 'services/notification_service.dart';
+import 'services/time_change_observer.dart';
 import 'shell/app_shell.dart';
 import 'theme/app_theme.dart';
 import 'widgets/app_lock_gate.dart';
@@ -50,9 +51,18 @@ Future<void> main() async {
 
   // Einseitiger Kalender-Export: gleicht bei Änderungen automatisch ab.
   final calendar = AndroidCalendarGateway();
-  if (calendar.isSupported) {
-    CalendarAutoSync(database, CalendarSyncService(database, calendar)).start();
-  }
+  final calendarSync = calendar.isSupported
+      ? (CalendarAutoSync(database, CalendarSyncService(database, calendar))
+          ..start())
+      : null;
+
+  // Zurück im Vordergrund: Zeitzone geändert? → Erinnerungen neu planen,
+  // Kalender abgleichen (Events tragen die Gerätezone).
+  TimeChangeObserver(() async {
+    final settings = await SettingsRepository(database).get();
+    await NotificationService.instance.refreshTimeZone(settings);
+    calendarSync?.trigger();
+  }).attach();
 
   runApp(MaiDoctorHubApp(database: database, appLock: appLock));
 }

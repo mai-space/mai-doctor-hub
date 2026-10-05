@@ -148,6 +148,13 @@ ernsthaft genutzt wird.
   Kalenderliste), Laufzeit-Abfrage mit Erklärung.
 - **Fehler**: `last_error` je Termin, Badge im Termin-Detail, Retry beim
   App-Start / nach Netzwechsel.
+- **Zeit & Zeitzone**: Termine werden als absolute Zeitpunkte (ms seit
+  Epoch) übertragen — korrekt über Sommer-/Winterzeit hinweg. Das Event
+  trägt die IANA-Zone des Geräts (`TimeZone.getDefault()`), die auch im
+  Abgleich-Hash steckt: nach Reise/Zonenwechsel werden beim nächsten
+  Vordergrund-Wechsel alle Events aktualisiert. Erinnerungen nutzen
+  dieselbe Gerätezone (vorher fest `Europe/Berlin`) und werden bei
+  Zonenwechsel neu geplant. Home sortiert minütlich nach Systemzeit neu.
 - **Tests**: `CalendarGateway`-Interface mit Fake → Unit-Tests für
   create/update/cancel/delete, Hash-Diffing, „Event extern gelöscht“.
 

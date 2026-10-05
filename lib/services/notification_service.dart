@@ -4,6 +4,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../data/app_database.dart';
+import 'device_time.dart';
 
 /// Lokale Morgen-/Abend-Erinnerungen für den Symptom-Check-in.
 class NotificationService {
@@ -25,11 +26,7 @@ class NotificationService {
     if (_initialized || kIsWeb) return;
 
     tz.initializeTimeZones();
-    try {
-      tz.setLocalLocation(tz.getLocation('Europe/Berlin'));
-    } catch (_) {
-      // Fallback: System-Lokalzeit der tz-Datenbank.
-    }
+    await _applyTimeZone(await DeviceTime.timeZone());
 
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const darwin = DarwinInitializationSettings();
@@ -55,6 +52,34 @@ class NotificationService {
     await iosPlugin?.requestPermissions(alert: true, badge: true, sound: true);
 
     _initialized = true;
+  }
+
+  String? _timeZone;
+
+  /// Zeitzone, nach der Erinnerungen gerade geplant sind.
+  String? get timeZone => _timeZone;
+
+  /// Setzt die tz-Datenbank auf die Gerätezone. Erinnerungen sind „täglich
+  /// 08:00 Ortszeit“ — nach Reise/Zonenwechsel müssen sie neu geplant werden.
+  Future<void> _applyTimeZone(String zone) async {
+    try {
+      tz.setLocalLocation(tz.getLocation(zone));
+      _timeZone = zone;
+    } catch (_) {
+      tz.setLocalLocation(tz.getLocation(DeviceTime.fallbackTimeZone));
+      _timeZone = DeviceTime.fallbackTimeZone;
+    }
+  }
+
+  /// Prüft, ob sich die Gerätezone geändert hat; plant dann neu.
+  /// Gibt `true` zurück, wenn neu geplant wurde.
+  Future<bool> refreshTimeZone(AppSetting settings) async {
+    if (kIsWeb || !_initialized) return false;
+    final zone = await DeviceTime.timeZone();
+    if (zone == _timeZone) return false;
+    await _applyTimeZone(zone);
+    await syncFromSettings(settings);
+    return true;
   }
 
   Future<void> syncFromSettings(AppSetting settings) async {

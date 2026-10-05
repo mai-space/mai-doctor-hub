@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../data/app_database.dart';
 import '../../data/repositories/appointment_repository.dart';
+import '../device_time.dart';
 import 'calendar_gateway.dart';
 
 /// Ergebnis eines Abgleichs (für UI und Tests).
@@ -38,10 +39,18 @@ class CalendarSyncReport {
 /// Kalender werden beim nächsten Abgleich überschrieben; extern gelöschte
 /// Events legt der Gateway neu an.
 class CalendarSyncService {
-  CalendarSyncService(this._db, this._gateway);
+  CalendarSyncService(
+    this._db,
+    this._gateway, {
+    Future<String> Function()? timeZone,
+  }) : _timeZone = timeZone ?? DeviceTime.timeZone;
 
   final AppDatabase _db;
   final CalendarGateway _gateway;
+
+  /// Gerätezone; Teil des Hashes → nach einem Zonenwechsel werden alle
+  /// Events mit der neuen Zone aktualisiert.
+  final Future<String> Function() _timeZone;
 
   static const defaultDuration = Duration(minutes: 30);
   static const managedBy = 'Verwaltet von Mai Doctor Hub';
@@ -50,6 +59,7 @@ class CalendarSyncService {
   static CalendarEventData eventFor(
     AppointmentSummary summary, {
     required bool includeTitle,
+    String? timeZone,
   }) {
     final a = summary.appointment;
     final doctor = summary.doctor;
@@ -71,6 +81,7 @@ class CalendarSyncService {
       ),
       location: location.isEmpty ? null : location,
       description: managedBy,
+      timeZone: timeZone,
     );
   }
 
@@ -101,6 +112,7 @@ class CalendarSyncService {
       for (final l in await _db.select(_db.calendarLinks).get())
         l.appointmentId: l,
     };
+    final timeZone = await _timeZone();
 
     var created = 0, updated = 0, deleted = 0, unchanged = 0, failed = 0;
 
@@ -110,6 +122,7 @@ class CalendarSyncService {
       final event = eventFor(
         summary,
         includeTitle: settings.calendarIncludeTitle,
+        timeZone: timeZone,
       );
       final hash = hashOf(calendarId, event);
       if (link != null &&
@@ -225,6 +238,10 @@ class CalendarAutoSync {
   final Duration debounce;
 
   StreamSubscription<void>? _subscription;
+
+  /// Abgleich anstoßen, z. B. wenn die App in den Vordergrund kommt
+  /// (Zeitzone/Uhrzeit können sich geändert haben). Dank Hash billig.
+  void trigger() => _schedule();
   Timer? _timer;
   bool _running = false;
   bool _again = false;

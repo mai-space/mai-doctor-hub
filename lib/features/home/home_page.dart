@@ -45,8 +45,11 @@ class _HomePageState extends State<HomePage> {
     super.didChangeDependencies();
     // Streams einmalig anlegen — nicht bei jedem Build neu abonnieren.
     final repo = AppointmentRepository(DatabaseScope.of(context));
-    _upcoming ??= repo.watchUpcomingSummaries();
-    _past ??= repo.watchPastSummaries();
+    // Minütlich neu einsortieren: Termine wechseln mit der Systemzeit
+    // von „kommend“ zu „vergangen“, auch ohne Datenänderung.
+    Stream<void> clock() => Stream<void>.periodic(const Duration(minutes: 1));
+    _upcoming ??= repo.watchUpcomingSummaries(clock: clock());
+    _past ??= repo.watchPastSummaries(clock: clock());
   }
 
   @override

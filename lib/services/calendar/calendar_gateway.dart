@@ -33,13 +33,20 @@ class CalendarEventData {
     required this.end,
     this.location,
     this.description,
+    this.timeZone,
   });
 
   final String title;
+
+  /// Absolute Zeitpunkte — als ms seit Epoch (UTC) übertragen, daher
+  /// unabhängig von Sommer-/Winterzeit und der Zone beim Speichern.
   final DateTime start;
   final DateTime end;
   final String? location;
   final String? description;
+
+  /// IANA-Zone des Geräts für die Anzeige im Kalender (z. B. Europe/Berlin).
+  final String? timeZone;
 
   Map<String, Object?> toJson() => {
     'title': title,
@@ -47,6 +54,7 @@ class CalendarEventData {
     'end': end.millisecondsSinceEpoch,
     'location': location,
     'description': description,
+    'timeZone': timeZone,
   };
 }
 

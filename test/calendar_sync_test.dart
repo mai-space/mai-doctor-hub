@@ -208,6 +208,36 @@ void main() {
     expect(calendar.all('g1'), hasLength(1));
   });
 
+  test('events carry the device time zone; a zone change re-syncs', () async {
+    var zone = 'Europe/Berlin';
+    final zoned = CalendarSyncService(db, calendar, timeZone: () async => zone);
+    // Termin über die Zeitumstellung (25.10.2026, 03:00 → 02:00).
+    final start = DateTime(2026, 10, 25, 1, 30);
+    await appointments.create(
+      doctorId: doctorId,
+      scheduledAt: start,
+      durationMin: 120,
+    );
+    await enable();
+
+    await zoned.syncAll();
+    final event = calendar.all('g1').single;
+    expect(event.timeZone, 'Europe/Berlin');
+    // Absolute Zeitpunkte: genau 2 h, unabhängig von der Umstellung.
+    expect(event.start.millisecondsSinceEpoch, start.millisecondsSinceEpoch);
+    expect(event.end.difference(event.start), const Duration(hours: 2));
+
+    expect((await zoned.syncAll()).unchanged, 1);
+
+    zone = 'America/New_York'; // Reise / Zone in den Einstellungen geändert
+    final report = await zoned.syncAll();
+    expect(report.updated, 1);
+    final moved = calendar.all('g1').single;
+    expect(moved.timeZone, 'America/New_York');
+    expect(moved.start, event.start, reason: 'gleicher Zeitpunkt, nur Anzeige');
+    expect(calendar.all('g1'), hasLength(1), reason: 'kein Duplikat');
+  });
+
   test('ICS export escapes and folds', () {
     final ics = Ics.event(
       uid: 'abc',

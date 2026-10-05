@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:drift/native.dart';
@@ -90,6 +91,29 @@ void main() {
         appointmentId: id,
       );
       await expectation;
+    });
+
+    test('clock tick moves a just-passed appointment out of upcoming', () async {
+      final clock = StreamController<void>();
+      addTearDown(clock.close);
+      await appointments.create(
+        doctorId: doctorId,
+        // drift speichert Sekunden → Abstand > 1 s.
+        scheduledAt: DateTime.now().add(const Duration(seconds: 1)),
+      );
+      final counts = <int>[];
+      final sub = appointments
+          .watchUpcomingSummaries(clock: clock.stream)
+          .listen((list) => counts.add(list.length));
+      addTearDown(sub.cancel);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(counts, [1]);
+
+      await Future<void>.delayed(const Duration(milliseconds: 2100));
+      expect(counts, [1], reason: 'ohne Tick keine Neuberechnung');
+      clock.add(null);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(counts.last, 0);
     });
 
     test('update replaces fields and links', () async {

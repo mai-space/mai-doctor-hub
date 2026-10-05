@@ -1,6 +1,7 @@
 package space.mai.mai_doctor_hub
 
 import android.view.WindowManager
+import java.util.TimeZone
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -11,6 +12,15 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        // IANA-Zeitzone des Geräts (z. B. „Europe/Berlin“) — Dart kennt nur
+        // Abkürzungen wie „CEST“, Erinnerungen und Kalender brauchen die ID.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "mai/device")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "timeZone" -> result.success(TimeZone.getDefault().id)
+                    else -> result.notImplemented()
+                }
+            }
         calendar = CalendarChannel(this).also {
             MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CalendarChannel.NAME)
                 .setMethodCallHandler(it)

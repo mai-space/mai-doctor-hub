@@ -125,7 +125,11 @@ class CalendarChannel(private val activity: Activity) : MethodChannel.MethodCall
             put(CalendarContract.Events.EVENT_LOCATION, call.argument<String>("location"))
             put(CalendarContract.Events.DTSTART, call.argument<Number>("start")!!.toLong())
             put(CalendarContract.Events.DTEND, call.argument<Number>("end")!!.toLong())
-            put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
+            // Zeitpunkte kommen absolut (ms seit Epoch); die Zone bestimmt nur
+            // die Anzeige/Wiederholungslogik im Kalender.
+            val zone = call.argument<String>("timeZone") ?: TimeZone.getDefault().id
+            put(CalendarContract.Events.EVENT_TIMEZONE, zone)
+            put(CalendarContract.Events.EVENT_END_TIMEZONE, zone)
         }
         val resolver = activity.contentResolver
         val existing = call.argument<String>("eventId")?.toLongOrNull()

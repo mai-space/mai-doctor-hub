@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
@@ -60,14 +62,48 @@ class AppointmentRepository {
 
   /// Feuert bei jeder Änderung an Terminen und allem, was eine
   /// [AppointmentSummary] beeinflusst (Arzt, Diagnosen, Berichte …).
-  Stream<void> _summaryChanges() => _db
-      .customSelect('SELECT 1', readsFrom: _summaryTables)
-      .watch()
-      .map((_) {});
+  Stream<void> _summaryChanges({Stream<void>? clock}) {
+    final changes = _db
+        .customSelect('SELECT 1', readsFrom: _summaryTables)
+        .watch()
+        .map((_) {});
+    return clock == null ? changes : _merge(changes, clock);
+  }
 
-  /// Kommende, geplante Termine — `now` wird bei jeder Änderung neu bestimmt.
-  Stream<List<AppointmentSummary>> watchUpcomingSummaries() {
-    return _summaryChanges().asyncMap((_) async {
+  /// Vereint Datenänderungen und Uhr-Ticks (ohne rxdart).
+  static Stream<void> _merge(Stream<void> a, Stream<void> b) {
+    late StreamController<void> controller;
+    final subscriptions = <StreamSubscription<void>>[];
+    controller = StreamController<void>(
+      onListen: () {
+        for (final s in [a, b]) {
+          subscriptions.add(
+            s.listen(controller.add, onError: controller.addError),
+          );
+        }
+      },
+      onPause: () {
+        for (final s in subscriptions) {
+          s.pause();
+        }
+      },
+      onResume: () {
+        for (final s in subscriptions) {
+          s.resume();
+        }
+      },
+      onCancel: () => Future.wait(subscriptions.map((s) => s.cancel())),
+    );
+    return controller.stream;
+  }
+
+  /// Kommende, geplante Termine. „Jetzt“ ist die Systemzeit bei jeder
+  /// Datenänderung und bei jedem [clock]-Tick — so wandert ein Termin auch
+  /// ohne Datenänderung nach „vergangen“, sobald seine Zeit vorbei ist.
+  Stream<List<AppointmentSummary>> watchUpcomingSummaries({
+    Stream<void>? clock,
+  }) {
+    return _summaryChanges(clock: clock).asyncMap((_) async {
       final now = DateTime.now();
       final rows =
           await (_db.select(_db.appointments)
@@ -80,8 +116,8 @@ class AppointmentRepository {
   }
 
   /// Vergangene Termine (alle Status), neueste zuerst.
-  Stream<List<AppointmentSummary>> watchPastSummaries() {
-    return _summaryChanges().asyncMap((_) async {
+  Stream<List<AppointmentSummary>> watchPastSummaries({Stream<void>? clock}) {
+    return _summaryChanges(clock: clock).asyncMap((_) async {
       final now = DateTime.now();
       final rows =
           await (_db.select(_db.appointments)
