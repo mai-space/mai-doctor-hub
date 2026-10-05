@@ -74,25 +74,36 @@ jobs:
       - name: Build release APK
         run: |
           set -o pipefail
-          # AGP 8.13 / Gradle 8.14 bleiben gepinnt wegen Legacy-Plugins mit jcenter().
-          # Flutter 3.47 warnt sonst und bricht ohne --android-skip-build-dependency-validation ab.
-          if ! flutter build apk --release --android-skip-build-dependency-validation 2>&1 | tee apk-build.log; then
+          if ! flutter build apk --release 2>&1 | tee apk-build.log; then
             {
               echo "## APK build failed"
               echo
               echo '```text'
-              # Relevante Fehlerzeilen statt kompletter Dependency-Liste
-              grep -nE 'FAILURE|What went wrong|BUILD FAILED|Error:|Could not|Exception|jcenter|Kotlin version|AGP' apk-build.log | tail -n 80 \
-                || tail -n 120 apk-build.log
+              # Kontext um den eigentlichen Fehler (nicht nur die FAILURE-Zeile)
+              if grep -n 'What went wrong:' apk-build.log >/dev/null 2>&1; then
+                start=$(grep -n 'What went wrong:' apk-build.log | tail -n 1 | cut -d: -f1)
+                start=$((start > 5 ? start - 5 : 1))
+                sed -n "${start},$((start + 40))p" apk-build.log
+              else
+                tail -n 120 apk-build.log
+              fi
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
-            # Nur echte Fehler annotieren (nicht die pub-outdated-Liste).
-            grep -nE 'FAILURE|What went wrong|BUILD FAILED|Error:|Could not|Exception|jcenter|Kotlin version' apk-build.log \
-              | tail -n 40 \
-              | while IFS= read -r line; do
-                  safe=$(printf '%s' "$line" | tr '|' '/' | cut -c1-200)
-                  echo "::error::$safe"
-                done
+            # Annotationen: Fehlerblock, nicht die pub-outdated-Liste
+            if grep -n 'What went wrong:' apk-build.log >/dev/null 2>&1; then
+              start=$(grep -n 'What went wrong:' apk-build.log | tail -n 1 | cut -d: -f1)
+              start=$((start > 2 ? start - 2 : 1))
+              sed -n "${start},$((start + 25))p" apk-build.log
+            else
+              tail -n 30 apk-build.log
+            fi | while IFS= read -r line; do
+              safe=$(printf '%s' "$line" | tr '|' '/' | cut -c1-200)
+              # Leere Zeilen und reine Trenner überspringen
+              case "$safe" in
+                ''|'---'*|'===') continue ;;
+              esac
+              echo "::error::$safe"
+            done
             exit 1
           fi
         env:

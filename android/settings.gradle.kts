@@ -19,12 +19,9 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    // AGP 9 + Gradle 9 entfernen jcenter(); Legacy-Plugins
-    // (flutter_local_notifications 8.x, pdf_text 0.5) brauchen es noch.
-    // Linse: Environment-Parität / Reproduzierbarkeit — Pin auf AGP 8.x.
-    // Kotlin >= 2.2.20: Flutter 3.47 Minimum; CI nutzt
-    // --android-skip-build-dependency-validation für AGP/Gradle-Pin.
-    id("com.android.application") version "8.13.0" apply false
+    // Flutter 3.47 Template-Stack. Legacy-Plugins mit jcenter() (pdf_text,
+    // flutter_local_notifications 8.x) wurden aus pubspec entfernt — unbenutzt auf main.
+    id("com.android.application") version "9.1.0" apply false
     id("org.jetbrains.kotlin.android") version "2.2.20" apply false
 }
 
