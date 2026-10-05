@@ -8,11 +8,16 @@ import '../../data/database_provider.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/diagnosis_hub_repository.dart';
 import '../../data/repositories/doctor_repository.dart';
+import '../../data/repositories/medication_repository.dart';
 import '../../data/repositories/records_repository.dart';
+import '../../data/repositories/reminder_repository.dart' show Weekdays;
 import '../../data/repositories/symptom_repository.dart';
 import '../../widgets/observation_chart.dart';
 import '../../widgets/symptom_report_card.dart';
 import '../home/appointment_detail_page.dart';
+import '../medications/medication_form_page.dart';
+import '../medications/pharmacy_form.dart';
+import '../settings/reminders_section.dart' show ensureNotificationPermission;
 import '../reports/report_viewer_page.dart';
 import 'entity_forms.dart';
 
@@ -28,6 +33,7 @@ void openRecord(BuildContext context, String entityType, String id) {
     'diagnosis' => DiagnosisDetailPage(diagnosisId: id),
     'symptom' => SymptomDetailPage(symptomId: id),
     'medication' => MedicationDetailPage(medicationId: id),
+    'pharmacy' => PharmacyDetailPage(pharmacyId: id),
     'note' => NoteDetailPage(noteId: id),
     _ => throw ArgumentError('Unbekannter Typ $entityType'),
   };
@@ -720,10 +726,11 @@ class SymptomDetailPage extends StatelessWidget {
 // --- Medikament ------------------------------------------------------------
 
 class _MedicationData {
-  const _MedicationData(this.medication, this.diagnosis);
+  const _MedicationData(this.details, this.intakes, this.adherence);
 
-  final Medication medication;
-  final Diagnose? diagnosis;
+  final MedicationDetails details;
+  final List<MedicationIntake> intakes;
+  final double? adherence;
 }
 
 class MedicationDetailPage extends StatelessWidget {
@@ -735,43 +742,228 @@ class MedicationDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return _DetailScaffold<_MedicationData>(
       title: 'Medikament',
-      watch: (db) => db.watchWith({db.medications, db.diagnoses}, () async {
-        final records = RecordsRepository(db);
-        final m = await records.getMedication(medicationId);
-        if (m == null) return null;
-        final d = m.diagnosisId == null
-            ? null
-            : await records.getDiagnosis(m.diagnosisId!);
-        return _MedicationData(m, d);
-      }),
-      onEdit: (context, data) =>
-          showMedicationForm(context, medication: data.medication),
+      watch: (db) {
+        final repo = MedicationRepository(db);
+        return db.watchWith(repo.tables, () async {
+          final details = await repo.get(medicationId);
+          if (details == null) return null;
+          return _MedicationData(
+            details,
+            await repo.intakes(medicationId, limit: 30),
+            await repo.adherence(medicationId),
+          );
+        });
+      },
+      onEdit: (context, data) => showMedicationFormPage(
+        context,
+        medicationId: data.details.medication.id,
+      ),
       onDelete: (context, data) async {
         final repo = RecordsRepository(DatabaseScope.of(context));
-        if (!await confirmDelete(context, what: 'Medikament')) return false;
-        await repo.deleteMedication(data.medication.id);
+        if (!await confirmDelete(
+          context,
+          what: 'Medikament',
+          detail: 'Einnahmezeiten und Einnahme-Protokoll werden mitgelöscht.',
+        )) {
+          return false;
+        }
+        await repo.deleteMedication(data.details.medication.id);
         return true;
       },
       body: (context, data) {
-        final m = data.medication;
+        final d = data.details;
+        final m = d.medication;
+        final repo = MedicationRepository(DatabaseScope.of(context));
         final period = [
           if (m.startedAt != null) 'ab ${_date.format(m.startedAt!)}',
-          if (m.endedAt != null) 'bis ${_date.format(m.endedAt!)}',
+          m.endedAt != null ? 'bis ${_date.format(m.endedAt!)}' : 'dauerhaft',
         ].join(' ');
         return [
-          DetailHeader(title: m.name, subtitle: m.dosage),
-          _infoTile(Icons.schedule_outlined, 'Einnahmeplan', m.scheduleText),
+          DetailHeader(
+            title: m.name,
+            subtitle: [
+              ?m.dosage,
+              if (m.form != null) medicationFormLabel(m.form!),
+            ].join(' · '),
+          ),
+          _infoTile(Icons.medication_liquid_outlined, 'Dosis je Einnahme', d.doseFor(null)),
+          _infoTile(Icons.info_outline, 'Hinweis', m.instructions),
           _infoTile(Icons.date_range_outlined, 'Zeitraum', period),
-          _infoTile(Icons.notes_outlined, 'Notizen', m.notes),
-          if (data.diagnosis != null)
+          DetailSection(
+            title: 'Einnahmezeiten',
+            empty: 'Keine festen Einnahmezeiten.',
+            children: [
+              for (final s in d.schedules)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.schedule),
+                  title: Text(
+                    '${s.hour.toString().padLeft(2, '0')}:'
+                    '${s.minute.toString().padLeft(2, '0')}'
+                    ' · ${d.doseFor(s) ?? 'Einnahme'}',
+                  ),
+                  subtitle: Text(Weekdays.describe(s.weekdays)),
+                ),
+              if (d.schedules.isNotEmpty)
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('An Einnahme erinnern'),
+                  value: m.remindersEnabled,
+                  onChanged: (v) async {
+                    await repo.setRemindersEnabled(m.id, v);
+                    if (v && context.mounted) {
+                      await ensureNotificationPermission(context);
+                    }
+                  },
+                ),
+            ],
+          ),
+          if (d.prescriber != null)
+            _linkTile(
+              context,
+              icon: Icons.medical_services_outlined,
+              title: d.prescriber!.name,
+              subtitle: 'Verschrieben von',
+              entityType: 'doctor',
+              id: d.prescriber!.id,
+            ),
+          if (d.pharmacy != null)
+            _linkTile(
+              context,
+              icon: Icons.local_pharmacy_outlined,
+              title: d.pharmacy!.name,
+              subtitle: 'Apotheke',
+              entityType: 'pharmacy',
+              id: d.pharmacy!.id,
+            ),
+          if (d.diagnosis != null)
             _linkTile(
               context,
               icon: Icons.biotech_outlined,
-              title: data.diagnosis!.title,
+              title: d.diagnosis!.title,
               subtitle: 'Diagnose',
               entityType: 'diagnosis',
-              id: data.diagnosis!.id,
+              id: d.diagnosis!.id,
             ),
+          _infoTile(Icons.notes_outlined, 'Notizen', m.notes),
+          DetailSection(
+            title: 'Einnahme-Protokoll',
+            trailing: TextButton.icon(
+              onPressed: () => repo.recordIntake(
+                medicationId: m.id,
+                doseAmount: m.doseAmount,
+              ),
+              icon: const Icon(Icons.add_task),
+              label: const Text('Jetzt genommen'),
+            ),
+            empty: 'Noch keine Einnahme erfasst.',
+            children: [
+              if (data.adherence != null)
+                Text(
+                  'Letzte 14 Tage: ${(data.adherence! * 100).round()} % der '
+                  'geplanten Einnahmen genommen',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              for (final i in data.intakes)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    i.status == IntakeStatus.taken
+                        ? Icons.check_circle_outline
+                        : Icons.remove_circle_outline,
+                  ),
+                  title: Text(
+                    i.status == IntakeStatus.taken
+                        ? 'Genommen${i.doseAmount == null ? '' : ' · ${formatAmount(i.doseAmount!)} ${m.doseUnit ?? ''}'}'
+                        : 'Ausgelassen',
+                  ),
+                  subtitle: Text(
+                    [
+                      _dateTime.format(i.recordedAt),
+                      if (i.scheduledFor != null)
+                        'geplant ${DateFormat('HH:mm', 'de').format(i.scheduledFor!)}',
+                    ].join(' · '),
+                  ),
+                  trailing: IconButton(
+                    tooltip: 'Eintrag löschen',
+                    icon: const Icon(Icons.delete_outline),
+                    onPressed: () => repo.deleteIntake(i.id),
+                  ),
+                ),
+            ],
+          ),
+        ];
+      },
+    );
+  }
+}
+
+// --- Apotheke --------------------------------------------------------------
+
+class _PharmacyData {
+  const _PharmacyData(this.pharmacy, this.medications);
+
+  final Pharmacy pharmacy;
+  final List<Medication> medications;
+}
+
+class PharmacyDetailPage extends StatelessWidget {
+  const PharmacyDetailPage({super.key, required this.pharmacyId});
+
+  final String pharmacyId;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DetailScaffold<_PharmacyData>(
+      title: 'Apotheke',
+      watch: (db) => db.watchWith({db.pharmacies, db.medications}, () async {
+        final repo = PharmacyRepository(db);
+        final p = await repo.get(pharmacyId);
+        if (p == null) return null;
+        return _PharmacyData(p, await repo.medicationsFor(pharmacyId));
+      }),
+      onEdit: (context, data) =>
+          showPharmacyForm(context, pharmacy: data.pharmacy),
+      onDelete: (context, data) async {
+        final repo = PharmacyRepository(DatabaseScope.of(context));
+        if (!await confirmDelete(context, what: 'Apotheke')) return false;
+        await repo.delete(data.pharmacy.id);
+        return true;
+      },
+      body: (context, data) {
+        final p = data.pharmacy;
+        return [
+          DetailHeader(title: p.name),
+          _infoTile(
+            Icons.phone_outlined,
+            'Telefon · tippen zum Anrufen',
+            p.phone,
+            onTap: () => launchUrl(Uri(scheme: 'tel', path: p.phone)),
+          ),
+          _infoTile(
+            Icons.place_outlined,
+            'Adresse · in Karten öffnen',
+            p.address,
+            onTap: () => launchUrl(
+              Uri.parse('geo:0,0?q=${Uri.encodeComponent(p.address ?? '')}'),
+            ),
+          ),
+          _infoTile(Icons.notes_outlined, 'Notizen', p.notes),
+          DetailSection(
+            title: 'Medikamente',
+            empty: 'Keine Medikamente von dieser Apotheke.',
+            children: [
+              for (final m in data.medications)
+                _linkTile(
+                  context,
+                  icon: Icons.medication_outlined,
+                  title: m.name,
+                  subtitle: m.dosage,
+                  entityType: 'medication',
+                  id: m.id,
+                ),
+            ],
+          ),
         ];
       },
     );

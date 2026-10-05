@@ -7,6 +7,7 @@ import '../../data/repositories/appointment_repository.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/empty_state.dart';
 import '../check_in/check_in_sheet.dart';
+import '../medications/intake_widgets.dart';
 import 'add_appointment_sheet.dart';
 import 'appointment_detail_page.dart';
 
@@ -108,10 +109,25 @@ class _HomePageState extends State<HomePage> {
                             label: const Text('Termin hinzufügen'),
                           ),
                           const SizedBox(height: 8),
-                          OutlinedButton.icon(
-                            onPressed: () => showCheckInSheet(context),
-                            icon: const Icon(Icons.favorite_outline),
-                            label: const Text('Check-in'),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () => showCheckInSheet(context),
+                                  icon: const Icon(Icons.favorite_outline),
+                                  label: const Text('Check-in'),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () =>
+                                      showTodayMedicationsSheet(context),
+                                  icon: const Icon(Icons.medication_outlined),
+                                  label: const Text('Medikamente'),
+                                ),
+                              ),
+                            ],
                           ),
                           if (!empty) ...[
                             const SizedBox(height: 20),

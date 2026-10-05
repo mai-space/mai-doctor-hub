@@ -15,6 +15,25 @@ enum ObservationKind { scale_1_10, color, quantity, note }
 /// Status eines Termins.
 enum AppointmentStatus { planned, done, cancelled }
 
+/// Darreichungsform eines Medikaments.
+enum MedicationForm {
+  tablet,
+  capsule,
+  drops,
+  liquid,
+  spray,
+  inhaler,
+  ointment,
+  injection,
+  patch,
+  suppository,
+  powder,
+  other,
+}
+
+/// Einnahme erfasst als genommen oder ausgelassen.
+enum IntakeStatus { taken, skipped }
+
 /// Herkunft eines Berichts.
 enum ReportSource { pdf, scan, image }
 
@@ -146,6 +165,69 @@ class Medications extends Table {
   TextColumn get notes => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
 
+  // v7: vollwertiges Medikament.
+  /// Darreichungsform (Tablette, Tropfen …).
+  IntColumn get form => intEnum<MedicationForm>().nullable()();
+
+  /// Menge pro Einnahme, z. B. 1 (Stück) oder 20 (Tropfen).
+  RealColumn get doseAmount => real().nullable()();
+  TextColumn get doseUnit => text().nullable()();
+
+  /// Hinweise wie „nach dem Essen“.
+  TextColumn get instructions => text().nullable()();
+  TextColumn get prescriberId => text().nullable().references(Doctors, #id)();
+  TextColumn get pharmacyId => text().nullable().references(Pharmacies, #id)();
+  BoolColumn get remindersEnabled =>
+      boolean().withDefault(const Constant(true))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// v7: Apotheke (Bezug/Abholung von Medikamenten).
+class Pharmacies extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get address => text().nullable()();
+  TextColumn get phone => text().nullable()();
+  TextColumn get notes => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// v7: Einnahmezeit eines Medikaments ([weekdays] wie bei Erinnerungen).
+class MedicationSchedules extends Table {
+  TextColumn get id => text()();
+  TextColumn get medicationId => text().references(Medications, #id)();
+
+  /// Stabile Nummer für Benachrichtigungs-IDs.
+  IntColumn get slot => integer().unique()();
+  IntColumn get hour => integer()();
+  IntColumn get minute => integer()();
+  IntColumn get weekdays => integer().withDefault(const Constant(127))();
+
+  /// Abweichende Menge für diese Einnahme (sonst die des Medikaments).
+  RealColumn get doseAmount => real().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// v7: Einnahme-Protokoll.
+class MedicationIntakes extends Table {
+  TextColumn get id => text()();
+  TextColumn get medicationId => text().references(Medications, #id)();
+
+  /// Geplanter Einnahmezeitpunkt (null = außerplanmäßig).
+  DateTimeColumn get scheduledFor => dateTime().nullable()();
+  DateTimeColumn get recordedAt => dateTime()();
+  IntColumn get status => intEnum<IntakeStatus>()();
+  RealColumn get doseAmount => real().nullable()();
+  TextColumn get note => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -260,6 +342,9 @@ class CalendarLinks extends Table {
     Reminders,
     ReminderSymptoms,
     DoctorSymptoms,
+    Pharmacies,
+    MedicationSchedules,
+    MedicationIntakes,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -267,7 +352,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'mai_doctor_hub'));
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -301,6 +386,18 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 6) {
         await migrator.createTable(doctorSymptoms);
+      }
+      if (from < 7) {
+        await migrator.createTable(pharmacies);
+        await migrator.addColumn(medications, medications.form);
+        await migrator.addColumn(medications, medications.doseAmount);
+        await migrator.addColumn(medications, medications.doseUnit);
+        await migrator.addColumn(medications, medications.instructions);
+        await migrator.addColumn(medications, medications.prescriberId);
+        await migrator.addColumn(medications, medications.pharmacyId);
+        await migrator.addColumn(medications, medications.remindersEnabled);
+        await migrator.createTable(medicationSchedules);
+        await migrator.createTable(medicationIntakes);
       }
       if (from < 5) {
         await migrator.addColumn(

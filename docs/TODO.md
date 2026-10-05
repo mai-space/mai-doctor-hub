@@ -35,7 +35,7 @@ Status: ☐ offen · ◐ in Arbeit · ☑ erledigt
   Check-ins (Datum + Wert), z. B. seit dem letzten Termin.
 - Beim Arzt: alle ihm zugeordneten Symptome.
 
-## 5. ☐ Medikamente als vollwertige Entität
+## 5. ☑ Medikamente als vollwertige Entität
 - Neue Entität **Apotheke**; Medikament zugeordnet zu verschreibendem
   Arzt und Apotheke.
 - Darreichungsform (Tablette, Kapsel, Tropfen, Spray, Salbe, Injektion …),

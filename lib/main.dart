@@ -7,12 +7,14 @@ import 'data/database_provider.dart';
 import 'data/repositories/settings_repository.dart';
 import 'features/check_in/check_in_sheet.dart';
 import 'features/home/appointment_detail_page.dart';
+import 'features/medications/intake_widgets.dart';
 import 'features/onboarding/onboarding_page.dart';
 import 'services/app_lock.dart';
 import 'services/calendar/calendar_gateway.dart';
 import 'services/calendar/calendar_sync_service.dart';
 import 'services/notification_service.dart';
 import 'services/notifications/appointment_reminders.dart';
+import 'services/notifications/medication_reminders.dart';
 import 'services/notifications/reminder_service.dart';
 import 'services/time_change_observer.dart';
 import 'shell/app_shell.dart';
@@ -35,6 +37,10 @@ Future<void> main() async {
   // Erinnerungen sind eigene Einträge; Änderungen planen automatisch neu.
   final reminders = ReminderService(database, notifications)..start();
   final appointmentReminders = AppointmentReminderService(
+    database,
+    notifications,
+  )..start();
+  final medicationReminders = MedicationReminderService(
     database,
     notifications,
   )..start();
@@ -67,6 +73,7 @@ Future<void> main() async {
     if (await notifications.refreshTimeZone()) await reminders.sync();
     // Vergangene Vorlaufzeiten fallen weg, neue Tage kommen dazu.
     await appointmentReminders.sync();
+    await medicationReminders.sync();
     calendarSync?.trigger();
   }).attach();
 
@@ -85,6 +92,9 @@ void _openFromNotification(String? payload) {
   if (context == null) return;
   final symptomIds = CheckInPayload.decode(payload);
   if (symptomIds != null) showCheckInSheet(context, symptomIds: symptomIds);
+  if (MedicationPayload.decode(payload) case (final id, final at)?) {
+    showIntakeConfirmDialog(context, id, at);
+  }
   final appointmentId = AppointmentPayload.decode(payload);
   if (appointmentId != null) {
     Navigator.of(context).push(

@@ -82,6 +82,9 @@ void main() {
     final active = records.listMedications(activeOnly: true);
     expect(active.single['name'], 'Nasenspray');
     expect(active.single['diagnosis'], 'Sinusitis');
+    expect(active.single['form'], 'Spray');
+    expect(active.single['dose'], '1.0 Sprühstoß');
+    expect(active.single['prescriber'], 'Dr. Weiß');
   });
 
   test('diagnosis hub by title keeps own notes and linked notes', () {

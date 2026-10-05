@@ -299,12 +299,31 @@ class MaiRecords {
     };
   }
 
+  static const _forms = [
+    'Tablette',
+    'Kapsel',
+    'Tropfen',
+    'Saft/Lösung',
+    'Spray',
+    'Inhalator',
+    'Salbe/Creme',
+    'Spritze',
+    'Pflaster',
+    'Zäpfchen',
+    'Pulver/Granulat',
+    'Sonstiges',
+  ];
+
   List<Map<String, Object?>> listMedications({bool activeOnly = false}) {
     final now = _seconds(DateTime.now());
     final rows = _db.select(
       '''
-      SELECT m.*, g.title AS diagnosis FROM medications m
+      SELECT m.*, g.title AS diagnosis, d.name AS prescriber,
+             p.name AS pharmacy
+      FROM medications m
       LEFT JOIN diagnoses g ON g.id = m.diagnosis_id
+      LEFT JOIN doctors d ON d.id = m.prescriber_id
+      LEFT JOIN pharmacies p ON p.id = m.pharmacy_id
       ${activeOnly ? 'WHERE m.ended_at IS NULL OR m.ended_at >= ?' : ''}
       ORDER BY m.name
       ''',
@@ -315,11 +334,18 @@ class MaiRecords {
         {
           'id': m['id'],
           'name': m['name'],
-          'dosage': m['dosage'],
+          'strength': m['dosage'],
+          'form': m['form'] == null ? null : _forms[m['form'] as int],
+          'dose': m['dose_amount'] == null
+              ? null
+              : '${m['dose_amount']} ${m['dose_unit'] ?? ''}'.trim(),
+          'instructions': m['instructions'],
           'schedule': m['schedule_text'],
           'since': _iso(m['started_at']),
           'until': _iso(m['ended_at']),
           'diagnosis': m['diagnosis'],
+          'prescriber': m['prescriber'],
+          'pharmacy': m['pharmacy'],
           'notes': m['notes'],
         },
     ];
@@ -409,9 +435,14 @@ class MaiRecords {
         ))
           {'id': s['id'], 'label': s['label']},
       ],
-      'current_medications': listMedications(activeOnly: true)
-          .map((m) => '${m['name']}${m['dosage'] == null ? '' : ' ${m['dosage']}'}')
-          .toList(),
+      'current_medications': [
+        for (final m in listMedications(activeOnly: true))
+          [
+            m['name'],
+            m['strength'],
+            if (m['schedule'] != null) '(${m['schedule']})',
+          ].whereType<String>().join(' '),
+      ],
       'next_appointments': [
         for (final r in _db.select(
           '''

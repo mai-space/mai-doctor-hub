@@ -7,6 +7,7 @@ import '../../data/repositories/records_repository.dart';
 import '../../theme/app_theme.dart';
 import '../home/add_appointment_sheet.dart';
 import 'detail_pages.dart';
+import '../medications/pharmacy_form.dart';
 import 'entity_forms.dart';
 
 enum RecordEntityFilter {
@@ -17,6 +18,7 @@ enum RecordEntityFilter {
   appointments,
   reports,
   medications,
+  pharmacies,
   notes,
 }
 
@@ -49,6 +51,7 @@ class _RecordsPageState extends State<RecordsPage> {
     RecordEntityFilter.appointments => 'appointment',
     RecordEntityFilter.reports => 'report',
     RecordEntityFilter.medications => 'medication',
+    RecordEntityFilter.pharmacies => 'pharmacy',
     RecordEntityFilter.notes => 'note',
   };
 
@@ -68,6 +71,7 @@ class _RecordsPageState extends State<RecordsPage> {
         db.reports,
         db.medications,
         db.notes,
+        db.pharmacies,
       },
       () async {
         final rows = await repo.search(query, entityType: type);
@@ -126,6 +130,8 @@ class _RecordsPageState extends State<RecordsPage> {
         await importReport(context);
       case RecordEntityFilter.medications:
         await showCreateMedicationDialog(context);
+      case RecordEntityFilter.pharmacies:
+        await showPharmacyForm(context);
       case RecordEntityFilter.notes:
         await showCreateNoteDialog(context);
       case RecordEntityFilter.all:
@@ -345,6 +351,7 @@ IconData _iconFor(String type) => switch (type) {
   'appointment' => Icons.event_outlined,
   'report' => Icons.description_outlined,
   'medication' => Icons.medication_outlined,
+  'pharmacy' => Icons.local_pharmacy_outlined,
   'note' => Icons.sticky_note_2_outlined,
   _ => Icons.folder_outlined,
 };
@@ -356,6 +363,7 @@ String _typeLabel(String type) => switch (type) {
   'appointment' => 'Termin',
   'report' => 'Bericht',
   'medication' => 'Medikament',
+  'pharmacy' => 'Apotheke',
   'note' => 'Notiz',
   _ => type,
 };
@@ -368,5 +376,6 @@ const _filterLabels = <RecordEntityFilter, String>{
   RecordEntityFilter.appointments: 'Termine',
   RecordEntityFilter.reports: 'Berichte',
   RecordEntityFilter.medications: 'Medikamente',
+  RecordEntityFilter.pharmacies: 'Apotheken',
   RecordEntityFilter.notes: 'Notizen',
 };

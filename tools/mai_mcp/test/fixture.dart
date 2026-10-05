@@ -2,13 +2,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:mai_backup_format/mai_backup_format.dart';
+import 'package:mai_mcp/mai_mcp.dart' show supportedSchemaVersion;
 import 'package:sqlite3/sqlite3.dart';
 
 int s(DateTime dt) => dt.millisecondsSinceEpoch ~/ 1000;
 
 /// Legt eine Akte mit dem aktuellen App-Schema an (siehe schema_contract_test
 /// in der App) und füllt sie mit Beispieldaten.
-String buildFixtureDb(Directory dir, {int userVersion = 2}) {
+String buildFixtureDb(Directory dir, {int userVersion = supportedSchemaVersion}) {
   final path = '${dir.path}/akte.sqlite';
   final db = sqlite3.open(path);
   final schema = File('test/fixtures/schema.sql').readAsStringSync();
@@ -58,8 +59,11 @@ String buildFixtureDb(Directory dir, {int userVersion = 2}) {
     )
     ..execute(
       'INSERT INTO medications (id, name, dosage, diagnosis_id, ended_at, '
-      "created_at) VALUES ('med1', 'Nasenspray', '2x täglich', 'dia1', NULL, 0),"
-      " ('med2', 'Antibiotikum', '1-0-1', NULL, ${s(past)}, 0)",
+      'created_at, form, dose_amount, dose_unit, prescriber_id) VALUES '
+      "('med1', 'Nasenspray', '2x täglich', 'dia1', NULL, 0, 4, 1, "
+      "'Sprühstoß', 'doc1'),"
+      " ('med2', 'Antibiotikum', '1-0-1', NULL, ${s(past)}, 0, NULL, NULL, "
+      'NULL, NULL)',
     )
     ..execute(
       'INSERT INTO notes (id, body, related_diagnosis_id, created_at, '

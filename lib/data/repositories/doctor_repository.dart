@@ -100,6 +100,8 @@ class DoctorRepository {
     await (_db.delete(
       _db.doctorSymptoms,
     )..where((t) => t.doctorId.equals(id))).go();
+    await (_db.update(_db.medications)..where((t) => t.prescriberId.equals(id)))
+        .write(const MedicationsCompanion(prescriberId: Value(null)));
     await (_db.delete(_db.doctors)..where((t) => t.id.equals(id))).go();
     await _db.deleteFts('doctor', id);
     return true;

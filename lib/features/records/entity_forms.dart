@@ -9,6 +9,7 @@ import '../../data/repositories/suggestion_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
 import '../../services/report_import_service.dart';
 import '../../widgets/suggestion_text_field.dart';
+import '../medications/medication_form_page.dart';
 
 String? _trimOrNull(TextEditingController c) {
   final value = c.text.trim();
@@ -353,73 +354,7 @@ Future<String?> showSymptomForm(BuildContext context, {Symptom? symptom}) async 
 Future<String?> showMedicationForm(
   BuildContext context, {
   Medication? medication,
-}) async {
-  final name = TextEditingController(text: medication?.name);
-  final dosage = TextEditingController(text: medication?.dosage);
-  final schedule = TextEditingController(text: medication?.scheduleText);
-  final notes = TextEditingController(text: medication?.notes);
-  var diagnosisId = medication?.diagnosisId;
-  var startedAt = medication?.startedAt;
-  var endedAt = medication?.endedAt;
-  final repo = RecordsRepository(DatabaseScope.of(context));
-
-  final ok = await _showFormDialog(
-    context,
-    title: medication == null ? 'Medikament anlegen' : 'Medikament bearbeiten',
-    fields: (setState) => [
-      SuggestionTextField(
-        controller: name,
-        field: SuggestionField.medicationName,
-        decoration: const InputDecoration(labelText: 'Name'),
-        autofocus: medication == null,
-      ),
-      SuggestionTextField(
-        controller: dosage,
-        field: SuggestionField.dosage,
-        decoration: const InputDecoration(labelText: 'Dosierung'),
-      ),
-      SuggestionTextField(
-        controller: schedule,
-        field: SuggestionField.medicationSchedule,
-        decoration: const InputDecoration(labelText: 'Einnahmeplan'),
-      ),
-      DiagnosisPicker(
-        value: diagnosisId,
-        onChanged: (v) => setState(() => diagnosisId = v),
-      ),
-      DateField(
-        label: 'Start',
-        value: startedAt,
-        onChanged: (v) => setState(() => startedAt = v),
-      ),
-      DateField(
-        label: 'Ende',
-        value: endedAt,
-        onChanged: (v) => setState(() => endedAt = v),
-      ),
-      TextField(
-        controller: notes,
-        maxLines: 2,
-        decoration: const InputDecoration(labelText: 'Notizen'),
-      ),
-    ],
-  );
-  if (!ok || name.text.trim().isEmpty) return null;
-  final id =
-      medication?.id ??
-      await repo.createMedication(name: name.text.trim());
-  await repo.updateMedication(
-    id: id,
-    name: name.text.trim(),
-    dosage: _trimOrNull(dosage),
-    scheduleText: _trimOrNull(schedule),
-    diagnosisId: diagnosisId,
-    startedAt: startedAt,
-    endedAt: endedAt,
-    notes: _trimOrNull(notes),
-  );
-  return id;
-}
+}) => showMedicationFormPage(context, medicationId: medication?.id);
 
 Future<String?> showNoteForm(
   BuildContext context, {

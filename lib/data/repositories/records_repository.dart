@@ -69,6 +69,7 @@ class RecordsRepository {
             _db.reports,
             _db.medications,
             _db.notes,
+            _db.pharmacies,
           },
         )
         .watch()
@@ -205,6 +206,21 @@ class RecordsRepository {
             ].join(' · '),
             sortDate: m.startedAt ?? m.createdAt,
             updatedAt: m.createdAt,
+          ),
+        );
+      }
+    }
+    if (entityType == null || entityType == 'pharmacy') {
+      final pharmacies = await _db.select(_db.pharmacies).get();
+      for (final p in pharmacies) {
+        items.add(
+          RecordListItem(
+            entityType: 'pharmacy',
+            entityId: p.id,
+            title: p.name,
+            subtitle: ['Apotheke', ?p.address].join(' · '),
+            sortDate: p.createdAt,
+            updatedAt: p.updatedAt,
           ),
         );
       }
@@ -453,10 +469,16 @@ class RecordsRepository {
     );
   }
 
-  Future<void> deleteMedication(String id) async {
+  Future<void> deleteMedication(String id) => _db.transaction(() async {
+    await (_db.delete(
+      _db.medicationSchedules,
+    )..where((t) => t.medicationId.equals(id))).go();
+    await (_db.delete(
+      _db.medicationIntakes,
+    )..where((t) => t.medicationId.equals(id))).go();
     await (_db.delete(_db.medications)..where((t) => t.id.equals(id))).go();
     await _db.deleteFts('medication', id);
-  }
+  });
 
   // --- Notizen -----------------------------------------------------------
 
