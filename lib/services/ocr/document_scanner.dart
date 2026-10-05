@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
+import 'package:flutter/services.dart';
 
 /// Ergebnis eines Kamera-Scans: PDF + Seitenbilder (für die Texterkennung).
 class ScannedDocument {
@@ -9,50 +9,51 @@ class ScannedDocument {
   final List<String> imagePaths;
 }
 
+/// Der Scanner konnte nicht starten (z. B. Google-Play-Dienste fehlen oder
+/// das Scanner-Modul wird noch geladen).
+class ScannerUnavailable implements Exception {
+  const ScannerUnavailable(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 abstract interface class DocumentScannerApi {
-  /// Standard: ML Kit; Tests setzen eine Attrappe.
+  /// Standard: ML Kit über den nativen Kanal; Tests setzen eine Attrappe.
   static DocumentScannerApi current = MlKitDocumentScanner();
 
   bool get isSupported;
 
-  /// `null`, wenn abgebrochen.
+  /// `null`, wenn abgebrochen; [ScannerUnavailable], wenn er nicht startet.
   Future<ScannedDocument?> scan();
 }
 
 /// Google ML Kit Dokumentenscanner (Android): Kantenerkennung, Zuschnitt,
 /// Filter — läuft auf dem Gerät, ohne Kamera-Berechtigung der App.
 class MlKitDocumentScanner implements DocumentScannerApi {
+  static const _channel = MethodChannel('mai/document_scanner');
+
   @override
   bool get isSupported =>
       !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
 
   @override
   Future<ScannedDocument?> scan() async {
-    final scanner = DocumentScanner(
-      options: DocumentScannerOptions(
-        documentFormats: {DocumentFormat.pdf, DocumentFormat.jpeg},
-        mode: ScannerMode.full,
-        pageLimit: 20,
-        isGalleryImport: true,
-      ),
-    );
+    final Map<Object?, Object?>? result;
     try {
-      final result = await scanner.scanDocument();
-      final pdf = result.pdf;
-      if (pdf == null) return null;
-      return ScannedDocument(
-        pdfPath: _path(pdf.uri),
-        imagePaths: [for (final uri in result.images ?? const <String>[]) _path(uri)],
-      );
-    } on Exception catch (e) {
-      // Abbruch durch den Nutzer kommt als Fehler zurück.
-      debugPrint('Scan abgebrochen/fehlgeschlagen: $e');
-      return null;
-    } finally {
-      await scanner.close();
+      result = await _channel.invokeMapMethod<Object?, Object?>('scan');
+    } on PlatformException catch (e) {
+      throw ScannerUnavailable(e.message ?? e.code);
     }
+    if (result == null) return null;
+    return ScannedDocument(
+      pdfPath: result['pdf']! as String,
+      imagePaths: [
+        for (final path in result['images'] as List<Object?>? ?? const [])
+          path! as String,
+      ],
+    );
   }
-
-  static String _path(String uri) =>
-      uri.startsWith('file:') ? Uri.parse(uri).toFilePath() : uri;
 }

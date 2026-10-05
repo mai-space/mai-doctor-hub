@@ -10,6 +10,9 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterFragmentActivity() {
     private var calendar: CalendarChannel? = null
 
+    // Registriert einen Activity-Result-Launcher: muss beim Erzeugen passieren.
+    private val documentScanner = DocumentScannerChannel(this)
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         // IANA-Zeitzone des Geräts (z. B. „Europe/Berlin“) — Dart kennt nur
@@ -23,6 +26,8 @@ class MainActivity : FlutterFragmentActivity() {
             }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, DatabaseKeyChannel.NAME)
             .setMethodCallHandler(DatabaseKeyChannel(applicationContext))
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, DocumentScannerChannel.NAME)
+            .setMethodCallHandler(documentScanner)
         calendar = CalendarChannel(this).also {
             MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CalendarChannel.NAME)
                 .setMethodCallHandler(it)

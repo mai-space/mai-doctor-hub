@@ -515,8 +515,37 @@ Future<ImportedReport?> scanReport(
 }) async {
   final records = RecordsRepository(DatabaseScope.of(context));
   final messenger = ScaffoldMessenger.of(context);
-  final scan = await DocumentScannerApi.current.scan();
-  if (scan == null) return null;
+  final ScannedDocument? result;
+  try {
+    result = await DocumentScannerApi.current.scan();
+  } on ScannerUnavailable catch (e) {
+    if (!context.mounted) return null;
+    final pickFile = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Scanner startet nicht'),
+        content: Text(
+          'Der Dokumentenscanner braucht die Google-Play-Dienste; beim ersten '
+          'Mal lädt er sich ggf. erst herunter. Bitte gleich noch einmal '
+          'versuchen oder ein Foto/PDF als Datei wählen.\n\nDetails: $e',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Datei wählen'),
+          ),
+        ],
+      ),
+    );
+    if (pickFile != true || !context.mounted) return null;
+    return pickReportFile(context, appointmentId: appointmentId);
+  }
+  if (result == null) return null;
+  final scan = result;
   messenger.showSnackBar(
     const SnackBar(content: Text('Scan wird gespeichert, Text wird erkannt…')),
   );

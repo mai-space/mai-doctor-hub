@@ -49,6 +49,15 @@ class FakeScanner implements DocumentScannerApi {
   Future<ScannedDocument?> scan() async => result;
 }
 
+class _UnavailableScanner implements DocumentScannerApi {
+  @override
+  bool get isSupported => true;
+
+  @override
+  Future<ScannedDocument?> scan() =>
+      throw const ScannerUnavailable('Waiting for module download');
+}
+
 Uint8List pngBytes() => img.encodePng(img.Image(width: 40, height: 30));
 
 void main() {
@@ -194,6 +203,38 @@ void main() {
     TextRecognizerApi.current = MlKitTextRecognizer();
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(seconds: 5));
+  });
+
+  testWidgets('scanner failure is explained with a file fallback', (
+    tester,
+  ) async {
+    DocumentScannerApi.current = _UnavailableScanner();
+    addTearDown(() => DocumentScannerApi.current = MlKitDocumentScanner());
+    await tester.pumpWidget(
+      DatabaseScope(
+        database: db,
+        child: MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => importReport(context),
+                child: const Text('add'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('add'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Dokument scannen'));
+    await tester.pumpAndSettle();
+    expect(find.text('Scanner startet nicht'), findsOneWidget);
+    expect(find.textContaining('Waiting for module download'), findsOneWidget);
+    expect(find.text('Datei wählen'), findsOneWidget);
+    await tester.tap(find.text('Abbrechen'));
+    await tester.pumpAndSettle();
+    expect(find.text('Scanner startet nicht'), findsNothing);
   });
 }
 

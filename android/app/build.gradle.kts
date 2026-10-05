@@ -74,4 +74,6 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     // AppCompat-Themes (local_auth: Absturzschutz auf alten Android-Versionen).
     implementation("androidx.appcompat:appcompat:1.7.1")
+    // Dokumentenscanner (eigener Kanal, siehe DocumentScannerChannel.kt).
+    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
 }
