@@ -7,7 +7,7 @@ Lokale Patientenakte (Iteration 1) — **Privacy first**. Alle Daten bleiben auf
 - Flutter (Android + Web)
 - Drift / SQLite (+ FTS5 für lokale Suche)
 - Lokale Check-in-Notifications (`flutter_local_notifications`)
-- Berichte: Dateiauswahl + optionale PDF-Text-Extraktion (`pdf_text`, Android)
+- Berichte: Dateiauswahl, lokale Ablage unter `Documents/reports/` (PDF-Text-Extraktion derzeit Stub, siehe `docs/ROADMAP.md`)
 
 ## Voraussetzungen
 
@@ -25,7 +25,9 @@ flutter pub get
 - **Kalender:** Monat default, Toggle Tag/Woche/Jahr, Termin-Marker, Tagesliste
 - **Meine Akte:** Entity-Filter, Sortierung, FTS (inkl. PDF-Text), CRUD für Ärzte/Diagnosen/Symptome/Medikamente/Notizen/Berichte/Termine
 - **Einstellungen:** Morgen-/Abend-Erinnerungen, Privacy-Hinweis
-- **Berichte:** lokal speichern, PDF-Text best-effort → FTS
+- **Berichte:** lokal speichern (Titel in FTS; PDF-Volltext folgt in I2)
+
+Review, Roadmap, Kalender-Sync- und MCP-Konzept: [`docs/ROADMAP.md`](docs/ROADMAP.md)
 
 ## Entwicklung
 

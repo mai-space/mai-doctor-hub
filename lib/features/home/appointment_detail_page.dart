@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/records_repository.dart';
-import '../../services/report_import_service.dart';
 import '../../theme/app_theme.dart';
+import '../records/entity_forms.dart';
 
 class AppointmentDetailPage extends StatefulWidget {
   const AppointmentDetailPage({super.key, required this.appointmentId});
@@ -155,18 +155,11 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
               const SizedBox(height: 16),
               FilledButton.icon(
                 onPressed: () async {
-                  final imported = await ReportImportService(
-                    records,
-                  ).pickAndImport(appointmentId: a.id);
-                  if (!context.mounted) return;
-                  if (imported != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Bericht „${imported.title}“ gespeichert'),
-                      ),
-                    );
-                    await _reload();
-                  }
+                  final imported = await importReport(
+                    context,
+                    appointmentId: a.id,
+                  );
+                  if (imported != null) await _reload();
                 },
                 icon: const Icon(Icons.attach_file),
                 label: const Text('Bericht hinzufügen'),

@@ -207,11 +207,26 @@ Future<void> showCreateNoteDialog(BuildContext context) async {
   ).createNote(body: body.text.trim());
 }
 
-Future<void> importReport(BuildContext context) async {
+/// Wählt eine Datei und legt sie als Bericht ab; Fehler landen als Snackbar.
+Future<ImportedReport?> importReport(
+  BuildContext context, {
+  String? appointmentId,
+}) async {
   final records = RecordsRepository(DatabaseScope.of(context));
-  final imported = await ReportImportService(records).pickAndImport();
-  if (!context.mounted || imported == null) return;
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('Bericht „${imported.title}“ gespeichert')),
-  );
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    final imported = await ReportImportService(
+      records,
+    ).pickAndImport(appointmentId: appointmentId);
+    if (imported != null) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('Bericht „${imported.title}“ gespeichert')),
+      );
+    }
+    return imported;
+  } on ReportImportException catch (e) {
+    debugPrint('$e');
+    messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    return null;
+  }
 }
