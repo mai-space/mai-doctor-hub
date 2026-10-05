@@ -36,4 +36,24 @@ class SettingsRepository {
       ),
     );
   }
+
+  Future<void> setAppLock(bool enabled) {
+    return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
+      AppSettingsCompanion(appLockEnabled: Value(enabled)),
+    );
+  }
+
+  Future<void> updateCalendarExport({
+    required bool enabled,
+    String? calendarId,
+    required bool includeTitle,
+  }) {
+    return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
+      AppSettingsCompanion(
+        calendarSyncEnabled: Value(enabled),
+        calendarId: Value(calendarId),
+        calendarIncludeTitle: Value(includeTitle),
+      ),
+    );
+  }
 }
