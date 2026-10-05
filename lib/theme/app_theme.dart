@@ -49,7 +49,7 @@ abstract final class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size.fromHeight(48),
+          minimumSize: const Size(64, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -57,7 +57,7 @@ abstract final class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          minimumSize: const Size.fromHeight(48),
+          minimumSize: const Size(64, 48),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
