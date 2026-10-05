@@ -19,8 +19,8 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    // Flutter 3.47 Template-Stack. Legacy-Plugins mit jcenter() (pdf_text,
-    // flutter_local_notifications 8.x) wurden aus pubspec entfernt — unbenutzt auf main.
+    // Flutter 3.47 + AGP 9. Kein jcenter(). Notifications: flutter_local_notifications 22.x.
+    // PDF-Text: best-effort Stub (kein Legacy pdf_text).
     id("com.android.application") version "9.1.0" apply false
     id("org.jetbrains.kotlin.android") version "2.2.20" apply false
 }

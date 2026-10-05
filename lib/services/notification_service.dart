@@ -32,15 +32,21 @@ class NotificationService {
     }
 
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const ios = IOSInitializationSettings();
-    const settings = InitializationSettings(android: android, iOS: ios);
+    const darwin = DarwinInitializationSettings();
+    const settings = InitializationSettings(android: android, iOS: darwin);
 
     await _plugin.initialize(
-      settings,
-      onSelectNotification: (payload) async {
-        onNotificationTap?.call(payload);
+      settings: settings,
+      onDidReceiveNotificationResponse: (response) {
+        onNotificationTap?.call(response.payload);
       },
     );
+
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    await androidPlugin?.requestNotificationsPermission();
 
     final iosPlugin = _plugin
         .resolvePlatformSpecificImplementation<
@@ -54,8 +60,8 @@ class NotificationService {
   Future<void> syncFromSettings(AppSetting settings) async {
     if (kIsWeb) return;
     await initialize();
-    await _plugin.cancel(_morningId);
-    await _plugin.cancel(_eveningId);
+    await _plugin.cancel(id: _morningId);
+    await _plugin.cancel(id: _eveningId);
 
     if (settings.morningReminderEnabled) {
       await _scheduleDaily(
@@ -88,22 +94,20 @@ class NotificationService {
       android: AndroidNotificationDetails(
         'check_in',
         'Symptom-Check-in',
-        'Lokale Erinnerungen für Symptom-Check-ins',
+        channelDescription: 'Lokale Erinnerungen für Symptom-Check-ins',
         importance: Importance.defaultImportance,
         priority: Priority.defaultPriority,
       ),
-      iOS: IOSNotificationDetails(),
+      iOS: DarwinNotificationDetails(),
     );
 
     await _plugin.zonedSchedule(
-      id,
-      title,
-      body,
-      _nextInstanceOf(hour, minute),
-      details,
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      id: id,
+      title: title,
+      body: body,
+      scheduledDate: _nextInstanceOf(hour, minute),
+      notificationDetails: details,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: checkInPayload,
     );
