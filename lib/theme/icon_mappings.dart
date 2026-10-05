@@ -15,14 +15,14 @@ abstract final class IconMappings {
 
   static const Map<String, IconData> _specialtyMap = {
     // Primary care
-    'Allgemeinmedizin (Hausarzt)': Icons.home_health_outlined,
-    'Innere Medizin (hausärztlich)': Icons.home_health_outlined,
+    'Allgemeinmedizin (Hausarzt)': Icons.medical_services_outlined,
+    'Innere Medizin (hausärztlich)': Icons.medical_services_outlined,
     'Kinder- und Jugendmedizin': Icons.accessibility,
 
     // Internal medicine specialties
     'Innere Medizin': Icons.medical_services_outlined,
     'Kardiologie': Icons.favorite_outlined,
-    'Gastroenterologie': Icons.fastfood_outlined,
+    'Gastroenterologie': Icons.restaurant_outlined,
     'Pneumologie (Lungenheilkunde)': Icons.air_outlined,
     'Nephrologie (Nierenheilkunde)': Icons.water_drop_outlined,
     'Endokrinologie und Diabetologie': Icons.biotech_outlined,
@@ -69,7 +69,7 @@ abstract final class IconMappings {
     'Radiologie': Icons.image_search_outlined,
     'Nuklearmedizin': Icons.science_outlined,
     'Laboratoriumsmedizin': Icons.science_outlined,
-    'Pathologie': Icons.lab_research_outlined,
+    'Pathologie': Icons.science_outlined,
     'Humangenetik': Icons.dna_outlined,
 
     // Other specialties
@@ -130,9 +130,9 @@ abstract final class IconMappings {
     'Brustwirbelsäule': Icons.psychology_outlined,
     'Rücken': Icons.psychology_outlined,
     'Lendenwirbelsäule': Icons.psychology_outlined,
-    'Bauch': Icons.fastfood_outlined,
-    'Oberbauch': Icons.fastfood_outlined,
-    'Unterbauch': Icons.fastfood_outlined,
+    'Bauch': Icons.restaurant_outlined,
+    'Oberbauch': Icons.restaurant_outlined,
+    'Unterbauch': Icons.restaurant_outlined,
     'Leiste': Icons.pan_tool_outlined,
     'Becken': Icons.accessibility,
     'Hüfte': Icons.accessibility,
