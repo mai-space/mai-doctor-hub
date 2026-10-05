@@ -143,6 +143,13 @@ void main() {
       ),
     );
     await tester.tap(find.text('open'));
+    // Das Formular lädt vorab Ärzte aus der DB (echte Async-Arbeit).
+    for (var i = 0; i < 5; i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 10)),
+      );
+      await tester.pump(const Duration(milliseconds: 50));
+    }
     await tester.pumpAndSettle();
 
     final region = find.widgetWithText(TextField, 'Körperregion');
