@@ -43,7 +43,6 @@ dependencies:
   intl: ^0.20.3
   flutter_local_notifications: ^8.2.0
   file_picker: ^13.1.0
-  pdf_text: ^0.5.0
 
 dev_dependencies:
   flutter_test:
