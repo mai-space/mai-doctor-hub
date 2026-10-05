@@ -28,10 +28,10 @@ abstract final class IconMappings {
     'Endokrinologie und Diabetologie': Icons.biotech_outlined,
     'Diabetologie': Icons.bloodtype_outlined,
     'Hämatologie und Onkologie': Icons.science_outlined,
-    'Rheumatologie': Icons.rheumatology_outlined,
+    'Rheumatologie': Icons.healing_outlined,
     'Angiologie (Gefäßmedizin)': Icons.favorite_outlined,
     'Infektiologie': Icons.virus_outlined,
-    'Geriatrie': Icons.elderly,
+    'Geriatrie': Icons.accessibility,
 
     // Surgical specialties
     'Allgemeinchirurgie': Icons.healing_outlined,
@@ -42,10 +42,10 @@ abstract final class IconMappings {
     'Kinderchirurgie': Icons.child_care,
     'Plastische und Ästhetische Chirurgie': Icons.face_retouching_natural,
     'Handchirurgie': Icons.pan_tool_outlined,
-    'Neurochirurgie': Icons.neurology_outlined,
-    'Orthopädie und Unfallchirurgie': Icons.sports_medicine_outlined,
-    'Orthopädie': Icons.sports_medicine_outlined,
-    'Unfallchirurgie': Icons.crisis_alert_outlined,
+    'Neurochirurgie': Icons.psychology_outlined,
+    'Orthopädie und Unfallchirurgie': Icons.healing_outlined,
+    'Orthopädie': Icons.healing_outlined,
+    'Unfallchirurgie': Icons.healing_outlined,
     'Mund-Kiefer-Gesichtschirurgie': Icons.dentistry_outlined,
     'Urologie': Icons.wc_outlined,
     'Frauenheilkunde und Geburtshilfe (Gynäkologie)': Icons.pregnant_woman,
@@ -67,7 +67,7 @@ abstract final class IconMappings {
 
     // Diagnostics
     'Radiologie': Icons.image_search_outlined,
-    'Nuklearmedizin': Icons.nuclear_mobiledata,
+    'Nuklearmedizin': Icons.science_outlined,
     'Laboratoriumsmedizin': Icons.science_outlined,
     'Pathologie': Icons.lab_research_outlined,
     'Humangenetik': Icons.dna_outlined,
@@ -75,14 +75,14 @@ abstract final class IconMappings {
     // Other specialties
     'Anästhesiologie': Icons.medical_services_outlined,
     'Schmerzmedizin': Icons.health_and_safety_outlined,
-    'Physikalische und Rehabilitative Medizin': Icons.sports_medicine_outlined,
-    'Sportmedizin': Icons.sports_medicine_outlined,
+    'Physikalische und Rehabilitative Medizin': Icons.healing_outlined,
+    'Sportmedizin': Icons.healing_outlined,
     'Arbeitsmedizin': Icons.construction_outlined,
     'Palliativmedizin': Icons.medical_services_outlined,
-    'Schlafmedizin': Icons.bedtime_outlined,
-    'Strahlentherapie': Icons.radiation_outlined,
+    'Schlafmedizin': Icons.medical_services_outlined,
+    'Strahlentherapie': Icons.medical_services_outlined,
     'Transfusionsmedizin': Icons.bloodtype_outlined,
-    'Notfallmedizin': Icons.emergency_outlined,
+    'Notfallmedizin': Icons.healing_outlined,
     'Naturheilverfahren': Icons.eco_outlined,
     'Homöopathie': Icons.eco_outlined,
 
@@ -93,14 +93,14 @@ abstract final class IconMappings {
     'Parodontologie': Icons.dentistry_outlined,
 
     // Health professions
-    'Physiotherapie': Icons.sports_medicine_outlined,
-    'Ergotherapie': Icons.sports_medicine_outlined,
+    'Physiotherapie': Icons.healing_outlined,
+    'Ergotherapie': Icons.healing_outlined,
     'Logopädie': Icons.hearing_outlined,
-    'Osteopathie': Icons.sports_medicine_outlined,
+    'Osteopathie': Icons.healing_outlined,
     'Heilpraktiker': Icons.eco_outlined,
     'Hebamme': Icons.pregnant_woman,
     'Ernährungsberatung': Icons.restaurant_outlined,
-    'Podologie': Icons.pedicab_outlined,
+    'Podologie': Icons.accessibility,
   };
 
   static const Map<String, IconData> _bodyRegionMap = {
