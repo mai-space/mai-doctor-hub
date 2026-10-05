@@ -68,10 +68,37 @@ jobs:
       - name: Pub get
         run: flutter pub get
 
+      - name: Flutter doctor
+        run: flutter doctor -v
+
       - name: Build release APK
-        run: flutter build apk --release
+        run: |
+          set -o pipefail
+          if ! flutter build apk --release 2>&1 | tee apk-build.log; then
+            {
+              echo "## APK build failed"
+              echo
+              echo '```text'
+              tail -n 250 apk-build.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+        env:
+          # Runner-RAM schonen; Daemon in CI ausschalten
+          GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+      - name: Upload APK build log (failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-build-log
+          path: apk-build.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Upload APK artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
