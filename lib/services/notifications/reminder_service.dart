@@ -1,10 +1,7 @@
-import 'dart:async';
-
-import 'package:flutter/foundation.dart';
-
 import '../../data/app_database.dart';
 import '../../data/repositories/reminder_repository.dart';
 import 'notification_plan.dart';
+import 'plan_sync.dart';
 
 /// Payload für Check-in-Benachrichtigungen; optional mit Symptom-IDs.
 abstract final class CheckInPayload {
@@ -76,35 +73,13 @@ abstract final class ReminderPlanner {
 }
 
 /// Hält die geplanten Check-in-Benachrichtigungen synchron mit der DB.
-class ReminderService {
-  ReminderService(this._db, this._scheduler);
-
-  final AppDatabase _db;
-  final NotificationScheduler _scheduler;
-  StreamSubscription<void>? _subscription;
-
-  Future<void> sync() async {
-    final reminders = await ReminderRepository(_db).all();
-    await _scheduler.replace(
-      NotificationGroup.reminders,
-      ReminderPlanner.plan(reminders),
-    );
-  }
-
-  /// Plant bei jeder Änderung an Erinnerungen/Symptomen neu.
-  void start() {
-    _subscription ??= _db
-        .customSelect(
-          'SELECT 1',
-          readsFrom: {_db.reminders, _db.reminderSymptoms, _db.symptoms},
-        )
-        .watch()
-        .listen((_) {
-          sync().catchError((Object e) {
-            debugPrint('Erinnerungen planen fehlgeschlagen: $e');
-          });
-        });
-  }
-
-  Future<void> dispose() async => _subscription?.cancel();
+class ReminderService extends PlanSync {
+  ReminderService(AppDatabase db, NotificationScheduler scheduler)
+    : super(
+        db: db,
+        scheduler: scheduler,
+        group: NotificationGroup.reminders,
+        tables: {db.reminders, db.reminderSymptoms, db.symptoms},
+        plan: () async => ReminderPlanner.plan(await ReminderRepository(db).all()),
+      );
 }

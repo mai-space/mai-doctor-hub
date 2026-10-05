@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
+import 'appointment_reminders_tile.dart';
 import 'backup_section.dart';
 import 'calendar_section.dart';
 import 'reminders_section.dart';
@@ -58,6 +59,8 @@ class SettingsPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               const RemindersSection(),
+              const SizedBox(height: 8),
+              AppointmentRemindersTile(settings: settings),
               const SizedBox(height: 24),
               CalendarSection(settings: settings),
               const SizedBox(height: 24),

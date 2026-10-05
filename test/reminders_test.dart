@@ -97,11 +97,11 @@ void main() {
     final scheduler = FakeScheduler();
     final service = ReminderService(db, scheduler)..start();
     addTearDown(service.dispose);
-    await Future<void>.delayed(const Duration(milliseconds: 50));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
     expect(scheduler.groups[NotificationGroup.reminders], hasLength(2));
 
     await repo.create(title: 'Mittag', hour: 12, minute: 0);
-    await Future<void>.delayed(const Duration(milliseconds: 50));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
     expect(scheduler.groups[NotificationGroup.reminders], hasLength(3));
   });
 

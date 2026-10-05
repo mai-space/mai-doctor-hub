@@ -5049,6 +5049,33 @@ class $AppSettingsTable extends AppSettings
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _appointmentRemindersEnabledMeta =
+      const VerificationMeta('appointmentRemindersEnabled');
+  @override
+  late final GeneratedColumn<bool> appointmentRemindersEnabled =
+      GeneratedColumn<bool>(
+        'appointment_reminders_enabled',
+        aliasedName,
+        false,
+        type: DriftSqlType.bool,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("appointment_reminders_enabled" IN (0, 1))',
+        ),
+        defaultValue: const Constant(true),
+      );
+  static const VerificationMeta _appointmentReminderLeadsMeta =
+      const VerificationMeta('appointmentReminderLeads');
+  @override
+  late final GeneratedColumn<String> appointmentReminderLeads =
+      GeneratedColumn<String>(
+        'appointment_reminder_leads',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('1440,60'),
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -5063,6 +5090,8 @@ class $AppSettingsTable extends AppSettings
     calendarIncludeTitle,
     appLockEnabled,
     onboardingCompleted,
+    appointmentRemindersEnabled,
+    appointmentReminderLeads,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5175,6 +5204,24 @@ class $AppSettingsTable extends AppSettings
         ),
       );
     }
+    if (data.containsKey('appointment_reminders_enabled')) {
+      context.handle(
+        _appointmentRemindersEnabledMeta,
+        appointmentRemindersEnabled.isAcceptableOrUnknown(
+          data['appointment_reminders_enabled']!,
+          _appointmentRemindersEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('appointment_reminder_leads')) {
+      context.handle(
+        _appointmentReminderLeadsMeta,
+        appointmentReminderLeads.isAcceptableOrUnknown(
+          data['appointment_reminder_leads']!,
+          _appointmentReminderLeadsMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -5232,6 +5279,14 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.bool,
         data['${effectivePrefix}onboarding_completed'],
       )!,
+      appointmentRemindersEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}appointment_reminders_enabled'],
+      )!,
+      appointmentReminderLeads: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}appointment_reminder_leads'],
+      )!,
     );
   }
 
@@ -5254,6 +5309,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final bool calendarIncludeTitle;
   final bool appLockEnabled;
   final bool onboardingCompleted;
+  final bool appointmentRemindersEnabled;
+  final String appointmentReminderLeads;
   const AppSetting({
     required this.id,
     required this.morningReminderEnabled,
@@ -5267,6 +5324,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.calendarIncludeTitle,
     required this.appLockEnabled,
     required this.onboardingCompleted,
+    required this.appointmentRemindersEnabled,
+    required this.appointmentReminderLeads,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5285,6 +5344,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['calendar_include_title'] = Variable<bool>(calendarIncludeTitle);
     map['app_lock_enabled'] = Variable<bool>(appLockEnabled);
     map['onboarding_completed'] = Variable<bool>(onboardingCompleted);
+    map['appointment_reminders_enabled'] = Variable<bool>(
+      appointmentRemindersEnabled,
+    );
+    map['appointment_reminder_leads'] = Variable<String>(
+      appointmentReminderLeads,
+    );
     return map;
   }
 
@@ -5304,6 +5369,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       calendarIncludeTitle: Value(calendarIncludeTitle),
       appLockEnabled: Value(appLockEnabled),
       onboardingCompleted: Value(onboardingCompleted),
+      appointmentRemindersEnabled: Value(appointmentRemindersEnabled),
+      appointmentReminderLeads: Value(appointmentReminderLeads),
     );
   }
 
@@ -5335,6 +5402,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       onboardingCompleted: serializer.fromJson<bool>(
         json['onboardingCompleted'],
       ),
+      appointmentRemindersEnabled: serializer.fromJson<bool>(
+        json['appointmentRemindersEnabled'],
+      ),
+      appointmentReminderLeads: serializer.fromJson<String>(
+        json['appointmentReminderLeads'],
+      ),
     );
   }
   @override
@@ -5353,6 +5426,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'calendarIncludeTitle': serializer.toJson<bool>(calendarIncludeTitle),
       'appLockEnabled': serializer.toJson<bool>(appLockEnabled),
       'onboardingCompleted': serializer.toJson<bool>(onboardingCompleted),
+      'appointmentRemindersEnabled': serializer.toJson<bool>(
+        appointmentRemindersEnabled,
+      ),
+      'appointmentReminderLeads': serializer.toJson<String>(
+        appointmentReminderLeads,
+      ),
     };
   }
 
@@ -5369,6 +5448,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     bool? calendarIncludeTitle,
     bool? appLockEnabled,
     bool? onboardingCompleted,
+    bool? appointmentRemindersEnabled,
+    String? appointmentReminderLeads,
   }) => AppSetting(
     id: id ?? this.id,
     morningReminderEnabled:
@@ -5384,6 +5465,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     calendarIncludeTitle: calendarIncludeTitle ?? this.calendarIncludeTitle,
     appLockEnabled: appLockEnabled ?? this.appLockEnabled,
     onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+    appointmentRemindersEnabled:
+        appointmentRemindersEnabled ?? this.appointmentRemindersEnabled,
+    appointmentReminderLeads:
+        appointmentReminderLeads ?? this.appointmentReminderLeads,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -5421,6 +5506,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       onboardingCompleted: data.onboardingCompleted.present
           ? data.onboardingCompleted.value
           : this.onboardingCompleted,
+      appointmentRemindersEnabled: data.appointmentRemindersEnabled.present
+          ? data.appointmentRemindersEnabled.value
+          : this.appointmentRemindersEnabled,
+      appointmentReminderLeads: data.appointmentReminderLeads.present
+          ? data.appointmentReminderLeads.value
+          : this.appointmentReminderLeads,
     );
   }
 
@@ -5438,7 +5529,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('calendarId: $calendarId, ')
           ..write('calendarIncludeTitle: $calendarIncludeTitle, ')
           ..write('appLockEnabled: $appLockEnabled, ')
-          ..write('onboardingCompleted: $onboardingCompleted')
+          ..write('onboardingCompleted: $onboardingCompleted, ')
+          ..write('appointmentRemindersEnabled: $appointmentRemindersEnabled, ')
+          ..write('appointmentReminderLeads: $appointmentReminderLeads')
           ..write(')'))
         .toString();
   }
@@ -5457,6 +5550,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     calendarIncludeTitle,
     appLockEnabled,
     onboardingCompleted,
+    appointmentRemindersEnabled,
+    appointmentReminderLeads,
   );
   @override
   bool operator ==(Object other) =>
@@ -5473,7 +5568,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.calendarId == this.calendarId &&
           other.calendarIncludeTitle == this.calendarIncludeTitle &&
           other.appLockEnabled == this.appLockEnabled &&
-          other.onboardingCompleted == this.onboardingCompleted);
+          other.onboardingCompleted == this.onboardingCompleted &&
+          other.appointmentRemindersEnabled ==
+              this.appointmentRemindersEnabled &&
+          other.appointmentReminderLeads == this.appointmentReminderLeads);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -5489,6 +5587,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<bool> calendarIncludeTitle;
   final Value<bool> appLockEnabled;
   final Value<bool> onboardingCompleted;
+  final Value<bool> appointmentRemindersEnabled;
+  final Value<String> appointmentReminderLeads;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.morningReminderEnabled = const Value.absent(),
@@ -5502,6 +5602,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.calendarIncludeTitle = const Value.absent(),
     this.appLockEnabled = const Value.absent(),
     this.onboardingCompleted = const Value.absent(),
+    this.appointmentRemindersEnabled = const Value.absent(),
+    this.appointmentReminderLeads = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -5516,6 +5618,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.calendarIncludeTitle = const Value.absent(),
     this.appLockEnabled = const Value.absent(),
     this.onboardingCompleted = const Value.absent(),
+    this.appointmentRemindersEnabled = const Value.absent(),
+    this.appointmentReminderLeads = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -5530,6 +5634,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<bool>? calendarIncludeTitle,
     Expression<bool>? appLockEnabled,
     Expression<bool>? onboardingCompleted,
+    Expression<bool>? appointmentRemindersEnabled,
+    Expression<String>? appointmentReminderLeads,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -5549,6 +5655,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (appLockEnabled != null) 'app_lock_enabled': appLockEnabled,
       if (onboardingCompleted != null)
         'onboarding_completed': onboardingCompleted,
+      if (appointmentRemindersEnabled != null)
+        'appointment_reminders_enabled': appointmentRemindersEnabled,
+      if (appointmentReminderLeads != null)
+        'appointment_reminder_leads': appointmentReminderLeads,
     });
   }
 
@@ -5565,6 +5675,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<bool>? calendarIncludeTitle,
     Value<bool>? appLockEnabled,
     Value<bool>? onboardingCompleted,
+    Value<bool>? appointmentRemindersEnabled,
+    Value<String>? appointmentReminderLeads,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -5581,6 +5693,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       calendarIncludeTitle: calendarIncludeTitle ?? this.calendarIncludeTitle,
       appLockEnabled: appLockEnabled ?? this.appLockEnabled,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+      appointmentRemindersEnabled:
+          appointmentRemindersEnabled ?? this.appointmentRemindersEnabled,
+      appointmentReminderLeads:
+          appointmentReminderLeads ?? this.appointmentReminderLeads,
     );
   }
 
@@ -5629,6 +5745,16 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (onboardingCompleted.present) {
       map['onboarding_completed'] = Variable<bool>(onboardingCompleted.value);
     }
+    if (appointmentRemindersEnabled.present) {
+      map['appointment_reminders_enabled'] = Variable<bool>(
+        appointmentRemindersEnabled.value,
+      );
+    }
+    if (appointmentReminderLeads.present) {
+      map['appointment_reminder_leads'] = Variable<String>(
+        appointmentReminderLeads.value,
+      );
+    }
     return map;
   }
 
@@ -5646,7 +5772,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('calendarId: $calendarId, ')
           ..write('calendarIncludeTitle: $calendarIncludeTitle, ')
           ..write('appLockEnabled: $appLockEnabled, ')
-          ..write('onboardingCompleted: $onboardingCompleted')
+          ..write('onboardingCompleted: $onboardingCompleted, ')
+          ..write('appointmentRemindersEnabled: $appointmentRemindersEnabled, ')
+          ..write('appointmentReminderLeads: $appointmentReminderLeads')
           ..write(')'))
         .toString();
   }
@@ -11861,6 +11989,8 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<bool> calendarIncludeTitle,
       Value<bool> appLockEnabled,
       Value<bool> onboardingCompleted,
+      Value<bool> appointmentRemindersEnabled,
+      Value<String> appointmentReminderLeads,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -11876,6 +12006,8 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<bool> calendarIncludeTitle,
       Value<bool> appLockEnabled,
       Value<bool> onboardingCompleted,
+      Value<bool> appointmentRemindersEnabled,
+      Value<String> appointmentReminderLeads,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -11944,6 +12076,16 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<bool> get onboardingCompleted => $composableBuilder(
     column: $table.onboardingCompleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get appointmentRemindersEnabled => $composableBuilder(
+    column: $table.appointmentRemindersEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get appointmentReminderLeads => $composableBuilder(
+    column: $table.appointmentReminderLeads,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -12016,6 +12158,16 @@ class $$AppSettingsTableOrderingComposer
     column: $table.onboardingCompleted,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get appointmentRemindersEnabled => $composableBuilder(
+    column: $table.appointmentRemindersEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get appointmentReminderLeads => $composableBuilder(
+    column: $table.appointmentReminderLeads,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -12084,6 +12236,16 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.onboardingCompleted,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get appointmentRemindersEnabled => $composableBuilder(
+    column: $table.appointmentRemindersEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get appointmentReminderLeads => $composableBuilder(
+    column: $table.appointmentReminderLeads,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -12129,6 +12291,8 @@ class $$AppSettingsTableTableManager
                 Value<bool> calendarIncludeTitle = const Value.absent(),
                 Value<bool> appLockEnabled = const Value.absent(),
                 Value<bool> onboardingCompleted = const Value.absent(),
+                Value<bool> appointmentRemindersEnabled = const Value.absent(),
+                Value<String> appointmentReminderLeads = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -12142,6 +12306,8 @@ class $$AppSettingsTableTableManager
                 calendarIncludeTitle: calendarIncludeTitle,
                 appLockEnabled: appLockEnabled,
                 onboardingCompleted: onboardingCompleted,
+                appointmentRemindersEnabled: appointmentRemindersEnabled,
+                appointmentReminderLeads: appointmentReminderLeads,
               ),
           createCompanionCallback:
               ({
@@ -12157,6 +12323,8 @@ class $$AppSettingsTableTableManager
                 Value<bool> calendarIncludeTitle = const Value.absent(),
                 Value<bool> appLockEnabled = const Value.absent(),
                 Value<bool> onboardingCompleted = const Value.absent(),
+                Value<bool> appointmentRemindersEnabled = const Value.absent(),
+                Value<String> appointmentReminderLeads = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -12170,6 +12338,8 @@ class $$AppSettingsTableTableManager
                 calendarIncludeTitle: calendarIncludeTitle,
                 appLockEnabled: appLockEnabled,
                 onboardingCompleted: onboardingCompleted,
+                appointmentRemindersEnabled: appointmentRemindersEnabled,
+                appointmentReminderLeads: appointmentReminderLeads,
               ),
           withReferenceMapper: (p0) => p0
               .map(

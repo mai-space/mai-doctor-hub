@@ -182,6 +182,12 @@ class AppSettings extends Table {
   BoolColumn get onboardingCompleted =>
       boolean().withDefault(const Constant(false))();
 
+  // v5: Erinnerungen vor Arztterminen (Vorlauf in Minuten, kommagetrennt).
+  BoolColumn get appointmentRemindersEnabled =>
+      boolean().withDefault(const Constant(true))();
+  TextColumn get appointmentReminderLeads =>
+      text().withDefault(const Constant('1440,60'))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -251,7 +257,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'mai_doctor_hub'));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -282,6 +288,16 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 4) {
         await migrator.addColumn(appSettings, appSettings.onboardingCompleted);
+      }
+      if (from < 5) {
+        await migrator.addColumn(
+          appSettings,
+          appSettings.appointmentRemindersEnabled,
+        );
+        await migrator.addColumn(
+          appSettings,
+          appSettings.appointmentReminderLeads,
+        );
       }
       if (from < 3) {
         await migrator.createTable(reminders);

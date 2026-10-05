@@ -149,6 +149,9 @@ class NotificationService
         channelDescription: plan.channel.description,
         importance: Importance.defaultImportance,
         priority: Priority.defaultPriority,
+        // Gesundheitsdaten: auf dem gesperrten Bildschirm nur „Inhalt
+        // ausgeblendet“ (sofern Android so eingestellt ist).
+        visibility: NotificationVisibility.private,
       ),
       iOS: const DarwinNotificationDetails(),
     );

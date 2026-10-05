@@ -42,4 +42,28 @@ class SettingsRepository {
       const AppSettingsCompanion(onboardingCompleted: Value(true)),
     );
   }
+
+  Future<void> updateAppointmentReminders({
+    required bool enabled,
+    required List<int> leadMinutes,
+  }) {
+    final leads = leadMinutes.toSet().toList()..sort((a, b) => b - a);
+    return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
+      AppSettingsCompanion(
+        appointmentRemindersEnabled: Value(enabled),
+        appointmentReminderLeads: Value(leads.join(',')),
+      ),
+    );
+  }
 }
+
+/// Vorlaufzeiten aus der Einstellung (Minuten, absteigend).
+List<int> parseLeadMinutes(String raw) =>
+    raw
+        .split(',')
+        .map((s) => int.tryParse(s.trim()))
+        .whereType<int>()
+        .where((m) => m > 0)
+        .toSet()
+        .toList()
+      ..sort((a, b) => b - a);

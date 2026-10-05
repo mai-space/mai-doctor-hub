@@ -22,7 +22,7 @@ Status: ☐ offen · ◐ in Arbeit · ☑ erledigt
   Erklärung angefragt.
 - Später erneut erreichbar, wenn Erinnerungen eingeschaltet werden.
 
-## 3. ☐ Termin-Erinnerungen (umschaltbar)
+## 3. ☑ Termin-Erinnerungen (umschaltbar)
 - Lokale Erinnerungen vor Arztterminen (z. B. „Morgen 09:00 · Dr. …“).
 - Ein-/ausschaltbar — wer den Google-Kalender bevorzugt, lässt sie aus.
 - Vorlaufzeiten wählbar (z. B. 1 Tag und 1 Stunde vorher).

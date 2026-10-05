@@ -6,11 +6,13 @@ import 'data/app_database.dart';
 import 'data/database_provider.dart';
 import 'data/repositories/settings_repository.dart';
 import 'features/check_in/check_in_sheet.dart';
+import 'features/home/appointment_detail_page.dart';
 import 'features/onboarding/onboarding_page.dart';
 import 'services/app_lock.dart';
 import 'services/calendar/calendar_gateway.dart';
 import 'services/calendar/calendar_sync_service.dart';
 import 'services/notification_service.dart';
+import 'services/notifications/appointment_reminders.dart';
 import 'services/notifications/reminder_service.dart';
 import 'services/time_change_observer.dart';
 import 'shell/app_shell.dart';
@@ -32,6 +34,10 @@ Future<void> main() async {
 
   // Erinnerungen sind eigene Einträge; Änderungen planen automatisch neu.
   final reminders = ReminderService(database, notifications)..start();
+  final appointmentReminders = AppointmentReminderService(
+    database,
+    notifications,
+  )..start();
 
   var lockEnabled = false;
   try {
@@ -59,6 +65,8 @@ Future<void> main() async {
   // Kalender abgleichen (Events tragen die Gerätezone).
   TimeChangeObserver(() async {
     if (await notifications.refreshTimeZone()) await reminders.sync();
+    // Vergangene Vorlaufzeiten fallen weg, neue Tage kommen dazu.
+    await appointmentReminders.sync();
     calendarSync?.trigger();
   }).attach();
 
@@ -77,6 +85,14 @@ void _openFromNotification(String? payload) {
   if (context == null) return;
   final symptomIds = CheckInPayload.decode(payload);
   if (symptomIds != null) showCheckInSheet(context, symptomIds: symptomIds);
+  final appointmentId = AppointmentPayload.decode(payload);
+  if (appointmentId != null) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => AppointmentDetailPage(appointmentId: appointmentId),
+      ),
+    );
+  }
 }
 
 class MaiDoctorHubApp extends StatefulWidget {
