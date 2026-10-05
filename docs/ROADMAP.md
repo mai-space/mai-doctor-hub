@@ -1,10 +1,35 @@
 # Mai Doctor Hub — Review & Roadmap (nach I1)
 
-Stand: 05.10.2026 · Basis: `main` @ `2a48626` + Bugfix „Bericht anhängen“
+Stand: 05.10.2026 · Basis: `main` @ `2a48626` · Umsetzung auf Branch
+`ccr-98fe9266-tmlx5r` (siehe Abschnitt 0)
 
 Leitplanke bleibt **Privacy first**: Daten liegen lokal, jede Funktion, die Daten
 das Gerät verlassen lässt (Kalender, KI), ist **opt-in**, minimiert und
 jederzeit abschaltbar.
+
+---
+
+## 0. Umsetzungsstand
+
+| Bereich | Status | Wo / Tests |
+|---------|--------|------------|
+| B1 Bericht anhängen | ✅ | `report_import_service.dart` · `report_import_test` |
+| Autovervollständigung aus Historie | ✅ | `suggestion_repository.dart` · `suggestion_test` |
+| B2/B3 Viewer + PDF-Text (`pdfrx`), Re-Index | ✅ | `report_viewer_page.dart`, `pdf_extractor_io.dart` · `pdf_extraction_test` (CI mit PDFium) |
+| B4/B5/B9 reaktive Summaries, Status, kein N+1 | ✅ | `appointment_repository.dart` · `repositories_test` |
+| B6 Cascade beim Löschen | ✅ | `repositories_test` |
+| B7/B8 Suche/Labels | ✅ | `repositories_test`, `crud_ui_test` |
+| CRUD + Detailseiten für alle Entitäten | ✅ | `detail_pages.dart`, `entity_forms.dart` · `crud_ui_test` |
+| Schema v2 + Migration | ✅ | `migration_test` (echte v1-DB) |
+| Verschlüsseltes Backup/Restore | ✅ | `backup_service_io.dart`, `packages/mai_backup_format` · `backup_test` |
+| Diagnose-Hub, Symptom-Verlauf | ✅ | `diagnosis_hub_repository.dart`, `observation_chart.dart` |
+| App-Sperre + `FLAG_SECURE` | ✅ | `app_lock.dart` · `app_lock_test` |
+| Kalender-Export (einseitig) + `.ics` | ✅ | `services/calendar/*`, `CalendarChannel.kt` · `calendar_sync_test`, `calendar_settings_test` |
+| MCP-Server für Gemini/Gemma | ✅ | `tools/mai_mcp` · eigene Tests inkl. stdio-Prozess |
+| B10 Web speichert keine Dateien | offen | Web bleibt Debug-Ziel |
+| Termin-Vorbereitung als PDF/Share | offen | Notizen pro Termin gibt es bereits |
+| Undo-Snackbars, OCR für Scans | offen | |
+| Home-Widgets, Material You/Dark Mode | Future | Abschnitt 5 |
 
 ---
 
