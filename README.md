@@ -5,7 +5,7 @@ Lokale Patientenakte — **Privacy first**. Alle Daten bleiben auf dem Gerät. K
 ## Stack
 
 - Flutter (Android + Web)
-- Drift / SQLite (+ FTS5 für lokale Suche)
+- Drift / SQLite3 Multiple Ciphers (verschlüsselt, + FTS5 für lokale Suche)
 - Lokale Check-in-Notifications (`flutter_local_notifications`)
 - Berichte: lokale Ablage unter `Documents/reports/`, PDF-Viewer + Text-Extraktion mit `pdfrx` (PDFium)
 - Sicherung: AES-256-GCM / PBKDF2 (`packages/mai_backup_format`)
@@ -76,7 +76,8 @@ Workflow: `.github/workflows/ci.yml` (Trigger: `push` auf alle Branches, `pull_r
 
 ## Privacy
 
-- Patientendaten nur in der lokalen SQLite-Datei der App-Sandbox
+- Patientendaten nur in der lokalen SQLite-Datei der App-Sandbox — **verschlüsselt** (SQLite3 Multiple Ciphers); der Schlüssel ist mit einem Android-Keystore-Schlüssel verpackt und verlässt das Gerät nie
+- Kein Android-/Google-Backup und kein Gerätetransfer der App-Daten (`allowBackup=false`, `data_extraction_rules.xml`); Umzug nur per verschlüsselter `.maibackup`-Sicherung
 - Daten verlassen das Gerät nur durch bewusste Aktionen: verschlüsselte Sicherung, Kalender-Export (minimal, opt-in), MCP-Server auf eigenem Rechner
 - App-Sperre (Biometrie/Geräte-PIN) blendet Inhalte in Screenshots und „Zuletzt verwendet“ aus
 - Berichte (PDF/Scan) unter `Documents/reports/`; extrahierter Text lokal indexiert

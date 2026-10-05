@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mai_doctor_hub/data/app_database.dart';
+import 'package:mai_doctor_hub/data/connection/connection_io.dart';
 import 'package:mai_doctor_hub/data/repositories/appointment_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/doctor_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/records_repository.dart';
@@ -27,7 +28,14 @@ void main() {
         .create(recursive: true);
     final tmp = await Directory('${root.path}/$name/tmp')
         .create(recursive: true);
-    final db = AppDatabase(NativeDatabase.memory());
+    // Jedes Gerät mit eigener, verschlüsselter Datenbank.
+    final key = (name.codeUnitAt(0).toRadixString(16).padLeft(2, '0')) * 32;
+    final db = AppDatabase(
+      NativeDatabase(
+        File('${root.path}/$name/db.sqlite'),
+        setup: (raw) => applyKey(raw, key),
+      ),
+    );
     addTearDown(db.close);
     return (
       db,
@@ -113,6 +121,16 @@ void main() {
 
     final sealed = await backupA.createBackupFile(_pass);
     expect(await BackupStream.versionOf(sealed.path), 2);
+    // In der Sicherung liegt die DB ohne Geräteschlüssel (nur das
+    // Sicherungspasswort schützt sie) — lesbar auf jedem Gerät und für mai_mcp.
+    final peek = await Directory('${root.path}/peek').create();
+    final opened = await BackupStream.open(sealed.path, _pass, peek.path);
+    final snapshot = sqlite.sqlite3.open(opened.databasePath);
+    expect(snapshot.select('SELECT title FROM appointments').single['title'],
+        'Kontrolle');
+    snapshot.close();
+    expect(File('${root.path}/a/db.sqlite').readAsBytesSync().take(6),
+        isNot('SQLite'.codeUnits));
 
     final (dbB, backupB, docsB) = await device('b');
     // Vorhandene Daten auf B werden ersetzt.

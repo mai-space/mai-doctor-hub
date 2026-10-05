@@ -17,6 +17,7 @@ import 'services/notifications/appointment_reminders.dart';
 import 'services/notifications/medication_reminders.dart';
 import 'services/notifications/reminder_service.dart';
 import 'services/time_change_observer.dart';
+import 'data/connection/connection.dart';
 import 'shell/app_shell.dart';
 import 'theme/app_theme.dart';
 import 'widgets/app_lock_gate.dart';
@@ -79,12 +80,42 @@ Future<void> main() async {
 
   runApp(MaiDoctorHubApp(database: database, appLock: appLock));
 
+  if (databaseOpenStatus.value?.unreadableCopy != null) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _showUnreadableData());
+  }
+
   final launch = await notifications.launchPayload();
   if (launch != null) {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _openFromNotification(launch),
     );
   }
+}
+
+/// Die gespeicherte Datenbank ließ sich nicht entschlüsseln (z. B. Schlüssel
+/// nach Zurücksetzen des Keystores verloren) und wurde beiseitegelegt.
+void _showUnreadableData() {
+  final context = appNavigatorKey.currentContext;
+  if (context == null) return;
+  showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      icon: const Icon(Icons.lock_reset),
+      title: const Text('Daten nicht lesbar'),
+      content: const Text(
+        'Die gespeicherten Daten konnten auf diesem Gerät nicht entschlüsselt '
+        'werden. Die App startet deshalb leer.\n\n'
+        'Mit einer .maibackup-Sicherung lässt sich alles wiederherstellen: '
+        'Einstellungen → Datensicherung → „Sicherung wiederherstellen“.',
+      ),
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Verstanden'),
+        ),
+      ],
+    ),
+  );
 }
 
 void _openFromNotification(String? payload) {

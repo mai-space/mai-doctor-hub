@@ -59,6 +59,14 @@ class BackupService {
       final snapshot = p.join(work.path, 'db.sqlite');
       // Konsistente Kopie, auch während die App die DB offen hat.
       await _db.customStatement('VACUUM INTO ?', [snapshot]);
+      // Die Kopie trägt den Geräteschlüssel → entschlüsseln; geschützt wird
+      // sie danach durch das Sicherungspasswort (geräteunabhängig).
+      await _db.customStatement('ATTACH DATABASE ? AS snap', [snapshot]);
+      try {
+        await _db.customStatement("PRAGMA snap.rekey = ''");
+      } finally {
+        await _db.customStatement('DETACH DATABASE snap');
+      }
 
       final reports = await _db.select(_db.reports).get();
       final files = <String, String>{};
@@ -193,7 +201,10 @@ class BackupService {
     Map<String, String> newPaths,
   ) async {
     final tables = _db.allTables.toList();
-    await _db.customStatement('ATTACH DATABASE ? AS bk', [restorePath]);
+    // KEY '': Sicherungs-DB ist unverschlüsselt (sonst gälte der Geräteschlüssel).
+    await _db.customStatement("ATTACH DATABASE ? AS bk KEY ''", [
+      restorePath,
+    ]);
     try {
       await _db.transaction(() async {
         for (final table in tables) {

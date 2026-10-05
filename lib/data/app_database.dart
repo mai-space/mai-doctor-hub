@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:drift_flutter/drift_flutter.dart';
+
+import 'connection/connection.dart';
 
 part 'app_database.g.dart';
 
@@ -376,7 +377,7 @@ class CalendarLinks extends Table {
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
-    : super(executor ?? driftDatabase(name: 'mai_doctor_hub'));
+    : super(executor ?? openAppDatabase());
 
   @override
   int get schemaVersion => 9;

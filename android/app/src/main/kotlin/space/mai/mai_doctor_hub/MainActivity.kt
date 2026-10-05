@@ -21,6 +21,8 @@ class MainActivity : FlutterFragmentActivity() {
                     else -> result.notImplemented()
                 }
             }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, DatabaseKeyChannel.NAME)
+            .setMethodCallHandler(DatabaseKeyChannel(applicationContext))
         calendar = CalendarChannel(this).also {
             MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CalendarChannel.NAME)
                 .setMethodCallHandler(it)

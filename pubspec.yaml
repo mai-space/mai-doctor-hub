@@ -114,3 +114,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# Verschlüsselte Datenbank (SQLite3 Multiple Ciphers statt Standard-SQLite).
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
