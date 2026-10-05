@@ -18,6 +18,11 @@ abstract final class AppTheme {
       surface: AppColors.surface,
     );
 
+    final textTheme = ThemeData(brightness: Brightness.light).textTheme.apply(
+      bodyColor: AppColors.ink,
+      displayColor: AppColors.ink,
+    );
+
     return ThemeData(
       useMaterial3: true,
       colorScheme: base,
@@ -42,9 +47,56 @@ abstract final class AppTheme {
           ),
         ),
       ),
-      textTheme: ThemeData(brightness: Brightness.light).textTheme.apply(
-        bodyColor: AppColors.ink,
-        displayColor: AppColors.ink,
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size.fromHeight(48),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size.fromHeight(48),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+      ),
+      cardTheme: CardTheme(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        color: Colors.white,
+      ),
+      listTileTheme: const ListTileThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+      iconTheme: IconThemeData(
+        color: AppColors.ink,
+        size: 24,
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: base.surface,
+        side: BorderSide(color: base.outline),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      textTheme: textTheme,
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      ),
+      dividerTheme: const DividerThemeData(
+        thickness: 1,
+        space: 1,
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/icon_mappings.dart';
 import '../../widgets/empty_state.dart';
 import '../check_in/check_in_sheet.dart';
 import '../medications/intake_widgets.dart';
@@ -185,11 +186,12 @@ class _AppointmentCard extends StatelessWidget {
     final a = summary.appointment;
     final when = DateFormat('EEE d. MMM · HH:mm', 'de').format(a.scheduledAt);
     final chips = [...summary.diagnosisTitles, ...summary.symptomLabels];
+    final theme = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Material(
-        color: Theme.of(context).colorScheme.surface,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
@@ -198,7 +200,7 @@ class _AppointmentCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outlineVariant,
+                color: theme.colorScheme.outlineVariant,
               ),
             ),
             child: Padding(
@@ -213,7 +215,7 @@ class _AppointmentCard extends StatelessWidget {
                           a.title?.isNotEmpty == true
                               ? a.title!
                               : summary.doctorName,
-                          style: Theme.of(context).textTheme.titleMedium
+                          style: theme.textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                       ),
@@ -243,13 +245,32 @@ class _AppointmentCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     when,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: AppColors.muted),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.muted,
+                    ),
                   ),
                   if (a.title?.isNotEmpty == true) ...[
-                    const SizedBox(height: 2),
-                    Text(summary.doctorName),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          summary.doctor?.specialty != null
+                              ? IconMappings.specialtyIcon(
+                                  summary.doctor!.specialty!,
+                                )
+                              : Icons.medical_services_outlined,
+                          size: 18,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            summary.doctorName,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                   if (chips.isNotEmpty) ...[
                     const SizedBox(height: 10),

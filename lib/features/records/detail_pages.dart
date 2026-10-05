@@ -13,6 +13,7 @@ import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/reminder_repository.dart' show Weekdays;
 import '../../data/repositories/symptom_repository.dart';
 import '../../data/repositories/vaccination_repository.dart';
+import '../../theme/icon_mappings.dart';
 import '../../widgets/observation_chart.dart';
 import '../../widgets/symptom_report_card.dart';
 import '../archive/archive_page.dart';
@@ -124,10 +125,16 @@ class _DetailScaffoldState<T> extends State<_DetailScaffold<T>> {
 }
 
 class DetailHeader extends StatelessWidget {
-  const DetailHeader({super.key, required this.title, this.subtitle});
+  const DetailHeader({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.icon,
+  });
 
   final String title;
   final String? subtitle;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -137,11 +144,26 @@ class DetailHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  size: 32,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 12),
+              ],
+              Expanded(
+                child: Text(
+                  title,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 4),
@@ -304,7 +326,13 @@ class DoctorDetailPage extends StatelessWidget {
       body: (context, data) {
         final d = data.doctor;
         return [
-          DetailHeader(title: d.name, subtitle: d.specialty),
+          DetailHeader(
+            title: d.name,
+            subtitle: d.specialty,
+            icon: d.specialty != null
+                ? IconMappings.specialtyIcon(d.specialty!)
+                : null,
+          ),
           _infoTile(Icons.business_outlined, 'Praxis', d.practiceName),
           _infoTile(
             Icons.phone_outlined,
@@ -612,6 +640,9 @@ class SymptomDetailPage extends StatelessWidget {
                   ? 'aktiv'
                   : 'geheilt am ${_date.format(s.healedAt!)}',
             ].join(' · '),
+            icon: s.bodyRegion != null
+                ? IconMappings.bodyRegionIcon(s.bodyRegion!)
+                : null,
           ),
           Align(
             alignment: Alignment.centerLeft,
@@ -643,7 +674,9 @@ class SymptomDetailPage extends StatelessWidget {
                 for (final d in data.doctors)
                   _linkTile(
                     context,
-                    icon: Icons.medical_services_outlined,
+                    icon: d.specialty != null
+                        ? IconMappings.specialtyIcon(d.specialty!)
+                        : Icons.medical_services_outlined,
                     title: d.name,
                     subtitle: d.specialty,
                     entityType: 'doctor',

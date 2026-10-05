@@ -14,6 +14,7 @@ import '../../data/repositories/settings_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
 import '../../services/calendar/calendar_sync_service.dart';
 import '../../services/calendar/ics.dart';
+import '../../theme/icon_mappings.dart';
 import '../../widgets/symptom_report_card.dart';
 import '../archive/archive_page.dart';
 import '../records/detail_pages.dart';
@@ -266,7 +267,11 @@ class _AppointmentBody extends StatelessWidget {
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.medical_services_outlined),
+          leading: Icon(
+            summary.doctor?.specialty != null
+                ? IconMappings.specialtyIcon(summary.doctor!.specialty!)
+                : Icons.medical_services_outlined,
+          ),
           title: Text(summary.doctorName),
           subtitle: summary.doctor?.specialty == null
               ? null
