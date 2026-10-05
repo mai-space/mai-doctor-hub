@@ -212,7 +212,42 @@ MCP-Server + Tools + Tests 3 PT · Doku/Setup Gemini & Ollama 0,5 PT.
 
 ---
 
-## 5. Reihenfolge (Vorschlag)
+## 5. Future Enhancements
+
+### Home-Bildschirm-Widgets (Android)
+- **„Nächster Termin“** (2×1 / 4×1): Datum, Uhrzeit, Arzt, Countdown; Tap
+  öffnet Termin-Detail per Deep-Link `maidoctorhub://appointment/<id>`.
+- **„Check-in“** (1×1 / 2×1): Schnell-Check-in für das wichtigste offene
+  Symptom (Skala 1–10 per Tap), ohne die App zu öffnen.
+- **„Medikamente heute“** (4×2): Einnahmeplan des Tages, abhakbar.
+- Umsetzung: `home_widget` (Flutter ↔ Glance/`AppWidgetProvider`), Daten
+  werden beim Speichern als kleiner, **minimaler** Snapshot in
+  `SharedPreferences` geschrieben (keine Diagnosen; Termintitel optional).
+- Privacy: Widget-Inhalte sind auf dem Sperrbildschirm/Home sichtbar →
+  Einstellung „Diskrete Widgets“ (nur „Arzttermin morgen 09:30“), bei
+  aktivem App-Lock standardmäßig diskret.
+- Aktualisierung: bei jeder Termin-/Medikationsänderung + täglich via
+  `WorkManager`; kein Netzwerk.
+
+### Material Theming
+- **Material You / Dynamic Color** (`dynamic_color`): Farbschema aus dem
+  Wallpaper (Android 12+), Fallback auf Seed `#1F6B5C`; Schalter
+  „Systemfarben verwenden“.
+- **Dark Mode**: `AppTheme.dark()` + `ThemeMode.system/light/dark` in den
+  Einstellungen; harte Farbkonstanten (`AppColors.ink/muted/danger`) durch
+  `ColorScheme`-Rollen bzw. eine `ThemeExtension` ersetzen.
+- **Kontrast & Lesbarkeit**: Hochkontrast-Variante
+  (`ColorScheme.fromSeed(contrastLevel: …)`), Textskalierung bis 200 %
+  testen (Golden-Tests), Mindest-Touch-Targets 48 dp.
+- **Typografie & Form**: eigene `TextTheme` (z. B. Inter/Atkinson
+  Hyperlegible für Lesbarkeit), konsistente Radien/Abstände als Tokens,
+  Material-3-Komponenten (`SearchAnchor`, `NavigationBar`, `Card.filled`).
+- **Themed Icon** (Android 13 Monochrome-Launcher-Icon) und angepasster
+  Splash (`flutter_native_splash`).
+
+---
+
+## 6. Reihenfolge (Vorschlag)
 1. I2: Viewer + PDF-Text (`pdfrx`), CRUD, reaktive Streams, Schema v2, Backup.
 2. I3: Diagnose-Hub, Symptom-Charts, App-Lock, **Kalender-Push (Option A)**.
 3. I4: `mai_core` + `mai_mcp` (lokal/Gemma zuerst, Gemini opt-in).

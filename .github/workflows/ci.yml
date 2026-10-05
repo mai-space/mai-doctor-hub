@@ -4,7 +4,8 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    # Alle Branches: APK-Build früh validieren. deploy-mock läuft nur auf main.
+    branches: ["**"]
   pull_request:
     branches: [main]
 
