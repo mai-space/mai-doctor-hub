@@ -17,26 +17,6 @@ class SettingsRepository {
         .getSingle();
   }
 
-  Future<void> updateReminders({
-    required bool morningEnabled,
-    required bool eveningEnabled,
-    required int morningHour,
-    required int morningMinute,
-    required int eveningHour,
-    required int eveningMinute,
-  }) {
-    return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
-      AppSettingsCompanion(
-        morningReminderEnabled: Value(morningEnabled),
-        eveningReminderEnabled: Value(eveningEnabled),
-        morningHour: Value(morningHour),
-        morningMinute: Value(morningMinute),
-        eveningHour: Value(eveningHour),
-        eveningMinute: Value(eveningMinute),
-      ),
-    );
-  }
-
   Future<void> setAppLock(bool enabled) {
     return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
       AppSettingsCompanion(appLockEnabled: Value(enabled)),

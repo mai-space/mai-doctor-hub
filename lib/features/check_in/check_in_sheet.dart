@@ -7,17 +7,25 @@ import '../../theme/app_theme.dart';
 import '../../widgets/empty_state.dart';
 
 /// Bottom-Sheet für schnelle Symptom-Observations (Check-in).
-Future<void> showCheckInSheet(BuildContext context) {
+///
+/// Mit [symptomIds] (z. B. aus einer symptombezogenen Erinnerung) werden nur
+/// diese Symptome gezeigt; leer = alle offenen.
+Future<void> showCheckInSheet(
+  BuildContext context, {
+  List<String> symptomIds = const [],
+}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (context) => const CheckInSheet(),
+    builder: (context) => CheckInSheet(symptomIds: symptomIds),
   );
 }
 
 class CheckInSheet extends StatefulWidget {
-  const CheckInSheet({super.key});
+  const CheckInSheet({super.key, this.symptomIds = const []});
+
+  final List<String> symptomIds;
 
   @override
   State<CheckInSheet> createState() => _CheckInSheetState();
@@ -38,7 +46,10 @@ class _CheckInSheetState extends State<CheckInSheet> {
       child: StreamBuilder<List<Symptom>>(
         stream: repo.watchOpen(),
         builder: (context, snapshot) {
-          final symptoms = snapshot.data ?? const [];
+          final all = snapshot.data ?? const <Symptom>[];
+          final symptoms = widget.symptomIds.isEmpty
+              ? all
+              : all.where((s) => widget.symptomIds.contains(s.id)).toList();
           if (symptoms.isEmpty) {
             return const SizedBox(
               height: 280,

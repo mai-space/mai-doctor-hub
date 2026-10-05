@@ -10,6 +10,7 @@ import 'services/app_lock.dart';
 import 'services/calendar/calendar_gateway.dart';
 import 'services/calendar/calendar_sync_service.dart';
 import 'services/notification_service.dart';
+import 'services/notifications/reminder_service.dart';
 import 'services/time_change_observer.dart';
 import 'shell/app_shell.dart';
 import 'theme/app_theme.dart';
@@ -23,21 +24,19 @@ Future<void> main() async {
   await initializeDateFormatting('de');
 
   final database = AppDatabase();
-  await NotificationService.instance.initialize();
-  NotificationService.instance.onNotificationTap = (payload) {
-    if (payload == NotificationService.checkInPayload) {
-      final context = appNavigatorKey.currentContext;
-      if (context != null) {
-        showCheckInSheet(context);
-      }
-    }
-  };
+  final notifications = NotificationService.instance;
+  await notifications.initialize();
+  notifications.onNotificationTap = _openFromNotification;
+  // TODO(onboarding): Berechtigung erst im Onboarding anfragen.
+  await notifications.requestPermission();
+
+  // Erinnerungen sind eigene Einträge; Änderungen planen automatisch neu.
+  final reminders = ReminderService(database, notifications)..start();
 
   var lockEnabled = false;
   try {
     final settings = await SettingsRepository(database).get();
     lockEnabled = settings.appLockEnabled;
-    await NotificationService.instance.syncFromSettings(settings);
   } catch (_) {
     // Settings-Zeile fehlt ggf. in Tests mit leerer DB — ignorieren.
   }
@@ -59,12 +58,25 @@ Future<void> main() async {
   // Zurück im Vordergrund: Zeitzone geändert? → Erinnerungen neu planen,
   // Kalender abgleichen (Events tragen die Gerätezone).
   TimeChangeObserver(() async {
-    final settings = await SettingsRepository(database).get();
-    await NotificationService.instance.refreshTimeZone(settings);
+    if (await notifications.refreshTimeZone()) await reminders.sync();
     calendarSync?.trigger();
   }).attach();
 
   runApp(MaiDoctorHubApp(database: database, appLock: appLock));
+
+  final launch = await notifications.launchPayload();
+  if (launch != null) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _openFromNotification(launch),
+    );
+  }
+}
+
+void _openFromNotification(String? payload) {
+  final context = appNavigatorKey.currentContext;
+  if (context == null) return;
+  final symptomIds = CheckInPayload.decode(payload);
+  if (symptomIds != null) showCheckInSheet(context, symptomIds: symptomIds);
 }
 
 class MaiDoctorHubApp extends StatefulWidget {

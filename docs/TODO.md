@@ -5,7 +5,7 @@ wird einzeln umgesetzt, getestet und als eigener Commit gepusht.
 
 Status: ☐ offen · ◐ in Arbeit · ☑ erledigt
 
-## 1. ☐ Erinnerungen als eigene Einträge
+## 1. ☑ Erinnerungen als eigene Einträge
 - `SCHEDULE_EXACT_ALARM` aus dem Manifest entfernen (wird nicht genutzt,
   Play-Policy).
 - Erinnerungen werden eine eigene Entität: beliebig viele, je mit Uhrzeit,

@@ -4,9 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../data/database_provider.dart';
 import '../../data/repositories/records_repository.dart';
-import '../../data/repositories/settings_repository.dart';
 import '../../services/backup_service.dart';
-import '../../services/notification_service.dart';
 import '../../services/report_import_service.dart';
 
 /// Einstellungen → Datensicherung & Suchindex.
@@ -91,10 +89,8 @@ class _BackupSectionState extends State<BackupSection> {
     final passphrase = await showPassphraseDialog(context);
     if (passphrase == null) return;
     await _run('Wiederherstellung', () async {
+      // Erinnerungen planen sich über den DB-Stream selbst neu.
       final result = await BackupService(db).restore(bytes, passphrase);
-      await NotificationService.instance.syncFromSettings(
-        await SettingsRepository(db).get(),
-      );
       final date = DateFormat('d. MMM yyyy', 'de').format(result.createdAt);
       _snack(
         'Sicherung vom $date wiederhergestellt'

@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
-import '../../services/notification_service.dart';
-import '../check_in/check_in_sheet.dart';
 import 'backup_section.dart';
 import 'calendar_section.dart';
+import 'reminders_section.dart';
 import 'security_section.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -34,42 +33,6 @@ class SettingsPage extends StatelessWidget {
             );
           }
 
-          final morning = TimeOfDay(
-            hour: settings.morningHour,
-            minute: settings.morningMinute,
-          );
-          final evening = TimeOfDay(
-            hour: settings.eveningHour,
-            minute: settings.eveningMinute,
-          );
-
-          Future<void> persist({
-            bool? morningEnabled,
-            bool? eveningEnabled,
-            TimeOfDay? morningTime,
-            TimeOfDay? eveningTime,
-          }) async {
-            final next = settings.copyWith(
-              morningReminderEnabled:
-                  morningEnabled ?? settings.morningReminderEnabled,
-              eveningReminderEnabled:
-                  eveningEnabled ?? settings.eveningReminderEnabled,
-              morningHour: morningTime?.hour ?? settings.morningHour,
-              morningMinute: morningTime?.minute ?? settings.morningMinute,
-              eveningHour: eveningTime?.hour ?? settings.eveningHour,
-              eveningMinute: eveningTime?.minute ?? settings.eveningMinute,
-            );
-            await repo.updateReminders(
-              morningEnabled: next.morningReminderEnabled,
-              eveningEnabled: next.eveningReminderEnabled,
-              morningHour: next.morningHour,
-              morningMinute: next.morningMinute,
-              eveningHour: next.eveningHour,
-              eveningMinute: next.eveningMinute,
-            );
-            await NotificationService.instance.syncFromSettings(next);
-          }
-
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
             children: [
@@ -89,57 +52,12 @@ class SettingsPage extends StatelessWidget {
                   leading: Icon(Icons.lock_outline),
                   title: Text('Alles lokal auf diesem Gerät'),
                   subtitle: Text(
-                    'Keine Accounts, kein Sync, keine Patientendaten auf Servern.',
+                    'Keine Accounts, keine Patientendaten auf Servern.',
                   ),
                 ),
               ),
               const SizedBox(height: 24),
-              Text(
-                'Erinnerungen',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Morgens'),
-                subtitle: Text(morning.format(context)),
-                value: settings.morningReminderEnabled,
-                onChanged: (value) => persist(morningEnabled: value),
-                secondary: IconButton(
-                  icon: const Icon(Icons.schedule),
-                  onPressed: () async {
-                    final picked = await showTimePicker(
-                      context: context,
-                      initialTime: morning,
-                    );
-                    if (picked != null) await persist(morningTime: picked);
-                  },
-                ),
-              ),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Abends'),
-                subtitle: Text(evening.format(context)),
-                value: settings.eveningReminderEnabled,
-                onChanged: (value) => persist(eveningEnabled: value),
-                secondary: IconButton(
-                  icon: const Icon(Icons.schedule),
-                  onPressed: () async {
-                    final picked = await showTimePicker(
-                      context: context,
-                      initialTime: evening,
-                    );
-                    if (picked != null) await persist(eveningTime: picked);
-                  },
-                ),
-              ),
-              const SizedBox(height: 8),
-              OutlinedButton.icon(
-                onPressed: () => showCheckInSheet(context),
-                icon: const Icon(Icons.favorite_outline),
-                label: const Text('Check-in jetzt öffnen'),
-              ),
+              const RemindersSection(),
               const SizedBox(height: 24),
               CalendarSection(settings: settings),
               const SizedBox(height: 24),

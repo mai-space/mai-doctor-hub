@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drift/drift.dart' show OrderingTerm;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mai_doctor_hub/data/app_database.dart';
@@ -28,7 +29,7 @@ Database openV1() {
 }
 
 void main() {
-  test('migrates v1 → v2 and keeps data', () async {
+  test('migrates v1 → current and keeps data', () async {
     final raw = openV1();
     final db = AppDatabase(NativeDatabase.opened(raw));
 
@@ -53,14 +54,25 @@ void main() {
     expect(hits, isNotEmpty);
 
     final version = await db.customSelect('PRAGMA user_version').getSingle();
-    expect(version.read<int>('user_version'), 2);
+    expect(version.read<int>('user_version'), db.schemaVersion);
+
+    // v3: Morgen-/Abend-Einstellung wurde zu Erinnerungs-Einträgen.
+    final reminders = await (db.select(db.reminders)
+          ..orderBy([(t) => OrderingTerm.asc(t.slot)]))
+        .get();
+    expect(reminders.map((r) => (r.hour, r.minute, r.enabled)), [
+      (7, 0, true),
+      (20, 0, true),
+    ]);
     await db.close();
   });
 
-  test('fresh database has settings row', () async {
+  test('fresh database has settings row and two default reminders', () async {
     final db = AppDatabase(NativeDatabase.memory());
     final settings = await db.select(db.appSettings).getSingle();
     expect(settings.eveningHour, 20);
+    final reminders = await db.select(db.reminders).get();
+    expect(reminders.map((r) => r.hour), unorderedEquals([8, 20]));
     await db.close();
   });
 }

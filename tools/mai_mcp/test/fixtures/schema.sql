@@ -1,4 +1,4 @@
--- schemaVersion 2
+-- schemaVersion 3
 ---
 CREATE TABLE "app_settings" ("id" INTEGER NOT NULL DEFAULT 1, "morning_reminder_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("morning_reminder_enabled" IN (0, 1)), "evening_reminder_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("evening_reminder_enabled" IN (0, 1)), "morning_hour" INTEGER NOT NULL DEFAULT 8, "morning_minute" INTEGER NOT NULL DEFAULT 0, "evening_hour" INTEGER NOT NULL DEFAULT 20, "evening_minute" INTEGER NOT NULL DEFAULT 0, "calendar_sync_enabled" INTEGER NOT NULL DEFAULT 0 CHECK ("calendar_sync_enabled" IN (0, 1)), "calendar_id" TEXT NULL, "calendar_include_title" INTEGER NOT NULL DEFAULT 0 CHECK ("calendar_include_title" IN (0, 1)), "app_lock_enabled" INTEGER NOT NULL DEFAULT 0 CHECK ("app_lock_enabled" IN (0, 1)), PRIMARY KEY ("id"));
 ---
@@ -25,6 +25,10 @@ CREATE VIRTUAL TABLE records_fts USING fts5(
           body,
           tokenize = 'unicode61'
         );
+---
+CREATE TABLE "reminder_symptoms" ("reminder_id" TEXT NOT NULL REFERENCES reminders (id), "symptom_id" TEXT NOT NULL REFERENCES symptoms (id), PRIMARY KEY ("reminder_id", "symptom_id"));
+---
+CREATE TABLE "reminders" ("id" TEXT NOT NULL, "slot" INTEGER NOT NULL UNIQUE, "title" TEXT NOT NULL, "body" TEXT NULL, "hour" INTEGER NOT NULL, "minute" INTEGER NOT NULL, "weekdays" INTEGER NOT NULL DEFAULT 127, "enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("enabled" IN (0, 1)), "created_at" INTEGER NOT NULL, "updated_at" INTEGER NOT NULL, PRIMARY KEY ("id"));
 ---
 CREATE TABLE "reports" ("id" TEXT NOT NULL, "appointment_id" TEXT NULL REFERENCES appointments (id), "title" TEXT NOT NULL, "mime_type" TEXT NOT NULL, "local_path" TEXT NOT NULL, "extracted_text" TEXT NULL, "page_count" INTEGER NULL, "source" INTEGER NOT NULL, "created_at" INTEGER NOT NULL, PRIMARY KEY ("id"));
 ---

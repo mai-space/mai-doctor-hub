@@ -182,6 +182,35 @@ class AppSettings extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+/// v3: Erinnerung (beliebig viele). [weekdays] ist eine Bitmaske
+/// Mo=1, Di=2, Mi=4 … So=64; 127 = täglich.
+class Reminders extends Table {
+  TextColumn get id => text()();
+
+  /// Stabile Nummer für Benachrichtigungs-IDs (einmalig vergeben).
+  IntColumn get slot => integer().unique()();
+  TextColumn get title => text()();
+  TextColumn get body => text().nullable()();
+  IntColumn get hour => integer()();
+  IntColumn get minute => integer()();
+  IntColumn get weekdays => integer().withDefault(const Constant(127))();
+  BoolColumn get enabled => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// v3: Erinnerung gilt nur für bestimmte Symptome (leer = alle offenen).
+class ReminderSymptoms extends Table {
+  TextColumn get reminderId => text().references(Reminders, #id)();
+  TextColumn get symptomId => text().references(Symptoms, #id)();
+
+  @override
+  Set<Column<Object>> get primaryKey => {reminderId, symptomId};
+}
+
 /// v2: Verknüpfung Termin → exportiertes Kalender-Event.
 class CalendarLinks extends Table {
   TextColumn get appointmentId => text()();
@@ -209,6 +238,8 @@ class CalendarLinks extends Table {
     Notes,
     AppSettings,
     CalendarLinks,
+    Reminders,
+    ReminderSymptoms,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -216,7 +247,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'mai_doctor_hub'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -232,6 +263,7 @@ class AppDatabase extends _$AppDatabase {
         );
       ''');
       await into(appSettings).insert(AppSettingsCompanion.insert());
+      await _insertDefaultReminders();
     },
     onUpgrade: (migrator, from, to) async {
       if (from < 2) {
@@ -244,12 +276,69 @@ class AppDatabase extends _$AppDatabase {
         await migrator.addColumn(appSettings, appSettings.appLockEnabled);
         await migrator.createTable(calendarLinks);
       }
+      if (from < 3) {
+        await migrator.createTable(reminders);
+        await migrator.createTable(reminderSymptoms);
+        // Bisherige Morgen-/Abend-Einstellung als Erinnerungen übernehmen.
+        final row = await customSelect(
+          'SELECT morning_reminder_enabled, evening_reminder_enabled, '
+          'morning_hour, morning_minute, evening_hour, evening_minute '
+          'FROM app_settings WHERE id = 1',
+        ).getSingleOrNull();
+        await _insertDefaultReminders(
+          morning: row == null
+              ? null
+              : (
+                  row.read<bool>('morning_reminder_enabled'),
+                  row.read<int>('morning_hour'),
+                  row.read<int>('morning_minute'),
+                ),
+          evening: row == null
+              ? null
+              : (
+                  row.read<bool>('evening_reminder_enabled'),
+                  row.read<int>('evening_hour'),
+                  row.read<int>('evening_minute'),
+                ),
+        );
+      }
     },
     beforeOpen: (details) async {
       // Settings-Zeile garantieren (z. B. nach Restore eines Fremd-Backups).
       await customStatement('INSERT OR IGNORE INTO app_settings (id) VALUES (1)');
     },
   );
+
+  /// Standard: zwei Check-in-Erinnerungen (morgens/abends).
+  Future<void> _insertDefaultReminders({
+    (bool, int, int)? morning,
+    (bool, int, int)? evening,
+  }) async {
+    final now = DateTime.now();
+    final defaults = [
+      ('reminder-morning', 1, 'Morgen-Check-in',
+          'Wie geht es dir heute? Symptome kurz protokollieren.',
+          morning ?? (true, 8, 0)),
+      ('reminder-evening', 2, 'Abend-Check-in',
+          'Abendliche Symptom-Notizen — dauert nur einen Moment.',
+          evening ?? (true, 20, 0)),
+    ];
+    for (final (id, slot, title, body, (enabled, hour, minute)) in defaults) {
+      await into(reminders).insert(
+        RemindersCompanion.insert(
+          id: id,
+          slot: slot,
+          title: title,
+          body: Value(body),
+          hour: hour,
+          minute: minute,
+          enabled: Value(enabled),
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+    }
+  }
 
   /// Lädt [load] neu, sobald sich eine der [tables] ändert.
   Stream<T> watchWith<T>(
