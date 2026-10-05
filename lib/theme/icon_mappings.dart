@@ -30,7 +30,7 @@ abstract final class IconMappings {
     'Hämatologie und Onkologie': Icons.science_outlined,
     'Rheumatologie': Icons.healing_outlined,
     'Angiologie (Gefäßmedizin)': Icons.favorite_outlined,
-    'Infektiologie': Icons.virus_outlined,
+    'Infektiologie': Icons.coronavirus_outlined,
     'Geriatrie': Icons.accessibility,
 
     // Surgical specialties
@@ -46,7 +46,7 @@ abstract final class IconMappings {
     'Orthopädie und Unfallchirurgie': Icons.healing_outlined,
     'Orthopädie': Icons.healing_outlined,
     'Unfallchirurgie': Icons.healing_outlined,
-    'Mund-Kiefer-Gesichtschirurgie': Icons.dentistry_outlined,
+    'Mund-Kiefer-Gesichtschirurgie': Icons.mood_outlined,
     'Urologie': Icons.wc_outlined,
     'Frauenheilkunde und Geburtshilfe (Gynäkologie)': Icons.favorite_outlined,
 
@@ -55,7 +55,7 @@ abstract final class IconMappings {
     'Hals-Nasen-Ohrenheilkunde (HNO)': Icons.hearing_outlined,
     'Phoniatrie und Pädaudiologie': Icons.hearing_outlined,
     'Dermatologie (Haut- und Geschlechtskrankheiten)': Icons.spa_outlined,
-    'Allergologie': Icons.allergy_outlined,
+    'Allergologie': Icons.local_florist_outlined,
 
     // Neurology and psychiatry
     'Neurologie': Icons.psychology_outlined,
@@ -70,7 +70,7 @@ abstract final class IconMappings {
     'Nuklearmedizin': Icons.science_outlined,
     'Laboratoriumsmedizin': Icons.science_outlined,
     'Pathologie': Icons.science_outlined,
-    'Humangenetik': Icons.dna_outlined,
+    'Humangenetik': Icons.biotech_outlined,
 
     // Other specialties
     'Anästhesiologie': Icons.medical_services_outlined,
@@ -87,10 +87,10 @@ abstract final class IconMappings {
     'Homöopathie': Icons.eco_outlined,
 
     // Dentistry
-    'Zahnmedizin': Icons.dentistry_outlined,
-    'Kieferorthopädie': Icons.dentistry_outlined,
-    'Oralchirurgie': Icons.dentistry_outlined,
-    'Parodontologie': Icons.dentistry_outlined,
+    'Zahnmedizin': Icons.mood_outlined,
+    'Kieferorthopädie': Icons.mood_outlined,
+    'Oralchirurgie': Icons.mood_outlined,
+    'Parodontologie': Icons.mood_outlined,
 
     // Health professions
     'Physiotherapie': Icons.healing_outlined,
@@ -112,9 +112,9 @@ abstract final class IconMappings {
     'Auge': Icons.visibility_outlined,
     'Ohr': Icons.hearing_outlined,
     'Nase': Icons.air_outlined,
-    'Mund': Icons.dentistry_outlined,
-    'Kiefer': Icons.dentistry_outlined,
-    'Zähne': Icons.dentistry_outlined,
+    'Mund': Icons.mood_outlined,
+    'Kiefer': Icons.mood_outlined,
+    'Zähne': Icons.mood_outlined,
     'Hals': Icons.air_outlined,
     'Nacken': Icons.psychology_outlined,
     'Halswirbelsäule': Icons.psychology_outlined,
