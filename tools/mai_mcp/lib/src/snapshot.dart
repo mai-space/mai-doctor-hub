@@ -19,18 +19,23 @@ class MaiSnapshot {
   final DateTime? createdAt;
 
   static Future<MaiSnapshot> openBackup(String path, String passphrase) async {
-    final contents = await BackupArchive.open(
-      await File(path).readAsBytes(),
-      passphrase,
-    );
     final dir = await Directory.systemTemp.createTemp('mai_mcp_');
     if (!Platform.isWindows) {
       await Process.run('chmod', ['700', dir.path]);
     }
-    final dbPath = '${dir.path}/snapshot.sqlite';
-    await File(dbPath).writeAsBytes(contents.database, flush: true);
     try {
-      return MaiSnapshot._(_open(dbPath), dir, contents.createdAt);
+      // Gestreamt entschlüsseln; Berichtsdateien werden nicht gebraucht.
+      final contents = await BackupStream.open(
+        path,
+        passphrase,
+        dir.path,
+        databaseOnly: true,
+      );
+      return MaiSnapshot._(
+        _open(contents.databasePath),
+        dir,
+        contents.createdAt,
+      );
     } catch (_) {
       await dir.delete(recursive: true);
       rethrow;

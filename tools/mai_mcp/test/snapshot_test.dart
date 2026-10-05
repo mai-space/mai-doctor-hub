@@ -32,6 +32,34 @@ void main() {
     expect(after, before);
   });
 
+  test('opens streamed (v2) backups as written by the app', () async {
+    final db = buildFixtureDb(dir);
+    final pdf = File('${dir.path}/r.pdf')..writeAsStringSync('%PDF');
+    final zip = '${dir.path}/backup.zip';
+    await BackupStream.writeZip(
+      zip,
+      databasePath: db,
+      manifest: {
+        'format': 2,
+        'createdAt': DateTime.utc(2026, 10, 6).toIso8601String(),
+        'reports': {'r1': 'reports/r1.pdf'},
+      },
+      files: {'reports/r1.pdf': pdf.path},
+    );
+    final sealed = '${dir.path}/akte.maibackup';
+    await BackupStream.encryptFile(
+      zip,
+      sealed,
+      'geheim-genug',
+      iterations: 1000,
+      chunkSize: 4096,
+    );
+    final snapshot = await MaiSnapshot.openBackup(sealed, 'geheim-genug');
+    addTearDown(snapshot.close);
+    expect(snapshot.createdAt, DateTime.utc(2026, 10, 6));
+    expect(MaiRecords(snapshot.db).listAppointments(), hasLength(2));
+  });
+
   test('wrong passphrase is rejected', () async {
     final backup = File('${dir.path}/akte.maibackup')
       ..writeAsBytesSync(
@@ -46,10 +74,7 @@ void main() {
   test('snapshot is read-only', () async {
     final snapshot = MaiSnapshot.openSqlite(buildFixtureDb(dir));
     addTearDown(snapshot.close);
-    expect(
-      () => snapshot.db.execute("DELETE FROM notes"),
-      throwsA(anything),
-    );
+    expect(() => snapshot.db.execute("DELETE FROM notes"), throwsA(anything));
   });
 
   test('unknown schema versions are rejected', () {

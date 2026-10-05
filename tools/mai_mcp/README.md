@@ -18,9 +18,9 @@ Rechner: mai_mcp --backup akte.maibackup   ← Passwort aus Umgebungsvariable
 
 - **Nur lesend.** Die Datenbank wird schreibgeschützt geöffnet; alle Tools
   tragen `readOnlyHint`.
-- **Kein Klartext auf der Platte.** Die Sicherung wird im Speicher
-  entschlüsselt; der SQLite-Snapshot liegt nur während der Laufzeit in einem
-  temporären Ordner (`chmod 700`) und wird beim Beenden gelöscht.
+- **Klartext nur kurzzeitig.** Die Sicherung wird gestreamt in einen
+  temporären Ordner (`chmod 700`) entschlüsselt; nur der SQLite-Snapshot wird
+  entpackt (keine Berichtsdateien) und beim Beenden gelöscht.
 - **Audit-Log optional** (`--audit-log`): protokolliert nur *welches* Tool
   wann aufgerufen wurde, nie Argumente oder Inhalte.
 - **Cloud-Modelle sehen die Antworten.** Mit Gemini (Cloud) werden die von

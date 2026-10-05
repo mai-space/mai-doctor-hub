@@ -60,7 +60,7 @@ Status: ☐ offen · ◐ in Arbeit · ☑ erledigt
 - Archivierte Einträge erscheinen nirgends sonst (Listen, Suche,
   Kalender-Export, Erinnerungen, MCP).
 
-## 9. ☐ Sicherung als Stream + Import/Export von Dokumenten
+## 9. ☑ Sicherung als Stream + Import/Export von Dokumenten
 - Sicherung wird gestreamt geschrieben/gelesen (kein Komplett-Laden in den
   Speicher), auch mit vielen großen PDFs.
 - Export aller Berichte/Scans (PDFs, Bilder) als Archiv mit lesbaren

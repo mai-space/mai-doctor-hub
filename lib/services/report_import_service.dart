@@ -22,6 +22,23 @@ class ImportedReport {
   final String? extractedText;
 }
 
+/// Eine gewählte Datei: lokaler Pfad bevorzugt, sonst Bytes.
+typedef PickedReportFile = ({
+  String name,
+  String? path,
+  Future<Uint8List> Function() readBytes,
+});
+
+/// Ergebnis einer Mehrfachauswahl.
+class BulkImportResult {
+  final imported = <ImportedReport>[];
+
+  /// Dateiname → Fehlermeldung.
+  final failed = <String, String>{};
+
+  bool get isEmpty => imported.isEmpty && failed.isEmpty;
+}
+
 /// Fehler beim Ablegen eines Berichts — Nachricht ist für die UI gedacht.
 class ReportImportException implements Exception {
   const ReportImportException(this.message, [this.cause]);
@@ -49,7 +66,9 @@ class ReportImportService {
   final RecordsRepository _records;
   final Future<Directory> Function() _baseDir;
 
-  Future<ImportedReport?> pickAndImport({String? appointmentId}) async {
+  /// Wählt eine oder mehrere Dateien und legt jede als Bericht ab.
+  /// Einzelne Fehler brechen den Rest nicht ab.
+  Future<BulkImportResult> pickAndImport({String? appointmentId}) async {
     final List<PlatformFile> files;
     try {
       files = await FilePicker.pickFiles(
@@ -59,15 +78,38 @@ class ReportImportService {
     } catch (e) {
       throw ReportImportException('Dateiauswahl fehlgeschlagen', e);
     }
-    if (files.isEmpty) return null;
+    return importAll([
+      for (final file in files)
+        (
+          name: file.name,
+          path: kIsWeb ? null : file.path,
+          readBytes: file.readAsBytes,
+        ),
+    ], appointmentId: appointmentId);
+  }
 
-    final file = files.first;
-    return importFile(
-      name: file.name,
-      sourcePath: kIsWeb ? null : file.path,
-      readBytes: file.readAsBytes,
-      appointmentId: appointmentId,
-    );
+  /// Legt mehrere Dateien nacheinander ab (je Datei nur eine im Speicher).
+  Future<BulkImportResult> importAll(
+    List<PickedReportFile> files, {
+    String? appointmentId,
+  }) async {
+    final result = BulkImportResult();
+    for (final file in files) {
+      try {
+        result.imported.add(
+          await importFile(
+            name: file.name,
+            sourcePath: file.path,
+            readBytes: file.readBytes,
+            appointmentId: appointmentId,
+          ),
+        );
+      } on ReportImportException catch (e) {
+        debugPrint('$e');
+        result.failed[file.name] = e.message;
+      }
+    }
+    return result;
   }
 
   /// Legt eine bereits gewählte Datei als Bericht ab.

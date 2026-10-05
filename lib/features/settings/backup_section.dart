@@ -1,11 +1,18 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../data/database_provider.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../services/backup_service.dart';
+import '../../services/document_export_service.dart';
 import '../../services/report_import_service.dart';
+import '../records/entity_forms.dart';
 
 /// Einstellungen → Datensicherung & Suchindex.
 class BackupSection extends StatefulWidget {
@@ -42,27 +49,71 @@ class _BackupSectionState extends State<BackupSection> {
     if (passphrase == null || !mounted) return;
     final service = BackupService(DatabaseScope.of(context));
     await _run('Sicherung', () async {
-      final bytes = await service.createBackup(passphrase);
-      final saved = await FilePicker.saveFile(
-        fileName: BackupService.suggestedFileName(DateTime.now()),
-        bytes: bytes,
-        dialogTitle: 'Sicherung speichern',
-      );
-      if (saved != null) {
-        _snack('Sicherung gespeichert — Passwort gut aufbewahren!');
+      final file = await service.createBackupFile(passphrase);
+      try {
+        // Teilen-Dialog liest die Datei selbst (z. B. „In Dateien
+        // speichern“, Drive) — nichts muss komplett in den Speicher.
+        final result = await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(file.path, mimeType: 'application/octet-stream')],
+            fileNameOverrides: [
+              BackupService.suggestedFileName(DateTime.now()),
+            ],
+            subject: 'Mai Doctor Hub — Sicherung',
+          ),
+        );
+        if (result.status != ShareResultStatus.dismissed) {
+          _snack('Sicherung erstellt — Passwort gut aufbewahren!');
+        }
+      } finally {
+        try {
+          await file.delete();
+        } catch (_) {}
       }
     });
   }
 
   Future<void> _import() async {
-    final db = DatabaseScope.of(context);
     final files = await FilePicker.pickFiles(dialogTitle: 'Sicherung wählen');
     if (files.isEmpty || !mounted) return;
-    final bytes = await files.first.readAsBytes();
-    if (!BackupCrypto.looksLikeBackup(bytes)) {
-      _snack('Keine Mai-Doctor-Hub-Sicherung (.maibackup).');
-      return;
+    final (path, staged) = await _localPath(files.first);
+    try {
+      if (await BackupStream.versionOf(path) == 0) {
+        _snack('Keine Mai-Doctor-Hub-Sicherung (.maibackup).');
+        return;
+      }
+      await _confirmAndRestore(path);
+    } finally {
+      if (staged) {
+        try {
+          await File(path).delete();
+        } catch (_) {}
+      }
     }
+  }
+
+  /// Lokaler Pfad der Auswahl; `content://`-Dateien werden gestreamt in den
+  /// Temp-Ordner kopiert (staged = danach löschen).
+  Future<(String, bool)> _localPath(PlatformFile file) async {
+    final direct = file.path;
+    if (direct != null) return (direct, false);
+    final target = File(
+      p.join(
+        (await getTemporaryDirectory()).path,
+        'import_${DateTime.now().microsecondsSinceEpoch}.maibackup',
+      ),
+    );
+    final sink = target.openWrite();
+    try {
+      await sink.addStream(file.readAsByteStream());
+    } finally {
+      await sink.close();
+    }
+    return (target.path, true);
+  }
+
+  Future<void> _confirmAndRestore(String path) async {
+    final db = DatabaseScope.of(context);
     if (!mounted) return;
     final confirmed = await showDialog<bool>(
       context: context,
@@ -90,12 +141,60 @@ class _BackupSectionState extends State<BackupSection> {
     if (passphrase == null) return;
     await _run('Wiederherstellung', () async {
       // Erinnerungen planen sich über den DB-Stream selbst neu.
-      final result = await BackupService(db).restore(bytes, passphrase);
+      final result = await BackupService(db).restoreFile(path, passphrase);
       final date = DateFormat('d. MMM yyyy', 'de').format(result.createdAt);
       _snack(
         'Sicherung vom $date wiederhergestellt'
         '${result.missingFiles > 0 ? ' (${result.missingFiles} Dateien fehlten)' : ''}.',
       );
+    });
+  }
+
+  Future<void> _exportDocuments() async {
+    final db = DatabaseScope.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Dokumente exportieren?'),
+        content: const Text(
+          'Alle Berichte und Scans werden als ZIP mit lesbaren Dateinamen '
+          'und einer Übersicht (CSV) geteilt. Das Archiv ist nicht '
+          'verschlüsselt — nur an vertrauenswürdige Ziele senden.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Exportieren'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    await _run('Export', () async {
+      final export = await DocumentExportService(db).export();
+      if (export == null) {
+        _snack('Keine Dokumente zum Exportieren.');
+        return;
+      }
+      try {
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(export.file.path, mimeType: 'application/zip')],
+            fileNameOverrides: [
+              DocumentExportService.suggestedFileName(DateTime.now()),
+            ],
+            subject: 'Mai Doctor Hub — ${export.count} Dokumente',
+          ),
+        );
+      } finally {
+        try {
+          await export.file.delete();
+        } catch (_) {}
+      }
     });
   }
 
@@ -153,6 +252,24 @@ class _BackupSectionState extends State<BackupSection> {
             enabled: !busy,
             onTap: _import,
           ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.folder_zip_outlined),
+            title: const Text('Dokumente exportieren'),
+            subtitle: const Text('Alle Berichte & Scans als ZIP mit Übersicht'),
+            enabled: !busy,
+            onTap: _exportDocuments,
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.drive_folder_upload_outlined),
+            title: const Text('Dokumente importieren'),
+            subtitle: const Text('Mehrere PDFs oder Bilder auf einmal'),
+            enabled: !busy,
+            onTap: () => _run('Import', () async {
+              await pickReportFile(context);
+            }),
+          ),
         ] else
           const ListTile(
             contentPadding: EdgeInsets.zero,
@@ -209,8 +326,8 @@ class _PassphraseDialogState extends State<_PassphraseDialog> {
     final value = _first.text;
     if (widget.confirm && value.length < BackupCrypto.minPassphraseLength) {
       setState(
-        () => _error =
-            'Mindestens ${BackupCrypto.minPassphraseLength} Zeichen.',
+        () =>
+            _error = 'Mindestens ${BackupCrypto.minPassphraseLength} Zeichen.',
       );
       return;
     }

@@ -11,7 +11,7 @@ import 'package:mai_backup_format/mai_backup_format.dart';
 import '../data/app_database.dart';
 
 export 'package:mai_backup_format/mai_backup_format.dart'
-    show BackupException, BackupCrypto;
+    show BackupException, BackupCrypto, BackupStream;
 
 const backupSupported = true;
 
@@ -50,7 +50,10 @@ class BackupService {
       'mai-doctor-hub-${now.year}-${_two(now.month)}-${_two(now.day)}'
       '.maibackup';
 
-  Future<Uint8List> createBackup(String passphrase) async {
+  /// Schreibt die verschlüsselte Sicherung Datei für Datei in den
+  /// Temp-Ordner — auch mit vielen PDFs nie komplett im Speicher.
+  /// Aufrufer teilt/kopiert die Datei und löscht sie danach.
+  Future<File> createBackupFile(String passphrase) async {
     final work = await _workDir();
     try {
       final snapshot = p.join(work.path, 'db.sqlite');
@@ -58,68 +61,75 @@ class BackupService {
       await _db.customStatement('VACUUM INTO ?', [snapshot]);
 
       final reports = await _db.select(_db.reports).get();
-      final files = <String, Uint8List>{};
+      final files = <String, String>{};
       final entries = <String, String>{};
       for (final report in reports) {
-        final file = File(report.localPath);
         if (report.localPath.startsWith('web-memory://') ||
-            !await file.exists()) {
+            !await File(report.localPath).exists()) {
           continue;
         }
         final entry = 'reports/${report.id}${p.extension(report.localPath)}';
-        files[entry] = await file.readAsBytes();
+        files[entry] = report.localPath;
         entries[report.id] = entry;
       }
-      final zip = BackupArchive.build(
-        database: await File(snapshot).readAsBytes(),
+      final zip = p.join(work.path, 'backup.zip');
+      await BackupStream.writeZip(
+        zip,
+        databasePath: snapshot,
         files: files,
         manifest: {
-          'format': 1,
+          'format': 2,
           'schemaVersion': _db.schemaVersion,
           'createdAt': DateTime.now().toUtc().toIso8601String(),
           'reports': entries,
         },
       );
-      return await BackupCrypto.encrypt(
+      final out = File(
+        p.join(
+          (await _tempDir()).path,
+          'export_${DateTime.now().microsecondsSinceEpoch}.maibackup',
+        ),
+      );
+      await BackupStream.encryptFile(
         zip,
+        out.path,
         passphrase,
         iterations: iterations,
       );
+      return out;
     } finally {
       await work.delete(recursive: true);
     }
   }
 
-  /// Ersetzt **alle** Daten durch den Inhalt der Sicherung.
+  /// Ersetzt **alle** Daten durch den Inhalt der Sicherung unter [path]
+  /// (Format v1 oder v2).
   ///
   /// Gerätespezifisches (Kalender-Verknüpfungen, gewählter Kalender) wird
   /// zurückgesetzt, weil Event-IDs auf einem anderen Gerät nicht gelten.
-  Future<RestoreResult> restore(Uint8List data, String passphrase) async {
-    final contents = await BackupArchive.open(data, passphrase);
-    final reportEntries = contents.reportEntries;
-
+  Future<RestoreResult> restoreFile(String path, String passphrase) async {
     final work = await _workDir();
     try {
-      final restorePath = p.join(work.path, 'restore.sqlite');
-      await File(restorePath).writeAsBytes(contents.database, flush: true);
+      final contents = await BackupStream.open(path, passphrase, work.path);
+      final restorePath = contents.databasePath;
       await _migrateSnapshot(restorePath);
 
       final reportsDir = Directory(p.join((await _baseDir()).path, 'reports'));
       final oldFiles = await _listFiles(reportsDir);
       await reportsDir.create(recursive: true);
 
-      // Dateien zuerst schreiben: scheitert das, bleibt die DB unverändert.
+      // Dateien zuerst verschieben: scheitert das, bleibt die DB unverändert.
       final newPaths = <String, String>{};
+      final stamp = DateTime.now().millisecondsSinceEpoch;
       for (final MapEntry(key: reportId, value: entry)
-          in reportEntries.entries) {
-        final bytes = contents.files[entry];
-        if (bytes == null) continue;
+          in contents.reportEntries.entries) {
+        final extracted = contents.files[entry];
+        if (extracted == null) continue;
         final target = p.join(
           reportsDir.path,
-          'restored_${DateTime.now().millisecondsSinceEpoch}_'
-          '${p.basename(entry)}',
+          'restored_${stamp}_${p.basename(entry)}',
         );
-        await File(target).writeAsBytes(bytes, flush: true);
+        await _move(File(extracted), target);
         newPaths[reportId] = target;
       }
 
@@ -143,6 +153,15 @@ class BackupService {
       );
     } finally {
       await work.delete(recursive: true);
+    }
+  }
+
+  /// Umbenennen; über Dateisystemgrenzen hinweg kopieren.
+  static Future<void> _move(File source, String target) async {
+    try {
+      await source.rename(target);
+    } on FileSystemException {
+      await source.copy(target);
     }
   }
 
@@ -181,9 +200,7 @@ class BackupService {
           await _db.customStatement('DELETE FROM "${table.actualTableName}"');
         }
         for (final table in tables) {
-          final columns = table.$columns
-              .map((c) => '"${c.name}"')
-              .join(', ');
+          final columns = table.$columns.map((c) => '"${c.name}"').join(', ');
           final name = table.actualTableName;
           await _db.customStatement(
             'INSERT INTO main."$name" ($columns) SELECT $columns FROM bk."$name"',
@@ -197,12 +214,14 @@ class BackupService {
 
         // Gerätespezifisches zurücksetzen.
         await _db.delete(_db.calendarLinks).go();
-        await _db.update(_db.appSettings).write(
-          const AppSettingsCompanion(
-            calendarSyncEnabled: Value(false),
-            calendarId: Value(null),
-          ),
-        );
+        await _db
+            .update(_db.appSettings)
+            .write(
+              const AppSettingsCompanion(
+                calendarSyncEnabled: Value(false),
+                calendarId: Value(null),
+              ),
+            );
         await _db.customStatement(
           'INSERT OR IGNORE INTO app_settings (id) VALUES (1)',
         );
@@ -232,7 +251,10 @@ class BackupService {
 
   Future<List<File>> _listFiles(Directory dir) async {
     if (!await dir.exists()) return const [];
-    return [await for (final e in dir.list()) if (e is File) e];
+    return [
+      await for (final e in dir.list())
+        if (e is File) e,
+    ];
   }
 
   static String _two(int v) => v.toString().padLeft(2, '0');

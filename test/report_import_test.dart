@@ -78,4 +78,15 @@ void main() {
       throwsA(isA<ReportImportException>()),
     );
   });
+
+  test('bulk import keeps going after a bad file', () async {
+    final result = await service.importAll([
+      (name: 'Brief 1.pdf', path: null, readBytes: () async => pdfBytes),
+      (name: 'notizen.txt', path: null, readBytes: () async => Uint8List(0)),
+      (name: 'Brief 2.pdf', path: null, readBytes: () async => pdfBytes),
+    ]);
+    expect(result.imported.map((r) => r.title), ['Brief 1.pdf', 'Brief 2.pdf']);
+    expect(result.failed.keys, ['notizen.txt']);
+    expect(await database.select(database.reports).get(), hasLength(2));
+  });
 }

@@ -113,7 +113,10 @@ void main() {
       source: ReportSource.image,
     );
     expect(await service.reindexMissing(), 1);
-    expect((await RecordsRepository(db).getReport(id))!.extractedText, isNotNull);
+    expect(
+      (await RecordsRepository(db).getReport(id))!.extractedText,
+      isNotNull,
+    );
   });
 
   test('ocr errors never block the import', () async {
@@ -138,10 +141,7 @@ void main() {
     );
     expect(recognizer.calls, hasLength(1));
     // A4 hochkant, lange Kante = renderSize.
-    expect(
-      imported.extractedText,
-      contains('x${OcrService.renderSize})'),
-    );
+    expect(imported.extractedText, contains('x${OcrService.renderSize})'));
   }, skip: _pdfium == null ? 'PDFIUM_PATH nicht gesetzt' : null);
 
   testWidgets('add report offers scan; scan flow stores a scan report', (
@@ -178,7 +178,7 @@ void main() {
     await tester.tap(find.text('add'));
     await tester.pumpAndSettle();
     expect(find.text('Dokument scannen'), findsOneWidget);
-    expect(find.text('Datei wählen'), findsOneWidget);
+    expect(find.text('Dateien wählen'), findsOneWidget);
     await tester.tap(find.text('Dokument scannen'));
     List<Report>? reports;
     for (var i = 0; i < 50 && (reports?.isEmpty ?? true); i++) {

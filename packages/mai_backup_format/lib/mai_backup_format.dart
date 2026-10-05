@@ -4,3 +4,4 @@ library;
 
 export 'src/backup_archive.dart';
 export 'src/backup_crypto.dart';
+export 'src/backup_stream.dart';

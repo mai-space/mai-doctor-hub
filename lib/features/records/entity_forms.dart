@@ -66,9 +66,9 @@ class DiagnosisPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Diagnose>>(
-      future: RecordsRepository(
-        DatabaseScope.of(context),
-      ).watchDiagnoses().first,
+      future: RecordsRepository(DatabaseScope.of(context))
+          .watchDiagnoses()
+          .first,
       builder: (context, snapshot) {
         final diagnoses = snapshot.data ?? const <Diagnose>[];
         if (diagnoses.isEmpty) return const SizedBox.shrink();
@@ -281,7 +281,10 @@ Future<String?> showDiagnosisForm(
   return diagnosis.id;
 }
 
-Future<String?> showSymptomForm(BuildContext context, {Symptom? symptom}) async {
+Future<String?> showSymptomForm(
+  BuildContext context, {
+  Symptom? symptom,
+}) async {
   final label = TextEditingController(text: symptom?.label);
   final region = TextEditingController(text: symptom?.bodyRegion);
   var diagnosisId = symptom?.diagnosisId;
@@ -464,7 +467,8 @@ Future<void> showCreateSymptomDialog(BuildContext context) =>
     showSymptomForm(context);
 Future<void> showCreateMedicationDialog(BuildContext context) =>
     showMedicationForm(context);
-Future<void> showCreateNoteDialog(BuildContext context) => showNoteForm(context);
+Future<void> showCreateNoteDialog(BuildContext context) =>
+    showNoteForm(context);
 
 /// Bericht hinzufügen: scannen (Kamera) oder Datei wählen.
 Future<ImportedReport?> importReport(
@@ -490,8 +494,8 @@ Future<ImportedReport?> importReport(
           ),
           ListTile(
             leading: const Icon(Icons.upload_file),
-            title: const Text('Datei wählen'),
-            subtitle: const Text('PDF oder Bild'),
+            title: const Text('Dateien wählen'),
+            subtitle: const Text('PDFs oder Bilder · auch mehrere auf einmal'),
             onTap: () => Navigator.pop(context, 'file'),
           ),
         ],
@@ -545,7 +549,8 @@ Future<ImportedReport?> scanReport(
   }
 }
 
-/// Wählt eine Datei und legt sie als Bericht ab; Fehler landen als Snackbar.
+/// Wählt Dateien und legt sie als Berichte ab; Ergebnis als Snackbar.
+/// Liefert den ersten importierten Bericht (oder `null`).
 Future<ImportedReport?> pickReportFile(
   BuildContext context, {
   String? appointmentId,
@@ -553,15 +558,25 @@ Future<ImportedReport?> pickReportFile(
   final records = RecordsRepository(DatabaseScope.of(context));
   final messenger = ScaffoldMessenger.of(context);
   try {
-    final imported = await ReportImportService(
-      records,
-    ).pickAndImport(appointmentId: appointmentId);
-    if (imported != null) {
-      messenger.showSnackBar(
-        SnackBar(content: Text('Bericht „${imported.title}“ gespeichert')),
-      );
+    final result = await ReportImportService(records)
+        .pickAndImport(appointmentId: appointmentId);
+    if (result.isEmpty) return null;
+    final ok = result.imported;
+    final failed = result.failed;
+    final String message;
+    if (failed.isEmpty) {
+      message = ok.length == 1
+          ? 'Bericht „${ok.single.title}“ gespeichert'
+          : '${ok.length} Berichte gespeichert';
+    } else if (ok.isEmpty && failed.length == 1) {
+      message = failed.values.single;
+    } else {
+      message =
+          '${ok.length} gespeichert, ${failed.length} fehlgeschlagen: '
+          '${failed.keys.join(', ')}';
     }
-    return imported;
+    messenger.showSnackBar(SnackBar(content: Text(message)));
+    return ok.isEmpty ? null : ok.first;
   } on ReportImportException catch (e) {
     debugPrint('$e');
     messenger.showSnackBar(SnackBar(content: Text(e.message)));

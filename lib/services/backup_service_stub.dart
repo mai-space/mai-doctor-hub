@@ -1,12 +1,11 @@
-import 'dart:io' show Directory;
-import 'dart:typed_data';
+import 'dart:io' show Directory, File;
 
 import 'package:mai_backup_format/mai_backup_format.dart';
 
 import '../data/app_database.dart';
 
 export 'package:mai_backup_format/mai_backup_format.dart'
-    show BackupException, BackupCrypto;
+    show BackupException, BackupCrypto, BackupStream;
 
 /// Web: keine Sicherung (Dateien liegen dort nicht dauerhaft vor).
 const backupSupported = false;
@@ -33,9 +32,9 @@ class BackupService {
 
   static String suggestedFileName(DateTime now) => 'mai-doctor-hub.maibackup';
 
-  Future<Uint8List> createBackup(String passphrase) =>
+  Future<File> createBackupFile(String passphrase) =>
       throw const BackupException('Sicherung ist im Web nicht verfügbar.');
 
-  Future<RestoreResult> restore(Uint8List data, String passphrase) =>
+  Future<RestoreResult> restoreFile(String path, String passphrase) =>
       throw const BackupException('Sicherung ist im Web nicht verfügbar.');
 }

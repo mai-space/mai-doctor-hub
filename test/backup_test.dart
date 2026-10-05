@@ -23,12 +23,10 @@ void main() {
 
   /// Ein „Gerät“: eigene DB + eigener Dokumentenordner.
   Future<(AppDatabase, BackupService, Directory)> device(String name) async {
-    final docs = await Directory('${root.path}/$name/docs').create(
-      recursive: true,
-    );
-    final tmp = await Directory('${root.path}/$name/tmp').create(
-      recursive: true,
-    );
+    final docs = await Directory('${root.path}/$name/docs')
+        .create(recursive: true);
+    final tmp = await Directory('${root.path}/$name/tmp')
+        .create(recursive: true);
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
     return (
@@ -113,7 +111,8 @@ void main() {
           ),
         );
 
-    final sealed = await backupA.createBackup(_pass);
+    final sealed = await backupA.createBackupFile(_pass);
+    expect(await BackupStream.versionOf(sealed.path), 2);
 
     final (dbB, backupB, docsB) = await device('b');
     // Vorhandene Daten auf B werden ersetzt.
@@ -122,14 +121,16 @@ void main() {
       ..createSync(recursive: true)
       ..writeAsStringSync('alt');
 
-    final result = await backupB.restore(sealed, _pass);
+    final result = await backupB.restoreFile(sealed.path, _pass);
     expect(result.reportCount, 1);
     expect(result.missingFiles, 0);
 
     final records = RecordsRepository(dbB);
     expect(await dbB.select(dbB.notes).get(), isEmpty);
-    expect((await AppointmentRepository(dbB).getById(appointmentId))!.title,
-        'Kontrolle');
+    expect(
+      (await AppointmentRepository(dbB).getById(appointmentId))!.title,
+      'Kontrolle',
+    );
     final report = (await records.reportsForAppointment(appointmentId)).single;
     expect(report.localPath, startsWith(docsB.path));
     expect(File(report.localPath).readAsStringSync(), '%PDF-Brief');
@@ -160,25 +161,30 @@ void main() {
       ..execute(
         "INSERT INTO diagnoses VALUES ('x', 'Asthma', NULL, NULL, NULL, 0, 0, 0)",
       )
-      ..execute("INSERT INTO records_fts VALUES ('diagnosis', 'x', 'Asthma', '')")
+      ..execute(
+        "INSERT INTO records_fts VALUES ('diagnosis', 'x', 'Asthma', '')",
+      )
       ..execute('PRAGMA user_version = 1')
       ..close();
 
-    final sealed = await BackupCrypto.encrypt(
-      BackupArchive.build(
-        database: File(v1Path).readAsBytesSync(),
-        manifest: const {
-          'format': 1,
-          'schemaVersion': 1,
-          'createdAt': '2026-01-01T00:00:00Z',
-          'reports': <String, String>{},
-        },
+    final sealed = File('${root.path}/v1.maibackup');
+    await sealed.writeAsBytes(
+      await BackupCrypto.encrypt(
+        BackupArchive.build(
+          database: File(v1Path).readAsBytesSync(),
+          manifest: const {
+            'format': 1,
+            'schemaVersion': 1,
+            'createdAt': '2026-01-01T00:00:00Z',
+            'reports': <String, String>{},
+          },
+        ),
+        _pass,
+        iterations: 1000,
       ),
-      _pass,
-      iterations: 1000,
     );
 
-    await backupB.restore(sealed, _pass);
+    await backupB.restoreFile(sealed.path, _pass);
     final records = RecordsRepository(dbB);
     expect((await records.getDiagnosis('x'))!.title, 'Asthma');
     expect(await records.search('Asthma'), isNotEmpty);
@@ -190,9 +196,9 @@ void main() {
     final (dbA, backupA, _) = await device('a');
     final (_, backupB, _) = await device('b');
     await dbA.customStatement('PRAGMA user_version = 99');
-    final sealed = await backupA.createBackup(_pass);
+    final sealed = await backupA.createBackupFile(_pass);
     expect(
-      () => backupB.restore(sealed, _pass),
+      () => backupB.restoreFile(sealed.path, _pass),
       throwsA(
         isA<BackupException>().having(
           (e) => e.message,
