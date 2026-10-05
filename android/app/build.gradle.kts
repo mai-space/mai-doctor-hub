@@ -1,7 +1,14 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val keyPropertiesFile = rootProject.file("key.properties")
+val keyProperties = Properties().apply {
+    if (keyPropertiesFile.exists()) keyPropertiesFile.inputStream().use { load(it) }
 }
 
 android {
@@ -33,31 +40,22 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            val keyPropertiesFile = rootProject.file("key.properties")
-            if (keyPropertiesFile.exists()) {
-                val keyProperties = java.util.Properties()
-                keyProperties.load(keyPropertiesFile.inputStream())
+        if (keyPropertiesFile.exists()) {
+            create("release") {
                 storeFile = file(keyProperties.getProperty("storeFile"))
                 storePassword = keyProperties.getProperty("storePassword")
                 keyAlias = keyProperties.getProperty("keyAlias")
                 keyPassword = keyProperties.getProperty("keyPassword")
-            } else {
-                // Fall back to debug signing if key.properties doesn't exist.
-                // For development/testing only — always use release signing for production.
-                println("⚠️  key.properties not found. Using debug keystore for release build.")
-                println("    For production, create android/key.properties with your signing key.")
-                storeFile = file("${project.android.sdkDirectory}/debug.keystore")
-                storePassword = "android"
-                keyAlias = "androiddebugkey"
-                keyPassword = "android"
             }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            // Ohne android/key.properties (z. B. in CI) mit Debug-Key signieren.
+            signingConfig = signingConfigs.getByName(
+                if (keyPropertiesFile.exists()) "release" else "debug",
+            )
         }
     }
 }
