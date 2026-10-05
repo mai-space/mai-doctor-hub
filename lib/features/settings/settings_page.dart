@@ -4,8 +4,8 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../services/notification_service.dart';
-import '../../theme/app_theme.dart';
 import '../check_in/check_in_sheet.dart';
+import 'backup_section.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -139,6 +139,8 @@ class SettingsPage extends StatelessWidget {
                 label: const Text('Check-in jetzt öffnen'),
               ),
               const SizedBox(height: 24),
+              const BackupSection(),
+              const SizedBox(height: 24),
               Text(
                 'App',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -153,13 +155,7 @@ class SettingsPage extends StatelessWidget {
               const ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text('Version'),
-                subtitle: Text('1.0.0+1 (Iteration 1)'),
-              ),
-              Text(
-                'Erweiterungen (PIN, Export, Themes) folgen später.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppColors.muted,
-                ),
+                subtitle: Text('1.0.0+1'),
               ),
             ],
           );
