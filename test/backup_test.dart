@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:archive/archive.dart';
+import 'package:mai_backup_format/mai_backup_format.dart';
 import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -165,15 +165,14 @@ void main() {
       ..close();
 
     final sealed = await BackupCrypto.encrypt(
-      ZipEncoder().encodeBytes(
-        Archive()
-          ..add(ArchiveFile.bytes('db.sqlite', File(v1Path).readAsBytesSync()))
-          ..add(
-            ArchiveFile.string(
-              'manifest.json',
-              '{"format":1,"schemaVersion":1,"createdAt":"2026-01-01T00:00:00Z","reports":{}}',
-            ),
-          ),
+      BackupArchive.build(
+        database: File(v1Path).readAsBytesSync(),
+        manifest: const {
+          'format': 1,
+          'schemaVersion': 1,
+          'createdAt': '2026-01-01T00:00:00Z',
+          'reports': <String, String>{},
+        },
       ),
       _pass,
       iterations: 1000,

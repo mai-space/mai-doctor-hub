@@ -49,3 +49,6 @@ app.*.map.json
 
 # Local browser/agent artifacts
 .playwright-mcp/
+
+# Bibliothekspaket: keine Lockfile
+packages/mai_backup_format/pubspec.lock

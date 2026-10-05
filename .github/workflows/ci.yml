@@ -48,9 +48,39 @@ jobs:
       - name: Test
         run: flutter test
 
+  dart-packages:
+    name: MCP server & backup format
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        package: [packages/mai_backup_format, tools/mai_mcp]
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter (Dart SDK)
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.6"
+          channel: stable
+          cache: true
+
+      - name: Pub get
+        run: dart pub get
+
+      - name: Analyze
+        run: dart analyze --fatal-infos
+
+      - name: Test
+        run: dart test
+
   build-apk:
     name: Release APK
-    needs: analyze-test
+    needs: [analyze-test, dart-packages]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

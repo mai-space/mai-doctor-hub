@@ -1,17 +1,17 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:archive/archive.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 
-import '../data/app_database.dart';
-import 'backup_crypto.dart';
+import 'package:mai_backup_format/mai_backup_format.dart';
 
-export 'backup_crypto.dart' show BackupException, BackupCrypto;
+import '../data/app_database.dart';
+
+export 'package:mai_backup_format/mai_backup_format.dart'
+    show BackupException, BackupCrypto;
 
 const backupSupported = true;
 
@@ -58,9 +58,8 @@ class BackupService {
       await _db.customStatement('VACUUM INTO ?', [snapshot]);
 
       final reports = await _db.select(_db.reports).get();
-      final archive = Archive()
-        ..add(ArchiveFile.bytes('db.sqlite', await File(snapshot).readAsBytes()));
-      final files = <String, String>{};
+      final files = <String, Uint8List>{};
+      final entries = <String, String>{};
       for (final report in reports) {
         final file = File(report.localPath);
         if (report.localPath.startsWith('web-memory://') ||
@@ -68,22 +67,21 @@ class BackupService {
           continue;
         }
         final entry = 'reports/${report.id}${p.extension(report.localPath)}';
-        archive.add(ArchiveFile.bytes(entry, await file.readAsBytes()));
-        files[report.id] = entry;
+        files[entry] = await file.readAsBytes();
+        entries[report.id] = entry;
       }
-      archive.add(
-        ArchiveFile.string(
-          'manifest.json',
-          jsonEncode({
-            'format': 1,
-            'schemaVersion': _db.schemaVersion,
-            'createdAt': DateTime.now().toUtc().toIso8601String(),
-            'reports': files,
-          }),
-        ),
+      final zip = BackupArchive.build(
+        database: await File(snapshot).readAsBytes(),
+        files: files,
+        manifest: {
+          'format': 1,
+          'schemaVersion': _db.schemaVersion,
+          'createdAt': DateTime.now().toUtc().toIso8601String(),
+          'reports': entries,
+        },
       );
       return await BackupCrypto.encrypt(
-        ZipEncoder().encodeBytes(archive),
+        zip,
         passphrase,
         iterations: iterations,
       );
@@ -97,27 +95,13 @@ class BackupService {
   /// Gerätespezifisches (Kalender-Verknüpfungen, gewählter Kalender) wird
   /// zurückgesetzt, weil Event-IDs auf einem anderen Gerät nicht gelten.
   Future<RestoreResult> restore(Uint8List data, String passphrase) async {
-    final plain = await BackupCrypto.decrypt(data, passphrase);
-    final Archive archive;
-    try {
-      archive = ZipDecoder().decodeBytes(plain);
-    } catch (e) {
-      throw BackupException('Sicherung ist beschädigt.', e);
-    }
-    final manifestFile = archive.findFile('manifest.json');
-    final dbFile = archive.findFile('db.sqlite');
-    if (manifestFile == null || dbFile == null) {
-      throw const BackupException('Sicherung ist unvollständig.');
-    }
-    final manifest =
-        jsonDecode(utf8.decode(manifestFile.content)) as Map<String, dynamic>;
-    final reportEntries = (manifest['reports'] as Map<String, dynamic>)
-        .cast<String, String>();
+    final contents = await BackupArchive.open(data, passphrase);
+    final reportEntries = contents.reportEntries;
 
     final work = await _workDir();
     try {
       final restorePath = p.join(work.path, 'restore.sqlite');
-      await File(restorePath).writeAsBytes(dbFile.content, flush: true);
+      await File(restorePath).writeAsBytes(contents.database, flush: true);
       await _migrateSnapshot(restorePath);
 
       final reportsDir = Directory(p.join((await _baseDir()).path, 'reports'));
@@ -128,14 +112,14 @@ class BackupService {
       final newPaths = <String, String>{};
       for (final MapEntry(key: reportId, value: entry)
           in reportEntries.entries) {
-        final file = archive.findFile(entry);
-        if (file == null) continue;
+        final bytes = contents.files[entry];
+        if (bytes == null) continue;
         final target = p.join(
           reportsDir.path,
           'restored_${DateTime.now().millisecondsSinceEpoch}_'
           '${p.basename(entry)}',
         );
-        await File(target).writeAsBytes(file.content, flush: true);
+        await File(target).writeAsBytes(bytes, flush: true);
         newPaths[reportId] = target;
       }
 
@@ -153,9 +137,7 @@ class BackupService {
 
       final reportCount = await _db.select(_db.reports).get();
       return RestoreResult(
-        createdAt:
-            DateTime.tryParse(manifest['createdAt'] as String? ?? '') ??
-            DateTime.now(),
+        createdAt: contents.createdAt ?? DateTime.now(),
         reportCount: reportCount.length,
         missingFiles: reportCount.length - newPaths.length,
       );

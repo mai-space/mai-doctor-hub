@@ -1,10 +1,12 @@
 import 'dart:io' show Directory;
 import 'dart:typed_data';
 
-import '../data/app_database.dart';
-import 'backup_crypto.dart';
+import 'package:mai_backup_format/mai_backup_format.dart';
 
-export 'backup_crypto.dart' show BackupException, BackupCrypto;
+import '../data/app_database.dart';
+
+export 'package:mai_backup_format/mai_backup_format.dart'
+    show BackupException, BackupCrypto;
 
 /// Web: keine Sicherung (Dateien liegen dort nicht dauerhaft vor).
 const backupSupported = false;

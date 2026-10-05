@@ -47,7 +47,8 @@ dependencies:
   pdfrx: ^2.6.5
   url_launcher: ^6.3.3
   cryptography: ^2.9.0
-  archive: ^4.3.0
+  mai_backup_format:
+    path: packages/mai_backup_format
   sqlite3: ^3.7.0
   local_auth: ^3.0.2
   crypto: ^3.0.7

@@ -1,0 +1,18 @@
+name: mai_mcp
+description: "Read-only MCP-Server für Mai Doctor Hub: macht eine verschlüsselte Sicherung für Gemini, Gemma & Co. abfragbar."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  args: ^2.7.0
+  dart_mcp: ^0.5.2
+  mai_backup_format:
+    path: ../../packages/mai_backup_format
+  sqlite3: ^3.7.0
+
+dev_dependencies:
+  stream_channel: ^2.1.4
+  test: ^1.26.0

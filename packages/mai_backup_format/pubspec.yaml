@@ -1,0 +1,14 @@
+name: mai_backup_format
+description: "Verschlüsseltes Sicherungsformat (.maibackup) von Mai Doctor Hub — reines Dart, geteilt von App und MCP-Server."
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  archive: ^4.3.0
+  cryptography: ^2.9.0
+
+dev_dependencies:
+  test: ^1.26.0
