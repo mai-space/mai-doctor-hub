@@ -103,6 +103,12 @@ class SymptomRepository {
   Future<void> delete(String id) async {
     await _db.transaction(() async {
       await (_db.delete(
+        _db.doctorSymptoms,
+      )..where((t) => t.symptomId.equals(id))).go();
+      await (_db.delete(
+        _db.reminderSymptoms,
+      )..where((t) => t.symptomId.equals(id))).go();
+      await (_db.delete(
         _db.symptomObservations,
       )..where((t) => t.symptomId.equals(id))).go();
       await (_db.delete(
@@ -155,4 +161,91 @@ class SymptomRepository {
         );
     return id;
   }
+
+  // --- Ärzte (n:m) ---------------------------------------------------------
+
+  Future<List<Doctor>> doctorsFor(String symptomId) async {
+    final rows = await (_db.select(_db.doctorSymptoms).join([
+      innerJoin(
+        _db.doctors,
+        _db.doctors.id.equalsExp(_db.doctorSymptoms.doctorId),
+      ),
+    ])..where(_db.doctorSymptoms.symptomId.equals(symptomId))).get();
+    return [for (final r in rows) r.readTable(_db.doctors)];
+  }
+
+  Future<void> setDoctors(String symptomId, List<String> doctorIds) =>
+      _db.transaction(() async {
+        await (_db.delete(
+          _db.doctorSymptoms,
+        )..where((t) => t.symptomId.equals(symptomId))).go();
+        for (final doctorId in doctorIds.toSet()) {
+          await _db
+              .into(_db.doctorSymptoms)
+              .insert(
+                DoctorSymptomsCompanion.insert(
+                  doctorId: doctorId,
+                  symptomId: symptomId,
+                ),
+              );
+        }
+      });
+
+  Future<void> linkDoctor(String doctorId, String symptomId) => _db
+      .into(_db.doctorSymptoms)
+      .insert(
+        DoctorSymptomsCompanion.insert(doctorId: doctorId, symptomId: symptomId),
+        mode: InsertMode.insertOrIgnore,
+      );
+
+  Future<void> unlinkDoctor(String doctorId, String symptomId) =>
+      (_db.delete(_db.doctorSymptoms)..where(
+            (t) => t.doctorId.equals(doctorId) & t.symptomId.equals(symptomId),
+          ))
+          .go();
+
+  /// Symptome eines Arztes: direkt zugeordnet **oder** über seine Termine.
+  /// Bool = direkt zugeordnet.
+  Future<List<(Symptom, bool)>> symptomsForDoctor(String doctorId) async {
+    final direct = await (_db.select(_db.doctorSymptoms).join([
+      innerJoin(
+        _db.symptoms,
+        _db.symptoms.id.equalsExp(_db.doctorSymptoms.symptomId),
+      ),
+    ])..where(_db.doctorSymptoms.doctorId.equals(doctorId))).get();
+    final viaAppointments = await (_db.select(_db.appointmentSymptoms).join([
+      innerJoin(
+        _db.appointments,
+        _db.appointments.id.equalsExp(_db.appointmentSymptoms.appointmentId),
+      ),
+      innerJoin(
+        _db.symptoms,
+        _db.symptoms.id.equalsExp(_db.appointmentSymptoms.symptomId),
+      ),
+    ])..where(_db.appointments.doctorId.equals(doctorId))).get();
+    final result = <String, (Symptom, bool)>{};
+    for (final r in viaAppointments) {
+      final s = r.readTable(_db.symptoms);
+      result[s.id] = (s, false);
+    }
+    for (final r in direct) {
+      final s = r.readTable(_db.symptoms);
+      result[s.id] = (s, true);
+    }
+    return result.values.toList()
+      ..sort((a, b) => a.$1.label.toLowerCase().compareTo(b.$1.label.toLowerCase()));
+  }
+
+  /// Gemeldete Check-ins im Zeitraum [from, to), älteste zuerst.
+  Future<List<SymptomObservation>> observationsBetween(
+    String symptomId,
+    DateTime from,
+    DateTime to,
+  ) =>
+      (_db.select(_db.symptomObservations)
+            ..where((t) => t.symptomId.equals(symptomId))
+            ..where((t) => t.recordedAt.isBiggerOrEqualValue(from))
+            ..where((t) => t.recordedAt.isSmallerThanValue(to))
+            ..orderBy([(t) => OrderingTerm.asc(t.recordedAt)]))
+          .get();
 }

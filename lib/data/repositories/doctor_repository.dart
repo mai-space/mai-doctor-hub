@@ -97,6 +97,9 @@ class DoctorRepository {
   /// Gibt `false` zurück, wenn noch Termine existieren.
   Future<bool> delete(String id) async {
     if (await appointmentCount(id) > 0) return false;
+    await (_db.delete(
+      _db.doctorSymptoms,
+    )..where((t) => t.doctorId.equals(id))).go();
     await (_db.delete(_db.doctors)..where((t) => t.id.equals(id))).go();
     await _db.deleteFts('doctor', id);
     return true;

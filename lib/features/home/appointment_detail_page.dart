@@ -11,18 +11,30 @@ import '../../data/database_provider.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/settings_repository.dart';
+import '../../data/repositories/symptom_repository.dart';
 import '../../services/calendar/calendar_sync_service.dart';
 import '../../services/calendar/ics.dart';
+import '../../widgets/symptom_report_card.dart';
 import '../records/detail_pages.dart';
 import '../records/entity_forms.dart';
 import 'add_appointment_sheet.dart';
 
 class _AppointmentData {
-  const _AppointmentData(this.summary, this.reports, this.notes);
+  const _AppointmentData(
+    this.summary,
+    this.reports,
+    this.notes,
+    this.symptoms,
+    this.window,
+  );
 
   final AppointmentSummary summary;
   final List<Report> reports;
   final List<Note> notes;
+
+  /// Zugeordnete Symptome mit den im [window] gemeldeten Check-ins.
+  final List<(Symptom, List<SymptomObservation>)> symptoms;
+  final (DateTime, DateTime) window;
 }
 
 enum _Action { done, cancel, reopen, ics, delete }
@@ -53,6 +65,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
         db.appointmentSymptoms,
         db.reports,
         db.notes,
+        db.symptomObservations,
       },
       () async {
         final summary = await AppointmentRepository(
@@ -69,7 +82,20 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                   )
                   ..orderBy([(t) => OrderingTerm.desc(t.updatedAt)]))
                 .get();
-        return _AppointmentData(summary, reports, notes);
+        final symptomRepo = SymptomRepository(db);
+        final window = await AppointmentRepository(
+          db,
+        ).reportWindow(summary.appointment);
+        final symptoms = <(Symptom, List<SymptomObservation>)>[];
+        for (final id in summary.symptomIds) {
+          final symptom = await symptomRepo.getById(id);
+          if (symptom == null) continue;
+          symptoms.add((
+            symptom,
+            await symptomRepo.observationsBetween(id, window.$1, window.$2),
+          ));
+        }
+        return _AppointmentData(summary, reports, notes, symptoms, window);
       },
     );
   }
@@ -269,24 +295,18 @@ class _AppointmentBody extends StatelessWidget {
               ),
             ],
           ),
-        if (summary.symptomLabels.isNotEmpty)
+        if (data.symptoms.isNotEmpty)
           DetailSection(
-            title: 'Symptome',
+            title: 'Symptome & gemeldete Check-ins',
             children: [
-              Wrap(
-                spacing: 8,
-                children: [
-                  for (var i = 0; i < summary.symptomIds.length; i++)
-                    ActionChip(
-                      label: Text(summary.symptomLabels[i]),
-                      onPressed: () => openRecord(
-                        context,
-                        'symptom',
-                        summary.symptomIds[i],
-                      ),
-                    ),
-                ],
-              ),
+              for (final (symptom, observations) in data.symptoms)
+                SymptomReportCard(
+                  symptom: symptom,
+                  observations: observations,
+                  from: data.window.$1,
+                  to: data.window.$2,
+                  onTap: () => openRecord(context, 'symptom', symptom.id),
+                ),
             ],
           ),
         DetailSection(

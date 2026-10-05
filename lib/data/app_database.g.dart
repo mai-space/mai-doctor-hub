@@ -7049,6 +7049,230 @@ class ReminderSymptomsCompanion extends UpdateCompanion<ReminderSymptom> {
   }
 }
 
+class $DoctorSymptomsTable extends DoctorSymptoms
+    with TableInfo<$DoctorSymptomsTable, DoctorSymptom> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DoctorSymptomsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _doctorIdMeta = const VerificationMeta(
+    'doctorId',
+  );
+  @override
+  late final GeneratedColumn<String> doctorId = GeneratedColumn<String>(
+    'doctor_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES doctors (id)',
+    ),
+  );
+  static const VerificationMeta _symptomIdMeta = const VerificationMeta(
+    'symptomId',
+  );
+  @override
+  late final GeneratedColumn<String> symptomId = GeneratedColumn<String>(
+    'symptom_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES symptoms (id)',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [doctorId, symptomId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'doctor_symptoms';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DoctorSymptom> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('doctor_id')) {
+      context.handle(
+        _doctorIdMeta,
+        doctorId.isAcceptableOrUnknown(data['doctor_id']!, _doctorIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_doctorIdMeta);
+    }
+    if (data.containsKey('symptom_id')) {
+      context.handle(
+        _symptomIdMeta,
+        symptomId.isAcceptableOrUnknown(data['symptom_id']!, _symptomIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_symptomIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {doctorId, symptomId};
+  @override
+  DoctorSymptom map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DoctorSymptom(
+      doctorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}doctor_id'],
+      )!,
+      symptomId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}symptom_id'],
+      )!,
+    );
+  }
+
+  @override
+  $DoctorSymptomsTable createAlias(String alias) {
+    return $DoctorSymptomsTable(attachedDatabase, alias);
+  }
+}
+
+class DoctorSymptom extends DataClass implements Insertable<DoctorSymptom> {
+  final String doctorId;
+  final String symptomId;
+  const DoctorSymptom({required this.doctorId, required this.symptomId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['doctor_id'] = Variable<String>(doctorId);
+    map['symptom_id'] = Variable<String>(symptomId);
+    return map;
+  }
+
+  DoctorSymptomsCompanion toCompanion(bool nullToAbsent) {
+    return DoctorSymptomsCompanion(
+      doctorId: Value(doctorId),
+      symptomId: Value(symptomId),
+    );
+  }
+
+  factory DoctorSymptom.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DoctorSymptom(
+      doctorId: serializer.fromJson<String>(json['doctorId']),
+      symptomId: serializer.fromJson<String>(json['symptomId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'doctorId': serializer.toJson<String>(doctorId),
+      'symptomId': serializer.toJson<String>(symptomId),
+    };
+  }
+
+  DoctorSymptom copyWith({String? doctorId, String? symptomId}) =>
+      DoctorSymptom(
+        doctorId: doctorId ?? this.doctorId,
+        symptomId: symptomId ?? this.symptomId,
+      );
+  DoctorSymptom copyWithCompanion(DoctorSymptomsCompanion data) {
+    return DoctorSymptom(
+      doctorId: data.doctorId.present ? data.doctorId.value : this.doctorId,
+      symptomId: data.symptomId.present ? data.symptomId.value : this.symptomId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DoctorSymptom(')
+          ..write('doctorId: $doctorId, ')
+          ..write('symptomId: $symptomId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(doctorId, symptomId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DoctorSymptom &&
+          other.doctorId == this.doctorId &&
+          other.symptomId == this.symptomId);
+}
+
+class DoctorSymptomsCompanion extends UpdateCompanion<DoctorSymptom> {
+  final Value<String> doctorId;
+  final Value<String> symptomId;
+  final Value<int> rowid;
+  const DoctorSymptomsCompanion({
+    this.doctorId = const Value.absent(),
+    this.symptomId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DoctorSymptomsCompanion.insert({
+    required String doctorId,
+    required String symptomId,
+    this.rowid = const Value.absent(),
+  }) : doctorId = Value(doctorId),
+       symptomId = Value(symptomId);
+  static Insertable<DoctorSymptom> custom({
+    Expression<String>? doctorId,
+    Expression<String>? symptomId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (doctorId != null) 'doctor_id': doctorId,
+      if (symptomId != null) 'symptom_id': symptomId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DoctorSymptomsCompanion copyWith({
+    Value<String>? doctorId,
+    Value<String>? symptomId,
+    Value<int>? rowid,
+  }) {
+    return DoctorSymptomsCompanion(
+      doctorId: doctorId ?? this.doctorId,
+      symptomId: symptomId ?? this.symptomId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (doctorId.present) {
+      map['doctor_id'] = Variable<String>(doctorId.value);
+    }
+    if (symptomId.present) {
+      map['symptom_id'] = Variable<String>(symptomId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DoctorSymptomsCompanion(')
+          ..write('doctorId: $doctorId, ')
+          ..write('symptomId: $symptomId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7071,6 +7295,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ReminderSymptomsTable reminderSymptoms = $ReminderSymptomsTable(
     this,
   );
+  late final $DoctorSymptomsTable doctorSymptoms = $DoctorSymptomsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7090,6 +7315,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     calendarLinks,
     reminders,
     reminderSymptoms,
+    doctorSymptoms,
   ];
 }
 
@@ -7135,6 +7361,24 @@ final class $$DoctorsTableReferences
     ).filter((f) => f.doctorId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_appointmentsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$DoctorSymptomsTable, List<DoctorSymptom>>
+  _doctorSymptomsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.doctorSymptoms,
+    aliasName: 'doctors__id__doctor_symptoms__doctor_id',
+  );
+
+  $$DoctorSymptomsTableProcessedTableManager get doctorSymptomsRefs {
+    final manager = $$DoctorSymptomsTableTableManager(
+      $_db,
+      $_db.doctorSymptoms,
+    ).filter((f) => f.doctorId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_doctorSymptomsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -7211,6 +7455,31 @@ class $$DoctorsTableFilterComposer
           }) => $$AppointmentsTableFilterComposer(
             $db: $db,
             $table: $db.appointments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> doctorSymptomsRefs(
+    Expression<bool> Function($$DoctorSymptomsTableFilterComposer f) f,
+  ) {
+    final $$DoctorSymptomsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.doctorSymptoms,
+      getReferencedColumn: (t) => t.doctorId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoctorSymptomsTableFilterComposer(
+            $db: $db,
+            $table: $db.doctorSymptoms,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -7338,6 +7607,31 @@ class $$DoctorsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> doctorSymptomsRefs<T extends Object>(
+    Expression<T> Function($$DoctorSymptomsTableAnnotationComposer a) f,
+  ) {
+    final $$DoctorSymptomsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.doctorSymptoms,
+      getReferencedColumn: (t) => t.doctorId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoctorSymptomsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.doctorSymptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$DoctorsTableTableManager
@@ -7353,7 +7647,10 @@ class $$DoctorsTableTableManager
           $$DoctorsTableUpdateCompanionBuilder,
           (Doctor, $$DoctorsTableReferences),
           Doctor,
-          PrefetchHooks Function({bool appointmentsRefs})
+          PrefetchHooks Function({
+            bool appointmentsRefs,
+            bool doctorSymptomsRefs,
+          })
         > {
   $$DoctorsTableTableManager(_$AppDatabase db, $DoctorsTable table)
     : super(
@@ -7422,35 +7719,63 @@ class $$DoctorsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({appointmentsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (appointmentsRefs) db.appointments],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (appointmentsRefs)
-                    await $_getPrefetchedData<
-                      Doctor,
-                      $DoctorsTable,
-                      Appointment
-                    >(
-                      currentTable: table,
-                      referencedTable: $$DoctorsTableReferences
-                          ._appointmentsRefsTable(db),
-                      managerFromTypedResult: (p0) => $$DoctorsTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).appointmentsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.doctorId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({appointmentsRefs = false, doctorSymptomsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (appointmentsRefs) db.appointments,
+                    if (doctorSymptomsRefs) db.doctorSymptoms,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (appointmentsRefs)
+                        await $_getPrefetchedData<
+                          Doctor,
+                          $DoctorsTable,
+                          Appointment
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DoctorsTableReferences
+                              ._appointmentsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DoctorsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).appointmentsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.doctorId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (doctorSymptomsRefs)
+                        await $_getPrefetchedData<
+                          Doctor,
+                          $DoctorsTable,
+                          DoctorSymptom
+                        >(
+                          currentTable: table,
+                          referencedTable: $$DoctorsTableReferences
+                              ._doctorSymptomsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$DoctorsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).doctorSymptomsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.doctorId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -7467,7 +7792,7 @@ typedef $$DoctorsTableProcessedTableManager =
       $$DoctorsTableUpdateCompanionBuilder,
       (Doctor, $$DoctorsTableReferences),
       Doctor,
-      PrefetchHooks Function({bool appointmentsRefs})
+      PrefetchHooks Function({bool appointmentsRefs, bool doctorSymptomsRefs})
     >;
 typedef $$DiagnosesTableCreateCompanionBuilder = DiagnosesCompanion Function({
   required String id,
@@ -8238,6 +8563,24 @@ final class $$SymptomsTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$DoctorSymptomsTable, List<DoctorSymptom>>
+  _doctorSymptomsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.doctorSymptoms,
+    aliasName: 'symptoms__id__doctor_symptoms__symptom_id',
+  );
+
+  $$DoctorSymptomsTableProcessedTableManager get doctorSymptomsRefs {
+    final manager = $$DoctorSymptomsTableTableManager(
+      $_db,
+      $_db.doctorSymptoms,
+    ).filter((f) => f.symptomId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_doctorSymptomsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$SymptomsTableFilterComposer
@@ -8379,6 +8722,31 @@ class $$SymptomsTableFilterComposer
           }) => $$ReminderSymptomsTableFilterComposer(
             $db: $db,
             $table: $db.reminderSymptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> doctorSymptomsRefs(
+    Expression<bool> Function($$DoctorSymptomsTableFilterComposer f) f,
+  ) {
+    final $$DoctorSymptomsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.doctorSymptoms,
+      getReferencedColumn: (t) => t.symptomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoctorSymptomsTableFilterComposer(
+            $db: $db,
+            $table: $db.doctorSymptoms,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -8601,6 +8969,31 @@ class $$SymptomsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> doctorSymptomsRefs<T extends Object>(
+    Expression<T> Function($$DoctorSymptomsTableAnnotationComposer a) f,
+  ) {
+    final $$DoctorSymptomsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.doctorSymptoms,
+      getReferencedColumn: (t) => t.symptomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoctorSymptomsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.doctorSymptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$SymptomsTableTableManager
@@ -8621,6 +9014,7 @@ class $$SymptomsTableTableManager
             bool symptomObservationsRefs,
             bool appointmentSymptomsRefs,
             bool reminderSymptomsRefs,
+            bool doctorSymptomsRefs,
           })
         > {
   $$SymptomsTableTableManager(_$AppDatabase db, $SymptomsTable table)
@@ -8696,6 +9090,7 @@ class $$SymptomsTableTableManager
                 symptomObservationsRefs = false,
                 appointmentSymptomsRefs = false,
                 reminderSymptomsRefs = false,
+                doctorSymptomsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -8703,6 +9098,7 @@ class $$SymptomsTableTableManager
                     if (symptomObservationsRefs) db.symptomObservations,
                     if (appointmentSymptomsRefs) db.appointmentSymptoms,
                     if (reminderSymptomsRefs) db.reminderSymptoms,
+                    if (doctorSymptomsRefs) db.doctorSymptoms,
                   ],
                   addJoins:
                       <
@@ -8799,6 +9195,27 @@ class $$SymptomsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (doctorSymptomsRefs)
+                        await $_getPrefetchedData<
+                          Symptom,
+                          $SymptomsTable,
+                          DoctorSymptom
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SymptomsTableReferences
+                              ._doctorSymptomsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SymptomsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).doctorSymptomsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.symptomId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -8824,6 +9241,7 @@ typedef $$SymptomsTableProcessedTableManager =
         bool symptomObservationsRefs,
         bool appointmentSymptomsRefs,
         bool reminderSymptomsRefs,
+        bool doctorSymptomsRefs,
       })
     >;
 typedef $$SymptomObservationsTableCreateCompanionBuilder =
@@ -13358,6 +13776,354 @@ typedef $$ReminderSymptomsTableProcessedTableManager =
       ReminderSymptom,
       PrefetchHooks Function({bool reminderId, bool symptomId})
     >;
+typedef $$DoctorSymptomsTableCreateCompanionBuilder =
+    DoctorSymptomsCompanion Function({
+      required String doctorId,
+      required String symptomId,
+      Value<int> rowid,
+    });
+typedef $$DoctorSymptomsTableUpdateCompanionBuilder =
+    DoctorSymptomsCompanion Function({
+      Value<String> doctorId,
+      Value<String> symptomId,
+      Value<int> rowid,
+    });
+
+final class $$DoctorSymptomsTableReferences
+    extends BaseReferences<_$AppDatabase, $DoctorSymptomsTable, DoctorSymptom> {
+  $$DoctorSymptomsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $DoctorsTable _doctorIdTable(_$AppDatabase db) =>
+      db.doctors.createAlias('doctor_symptoms__doctor_id__doctors__id');
+
+  $$DoctorsTableProcessedTableManager get doctorId {
+    final $_column = $_itemColumn<String>('doctor_id')!;
+
+    final manager = $$DoctorsTableTableManager(
+      $_db,
+      $_db.doctors,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_doctorIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $SymptomsTable _symptomIdTable(_$AppDatabase db) =>
+      db.symptoms.createAlias('doctor_symptoms__symptom_id__symptoms__id');
+
+  $$SymptomsTableProcessedTableManager get symptomId {
+    final $_column = $_itemColumn<String>('symptom_id')!;
+
+    final manager = $$SymptomsTableTableManager(
+      $_db,
+      $_db.symptoms,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_symptomIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$DoctorSymptomsTableFilterComposer
+    extends Composer<_$AppDatabase, $DoctorSymptomsTable> {
+  $$DoctorSymptomsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$DoctorsTableFilterComposer get doctorId {
+    final $$DoctorsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.doctorId,
+      referencedTable: $db.doctors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoctorsTableFilterComposer(
+            $db: $db,
+            $table: $db.doctors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SymptomsTableFilterComposer get symptomId {
+    final $$SymptomsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.symptomId,
+      referencedTable: $db.symptoms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomsTableFilterComposer(
+            $db: $db,
+            $table: $db.symptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DoctorSymptomsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DoctorSymptomsTable> {
+  $$DoctorSymptomsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$DoctorsTableOrderingComposer get doctorId {
+    final $$DoctorsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.doctorId,
+      referencedTable: $db.doctors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoctorsTableOrderingComposer(
+            $db: $db,
+            $table: $db.doctors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SymptomsTableOrderingComposer get symptomId {
+    final $$SymptomsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.symptomId,
+      referencedTable: $db.symptoms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomsTableOrderingComposer(
+            $db: $db,
+            $table: $db.symptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DoctorSymptomsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DoctorSymptomsTable> {
+  $$DoctorSymptomsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$DoctorsTableAnnotationComposer get doctorId {
+    final $$DoctorsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.doctorId,
+      referencedTable: $db.doctors,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DoctorsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.doctors,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SymptomsTableAnnotationComposer get symptomId {
+    final $$SymptomsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.symptomId,
+      referencedTable: $db.symptoms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.symptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DoctorSymptomsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DoctorSymptomsTable,
+          DoctorSymptom,
+          $$DoctorSymptomsTableFilterComposer,
+          $$DoctorSymptomsTableOrderingComposer,
+          $$DoctorSymptomsTableAnnotationComposer,
+          $$DoctorSymptomsTableCreateCompanionBuilder,
+          $$DoctorSymptomsTableUpdateCompanionBuilder,
+          (DoctorSymptom, $$DoctorSymptomsTableReferences),
+          DoctorSymptom,
+          PrefetchHooks Function({bool doctorId, bool symptomId})
+        > {
+  $$DoctorSymptomsTableTableManager(
+    _$AppDatabase db,
+    $DoctorSymptomsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DoctorSymptomsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DoctorSymptomsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DoctorSymptomsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> doctorId = const Value.absent(),
+                Value<String> symptomId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DoctorSymptomsCompanion(
+                doctorId: doctorId,
+                symptomId: symptomId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String doctorId,
+                required String symptomId,
+                Value<int> rowid = const Value.absent(),
+              }) => DoctorSymptomsCompanion.insert(
+                doctorId: doctorId,
+                symptomId: symptomId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$DoctorSymptomsTable, DoctorSymptom>(table),
+                  $$DoctorSymptomsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({doctorId = false, symptomId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (doctorId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.doctorId,
+                        referencedTable: $$DoctorSymptomsTableReferences
+                            ._doctorIdTable(db),
+                        referencedColumn: $$DoctorSymptomsTableReferences
+                            ._doctorIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+                    if (symptomId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.symptomId,
+                        referencedTable: $$DoctorSymptomsTableReferences
+                            ._symptomIdTable(db),
+                        referencedColumn: $$DoctorSymptomsTableReferences
+                            ._symptomIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$DoctorSymptomsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DoctorSymptomsTable,
+      DoctorSymptom,
+      $$DoctorSymptomsTableFilterComposer,
+      $$DoctorSymptomsTableOrderingComposer,
+      $$DoctorSymptomsTableAnnotationComposer,
+      $$DoctorSymptomsTableCreateCompanionBuilder,
+      $$DoctorSymptomsTableUpdateCompanionBuilder,
+      (DoctorSymptom, $$DoctorSymptomsTableReferences),
+      DoctorSymptom,
+      PrefetchHooks Function({bool doctorId, bool symptomId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -13390,4 +14156,6 @@ class $AppDatabaseManager {
       $$RemindersTableTableManager(_db, _db.reminders);
   $$ReminderSymptomsTableTableManager get reminderSymptoms =>
       $$ReminderSymptomsTableTableManager(_db, _db.reminderSymptoms);
+  $$DoctorSymptomsTableTableManager get doctorSymptoms =>
+      $$DoctorSymptomsTableTableManager(_db, _db.doctorSymptoms);
 }

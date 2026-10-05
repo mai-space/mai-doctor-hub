@@ -1,4 +1,4 @@
-import 'package:drift/drift.dart' show OrderingTerm;
+import 'package:drift/drift.dart' show OrderingTerm, innerJoin;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +11,7 @@ import '../../data/repositories/doctor_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
 import '../../widgets/observation_chart.dart';
+import '../../widgets/symptom_report_card.dart';
 import '../home/appointment_detail_page.dart';
 import '../reports/report_viewer_page.dart';
 import 'entity_forms.dart';
@@ -249,10 +250,13 @@ Widget _appointmentTile(BuildContext context, AppointmentSummary s) {
 // --- Arzt ------------------------------------------------------------------
 
 class _DoctorData {
-  const _DoctorData(this.doctor, this.appointments);
+  const _DoctorData(this.doctor, this.appointments, this.symptoms);
 
   final Doctor doctor;
   final List<AppointmentSummary> appointments;
+
+  /// Symptom + direkt zugeordnet (sonst über einen Termin).
+  final List<(Symptom, bool)> symptoms;
 }
 
 class DoctorDetailPage extends StatelessWidget {
@@ -264,7 +268,13 @@ class DoctorDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return _DetailScaffold<_DoctorData>(
       title: 'Arzt',
-      watch: (db) => db.watchWith({db.doctors, db.appointments}, () async {
+      watch: (db) => db.watchWith({
+        db.doctors,
+        db.appointments,
+        db.symptoms,
+        db.doctorSymptoms,
+        db.appointmentSymptoms,
+      }, () async {
         final doctor = await DoctorRepository(db).getById(doctorId);
         if (doctor == null) return null;
         final appointments =
@@ -275,6 +285,7 @@ class DoctorDetailPage extends StatelessWidget {
         return _DoctorData(
           doctor,
           await AppointmentRepository(db).summariesFor(appointments),
+          await SymptomRepository(db).symptomsForDoctor(doctorId),
         );
       }),
       onEdit: (context, data) => showDoctorForm(context, doctor: data.doctor),
@@ -314,6 +325,29 @@ class DoctorDetailPage extends StatelessWidget {
           ),
           _infoTile(Icons.notes_outlined, 'Notizen', d.notes),
           DetailSection(
+            title: 'Symptome',
+            empty: 'Noch keine Symptome bei diesem Arzt.',
+            trailing: TextButton.icon(
+              onPressed: () => _assignSymptoms(context, data),
+              icon: const Icon(Icons.add),
+              label: const Text('Zuordnen'),
+            ),
+            children: [
+              for (final (symptom, direct) in data.symptoms)
+                _linkTile(
+                  context,
+                  icon: Icons.healing_outlined,
+                  title: symptom.label,
+                  subtitle: [
+                    symptom.healedAt == null ? 'aktiv' : 'geheilt',
+                    direct ? 'zugeordnet' : 'aus Terminen',
+                  ].join(' · '),
+                  entityType: 'symptom',
+                  id: symptom.id,
+                ),
+            ],
+          ),
+          DetailSection(
             title: 'Termine',
             empty: 'Keine Termine bei diesem Arzt.',
             children: [
@@ -323,6 +357,59 @@ class DoctorDetailPage extends StatelessWidget {
         ];
       },
     );
+  }
+}
+
+/// Symptome einem Arzt direkt zuordnen (n:m).
+Future<void> _assignSymptoms(BuildContext context, _DoctorData data) async {
+  final repo = SymptomRepository(DatabaseScope.of(context));
+  final all = await repo.watchAll().first;
+  if (!context.mounted) return;
+  final selected = {
+    for (final (s, direct) in data.symptoms)
+      if (direct) s.id,
+  };
+  final initial = {...selected};
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) => AlertDialog(
+        title: Text('Symptome bei ${data.doctor.name}'),
+        scrollable: true,
+        content: all.isEmpty
+            ? const Text('Noch keine Symptome angelegt.')
+            : Wrap(
+                spacing: 6,
+                children: [
+                  for (final s in all)
+                    FilterChip(
+                      label: Text(s.label),
+                      selected: selected.contains(s.id),
+                      onSelected: (v) => setState(
+                        () => v ? selected.add(s.id) : selected.remove(s.id),
+                      ),
+                    ),
+                ],
+              ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Abbrechen'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Speichern'),
+          ),
+        ],
+      ),
+    ),
+  );
+  if (ok != true) return;
+  for (final id in selected.difference(initial)) {
+    await repo.linkDoctor(data.doctor.id, id);
+  }
+  for (final id in initial.difference(selected)) {
+    await repo.unlinkDoctor(data.doctor.id, id);
   }
 }
 
@@ -454,11 +541,19 @@ class DiagnosisDetailPage extends StatelessWidget {
 // --- Symptom ---------------------------------------------------------------
 
 class _SymptomData {
-  const _SymptomData(this.symptom, this.observations, this.diagnosis);
+  const _SymptomData(
+    this.symptom,
+    this.observations,
+    this.diagnosis,
+    this.doctors,
+    this.appointments,
+  );
 
   final Symptom symptom;
   final List<SymptomObservation> observations;
   final Diagnose? diagnosis;
+  final List<Doctor> doctors;
+  final List<AppointmentSummary> appointments;
 }
 
 class SymptomDetailPage extends StatelessWidget {
@@ -471,7 +566,15 @@ class SymptomDetailPage extends StatelessWidget {
     return _DetailScaffold<_SymptomData>(
       title: 'Symptom',
       watch: (db) => db.watchWith(
-        {db.symptoms, db.symptomObservations, db.diagnoses},
+        {
+          db.symptoms,
+          db.symptomObservations,
+          db.diagnoses,
+          db.doctors,
+          db.doctorSymptoms,
+          db.appointments,
+          db.appointmentSymptoms,
+        },
         () async {
           final symptom = await SymptomRepository(db).getById(symptomId);
           if (symptom == null) return null;
@@ -483,7 +586,28 @@ class SymptomDetailPage extends StatelessWidget {
           final diagnosis = symptom.diagnosisId == null
               ? null
               : await RecordsRepository(db).getDiagnosis(symptom.diagnosisId!);
-          return _SymptomData(symptom, observations, diagnosis);
+          final symptomRepo = SymptomRepository(db);
+          final appointmentRows =
+              await (db.select(db.appointments).join([
+                      innerJoin(
+                        db.appointmentSymptoms,
+                        db.appointmentSymptoms.appointmentId.equalsExp(
+                          db.appointments.id,
+                        ),
+                      ),
+                    ])
+                    ..where(db.appointmentSymptoms.symptomId.equals(symptomId))
+                    ..orderBy([OrderingTerm.desc(db.appointments.scheduledAt)]))
+                  .get();
+          return _SymptomData(
+            symptom,
+            observations,
+            diagnosis,
+            await symptomRepo.doctorsFor(symptomId),
+            await AppointmentRepository(db).summariesFor([
+              for (final r in appointmentRows) r.readTable(db.appointments),
+            ]),
+          );
         },
       ),
       onEdit: (context, data) =>
@@ -536,6 +660,28 @@ class SymptomDetailPage extends StatelessWidget {
               entityType: 'diagnosis',
               id: data.diagnosis!.id,
             ),
+          if (data.doctors.isNotEmpty)
+            DetailSection(
+              title: 'Ärzte',
+              children: [
+                for (final d in data.doctors)
+                  _linkTile(
+                    context,
+                    icon: Icons.medical_services_outlined,
+                    title: d.name,
+                    subtitle: d.specialty,
+                    entityType: 'doctor',
+                    id: d.id,
+                  ),
+              ],
+            ),
+          if (data.appointments.isNotEmpty)
+            DetailSection(
+              title: 'Besprochen bei Terminen',
+              children: [
+                for (final a in data.appointments) _appointmentTile(context, a),
+              ],
+            ),
           DetailSection(
             title: 'Verlauf',
             children: [
@@ -549,7 +695,7 @@ class SymptomDetailPage extends StatelessWidget {
               for (final o in data.observations.take(50))
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(_observationLabel(o)),
+                  title: Text(observationLabel(o)),
                   subtitle: Text(
                     [
                       _dateTime.format(o.recordedAt),
@@ -570,14 +716,6 @@ class SymptomDetailPage extends StatelessWidget {
   }
 }
 
-String _observationLabel(SymptomObservation o) => switch (o.kind) {
-  ObservationKind.scale_1_10 =>
-    'Stärke ${o.valueNumber?.toStringAsFixed(0) ?? '–'}/10',
-  ObservationKind.quantity =>
-    '${o.valueNumber?.toString() ?? '–'} ${o.unit ?? ''}'.trim(),
-  ObservationKind.color => 'Farbe ${o.valueColor ?? o.valueText ?? ''}',
-  ObservationKind.note => o.valueText ?? o.note ?? 'Notiz',
-};
 
 // --- Medikament ------------------------------------------------------------
 

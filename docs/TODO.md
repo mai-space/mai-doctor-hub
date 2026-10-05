@@ -29,7 +29,7 @@ Status: ☐ offen · ◐ in Arbeit · ☑ erledigt
 - Abgesagte/gelöschte Termine → Erinnerung entfernt; Änderungen →
   neu geplant.
 
-## 4. ☐ Symptome ↔ Termine/Ärzte (n:m) mit gemeldeten Werten
+## 4. ☑ Symptome ↔ Termine/Ärzte (n:m) mit gemeldeten Werten
 - Symptome lassen sich Terminen **und** Ärzten zuordnen (n:m).
 - Im Termin sieht man die zugeordneten Symptome mit den gemeldeten
   Check-ins (Datum + Wert), z. B. seit dem letzten Termin.

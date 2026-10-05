@@ -281,7 +281,14 @@ Future<String?> showSymptomForm(BuildContext context, {Symptom? symptom}) async 
   final label = TextEditingController(text: symptom?.label);
   final region = TextEditingController(text: symptom?.bodyRegion);
   var diagnosisId = symptom?.diagnosisId;
-  final repo = SymptomRepository(DatabaseScope.of(context));
+  final db = DatabaseScope.of(context);
+  final repo = SymptomRepository(db);
+  final doctors = await DoctorRepository(db).watchAll().first;
+  final doctorIds = {
+    if (symptom != null)
+      for (final d in await repo.doctorsFor(symptom.id)) d.id,
+  };
+  if (!context.mounted) return null;
 
   final ok = await _showFormDialog(
     context,
@@ -302,23 +309,45 @@ Future<String?> showSymptomForm(BuildContext context, {Symptom? symptom}) async 
         value: diagnosisId,
         onChanged: (v) => setState(() => diagnosisId = v),
       ),
+      if (doctors.isNotEmpty) ...[
+        const SizedBox(height: 12),
+        const Text('Ärzte'),
+        const SizedBox(height: 4),
+        Wrap(
+          spacing: 6,
+          children: [
+            for (final d in doctors)
+              FilterChip(
+                label: Text(d.name),
+                selected: doctorIds.contains(d.id),
+                onSelected: (v) => setState(
+                  () => v ? doctorIds.add(d.id) : doctorIds.remove(d.id),
+                ),
+              ),
+          ],
+        ),
+      ],
     ],
   );
   if (!ok || label.text.trim().isEmpty) return null;
+  final String id;
   if (symptom == null) {
-    return repo.create(
+    id = await repo.create(
+      label: label.text.trim(),
+      bodyRegion: _trimOrNull(region),
+      diagnosisId: diagnosisId,
+    );
+  } else {
+    id = symptom.id;
+    await repo.update(
+      id: id,
       label: label.text.trim(),
       bodyRegion: _trimOrNull(region),
       diagnosisId: diagnosisId,
     );
   }
-  await repo.update(
-    id: symptom.id,
-    label: label.text.trim(),
-    bodyRegion: _trimOrNull(region),
-    diagnosisId: diagnosisId,
-  );
-  return symptom.id;
+  await repo.setDoctors(id, doctorIds.toList());
+  return id;
 }
 
 Future<String?> showMedicationForm(

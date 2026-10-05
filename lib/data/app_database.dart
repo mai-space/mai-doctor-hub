@@ -110,6 +110,15 @@ class AppointmentSymptoms extends Table {
   Set<Column<Object>> get primaryKey => {appointmentId, symptomId};
 }
 
+/// v6: Symptom ist (auch) Thema bei einem Arzt — unabhängig vom Termin.
+class DoctorSymptoms extends Table {
+  TextColumn get doctorId => text().references(Doctors, #id)();
+  TextColumn get symptomId => text().references(Symptoms, #id)();
+
+  @override
+  Set<Column<Object>> get primaryKey => {doctorId, symptomId};
+}
+
 class Reports extends Table {
   TextColumn get id => text()();
   TextColumn get appointmentId =>
@@ -250,6 +259,7 @@ class CalendarLinks extends Table {
     CalendarLinks,
     Reminders,
     ReminderSymptoms,
+    DoctorSymptoms,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -257,7 +267,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'mai_doctor_hub'));
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -288,6 +298,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 4) {
         await migrator.addColumn(appSettings, appSettings.onboardingCompleted);
+      }
+      if (from < 6) {
+        await migrator.createTable(doctorSymptoms);
       }
       if (from < 5) {
         await migrator.addColumn(

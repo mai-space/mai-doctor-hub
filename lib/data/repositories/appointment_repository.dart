@@ -405,4 +405,34 @@ class AppointmentRepository {
       await records.deleteReportFile(report);
     }
   }
+
+  /// Zeitraum, dessen Check-ins zu einem Termin gehören: seit dem letzten
+  /// Termin beim selben Arzt (sonst 30 Tage davor) bis zum Termin — bzw.
+  /// bis jetzt, wenn der Termin noch bevorsteht.
+  Future<(DateTime, DateTime)> reportWindow(
+    Appointment appointment, {
+    DateTime? now,
+  }) async {
+    final previous =
+        await (_db.select(_db.appointments)
+              ..where((t) => t.doctorId.equals(appointment.doctorId))
+              ..where(
+                (t) => t.scheduledAt.isSmallerThanValue(appointment.scheduledAt),
+              )
+              ..where(
+                (t) =>
+                    t.status.equalsValue(AppointmentStatus.cancelled).not(),
+              )
+              ..orderBy([(t) => OrderingTerm.desc(t.scheduledAt)])
+              ..limit(1))
+            .getSingleOrNull();
+    final from =
+        previous?.scheduledAt ??
+        appointment.scheduledAt.subtract(const Duration(days: 30));
+    final current = now ?? DateTime.now();
+    final to = appointment.scheduledAt.isAfter(current)
+        ? current
+        : appointment.scheduledAt;
+    return (from, to.add(const Duration(seconds: 1)));
+  }
 }

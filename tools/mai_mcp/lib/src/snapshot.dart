@@ -4,7 +4,7 @@ import 'package:mai_backup_format/mai_backup_format.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 /// Höchste Schema-Version der App, die dieser Server versteht.
-const supportedSchemaVersion = 5;
+const supportedSchemaVersion = 6;
 
 /// Read-only-Zugriff auf einen Akten-Snapshot.
 ///
