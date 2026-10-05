@@ -6,7 +6,8 @@ Lokale Patientenakte (Iteration 1) — **Privacy first**. Alle Daten bleiben auf
 
 - Flutter (Android + Web)
 - Drift / SQLite (+ FTS5 für lokale Suche)
-- Lokale Check-in-Notifications
+- Lokale Check-in-Notifications (`flutter_local_notifications`)
+- Berichte: Dateiauswahl + optionale PDF-Text-Extraktion (`pdf_text`, Android)
 
 ## Voraussetzungen
 
@@ -18,10 +19,18 @@ flutter --version
 flutter pub get
 ```
 
+## Features (I1)
+
+- **Home:** Quick Launch „Termin hinzufügen“, bidirektionale Timeline (Zukunft ↓ / Vergangenheit ↑), Check-in
+- **Kalender:** Monat default, Toggle Tag/Woche/Jahr, Termin-Marker, Tagesliste
+- **Meine Akte:** Entity-Filter, Sortierung, FTS (inkl. PDF-Text), CRUD für Ärzte/Diagnosen/Symptome/Medikamente/Notizen/Berichte/Termine
+- **Einstellungen:** Morgen-/Abend-Erinnerungen, Privacy-Hinweis
+- **Berichte:** lokal speichern, PDF-Text best-effort → FTS
+
 ## Entwicklung
 
 ```bash
-# Web (schnelles UI-Debug)
+# Web (schnelles UI-Debug; Notifications/PDF-Text eingeschränkt)
 flutter run -d chrome
 
 # Android
@@ -30,6 +39,12 @@ flutter run -d android
 # Analyse & Tests
 flutter analyze
 flutter test
+```
+
+Nach Schema-Änderungen an `lib/data/app_database.dart`:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 ## Release-APK (lokal)
@@ -50,5 +65,6 @@ Workflow: `.github/workflows/ci.yml` (Trigger: `push`/`pull_request` auf `main`)
 ## Privacy
 
 - Patientendaten nur in der lokalen SQLite-Datei der App-Sandbox
-- Berichte (PDF/Scan) im App-Dateisystem; extrahierter Text lokal indexiert
+- Berichte (PDF/Scan) unter `Documents/reports/`; extrahierter Text lokal indexiert
+- Erinnerungen sind **lokal** (kein FCM/Server-Push)
 - CI baut Artefakte; Mock-Deploy lädt **keine** Nutzerdaten hoch

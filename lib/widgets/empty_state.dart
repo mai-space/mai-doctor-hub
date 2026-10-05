@@ -49,17 +49,7 @@ class EmptyState extends StatelessWidget {
             if (actionLabel != null) ...[
               const SizedBox(height: 20),
               OutlinedButton(
-                onPressed:
-                    onAction ??
-                    () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Termin anlegen folgt mit der Persistenz-Schicht',
-                          ),
-                        ),
-                      );
-                    },
+                onPressed: onAction,
                 child: Text(actionLabel!),
               ),
             ],
