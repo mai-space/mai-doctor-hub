@@ -82,6 +82,12 @@ jobs:
               tail -n 250 apk-build.log
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
+            # Annotations sind über die öffentliche Checks-API lesbar (ohne Login).
+            tail -n 60 apk-build.log | while IFS= read -r line; do
+              # GitHub annotation message limit beachten
+              safe=$(printf '%s' "$line" | tr '|' '/' | cut -c1-200)
+              echo "::error::$safe"
+            done
             exit 1
           fi
         env:
