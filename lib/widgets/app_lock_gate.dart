@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/app_lock.dart';
+import 'app_logo.dart';
 
 /// Legt den Sperrbildschirm über die gesamte App, solange gesperrt.
 class AppLockGate extends StatefulWidget {
@@ -53,11 +54,7 @@ class _LockScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.lock_outline,
-                  size: 56,
-                  color: theme.colorScheme.primary,
-                ),
+                const AppLogo(size: 72),
                 const SizedBox(height: 16),
                 Text(
                   'Mai Doctor Hub ist gesperrt',

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../services/notification_service.dart';
+import '../../widgets/app_logo.dart';
 
 /// Kurzes Onboarding beim ersten Start. Die Benachrichtigungs-Berechtigung
 /// wird erst hier — mit Erklärung — angefragt, nicht beim App-Start.
@@ -65,7 +66,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 onPageChanged: (i) => setState(() => _index = i),
                 children: [
                   const _Step(
-                    icon: Icons.lock_outline,
+                    visual: AppLogo(size: 96),
                     title: 'Deine Akte bleibt bei dir',
                     text:
                         'Mai Doctor Hub speichert alles nur auf diesem Gerät. '
@@ -73,7 +74,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         'Sicherung, Kalender, Assistent — entscheidest du.',
                   ),
                   const _Step(
-                    icon: Icons.medical_services_outlined,
+                    visual: _StepIcon(Icons.medical_services_outlined),
                     title: 'Alles an einem Ort',
                     text:
                         'Termine, Ärzte, Diagnosen, Symptome, Medikamente und '
@@ -82,7 +83,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         'parat.',
                   ),
                   _Step(
-                    icon: Icons.notifications_active_outlined,
+                    visual: const _StepIcon(
+                      Icons.notifications_active_outlined,
+                    ),
                     title: 'Erinnerungen',
                     text:
                         'Damit wir dich an Check-ins, Termine und Medikamente '
@@ -148,13 +151,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
 class _Step extends StatelessWidget {
   const _Step({
-    required this.icon,
+    required this.visual,
     required this.title,
     required this.text,
     this.action,
   });
 
-  final IconData icon;
+  final Widget visual;
   final String title;
   final String text;
   final Widget? action;
@@ -166,7 +169,7 @@ class _Step extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
       child: Column(
         children: [
-          Icon(icon, size: 72, color: theme.colorScheme.primary),
+          visual,
           const SizedBox(height: 24),
           Text(
             title,
@@ -186,4 +189,14 @@ class _Step extends StatelessWidget {
       ),
     );
   }
+}
+
+class _StepIcon extends StatelessWidget {
+  const _StepIcon(this.icon);
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) =>
+      Icon(icon, size: 72, color: Theme.of(context).colorScheme.primary);
 }

@@ -6,6 +6,7 @@ import '../../data/database_provider.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/icon_mappings.dart';
+import '../../widgets/app_logo.dart';
 import '../../widgets/empty_state.dart';
 import '../check_in/check_in_sheet.dart';
 import '../medications/intake_widgets.dart';
@@ -89,19 +90,8 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Mai Doctor Hub',
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.ink,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Deine Termine — lokal auf diesem Gerät',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.muted,
-                            ),
+                          const AppWordmark(
+                            subtitle: 'Deine Termine — lokal auf diesem Gerät',
                           ),
                           const SizedBox(height: 20),
                           FilledButton.icon(
