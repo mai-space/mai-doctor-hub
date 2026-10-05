@@ -6,8 +6,10 @@ import '../../data/database_provider.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/doctor_repository.dart';
 import '../../data/repositories/records_repository.dart';
+import '../../data/repositories/suggestion_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/suggestion_text_field.dart';
 
 Future<String?> showAddAppointmentSheet(BuildContext context) {
   return showModalBottomSheet<String>(
@@ -156,8 +158,9 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
               onTap: _pickDateTime,
             ),
             const SizedBox(height: 8),
-            TextField(
+            SuggestionTextField(
               controller: _titleController,
+              field: SuggestionField.appointmentTitle,
               decoration: const InputDecoration(
                 labelText: 'Titel (optional)',
                 border: OutlineInputBorder(),
@@ -194,8 +197,9 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
                 ),
               ),
               const SizedBox(height: 8),
-              TextField(
+              SuggestionTextField(
                 controller: _newDoctorSpecialty,
+                field: SuggestionField.specialty,
                 decoration: const InputDecoration(
                   labelText: 'Fachrichtung (optional)',
                   border: OutlineInputBorder(),

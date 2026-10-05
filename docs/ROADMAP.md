@@ -23,6 +23,17 @@ jederzeit abschaltbar.
 |---|---------|---------|-----|
 | B1 | **PDF/Bild an Bericht anhängen schlägt fehl** (Android, ohne Rückmeldung) | `XFile.saveTo()` kopiert nach `Documents/reports/…`, der Ordner wurde nie angelegt → `PathNotFoundException`; Exception unbehandelt im `onPressed` → stiller Fehler | Ordner `recursive` anlegen, Kopie per Pfad mit Byte-Fallback (SAF/`content://`), Fehler als `ReportImportException` → Snackbar, verwaiste Datei bei DB-Fehler löschen. Tests: `test/report_import_test.dart` |
 
+### UX-Verbesserung (umgesetzt in diesem Branch)
+- **Autovervollständigung aus eigener Historie**: Körperregion, Fachrichtung,
+  Symptom, Diagnose, Medikament, Dosierung, Einnahmeplan und Termintitel
+  schlagen alle früher eingegebenen Werte vor — häufigste zuerst, dann zuletzt
+  genutzte; Groß-/Kleinschreibung zusammengefasst; Präfix- vor Wort- vor
+  Teiltreffern. Leeres Feld fokussieren zeigt die Top 8. Für Körperregion und
+  Fachrichtung gibt es Startvorschläge, solange noch nichts erfasst ist.
+  (`SuggestionRepository`, `SuggestionTextField`, `test/suggestion_test.dart`)
+- Nächster Schritt: Vorschläge einzeln entfernen (Long-Press) und
+  Tippfehler-Varianten zusammenführen, sobald Bearbeiten existiert.
+
 ### Bugs / Schwächen (offen)
 | # | Befund | Prio |
 |---|--------|------|

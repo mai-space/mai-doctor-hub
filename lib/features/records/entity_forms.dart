@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/doctor_repository.dart';
 import '../../data/repositories/records_repository.dart';
+import '../../data/repositories/suggestion_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
 import '../../services/report_import_service.dart';
+import '../../widgets/suggestion_text_field.dart';
 
 Future<void> showCreateDoctorDialog(BuildContext context) async {
   final name = TextEditingController();
@@ -21,8 +23,9 @@ Future<void> showCreateDoctorDialog(BuildContext context) async {
             decoration: const InputDecoration(labelText: 'Name'),
             autofocus: true,
           ),
-          TextField(
+          SuggestionTextField(
             controller: specialty,
+            field: SuggestionField.specialty,
             decoration: const InputDecoration(labelText: 'Fachrichtung'),
           ),
         ],
@@ -57,8 +60,9 @@ Future<void> showCreateDiagnosisDialog(BuildContext context) async {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
+          SuggestionTextField(
             controller: title,
+            field: SuggestionField.diagnosisTitle,
             decoration: const InputDecoration(labelText: 'Titel'),
             autofocus: true,
           ),
@@ -98,13 +102,15 @@ Future<void> showCreateSymptomDialog(BuildContext context) async {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
+          SuggestionTextField(
             controller: label,
+            field: SuggestionField.symptomLabel,
             decoration: const InputDecoration(labelText: 'Bezeichnung'),
             autofocus: true,
           ),
-          TextField(
+          SuggestionTextField(
             controller: region,
+            field: SuggestionField.bodyRegion,
             decoration: const InputDecoration(labelText: 'Körperregion'),
           ),
         ],
@@ -140,17 +146,20 @@ Future<void> showCreateMedicationDialog(BuildContext context) async {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
+          SuggestionTextField(
             controller: name,
+            field: SuggestionField.medicationName,
             decoration: const InputDecoration(labelText: 'Name'),
             autofocus: true,
           ),
-          TextField(
+          SuggestionTextField(
             controller: dosage,
+            field: SuggestionField.dosage,
             decoration: const InputDecoration(labelText: 'Dosierung'),
           ),
-          TextField(
+          SuggestionTextField(
             controller: schedule,
+            field: SuggestionField.medicationSchedule,
             decoration: const InputDecoration(labelText: 'Einnahmeplan'),
           ),
         ],
