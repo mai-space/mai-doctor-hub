@@ -1,4 +1,5 @@
 import '../app_database.dart';
+import '../suggestion_catalog.dart';
 
 /// Freitextfelder, für die bereits eingegebene Werte vorgeschlagen werden.
 enum SuggestionField {
@@ -35,36 +36,11 @@ class SuggestionRepository {
     SuggestionField.appointmentTitle: ('appointments', 'title', 'updated_at'),
   };
 
-  /// Startvorschläge, solange noch keine eigenen Werte existieren.
+  /// Statische Vorschläge — nach den eigenen Werten angehängt.
   static const _defaults = <SuggestionField, List<String>>{
-    SuggestionField.bodyRegion: [
-      'Kopf',
-      'Nacken',
-      'Schulter',
-      'Brust',
-      'Rücken',
-      'Bauch',
-      'Arm',
-      'Hand',
-      'Hüfte',
-      'Knie',
-      'Fuß',
-      'Haut',
-    ],
-    SuggestionField.specialty: [
-      'Allgemeinmedizin',
-      'Innere Medizin',
-      'Orthopädie',
-      'Dermatologie',
-      'Neurologie',
-      'Kardiologie',
-      'Gynäkologie',
-      'HNO',
-      'Augenheilkunde',
-      'Zahnmedizin',
-      'Radiologie',
-      'Psychotherapie',
-    ],
+    SuggestionField.bodyRegion: bodyRegionCatalog,
+    SuggestionField.specialty: specialtyCatalog,
+    SuggestionField.symptomLabel: symptomCatalog,
   };
 
   Future<List<String>> valuesFor(SuggestionField field) async {
@@ -76,12 +52,13 @@ class SuggestionRepository {
           ORDER BY $timestamp DESC
           ''', readsFrom: {}).get();
 
-    // In Dart gruppieren: SQLite-LOWER() kennt keine Umlaute.
+    // In Dart gruppieren: SQLite-LOWER() kennt keine Umlaute; [normalize]
+    // fasst auch „Übelkeit“/„Uebelkeit“ zusammen.
     final uses = <String, int>{};
     final spelling = <String, String>{}; // Einfügereihenfolge = Aktualität
     for (final row in rows) {
       final value = row.read<String>('value');
-      final key = value.toLowerCase();
+      final key = normalize(value);
       uses[key] = (uses[key] ?? 0) + 1;
       spelling.putIfAbsent(key, () => value);
     }
@@ -95,32 +72,47 @@ class SuggestionRepository {
 
     final values = [for (final key in keys) spelling[key]!];
     for (final value in _defaults[field] ?? const <String>[]) {
-      if (!uses.containsKey(value.toLowerCase())) values.add(value);
+      if (!uses.containsKey(normalize(value))) values.add(value);
     }
     return values;
   }
 
   /// Präfix-Treffer zuerst, dann Wortanfänge, dann Treffer im Wort.
-  /// Exakte Treffer werden ausgeblendet (nichts mehr zu ergänzen).
+  /// Wörtlich schon Getipptes wird ausgeblendet (nichts mehr zu ergänzen).
+  /// Groß-/Kleinschreibung und Umlaut-Schreibweisen sind egal
+  /// („ubelkeit“, „uebelkeit“ → „Übelkeit“).
   static List<String> filter(List<String> values, String input) {
-    final query = input.trim().toLowerCase();
+    final raw = input.trim().toLowerCase();
+    final query = normalize(raw);
     if (query.isEmpty) return values.take(8).toList();
     final prefix = <String>[];
     final wordStart = <String>[];
     final contains = <String>[];
     for (final value in values) {
-      final lower = value.toLowerCase();
-      if (lower == query) continue;
-      if (lower.startsWith(query)) {
+      // Nur wörtlich Getipptes ausblenden — „ubelkeit“ schlägt „Übelkeit“ vor.
+      if (value.toLowerCase() == raw) continue;
+      final text = normalize(value);
+      if (text.startsWith(query)) {
         prefix.add(value);
-      } else if (lower
+      } else if (text
           .split(RegExp(r'[\s,/()-]+'))
           .any((w) => w.startsWith(query))) {
         wordStart.add(value);
-      } else if (lower.contains(query)) {
+      } else if (text.contains(query)) {
         contains.add(value);
       }
     }
     return [...prefix, ...wordStart, ...contains].take(8).toList();
   }
+
+  /// Vergleichsform: klein, Umlaute/ß aufgelöst (ä/ae → a usw.).
+  static String normalize(String text) => text
+      .toLowerCase()
+      .replaceAll('ä', 'a')
+      .replaceAll('ö', 'o')
+      .replaceAll('ü', 'u')
+      .replaceAll('ß', 'ss')
+      .replaceAll('ae', 'a')
+      .replaceAll('oe', 'o')
+      .replaceAll('ue', 'u');
 }

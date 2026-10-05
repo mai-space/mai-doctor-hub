@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mai_doctor_hub/data/app_database.dart';
 import 'package:mai_doctor_hub/data/database_provider.dart';
+import 'package:mai_doctor_hub/data/repositories/doctor_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/records_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/suggestion_repository.dart';
+import 'package:mai_doctor_hub/data/suggestion_catalog.dart';
 import 'package:mai_doctor_hub/data/repositories/symptom_repository.dart';
 import 'package:mai_doctor_hub/features/records/entity_forms.dart';
 
@@ -58,6 +60,62 @@ void main() {
       'linkes Knie',
     ]);
     expect(SuggestionRepository.filter(values, ''), values);
+  });
+
+  test('German catalogs: own values first, then catalog', () async {
+    await DoctorRepository(database).create(name: 'Dr. A', specialty: 'Kinderarzt');
+    final repo = SuggestionRepository(database);
+
+    final specialties = await repo.valuesFor(SuggestionField.specialty);
+    expect(specialties.first, 'Kinderarzt');
+    expect(specialties, containsAll(specialtyCatalog));
+
+    final symptoms = await repo.valuesFor(SuggestionField.symptomLabel);
+    expect(symptoms, containsAll(['Kopfschmerzen', 'Übelkeit', 'Husten']));
+    expect(
+      await repo.valuesFor(SuggestionField.bodyRegion),
+      contains('Lendenwirbelsäule'),
+    );
+  });
+
+  test('catalog matching: abbreviations, word starts, umlauts', () {
+    expect(
+      SuggestionRepository.filter(specialtyCatalog, 'hno').first,
+      'Hals-Nasen-Ohrenheilkunde (HNO)',
+    );
+    expect(
+      SuggestionRepository.filter(specialtyCatalog, 'Gyn'),
+      contains('Frauenheilkunde und Geburtshilfe (Gynäkologie)'),
+    );
+    expect(
+      SuggestionRepository.filter(specialtyCatalog, 'hausarzt'),
+      contains('Allgemeinmedizin (Hausarzt)'),
+    );
+    for (final typed in ['ubelkeit', 'uebelkeit', 'ÜBEL']) {
+      expect(
+        SuggestionRepository.filter(symptomCatalog, typed),
+        contains('Übelkeit'),
+        reason: typed,
+      );
+    }
+    expect(
+      SuggestionRepository.filter(symptomCatalog, 'kopf').first,
+      'Kopfschmerzen',
+    );
+    expect(SuggestionRepository.filter(symptomCatalog, 'schmerz'), hasLength(8));
+  });
+
+  test('own spelling variants with umlauts are merged', () async {
+    final symptoms = SymptomRepository(database);
+    await symptoms.create(label: 'Uebelkeit');
+    await symptoms.create(label: 'Übelkeit');
+    final values = await SuggestionRepository(
+      database,
+    ).valuesFor(SuggestionField.symptomLabel);
+    expect(
+      values.where((v) => SuggestionRepository.normalize(v) == 'ubelkeit'),
+      hasLength(1),
+    );
   });
 
   testWidgets('symptom dialog suggests previously entered body region', (
