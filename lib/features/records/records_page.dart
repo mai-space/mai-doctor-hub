@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../data/database_provider.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../theme/app_theme.dart';
 import '../home/add_appointment_sheet.dart';
-import '../home/appointment_detail_page.dart';
+import 'detail_pages.dart';
 import 'entity_forms.dart';
 
 enum RecordEntityFilter {
@@ -29,11 +31,12 @@ class _RecordsPageState extends State<RecordsPage> {
   RecordEntityFilter _filter = RecordEntityFilter.all;
   RecordSort _sort = RecordSort.date;
   final _searchController = TextEditingController();
-  Future<List<RecordListItem>>? _listFuture;
-  int _reloadToken = 0;
+  Stream<List<RecordListItem>>? _stream;
+  Timer? _debounce;
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -49,49 +52,64 @@ class _RecordsPageState extends State<RecordsPage> {
     RecordEntityFilter.notes => 'note',
   };
 
-  void _reload() {
+  /// Liste bzw. Suchergebnis — beides reaktiv auf Datenänderungen.
+  Stream<List<RecordListItem>> _buildStream() {
     final db = DatabaseScope.of(context);
     final repo = RecordsRepository(db);
     final query = _searchController.text.trim();
-    setState(() {
-      _reloadToken++;
-      final token = _reloadToken;
-      if (query.isNotEmpty) {
-        _listFuture = () async {
-          final rows = await repo.search(query);
-          if (token != _reloadToken) return <RecordListItem>[];
-          final items = rows.map((row) {
-            final type = row.read<String>('entity_type');
-            final id = row.read<String>('entity_id');
-            final title = row.read<String>('title');
-            final body = row.read<String>('body');
-            return RecordListItem(
-              entityType: type,
-              entityId: id,
-              title: title,
-              subtitle: body.isEmpty
-                  ? _typeLabel(type)
-                  : '${_typeLabel(type)} · ${body.length > 40 ? '${body.substring(0, 40)}…' : body}',
-              sortDate: DateTime.now(),
-            );
-          }).toList();
-          if (_entityType != null) {
-            return items.where((i) => i.entityType == _entityType).toList();
-          }
-          return items;
-        }();
-      } else {
-        _listFuture = repo.listAll(sort: _sort, entityType: _entityType);
-      }
+    final type = _entityType;
+    if (query.isEmpty) return repo.watchAll(sort: _sort, entityType: type);
+    return db.watchWith(
+      {
+        db.doctors,
+        db.diagnoses,
+        db.symptoms,
+        db.appointments,
+        db.reports,
+        db.medications,
+        db.notes,
+      },
+      () async {
+        final rows = await repo.search(query, entityType: type);
+        return [
+          for (final row in rows)
+            _searchItem(
+              row.read<String>('entity_type'),
+              row.read<String>('entity_id'),
+              row.read<String>('title'),
+              row.read<String>('body'),
+            ),
+        ];
+      },
+    );
+  }
+
+  RecordListItem _searchItem(String type, String id, String title, String body) {
+    final snippet = body.length > 60 ? '${body.substring(0, 60)}…' : body;
+    return RecordListItem(
+      entityType: type,
+      entityId: id,
+      title: title,
+      subtitle: snippet.isEmpty
+          ? _typeLabel(type)
+          : '${_typeLabel(type)} · ${snippet.replaceAll('\n', ' ')}',
+      sortDate: DateTime.now(),
+    );
+  }
+
+  void _reload() => setState(() => _stream = _buildStream());
+
+  void _onSearchChanged(String _) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 250), () {
+      if (mounted) _reload();
     });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _listFuture ??= RecordsRepository(
-      DatabaseScope.of(context),
-    ).listAll(sort: _sort, entityType: _entityType);
+    _stream ??= _buildStream();
   }
 
   Future<void> _createForFilter() async {
@@ -113,7 +131,7 @@ class _RecordsPageState extends State<RecordsPage> {
       case RecordEntityFilter.all:
         await _showCreateMenu();
     }
-    if (mounted) _reload();
+    if (mounted && _searchController.text.isNotEmpty) _reload();
   }
 
   Future<void> _showCreateMenu() async {
@@ -139,15 +157,8 @@ class _RecordsPageState extends State<RecordsPage> {
     await _createForFilter();
   }
 
-  void _openItem(RecordListItem item) {
-    if (item.entityType == 'appointment') {
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => AppointmentDetailPage(appointmentId: item.entityId),
-        ),
-      );
-    }
-  }
+  void _openItem(RecordListItem item) =>
+      openRecord(context, item.entityType, item.entityId);
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +230,7 @@ class _RecordsPageState extends State<RecordsPage> {
                     },
                   ),
               ],
-              onChanged: (_) => _reload(),
+              onChanged: _onSearchChanged,
             ),
           ),
           const SizedBox(height: 12),
@@ -245,10 +256,10 @@ class _RecordsPageState extends State<RecordsPage> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<RecordListItem>>(
-              future: _listFuture,
+            child: StreamBuilder<List<RecordListItem>>(
+              stream: _stream,
               builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
+                if (!snapshot.hasData) {
                   return const Center(child: Text('Akte wird geladen…'));
                 }
                 final items = snapshot.data ?? const [];
