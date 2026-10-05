@@ -167,8 +167,32 @@ class AppSettings extends Table {
   IntColumn get eveningHour => integer().withDefault(const Constant(20))();
   IntColumn get eveningMinute => integer().withDefault(const Constant(0))();
 
+  // v2: Kalender-Export (einseitig nach Google/Gerätekalender).
+  BoolColumn get calendarSyncEnabled =>
+      boolean().withDefault(const Constant(false))();
+  TextColumn get calendarId => text().nullable()();
+  BoolColumn get calendarIncludeTitle =>
+      boolean().withDefault(const Constant(false))();
+
+  // v2: App-Sperre (Biometrie/Geräte-PIN).
+  BoolColumn get appLockEnabled =>
+      boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
+}
+
+/// v2: Verknüpfung Termin → exportiertes Kalender-Event.
+class CalendarLinks extends Table {
+  TextColumn get appointmentId => text()();
+  TextColumn get calendarId => text()();
+  TextColumn get externalEventId => text().nullable()();
+  TextColumn get payloadHash => text().nullable()();
+  DateTimeColumn get syncedAt => dateTime().nullable()();
+  TextColumn get lastError => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {appointmentId};
 }
 
 @DriftDatabase(
@@ -184,6 +208,7 @@ class AppSettings extends Table {
     Medications,
     Notes,
     AppSettings,
+    CalendarLinks,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -191,7 +216,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'mai_doctor_hub'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -207,6 +232,22 @@ class AppDatabase extends _$AppDatabase {
         );
       ''');
       await into(appSettings).insert(AppSettingsCompanion.insert());
+    },
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) {
+        await migrator.addColumn(appSettings, appSettings.calendarSyncEnabled);
+        await migrator.addColumn(appSettings, appSettings.calendarId);
+        await migrator.addColumn(
+          appSettings,
+          appSettings.calendarIncludeTitle,
+        );
+        await migrator.addColumn(appSettings, appSettings.appLockEnabled);
+        await migrator.createTable(calendarLinks);
+      }
+    },
+    beforeOpen: (details) async {
+      // Settings-Zeile garantieren (z. B. nach Restore eines Fremd-Backups).
+      await customStatement('INSERT OR IGNORE INTO app_settings (id) VALUES (1)');
     },
   );
 
@@ -226,7 +267,11 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-  Future<List<QueryRow>> searchFts(String query, {int limit = 50}) async {
+  Future<List<QueryRow>> searchFts(
+    String query, {
+    String? entityType,
+    int limit = 50,
+  }) async {
     final trimmed = query.trim();
     if (trimmed.isEmpty) return const [];
     return customSelect(
@@ -234,11 +279,24 @@ class AppDatabase extends _$AppDatabase {
       SELECT entity_type, entity_id, title, body, bm25(records_fts) AS rank
       FROM records_fts
       WHERE records_fts MATCH ?
+        AND (? IS NULL OR entity_type = ?)
       ORDER BY rank
       LIMIT ?
       ''',
-      variables: [Variable.withString(trimmed), Variable.withInt(limit)],
+      variables: [
+        Variable.withString(trimmed),
+        Variable(entityType),
+        Variable(entityType),
+        Variable.withInt(limit),
+      ],
       readsFrom: {},
     ).get();
+  }
+
+  Future<void> deleteFts(String entityType, String entityId) {
+    return customStatement(
+      'DELETE FROM records_fts WHERE entity_type = ? AND entity_id = ?',
+      [entityType, entityId],
+    );
   }
 }

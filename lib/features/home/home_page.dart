@@ -37,18 +37,28 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Stream<List<AppointmentSummary>>? _upcoming;
+  Stream<List<AppointmentSummary>>? _past;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Streams einmalig anlegen — nicht bei jedem Build neu abonnieren.
+    final repo = AppointmentRepository(DatabaseScope.of(context));
+    _upcoming ??= repo.watchUpcomingSummaries();
+    _past ??= repo.watchPastSummaries();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final db = DatabaseScope.of(context);
-    final repo = AppointmentRepository(db);
     final theme = Theme.of(context);
 
     return SafeArea(
-      child: StreamBuilder<List<Appointment>>(
-        stream: repo.watchUpcoming(),
+      child: StreamBuilder<List<AppointmentSummary>>(
+        stream: _upcoming,
         builder: (context, upcomingSnap) {
-          return StreamBuilder<List<Appointment>>(
-            stream: repo.watchPast(),
+          return StreamBuilder<List<AppointmentSummary>>(
+            stream: _past,
             builder: (context, pastSnap) {
               final upcoming = upcomingSnap.data ?? const [];
               final past = pastSnap.data ?? const [];
@@ -60,20 +70,10 @@ class _HomePageState extends State<HomePage> {
                   if (!empty)
                     SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
-                        final appointment = past[index];
-                        return FutureBuilder<AppointmentSummary?>(
-                          future: repo.summaryFor(appointment.id),
-                          builder: (context, snap) {
-                            final summary = snap.data;
-                            if (summary == null) {
-                              return const SizedBox(height: 72);
-                            }
-                            return _AppointmentCard(
-                              summary: summary,
-                              isPast: true,
-                              onTap: () => _openDetail(appointment.id),
-                            );
-                          },
+                        final summary = past[index];
+                        return _AppointmentCard(
+                          summary: summary,
+                          onTap: () => _openDetail(summary.appointment.id),
                         );
                       }, childCount: past.length),
                     ),
@@ -138,20 +138,10 @@ class _HomePageState extends State<HomePage> {
                   else
                     SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
-                        final appointment = upcoming[index];
-                        return FutureBuilder<AppointmentSummary?>(
-                          future: repo.summaryFor(appointment.id),
-                          builder: (context, snap) {
-                            final summary = snap.data;
-                            if (summary == null) {
-                              return const SizedBox(height: 72);
-                            }
-                            return _AppointmentCard(
-                              summary: summary,
-                              isPast: false,
-                              onTap: () => _openDetail(appointment.id),
-                            );
-                          },
+                        final summary = upcoming[index];
+                        return _AppointmentCard(
+                          summary: summary,
+                          onTap: () => _openDetail(summary.appointment.id),
                         );
                       }, childCount: upcoming.length),
                     ),
@@ -166,14 +156,9 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _AppointmentCard extends StatelessWidget {
-  const _AppointmentCard({
-    required this.summary,
-    required this.isPast,
-    required this.onTap,
-  });
+  const _AppointmentCard({required this.summary, required this.onTap});
 
   final AppointmentSummary summary;
-  final bool isPast;
   final VoidCallback onTap;
 
   @override
@@ -213,7 +198,9 @@ class _AppointmentCard extends StatelessWidget {
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                       ),
-                      if (!summary.hasReport && isPast)
+                      if (a.status != AppointmentStatus.planned)
+                        _StatusBadge(status: a.status)
+                      else if (summary.isMissingReport)
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -265,6 +252,35 @@ class _AppointmentCard extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({required this.status});
+
+  final AppointmentStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final cancelled = status == AppointmentStatus.cancelled;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: cancelled
+            ? scheme.surfaceContainerHighest
+            : scheme.primaryContainer,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        appointmentStatusLabel(status),
+        style: TextStyle(
+          color: cancelled ? scheme.onSurfaceVariant : scheme.onPrimaryContainer,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

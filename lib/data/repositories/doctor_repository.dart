@@ -54,4 +54,51 @@ class DoctorRepository {
     );
     return id;
   }
+
+  Future<void> update({
+    required String id,
+    required String name,
+    String? specialty,
+    String? practiceName,
+    String? phone,
+    String? address,
+    String? notes,
+  }) async {
+    await (_db.update(_db.doctors)..where((t) => t.id.equals(id))).write(
+      DoctorsCompanion(
+        name: Value(name),
+        specialty: Value(specialty),
+        practiceName: Value(practiceName),
+        phone: Value(phone),
+        address: Value(address),
+        notes: Value(notes),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+    await _db.upsertFts(
+      entityType: 'doctor',
+      entityId: id,
+      title: name,
+      body: [specialty, practiceName, notes].whereType<String>().join(' '),
+    );
+  }
+
+  Future<int> appointmentCount(String id) async {
+    final count = _db.appointments.id.count();
+    final row =
+        await (_db.selectOnly(_db.appointments)
+              ..addColumns([count])
+              ..where(_db.appointments.doctorId.equals(id)))
+            .getSingle();
+    return row.read(count) ?? 0;
+  }
+
+  /// Löscht den Arzt nur, wenn keine Termine mehr auf ihn verweisen.
+  /// Gibt `false` zurück, wenn noch Termine existieren.
+  Future<bool> delete(String id) async {
+    if (await appointmentCount(id) > 0) return false;
+    await (_db.delete(_db.doctors)..where((t) => t.id.equals(id))).go();
+    await _db.deleteFts('doctor', id);
+    return true;
+  }
 }

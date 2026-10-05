@@ -1,9 +1,17 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../app_database.dart';
 
 const _uuid = Uuid();
+
+String diagnosisStatusLabel(DiagnosisStatus status) => switch (status) {
+  DiagnosisStatus.active => 'aktiv',
+  DiagnosisStatus.resolved => 'abgeschlossen',
+};
 
 enum RecordSort { date, name, updated }
 
@@ -14,14 +22,16 @@ class RecordListItem {
     required this.title,
     required this.subtitle,
     required this.sortDate,
+    DateTime? updatedAt,
     this.icon,
-  });
+  }) : updatedAt = updatedAt ?? sortDate;
 
   final String entityType;
   final String entityId;
   final String title;
   final String subtitle;
   final DateTime sortDate;
+  final DateTime updatedAt;
   final String? icon;
 }
 
@@ -30,7 +40,7 @@ class RecordsRepository {
 
   final AppDatabase _db;
 
-  Future<List<QueryRow>> search(String query) {
+  Future<List<QueryRow>> search(String query, {String? entityType}) {
     final tokens = query
         .trim()
         .split(RegExp(r'\s+'))
@@ -40,7 +50,29 @@ class RecordsRepository {
           return cleaned.endsWith('*') ? cleaned : '$cleaned*';
         })
         .join(' ');
-    return _db.searchFts(tokens);
+    return _db.searchFts(tokens, entityType: entityType);
+  }
+
+  /// Wie [listAll], aber reaktiv auf alle Akten-Tabellen.
+  Stream<List<RecordListItem>> watchAll({
+    required RecordSort sort,
+    String? entityType,
+  }) {
+    return _db
+        .customSelect(
+          'SELECT 1',
+          readsFrom: {
+            _db.doctors,
+            _db.diagnoses,
+            _db.symptoms,
+            _db.appointments,
+            _db.reports,
+            _db.medications,
+            _db.notes,
+          },
+        )
+        .watch()
+        .asyncMap((_) => listAll(sort: sort, entityType: entityType));
   }
 
   Stream<List<Diagnose>> watchDiagnoses() {
@@ -92,7 +124,8 @@ class RecordsRepository {
               'Arzt',
               if (d.specialty != null) d.specialty!,
             ].join(' · '),
-            sortDate: d.updatedAt,
+            sortDate: d.createdAt,
+            updatedAt: d.updatedAt,
           ),
         );
       }
@@ -105,8 +138,9 @@ class RecordsRepository {
             entityType: 'diagnosis',
             entityId: d.id,
             title: d.title,
-            subtitle: 'Diagnose · ${d.status.name}',
-            sortDate: d.updatedAt,
+            subtitle: 'Diagnose · ${diagnosisStatusLabel(d.status)}',
+            sortDate: d.startedAt ?? d.createdAt,
+            updatedAt: d.updatedAt,
           ),
         );
       }
@@ -122,7 +156,8 @@ class RecordsRepository {
             subtitle: s.healedAt == null
                 ? 'Symptom · aktiv'
                 : 'Symptom · geheilt',
-            sortDate: s.updatedAt,
+            sortDate: s.createdAt,
+            updatedAt: s.updatedAt,
           ),
         );
       }
@@ -137,6 +172,7 @@ class RecordsRepository {
             title: a.title ?? 'Termin',
             subtitle: 'Termin · ${_formatDate(a.scheduledAt)}',
             sortDate: a.scheduledAt,
+            updatedAt: a.updatedAt,
           ),
         );
       }
@@ -167,7 +203,8 @@ class RecordsRepository {
               'Medikament',
               if (m.dosage != null) m.dosage!,
             ].join(' · '),
-            sortDate: m.createdAt,
+            sortDate: m.startedAt ?? m.createdAt,
+            updatedAt: m.createdAt,
           ),
         );
       }
@@ -184,7 +221,8 @@ class RecordsRepository {
             entityId: n.id,
             title: preview,
             subtitle: 'Notiz · ${_formatDate(n.updatedAt)}',
-            sortDate: n.updatedAt,
+            sortDate: n.createdAt,
+            updatedAt: n.updatedAt,
           ),
         );
       }
@@ -195,6 +233,7 @@ class RecordsRepository {
         case RecordSort.name:
           return a.title.toLowerCase().compareTo(b.title.toLowerCase());
         case RecordSort.updated:
+          return b.updatedAt.compareTo(a.updatedAt);
         case RecordSort.date:
           return b.sortDate.compareTo(a.sortDate);
       }
@@ -326,5 +365,192 @@ class RecordsRepository {
       body: extractedText ?? '',
     );
     return id;
+  }
+
+  // --- Diagnosen ---------------------------------------------------------
+
+  Future<Diagnose?> getDiagnosis(String id) => (_db.select(
+    _db.diagnoses,
+  )..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<void> updateDiagnosis({
+    required String id,
+    required String title,
+    String? notes,
+    required DiagnosisStatus status,
+    DateTime? startedAt,
+    DateTime? endedAt,
+  }) async {
+    await (_db.update(_db.diagnoses)..where((t) => t.id.equals(id))).write(
+      DiagnosesCompanion(
+        title: Value(title),
+        notes: Value(notes),
+        status: Value(status),
+        startedAt: Value(startedAt),
+        endedAt: Value(endedAt),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+    await _db.upsertFts(
+      entityType: 'diagnosis',
+      entityId: id,
+      title: title,
+      body: notes ?? '',
+    );
+  }
+
+  /// Löscht die Diagnose; verknüpfte Symptome/Medikamente/Notizen bleiben.
+  Future<void> deleteDiagnosis(String id) async {
+    await _db.transaction(() async {
+      await (_db.delete(
+        _db.appointmentDiagnoses,
+      )..where((t) => t.diagnosisId.equals(id))).go();
+      await (_db.update(_db.symptoms)..where((t) => t.diagnosisId.equals(id)))
+          .write(const SymptomsCompanion(diagnosisId: Value(null)));
+      await (_db.update(_db.medications)
+            ..where((t) => t.diagnosisId.equals(id)))
+          .write(const MedicationsCompanion(diagnosisId: Value(null)));
+      await (_db.update(_db.notes)
+            ..where((t) => t.relatedDiagnosisId.equals(id)))
+          .write(const NotesCompanion(relatedDiagnosisId: Value(null)));
+      await (_db.delete(_db.diagnoses)..where((t) => t.id.equals(id))).go();
+      await _db.deleteFts('diagnosis', id);
+    });
+  }
+
+  // --- Medikamente -------------------------------------------------------
+
+  Future<Medication?> getMedication(String id) => (_db.select(
+    _db.medications,
+  )..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<void> updateMedication({
+    required String id,
+    required String name,
+    String? dosage,
+    String? scheduleText,
+    String? diagnosisId,
+    DateTime? startedAt,
+    DateTime? endedAt,
+    String? notes,
+  }) async {
+    await (_db.update(_db.medications)..where((t) => t.id.equals(id))).write(
+      MedicationsCompanion(
+        name: Value(name),
+        dosage: Value(dosage),
+        scheduleText: Value(scheduleText),
+        diagnosisId: Value(diagnosisId),
+        startedAt: Value(startedAt),
+        endedAt: Value(endedAt),
+        notes: Value(notes),
+      ),
+    );
+    await _db.upsertFts(
+      entityType: 'medication',
+      entityId: id,
+      title: name,
+      body: [dosage, scheduleText, notes].whereType<String>().join(' '),
+    );
+  }
+
+  Future<void> deleteMedication(String id) async {
+    await (_db.delete(_db.medications)..where((t) => t.id.equals(id))).go();
+    await _db.deleteFts('medication', id);
+  }
+
+  // --- Notizen -----------------------------------------------------------
+
+  Future<Note?> getNote(String id) => (_db.select(
+    _db.notes,
+  )..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<void> updateNote({
+    required String id,
+    required String body,
+    String? relatedAppointmentId,
+    String? relatedDiagnosisId,
+  }) async {
+    await (_db.update(_db.notes)..where((t) => t.id.equals(id))).write(
+      NotesCompanion(
+        body: Value(body),
+        relatedAppointmentId: Value(relatedAppointmentId),
+        relatedDiagnosisId: Value(relatedDiagnosisId),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+    await _db.upsertFts(
+      entityType: 'note',
+      entityId: id,
+      title: body.length > 40 ? '${body.substring(0, 40)}…' : body,
+      body: body,
+    );
+  }
+
+  Future<void> deleteNote(String id) async {
+    await (_db.delete(_db.notes)..where((t) => t.id.equals(id))).go();
+    await _db.deleteFts('note', id);
+  }
+
+  // --- Berichte ----------------------------------------------------------
+
+  Future<Report?> getReport(String id) => (_db.select(
+    _db.reports,
+  )..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  Future<List<Report>> allReports() => _db.select(_db.reports).get();
+
+  Future<void> updateReport({
+    required String id,
+    required String title,
+    String? appointmentId,
+  }) async {
+    await (_db.update(_db.reports)..where((t) => t.id.equals(id))).write(
+      ReportsCompanion(title: Value(title), appointmentId: Value(appointmentId)),
+    );
+    final report = await getReport(id);
+    await _db.upsertFts(
+      entityType: 'report',
+      entityId: id,
+      title: title,
+      body: report?.extractedText ?? '',
+    );
+  }
+
+  /// Speichert (neu) extrahierten Text und aktualisiert den Suchindex.
+  Future<void> setReportText(String id, String? text, int? pageCount) async {
+    await (_db.update(_db.reports)..where((t) => t.id.equals(id))).write(
+      ReportsCompanion(extractedText: Value(text), pageCount: Value(pageCount)),
+    );
+    final report = await getReport(id);
+    if (report == null) return;
+    await _db.upsertFts(
+      entityType: 'report',
+      entityId: id,
+      title: report.title,
+      body: text ?? '',
+    );
+  }
+
+  Future<void> deleteReport(String id) async {
+    final report = await getReport(id);
+    if (report == null) return;
+    await deleteReportRow(id);
+    await deleteReportFile(report);
+  }
+
+  /// Nur DB-Zeile + Index (für Transaktionen); Datei separat löschen.
+  Future<void> deleteReportRow(String id) async {
+    await (_db.delete(_db.reports)..where((t) => t.id.equals(id))).go();
+    await _db.deleteFts('report', id);
+  }
+
+  Future<void> deleteReportFile(Report report) async {
+    if (kIsWeb || report.localPath.startsWith('web-memory://')) return;
+    try {
+      final file = File(report.localPath);
+      if (await file.exists()) await file.delete();
+    } catch (_) {
+      // Datei bereits weg oder nicht zugreifbar — DB ist maßgeblich.
+    }
   }
 }

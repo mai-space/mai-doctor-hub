@@ -4981,6 +4981,60 @@ class $AppSettingsTable extends AppSettings
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _calendarSyncEnabledMeta =
+      const VerificationMeta('calendarSyncEnabled');
+  @override
+  late final GeneratedColumn<bool> calendarSyncEnabled = GeneratedColumn<bool>(
+    'calendar_sync_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("calendar_sync_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _calendarIdMeta = const VerificationMeta(
+    'calendarId',
+  );
+  @override
+  late final GeneratedColumn<String> calendarId = GeneratedColumn<String>(
+    'calendar_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _calendarIncludeTitleMeta =
+      const VerificationMeta('calendarIncludeTitle');
+  @override
+  late final GeneratedColumn<bool> calendarIncludeTitle = GeneratedColumn<bool>(
+    'calendar_include_title',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("calendar_include_title" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _appLockEnabledMeta = const VerificationMeta(
+    'appLockEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> appLockEnabled = GeneratedColumn<bool>(
+    'app_lock_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("app_lock_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -4990,6 +5044,10 @@ class $AppSettingsTable extends AppSettings
     morningMinute,
     eveningHour,
     eveningMinute,
+    calendarSyncEnabled,
+    calendarId,
+    calendarIncludeTitle,
+    appLockEnabled,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5060,6 +5118,39 @@ class $AppSettingsTable extends AppSettings
         ),
       );
     }
+    if (data.containsKey('calendar_sync_enabled')) {
+      context.handle(
+        _calendarSyncEnabledMeta,
+        calendarSyncEnabled.isAcceptableOrUnknown(
+          data['calendar_sync_enabled']!,
+          _calendarSyncEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('calendar_id')) {
+      context.handle(
+        _calendarIdMeta,
+        calendarId.isAcceptableOrUnknown(data['calendar_id']!, _calendarIdMeta),
+      );
+    }
+    if (data.containsKey('calendar_include_title')) {
+      context.handle(
+        _calendarIncludeTitleMeta,
+        calendarIncludeTitle.isAcceptableOrUnknown(
+          data['calendar_include_title']!,
+          _calendarIncludeTitleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('app_lock_enabled')) {
+      context.handle(
+        _appLockEnabledMeta,
+        appLockEnabled.isAcceptableOrUnknown(
+          data['app_lock_enabled']!,
+          _appLockEnabledMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -5097,6 +5188,22 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.int,
         data['${effectivePrefix}evening_minute'],
       )!,
+      calendarSyncEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}calendar_sync_enabled'],
+      )!,
+      calendarId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}calendar_id'],
+      ),
+      calendarIncludeTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}calendar_include_title'],
+      )!,
+      appLockEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}app_lock_enabled'],
+      )!,
     );
   }
 
@@ -5114,6 +5221,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final int morningMinute;
   final int eveningHour;
   final int eveningMinute;
+  final bool calendarSyncEnabled;
+  final String? calendarId;
+  final bool calendarIncludeTitle;
+  final bool appLockEnabled;
   const AppSetting({
     required this.id,
     required this.morningReminderEnabled,
@@ -5122,6 +5233,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.morningMinute,
     required this.eveningHour,
     required this.eveningMinute,
+    required this.calendarSyncEnabled,
+    this.calendarId,
+    required this.calendarIncludeTitle,
+    required this.appLockEnabled,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5133,6 +5248,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['morning_minute'] = Variable<int>(morningMinute);
     map['evening_hour'] = Variable<int>(eveningHour);
     map['evening_minute'] = Variable<int>(eveningMinute);
+    map['calendar_sync_enabled'] = Variable<bool>(calendarSyncEnabled);
+    if (!nullToAbsent || calendarId != null) {
+      map['calendar_id'] = Variable<String>(calendarId);
+    }
+    map['calendar_include_title'] = Variable<bool>(calendarIncludeTitle);
+    map['app_lock_enabled'] = Variable<bool>(appLockEnabled);
     return map;
   }
 
@@ -5145,6 +5266,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       morningMinute: Value(morningMinute),
       eveningHour: Value(eveningHour),
       eveningMinute: Value(eveningMinute),
+      calendarSyncEnabled: Value(calendarSyncEnabled),
+      calendarId: calendarId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(calendarId),
+      calendarIncludeTitle: Value(calendarIncludeTitle),
+      appLockEnabled: Value(appLockEnabled),
     );
   }
 
@@ -5165,6 +5292,14 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       morningMinute: serializer.fromJson<int>(json['morningMinute']),
       eveningHour: serializer.fromJson<int>(json['eveningHour']),
       eveningMinute: serializer.fromJson<int>(json['eveningMinute']),
+      calendarSyncEnabled: serializer.fromJson<bool>(
+        json['calendarSyncEnabled'],
+      ),
+      calendarId: serializer.fromJson<String?>(json['calendarId']),
+      calendarIncludeTitle: serializer.fromJson<bool>(
+        json['calendarIncludeTitle'],
+      ),
+      appLockEnabled: serializer.fromJson<bool>(json['appLockEnabled']),
     );
   }
   @override
@@ -5178,6 +5313,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'morningMinute': serializer.toJson<int>(morningMinute),
       'eveningHour': serializer.toJson<int>(eveningHour),
       'eveningMinute': serializer.toJson<int>(eveningMinute),
+      'calendarSyncEnabled': serializer.toJson<bool>(calendarSyncEnabled),
+      'calendarId': serializer.toJson<String?>(calendarId),
+      'calendarIncludeTitle': serializer.toJson<bool>(calendarIncludeTitle),
+      'appLockEnabled': serializer.toJson<bool>(appLockEnabled),
     };
   }
 
@@ -5189,6 +5328,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     int? morningMinute,
     int? eveningHour,
     int? eveningMinute,
+    bool? calendarSyncEnabled,
+    Value<String?> calendarId = const Value.absent(),
+    bool? calendarIncludeTitle,
+    bool? appLockEnabled,
   }) => AppSetting(
     id: id ?? this.id,
     morningReminderEnabled:
@@ -5199,6 +5342,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     morningMinute: morningMinute ?? this.morningMinute,
     eveningHour: eveningHour ?? this.eveningHour,
     eveningMinute: eveningMinute ?? this.eveningMinute,
+    calendarSyncEnabled: calendarSyncEnabled ?? this.calendarSyncEnabled,
+    calendarId: calendarId.present ? calendarId.value : this.calendarId,
+    calendarIncludeTitle: calendarIncludeTitle ?? this.calendarIncludeTitle,
+    appLockEnabled: appLockEnabled ?? this.appLockEnabled,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -5221,6 +5368,18 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       eveningMinute: data.eveningMinute.present
           ? data.eveningMinute.value
           : this.eveningMinute,
+      calendarSyncEnabled: data.calendarSyncEnabled.present
+          ? data.calendarSyncEnabled.value
+          : this.calendarSyncEnabled,
+      calendarId: data.calendarId.present
+          ? data.calendarId.value
+          : this.calendarId,
+      calendarIncludeTitle: data.calendarIncludeTitle.present
+          ? data.calendarIncludeTitle.value
+          : this.calendarIncludeTitle,
+      appLockEnabled: data.appLockEnabled.present
+          ? data.appLockEnabled.value
+          : this.appLockEnabled,
     );
   }
 
@@ -5233,7 +5392,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('morningHour: $morningHour, ')
           ..write('morningMinute: $morningMinute, ')
           ..write('eveningHour: $eveningHour, ')
-          ..write('eveningMinute: $eveningMinute')
+          ..write('eveningMinute: $eveningMinute, ')
+          ..write('calendarSyncEnabled: $calendarSyncEnabled, ')
+          ..write('calendarId: $calendarId, ')
+          ..write('calendarIncludeTitle: $calendarIncludeTitle, ')
+          ..write('appLockEnabled: $appLockEnabled')
           ..write(')'))
         .toString();
   }
@@ -5247,6 +5410,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     morningMinute,
     eveningHour,
     eveningMinute,
+    calendarSyncEnabled,
+    calendarId,
+    calendarIncludeTitle,
+    appLockEnabled,
   );
   @override
   bool operator ==(Object other) =>
@@ -5258,7 +5425,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.morningHour == this.morningHour &&
           other.morningMinute == this.morningMinute &&
           other.eveningHour == this.eveningHour &&
-          other.eveningMinute == this.eveningMinute);
+          other.eveningMinute == this.eveningMinute &&
+          other.calendarSyncEnabled == this.calendarSyncEnabled &&
+          other.calendarId == this.calendarId &&
+          other.calendarIncludeTitle == this.calendarIncludeTitle &&
+          other.appLockEnabled == this.appLockEnabled);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -5269,6 +5440,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<int> morningMinute;
   final Value<int> eveningHour;
   final Value<int> eveningMinute;
+  final Value<bool> calendarSyncEnabled;
+  final Value<String?> calendarId;
+  final Value<bool> calendarIncludeTitle;
+  final Value<bool> appLockEnabled;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.morningReminderEnabled = const Value.absent(),
@@ -5277,6 +5452,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.morningMinute = const Value.absent(),
     this.eveningHour = const Value.absent(),
     this.eveningMinute = const Value.absent(),
+    this.calendarSyncEnabled = const Value.absent(),
+    this.calendarId = const Value.absent(),
+    this.calendarIncludeTitle = const Value.absent(),
+    this.appLockEnabled = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -5286,6 +5465,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.morningMinute = const Value.absent(),
     this.eveningHour = const Value.absent(),
     this.eveningMinute = const Value.absent(),
+    this.calendarSyncEnabled = const Value.absent(),
+    this.calendarId = const Value.absent(),
+    this.calendarIncludeTitle = const Value.absent(),
+    this.appLockEnabled = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -5295,6 +5478,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<int>? morningMinute,
     Expression<int>? eveningHour,
     Expression<int>? eveningMinute,
+    Expression<bool>? calendarSyncEnabled,
+    Expression<String>? calendarId,
+    Expression<bool>? calendarIncludeTitle,
+    Expression<bool>? appLockEnabled,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -5306,6 +5493,12 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (morningMinute != null) 'morning_minute': morningMinute,
       if (eveningHour != null) 'evening_hour': eveningHour,
       if (eveningMinute != null) 'evening_minute': eveningMinute,
+      if (calendarSyncEnabled != null)
+        'calendar_sync_enabled': calendarSyncEnabled,
+      if (calendarId != null) 'calendar_id': calendarId,
+      if (calendarIncludeTitle != null)
+        'calendar_include_title': calendarIncludeTitle,
+      if (appLockEnabled != null) 'app_lock_enabled': appLockEnabled,
     });
   }
 
@@ -5317,6 +5510,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<int>? morningMinute,
     Value<int>? eveningHour,
     Value<int>? eveningMinute,
+    Value<bool>? calendarSyncEnabled,
+    Value<String?>? calendarId,
+    Value<bool>? calendarIncludeTitle,
+    Value<bool>? appLockEnabled,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -5328,6 +5525,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       morningMinute: morningMinute ?? this.morningMinute,
       eveningHour: eveningHour ?? this.eveningHour,
       eveningMinute: eveningMinute ?? this.eveningMinute,
+      calendarSyncEnabled: calendarSyncEnabled ?? this.calendarSyncEnabled,
+      calendarId: calendarId ?? this.calendarId,
+      calendarIncludeTitle: calendarIncludeTitle ?? this.calendarIncludeTitle,
+      appLockEnabled: appLockEnabled ?? this.appLockEnabled,
     );
   }
 
@@ -5359,6 +5560,20 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (eveningMinute.present) {
       map['evening_minute'] = Variable<int>(eveningMinute.value);
     }
+    if (calendarSyncEnabled.present) {
+      map['calendar_sync_enabled'] = Variable<bool>(calendarSyncEnabled.value);
+    }
+    if (calendarId.present) {
+      map['calendar_id'] = Variable<String>(calendarId.value);
+    }
+    if (calendarIncludeTitle.present) {
+      map['calendar_include_title'] = Variable<bool>(
+        calendarIncludeTitle.value,
+      );
+    }
+    if (appLockEnabled.present) {
+      map['app_lock_enabled'] = Variable<bool>(appLockEnabled.value);
+    }
     return map;
   }
 
@@ -5371,7 +5586,455 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('morningHour: $morningHour, ')
           ..write('morningMinute: $morningMinute, ')
           ..write('eveningHour: $eveningHour, ')
-          ..write('eveningMinute: $eveningMinute')
+          ..write('eveningMinute: $eveningMinute, ')
+          ..write('calendarSyncEnabled: $calendarSyncEnabled, ')
+          ..write('calendarId: $calendarId, ')
+          ..write('calendarIncludeTitle: $calendarIncludeTitle, ')
+          ..write('appLockEnabled: $appLockEnabled')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CalendarLinksTable extends CalendarLinks
+    with TableInfo<$CalendarLinksTable, CalendarLink> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CalendarLinksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _appointmentIdMeta = const VerificationMeta(
+    'appointmentId',
+  );
+  @override
+  late final GeneratedColumn<String> appointmentId = GeneratedColumn<String>(
+    'appointment_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _calendarIdMeta = const VerificationMeta(
+    'calendarId',
+  );
+  @override
+  late final GeneratedColumn<String> calendarId = GeneratedColumn<String>(
+    'calendar_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _externalEventIdMeta = const VerificationMeta(
+    'externalEventId',
+  );
+  @override
+  late final GeneratedColumn<String> externalEventId = GeneratedColumn<String>(
+    'external_event_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadHashMeta = const VerificationMeta(
+    'payloadHash',
+  );
+  @override
+  late final GeneratedColumn<String> payloadHash = GeneratedColumn<String>(
+    'payload_hash',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncedAtMeta = const VerificationMeta(
+    'syncedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
+    'synced_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
+    'lastError',
+  );
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    appointmentId,
+    calendarId,
+    externalEventId,
+    payloadHash,
+    syncedAt,
+    lastError,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'calendar_links';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CalendarLink> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('appointment_id')) {
+      context.handle(
+        _appointmentIdMeta,
+        appointmentId.isAcceptableOrUnknown(
+          data['appointment_id']!,
+          _appointmentIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_appointmentIdMeta);
+    }
+    if (data.containsKey('calendar_id')) {
+      context.handle(
+        _calendarIdMeta,
+        calendarId.isAcceptableOrUnknown(data['calendar_id']!, _calendarIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_calendarIdMeta);
+    }
+    if (data.containsKey('external_event_id')) {
+      context.handle(
+        _externalEventIdMeta,
+        externalEventId.isAcceptableOrUnknown(
+          data['external_event_id']!,
+          _externalEventIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('payload_hash')) {
+      context.handle(
+        _payloadHashMeta,
+        payloadHash.isAcceptableOrUnknown(
+          data['payload_hash']!,
+          _payloadHashMeta,
+        ),
+      );
+    }
+    if (data.containsKey('synced_at')) {
+      context.handle(
+        _syncedAtMeta,
+        syncedAt.isAcceptableOrUnknown(data['synced_at']!, _syncedAtMeta),
+      );
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(
+        _lastErrorMeta,
+        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {appointmentId};
+  @override
+  CalendarLink map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CalendarLink(
+      appointmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}appointment_id'],
+      )!,
+      calendarId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}calendar_id'],
+      )!,
+      externalEventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}external_event_id'],
+      ),
+      payloadHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_hash'],
+      ),
+      syncedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}synced_at'],
+      ),
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+    );
+  }
+
+  @override
+  $CalendarLinksTable createAlias(String alias) {
+    return $CalendarLinksTable(attachedDatabase, alias);
+  }
+}
+
+class CalendarLink extends DataClass implements Insertable<CalendarLink> {
+  final String appointmentId;
+  final String calendarId;
+  final String? externalEventId;
+  final String? payloadHash;
+  final DateTime? syncedAt;
+  final String? lastError;
+  const CalendarLink({
+    required this.appointmentId,
+    required this.calendarId,
+    this.externalEventId,
+    this.payloadHash,
+    this.syncedAt,
+    this.lastError,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['appointment_id'] = Variable<String>(appointmentId);
+    map['calendar_id'] = Variable<String>(calendarId);
+    if (!nullToAbsent || externalEventId != null) {
+      map['external_event_id'] = Variable<String>(externalEventId);
+    }
+    if (!nullToAbsent || payloadHash != null) {
+      map['payload_hash'] = Variable<String>(payloadHash);
+    }
+    if (!nullToAbsent || syncedAt != null) {
+      map['synced_at'] = Variable<DateTime>(syncedAt);
+    }
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    return map;
+  }
+
+  CalendarLinksCompanion toCompanion(bool nullToAbsent) {
+    return CalendarLinksCompanion(
+      appointmentId: Value(appointmentId),
+      calendarId: Value(calendarId),
+      externalEventId: externalEventId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(externalEventId),
+      payloadHash: payloadHash == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payloadHash),
+      syncedAt: syncedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncedAt),
+      lastError: lastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastError),
+    );
+  }
+
+  factory CalendarLink.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CalendarLink(
+      appointmentId: serializer.fromJson<String>(json['appointmentId']),
+      calendarId: serializer.fromJson<String>(json['calendarId']),
+      externalEventId: serializer.fromJson<String?>(json['externalEventId']),
+      payloadHash: serializer.fromJson<String?>(json['payloadHash']),
+      syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'appointmentId': serializer.toJson<String>(appointmentId),
+      'calendarId': serializer.toJson<String>(calendarId),
+      'externalEventId': serializer.toJson<String?>(externalEventId),
+      'payloadHash': serializer.toJson<String?>(payloadHash),
+      'syncedAt': serializer.toJson<DateTime?>(syncedAt),
+      'lastError': serializer.toJson<String?>(lastError),
+    };
+  }
+
+  CalendarLink copyWith({
+    String? appointmentId,
+    String? calendarId,
+    Value<String?> externalEventId = const Value.absent(),
+    Value<String?> payloadHash = const Value.absent(),
+    Value<DateTime?> syncedAt = const Value.absent(),
+    Value<String?> lastError = const Value.absent(),
+  }) => CalendarLink(
+    appointmentId: appointmentId ?? this.appointmentId,
+    calendarId: calendarId ?? this.calendarId,
+    externalEventId: externalEventId.present
+        ? externalEventId.value
+        : this.externalEventId,
+    payloadHash: payloadHash.present ? payloadHash.value : this.payloadHash,
+    syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
+    lastError: lastError.present ? lastError.value : this.lastError,
+  );
+  CalendarLink copyWithCompanion(CalendarLinksCompanion data) {
+    return CalendarLink(
+      appointmentId: data.appointmentId.present
+          ? data.appointmentId.value
+          : this.appointmentId,
+      calendarId: data.calendarId.present
+          ? data.calendarId.value
+          : this.calendarId,
+      externalEventId: data.externalEventId.present
+          ? data.externalEventId.value
+          : this.externalEventId,
+      payloadHash: data.payloadHash.present
+          ? data.payloadHash.value
+          : this.payloadHash,
+      syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CalendarLink(')
+          ..write('appointmentId: $appointmentId, ')
+          ..write('calendarId: $calendarId, ')
+          ..write('externalEventId: $externalEventId, ')
+          ..write('payloadHash: $payloadHash, ')
+          ..write('syncedAt: $syncedAt, ')
+          ..write('lastError: $lastError')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    appointmentId,
+    calendarId,
+    externalEventId,
+    payloadHash,
+    syncedAt,
+    lastError,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CalendarLink &&
+          other.appointmentId == this.appointmentId &&
+          other.calendarId == this.calendarId &&
+          other.externalEventId == this.externalEventId &&
+          other.payloadHash == this.payloadHash &&
+          other.syncedAt == this.syncedAt &&
+          other.lastError == this.lastError);
+}
+
+class CalendarLinksCompanion extends UpdateCompanion<CalendarLink> {
+  final Value<String> appointmentId;
+  final Value<String> calendarId;
+  final Value<String?> externalEventId;
+  final Value<String?> payloadHash;
+  final Value<DateTime?> syncedAt;
+  final Value<String?> lastError;
+  final Value<int> rowid;
+  const CalendarLinksCompanion({
+    this.appointmentId = const Value.absent(),
+    this.calendarId = const Value.absent(),
+    this.externalEventId = const Value.absent(),
+    this.payloadHash = const Value.absent(),
+    this.syncedAt = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CalendarLinksCompanion.insert({
+    required String appointmentId,
+    required String calendarId,
+    this.externalEventId = const Value.absent(),
+    this.payloadHash = const Value.absent(),
+    this.syncedAt = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : appointmentId = Value(appointmentId),
+       calendarId = Value(calendarId);
+  static Insertable<CalendarLink> custom({
+    Expression<String>? appointmentId,
+    Expression<String>? calendarId,
+    Expression<String>? externalEventId,
+    Expression<String>? payloadHash,
+    Expression<DateTime>? syncedAt,
+    Expression<String>? lastError,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (appointmentId != null) 'appointment_id': appointmentId,
+      if (calendarId != null) 'calendar_id': calendarId,
+      if (externalEventId != null) 'external_event_id': externalEventId,
+      if (payloadHash != null) 'payload_hash': payloadHash,
+      if (syncedAt != null) 'synced_at': syncedAt,
+      if (lastError != null) 'last_error': lastError,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CalendarLinksCompanion copyWith({
+    Value<String>? appointmentId,
+    Value<String>? calendarId,
+    Value<String?>? externalEventId,
+    Value<String?>? payloadHash,
+    Value<DateTime?>? syncedAt,
+    Value<String?>? lastError,
+    Value<int>? rowid,
+  }) {
+    return CalendarLinksCompanion(
+      appointmentId: appointmentId ?? this.appointmentId,
+      calendarId: calendarId ?? this.calendarId,
+      externalEventId: externalEventId ?? this.externalEventId,
+      payloadHash: payloadHash ?? this.payloadHash,
+      syncedAt: syncedAt ?? this.syncedAt,
+      lastError: lastError ?? this.lastError,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (appointmentId.present) {
+      map['appointment_id'] = Variable<String>(appointmentId.value);
+    }
+    if (calendarId.present) {
+      map['calendar_id'] = Variable<String>(calendarId.value);
+    }
+    if (externalEventId.present) {
+      map['external_event_id'] = Variable<String>(externalEventId.value);
+    }
+    if (payloadHash.present) {
+      map['payload_hash'] = Variable<String>(payloadHash.value);
+    }
+    if (syncedAt.present) {
+      map['synced_at'] = Variable<DateTime>(syncedAt.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CalendarLinksCompanion(')
+          ..write('appointmentId: $appointmentId, ')
+          ..write('calendarId: $calendarId, ')
+          ..write('externalEventId: $externalEventId, ')
+          ..write('payloadHash: $payloadHash, ')
+          ..write('syncedAt: $syncedAt, ')
+          ..write('lastError: $lastError, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -5394,6 +6057,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MedicationsTable medications = $MedicationsTable(this);
   late final $NotesTable notes = $NotesTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
+  late final $CalendarLinksTable calendarLinks = $CalendarLinksTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5410,6 +6074,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     medications,
     notes,
     appSettings,
+    calendarLinks,
   ];
 }
 
@@ -10209,6 +10874,10 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<int> morningMinute,
       Value<int> eveningHour,
       Value<int> eveningMinute,
+      Value<bool> calendarSyncEnabled,
+      Value<String?> calendarId,
+      Value<bool> calendarIncludeTitle,
+      Value<bool> appLockEnabled,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -10219,6 +10888,10 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<int> morningMinute,
       Value<int> eveningHour,
       Value<int> eveningMinute,
+      Value<bool> calendarSyncEnabled,
+      Value<String?> calendarId,
+      Value<bool> calendarIncludeTitle,
+      Value<bool> appLockEnabled,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -10262,6 +10935,26 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<int> get eveningMinute => $composableBuilder(
     column: $table.eveningMinute,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get calendarSyncEnabled => $composableBuilder(
+    column: $table.calendarSyncEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get calendarId => $composableBuilder(
+    column: $table.calendarId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get calendarIncludeTitle => $composableBuilder(
+    column: $table.calendarIncludeTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get appLockEnabled => $composableBuilder(
+    column: $table.appLockEnabled,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -10309,6 +11002,26 @@ class $$AppSettingsTableOrderingComposer
     column: $table.eveningMinute,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get calendarSyncEnabled => $composableBuilder(
+    column: $table.calendarSyncEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get calendarId => $composableBuilder(
+    column: $table.calendarId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get calendarIncludeTitle => $composableBuilder(
+    column: $table.calendarIncludeTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get appLockEnabled => $composableBuilder(
+    column: $table.appLockEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -10352,6 +11065,26 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.eveningMinute,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get calendarSyncEnabled => $composableBuilder(
+    column: $table.calendarSyncEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get calendarId => $composableBuilder(
+    column: $table.calendarId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get calendarIncludeTitle => $composableBuilder(
+    column: $table.calendarIncludeTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get appLockEnabled => $composableBuilder(
+    column: $table.appLockEnabled,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -10392,6 +11125,10 @@ class $$AppSettingsTableTableManager
                 Value<int> morningMinute = const Value.absent(),
                 Value<int> eveningHour = const Value.absent(),
                 Value<int> eveningMinute = const Value.absent(),
+                Value<bool> calendarSyncEnabled = const Value.absent(),
+                Value<String?> calendarId = const Value.absent(),
+                Value<bool> calendarIncludeTitle = const Value.absent(),
+                Value<bool> appLockEnabled = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -10400,6 +11137,10 @@ class $$AppSettingsTableTableManager
                 morningMinute: morningMinute,
                 eveningHour: eveningHour,
                 eveningMinute: eveningMinute,
+                calendarSyncEnabled: calendarSyncEnabled,
+                calendarId: calendarId,
+                calendarIncludeTitle: calendarIncludeTitle,
+                appLockEnabled: appLockEnabled,
               ),
           createCompanionCallback:
               ({
@@ -10410,6 +11151,10 @@ class $$AppSettingsTableTableManager
                 Value<int> morningMinute = const Value.absent(),
                 Value<int> eveningHour = const Value.absent(),
                 Value<int> eveningMinute = const Value.absent(),
+                Value<bool> calendarSyncEnabled = const Value.absent(),
+                Value<String?> calendarId = const Value.absent(),
+                Value<bool> calendarIncludeTitle = const Value.absent(),
+                Value<bool> appLockEnabled = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -10418,6 +11163,10 @@ class $$AppSettingsTableTableManager
                 morningMinute: morningMinute,
                 eveningHour: eveningHour,
                 eveningMinute: eveningMinute,
+                calendarSyncEnabled: calendarSyncEnabled,
+                calendarId: calendarId,
+                calendarIncludeTitle: calendarIncludeTitle,
+                appLockEnabled: appLockEnabled,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -10453,6 +11202,242 @@ typedef $$AppSettingsTableProcessedTableManager =
       AppSetting,
       PrefetchHooks Function()
     >;
+typedef $$CalendarLinksTableCreateCompanionBuilder =
+    CalendarLinksCompanion Function({
+      required String appointmentId,
+      required String calendarId,
+      Value<String?> externalEventId,
+      Value<String?> payloadHash,
+      Value<DateTime?> syncedAt,
+      Value<String?> lastError,
+      Value<int> rowid,
+    });
+typedef $$CalendarLinksTableUpdateCompanionBuilder =
+    CalendarLinksCompanion Function({
+      Value<String> appointmentId,
+      Value<String> calendarId,
+      Value<String?> externalEventId,
+      Value<String?> payloadHash,
+      Value<DateTime?> syncedAt,
+      Value<String?> lastError,
+      Value<int> rowid,
+    });
+
+class $$CalendarLinksTableFilterComposer
+    extends Composer<_$AppDatabase, $CalendarLinksTable> {
+  $$CalendarLinksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get appointmentId => $composableBuilder(
+    column: $table.appointmentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get calendarId => $composableBuilder(
+    column: $table.calendarId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get externalEventId => $composableBuilder(
+    column: $table.externalEventId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payloadHash => $composableBuilder(
+    column: $table.payloadHash,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get syncedAt => $composableBuilder(
+    column: $table.syncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CalendarLinksTableOrderingComposer
+    extends Composer<_$AppDatabase, $CalendarLinksTable> {
+  $$CalendarLinksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get appointmentId => $composableBuilder(
+    column: $table.appointmentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get calendarId => $composableBuilder(
+    column: $table.calendarId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get externalEventId => $composableBuilder(
+    column: $table.externalEventId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadHash => $composableBuilder(
+    column: $table.payloadHash,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get syncedAt => $composableBuilder(
+    column: $table.syncedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CalendarLinksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CalendarLinksTable> {
+  $$CalendarLinksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get appointmentId => $composableBuilder(
+    column: $table.appointmentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get calendarId => $composableBuilder(
+    column: $table.calendarId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get externalEventId => $composableBuilder(
+    column: $table.externalEventId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get payloadHash => $composableBuilder(
+    column: $table.payloadHash,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get syncedAt =>
+      $composableBuilder(column: $table.syncedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => column);
+}
+
+class $$CalendarLinksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CalendarLinksTable,
+          CalendarLink,
+          $$CalendarLinksTableFilterComposer,
+          $$CalendarLinksTableOrderingComposer,
+          $$CalendarLinksTableAnnotationComposer,
+          $$CalendarLinksTableCreateCompanionBuilder,
+          $$CalendarLinksTableUpdateCompanionBuilder,
+          (
+            CalendarLink,
+            BaseReferences<_$AppDatabase, $CalendarLinksTable, CalendarLink>,
+          ),
+          CalendarLink,
+          PrefetchHooks Function()
+        > {
+  $$CalendarLinksTableTableManager(_$AppDatabase db, $CalendarLinksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CalendarLinksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CalendarLinksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CalendarLinksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> appointmentId = const Value.absent(),
+                Value<String> calendarId = const Value.absent(),
+                Value<String?> externalEventId = const Value.absent(),
+                Value<String?> payloadHash = const Value.absent(),
+                Value<DateTime?> syncedAt = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CalendarLinksCompanion(
+                appointmentId: appointmentId,
+                calendarId: calendarId,
+                externalEventId: externalEventId,
+                payloadHash: payloadHash,
+                syncedAt: syncedAt,
+                lastError: lastError,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String appointmentId,
+                required String calendarId,
+                Value<String?> externalEventId = const Value.absent(),
+                Value<String?> payloadHash = const Value.absent(),
+                Value<DateTime?> syncedAt = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CalendarLinksCompanion.insert(
+                appointmentId: appointmentId,
+                calendarId: calendarId,
+                externalEventId: externalEventId,
+                payloadHash: payloadHash,
+                syncedAt: syncedAt,
+                lastError: lastError,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CalendarLinksTable, CalendarLink>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $CalendarLinksTable,
+                    CalendarLink
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CalendarLinksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CalendarLinksTable,
+      CalendarLink,
+      $$CalendarLinksTableFilterComposer,
+      $$CalendarLinksTableOrderingComposer,
+      $$CalendarLinksTableAnnotationComposer,
+      $$CalendarLinksTableCreateCompanionBuilder,
+      $$CalendarLinksTableUpdateCompanionBuilder,
+      (
+        CalendarLink,
+        BaseReferences<_$AppDatabase, $CalendarLinksTable, CalendarLink>,
+      ),
+      CalendarLink,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -10479,4 +11464,6 @@ class $AppDatabaseManager {
       $$NotesTableTableManager(_db, _db.notes);
   $$AppSettingsTableTableManager get appSettings =>
       $$AppSettingsTableTableManager(_db, _db.appSettings);
+  $$CalendarLinksTableTableManager get calendarLinks =>
+      $$CalendarLinksTableTableManager(_db, _db.calendarLinks);
 }

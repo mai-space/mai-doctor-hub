@@ -47,8 +47,7 @@ class SettingsPage extends StatelessWidget {
             TimeOfDay? morningTime,
             TimeOfDay? eveningTime,
           }) async {
-            final next = AppSetting(
-              id: 1,
+            final next = settings.copyWith(
               morningReminderEnabled:
                   morningEnabled ?? settings.morningReminderEnabled,
               eveningReminderEnabled:
