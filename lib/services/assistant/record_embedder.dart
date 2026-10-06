@@ -7,6 +7,7 @@ import 'package:flutter_gemma/flutter_gemma.dart';
 import '../../l10n/l10n.dart';
 import 'assistant_engine.dart' show AssistantCancelled;
 import 'gemma_runtime.dart';
+import 'model_integrity.dart';
 
 /// Lokales Embedding-Modell für die semantische Suche.
 abstract interface class RecordEmbedder {
@@ -34,11 +35,24 @@ abstract interface class RecordEmbedder {
 }
 
 class GemmaRecordEmbedder implements RecordEmbedder {
-  static const _base =
-      'https://huggingface.co/litert-community/embeddinggemma-300m/resolve/main';
-  static const _modelUrl =
-      '$_base/embeddinggemma-300M_seq512_mixed-precision.tflite';
-  static const _tokenizerUrl = '$_base/sentencepiece.model';
+  /// Feste Revision + SHA-256 (nicht `main`): siehe [PinnedModelFile].
+  static const _revision = '29888fcee3216acadc7e844906e5fe0d79a61875';
+  static const modelFile = PinnedModelFile(
+    repo: 'litert-community/embeddinggemma-300m',
+    revision: _revision,
+    fileName: 'embeddinggemma-300M_seq512_mixed-precision.tflite',
+    sha256: 'ad09e81557203cb0e177abf9bf8727dfe138a7d394aa0f70f0b2ed16432e121a',
+    size: 179132472,
+  );
+  static const tokenizerFile = PinnedModelFile(
+    repo: 'litert-community/embeddinggemma-300m',
+    revision: _revision,
+    fileName: 'sentencepiece.model',
+    sha256: 'd6daa52d93d7aad10e8388bd526c4e501d914b47177398d1d9621f1fe48438c7',
+    size: 4683319,
+  );
+  static final _modelUrl = modelFile.url;
+  static final _tokenizerUrl = tokenizerFile.url;
 
   CancelToken? _cancel;
   EmbeddingModel? _model;
@@ -82,6 +96,12 @@ class GemmaRecordEmbedder implements RecordEmbedder {
             .withModelProgress(controller.add)
             .withCancelToken(cancel)
             .install();
+        try {
+          await verifyInstalled([modelFile, tokenizerFile]);
+        } on ModelIntegrityException {
+          await FlutterGemma.uninstallEmbedder();
+          rethrow;
+        }
         await controller.close();
       } catch (e, s) {
         controller.addError(
@@ -91,6 +111,7 @@ class GemmaRecordEmbedder implements RecordEmbedder {
         await controller.close();
       } finally {
         if (identical(_cancel, cancel)) _cancel = null;
+        await scrubDownloadSecret(token);
       }
     }();
     return controller.stream;

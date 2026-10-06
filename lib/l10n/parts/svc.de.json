@@ -99,7 +99,7 @@
   "svcSemanticStep2Google": "Googles Originalseite",
   "svcSemanticStep3": "Auf der Token-Seite „Create new token“ tippen, Typ „Read“ wählen, einen Namen vergeben und den Token (beginnt mit hf_) kopieren.",
   "svcSemanticStep3Link": "Token-Seite öffnen",
-  "svcSemanticStep4": "Den Token hier einfügen und „Semantische Suche aktivieren“ tippen. Er wird nur für den Download genutzt und nicht gespeichert.",
+  "svcSemanticStep4": "Den Token hier einfügen und „Semantische Suche aktivieren“ tippen. Er wird nur für den Download genutzt und nicht gespeichert; danach kannst du ihn auf der Token-Seite wieder löschen.",
   "svcSemanticLicenseHint": "Schlägt der Download fehl, ist meist die Lizenz (Schritt 2) noch nicht akzeptiert.",
   "svcLinkCopied": "Link konnte nicht geöffnet werden und wurde kopiert: {url}",
   "@svcLinkCopied": {

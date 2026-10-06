@@ -1776,7 +1776,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get svcSemanticStep4 =>
-      'Den Token hier einfügen und „Semantische Suche aktivieren“ tippen. Er wird nur für den Download genutzt und nicht gespeichert.';
+      'Den Token hier einfügen und „Semantische Suche aktivieren“ tippen. Er wird nur für den Download genutzt und nicht gespeichert; danach kannst du ihn auf der Token-Seite wieder löschen.';
 
   @override
   String get svcSemanticLicenseHint =>

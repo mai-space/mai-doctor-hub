@@ -62,6 +62,8 @@ dependencies:
   flutter_gemma: ^1.11.4
   flutter_gemma_litertlm: ^1.8.6
   flutter_gemma_embeddings: ^2.2.2
+  # Direkt: Download-Verlauf (mit Token) nach dem Laden bereinigen.
+  background_downloader: ^9.6.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

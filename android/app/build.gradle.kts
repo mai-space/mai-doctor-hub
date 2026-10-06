@@ -81,4 +81,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
     // Dokumentenscanner (eigener Kanal, siehe DocumentScannerChannel.kt).
     implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
+    // Erledigte Download-Aufträge (mit Hugging-Face-Token) aus der
+    // WorkManager-Datenbank entfernen; Version wie background_downloader.
+    implementation("androidx.work:work-runtime-ktx:2.11.0")
 }

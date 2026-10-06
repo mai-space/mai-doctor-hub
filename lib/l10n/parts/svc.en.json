@@ -34,7 +34,7 @@
   "svcSemanticStep2Google": "Google's original page",
   "svcSemanticStep3": "On the token page tap “Create new token”, choose type “Read”, give it a name and copy the token (starts with hf_).",
   "svcSemanticStep3Link": "Open token page",
-  "svcSemanticStep4": "Paste the token here and tap “Enable semantic search”. It is only used for the download and is not stored.",
+  "svcSemanticStep4": "Paste the token here and tap “Enable semantic search”. It is only used for the download and is not stored; afterwards you can delete it on the token page.",
   "svcSemanticLicenseHint": "If the download fails, the license (step 2) usually hasn't been accepted yet.",
   "svcLinkCopied": "Couldn't open the link, so it was copied: {url}",
   "svcSemanticEnable": "Enable semantic search",

@@ -7,6 +7,8 @@ import java.util.TimeZone
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import androidx.work.WorkManager
+import java.io.File
 
 // FragmentActivity wird von local_auth (BiometricPrompt) benötigt.
 class MainActivity : FlutterFragmentActivity() {
@@ -34,6 +36,19 @@ class MainActivity : FlutterFragmentActivity() {
                                 "totalRam" to memory.totalMem,
                             ),
                         )
+                    }
+                    // Hugging-Face-Token aus gespeicherten Download-Aufträgen
+                    // entfernen (WorkManager-DB, Einstellungen des Downloaders).
+                    "scrubSecret" -> {
+                        val secret = call.argument<String>("secret")
+                        if (secret.isNullOrEmpty()) {
+                            result.error("ARG", "secret fehlt", null)
+                        } else {
+                            Thread {
+                                val removed = scrubSecret(secret)
+                                runOnUiThread { result.success(removed) }
+                            }.start()
+                        }
                     }
                     else -> result.notImplemented()
                 }
@@ -70,5 +85,31 @@ class MainActivity : FlutterFragmentActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         calendar?.onPermissionResult(requestCode)
+    }
+
+    /** Entfernt Einträge mit [secret] aus allen Einstellungsdateien der App
+     *  und räumt erledigte WorkManager-Aufträge ab. */
+    private fun scrubSecret(secret: String): Int {
+        var removed = 0
+        val prefsDir = File(applicationInfo.dataDir, "shared_prefs")
+        prefsDir.listFiles()?.filter { it.name.endsWith(".xml") }?.forEach { file ->
+            val prefs = getSharedPreferences(file.name.removeSuffix(".xml"), MODE_PRIVATE)
+            val stale = prefs.all.filter { (_, value) ->
+                when (value) {
+                    is String -> value.contains(secret)
+                    is Set<*> -> value.any { it is String && it.contains(secret) }
+                    else -> false
+                }
+            }.keys
+            if (stale.isNotEmpty()) {
+                prefs.edit().apply { stale.forEach { remove(it) } }.commit()
+                removed += stale.size
+            }
+        }
+        try {
+            WorkManager.getInstance(applicationContext).pruneWork().result.get()
+        } catch (_: Exception) {
+        }
+        return removed
     }
 }

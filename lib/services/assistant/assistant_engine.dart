@@ -6,6 +6,7 @@ import 'package:flutter_gemma/flutter_gemma.dart';
 
 import '../../l10n/l10n.dart';
 import 'gemma_runtime.dart';
+import 'model_integrity.dart';
 
 /// Kann dieses Gerät das lokale Modell ausführen?
 sealed class AssistantSupport {
@@ -67,10 +68,16 @@ class AssistantCancelled implements Exception {
 }
 
 class GemmaAssistantEngine implements AssistantEngine {
-  static const _url =
-      'https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/'
-      'resolve/main/gemma-4-E2B-it.litertlm';
-  static const _modelId = 'gemma-4-E2B-it.litertlm';
+  /// Feste Revision + SHA-256 (nicht `main`): siehe [PinnedModelFile].
+  static const modelFile = PinnedModelFile(
+    repo: 'litert-community/gemma-4-E2B-it-litert-lm',
+    revision: 'b3ca0d2f076785a8f4b2219ddbd2bdb99954eae1',
+    fileName: 'gemma-4-E2B-it.litertlm',
+    sha256: '181938105e0eefd105961417e8da75903eacda102c4fce9ce90f50b97139a63c',
+    size: 2588147712,
+  );
+  static final _url = modelFile.url;
+  static final _modelId = modelFile.fileName;
   static const _device = MethodChannel('mai/device');
 
   /// Antwortlänge in Tokens.
@@ -148,6 +155,12 @@ class GemmaAssistantEngine implements AssistantEngine {
             .withProgress(controller.add)
             .withCancelToken(cancel)
             .install();
+        try {
+          await verifyInstalled([modelFile]);
+        } on ModelIntegrityException {
+          await FlutterGemma.uninstallModel(_modelId);
+          rethrow;
+        }
         await controller.close();
       } catch (e, s) {
         controller.addError(

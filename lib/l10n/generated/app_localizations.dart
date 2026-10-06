@@ -3257,7 +3257,7 @@ abstract class AppLocalizations {
   /// No description provided for @svcSemanticStep4.
   ///
   /// In de, this message translates to:
-  /// **'Den Token hier einfügen und „Semantische Suche aktivieren“ tippen. Er wird nur für den Download genutzt und nicht gespeichert.'**
+  /// **'Den Token hier einfügen und „Semantische Suche aktivieren“ tippen. Er wird nur für den Download genutzt und nicht gespeichert; danach kannst du ihn auf der Token-Seite wieder löschen.'**
   String get svcSemanticStep4;
 
   /// No description provided for @svcSemanticLicenseHint.

@@ -1843,7 +1843,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get svcSemanticStep4 =>
-      'Paste the token here and tap “Enable semantic search”. It is only used for the download and is not stored.';
+      'Paste the token here and tap “Enable semantic search”. It is only used for the download and is not stored; afterwards you can delete it on the token page.';
 
   @override
   String get svcSemanticLicenseHint =>
