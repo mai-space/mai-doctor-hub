@@ -13,6 +13,7 @@ import '../data/app_database.dart';
 import '../data/repositories/records_repository.dart'
     show ownedReportFile, reportsDirectory;
 import '../l10n/l10n.dart';
+import 'file_vault.dart';
 
 export 'package:mai_backup_format/mai_backup_format.dart'
     show BackupException, BackupCrypto, BackupStream;
@@ -81,7 +82,12 @@ class BackupService {
         final file = await ownedReportFile(report.localPath, reportsDir);
         if (file == null) continue;
         final entry = 'reports/${report.id}${p.extension(report.localPath)}';
-        files[entry] = file.path;
+        // Im Gerät verschlüsselt → für die Sicherung entschlüsseln (die
+        // Sicherung schützt das Passwort, geräteunabhängig). Klartext nur im
+        // Arbeitsordner, der am Ende gelöscht wird.
+        final plain = p.join(work.path, 'r_${files.length}');
+        await FileVault.current.decryptTo(file.path, plain);
+        files[entry] = plain;
         entries[report.id] = entry;
       }
       final zip = p.join(work.path, 'backup.zip');
@@ -142,6 +148,8 @@ class BackupService {
           'restored_${stamp}_${p.basename(entry)}',
         );
         await _move(File(extracted), target);
+        // Auf diesem Gerät wieder verschlüsselt ablegen.
+        await FileVault.current.encryptInPlace(target);
         newPaths[reportId] = target;
       }
 

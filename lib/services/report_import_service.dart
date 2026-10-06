@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import '../data/app_database.dart';
 import '../data/repositories/records_repository.dart';
 import '../l10n/l10n.dart';
+import 'file_vault.dart';
 import 'ocr/ocr_service.dart';
 import 'pdf_extractor.dart';
 
@@ -58,14 +59,27 @@ class ReportImportService {
   ReportImportService(
     this._records, {
     Future<Directory> Function()? baseDir,
+    Future<Directory> Function()? tempDir,
     OcrService? ocr,
   }) : _baseDir = baseDir ?? getApplicationDocumentsDirectory,
+       _tempDir = tempDir ?? _cacheDir,
        _ocr = ocr ?? OcrService(TextRecognizerApi.current);
 
   final OcrService _ocr;
 
   final RecordsRepository _records;
   final Future<Directory> Function() _baseDir;
+
+  /// Für kurzlebige Klartext-Kopien (Texterkennung); `TempFiles` räumt auf.
+  final Future<Directory> Function() _tempDir;
+
+  static Future<Directory> _cacheDir() async {
+    try {
+      return await getTemporaryDirectory();
+    } catch (_) {
+      return Directory.systemTemp; // ohne Plugin (Tests, Desktop)
+    }
+  }
 
   /// Wählt eine oder mehrere Dateien und legt jede als Bericht ab.
   /// Einzelne Fehler brechen den Rest nicht ab.
@@ -145,30 +159,51 @@ class ReportImportService {
     final reportSource =
         source ?? (ext == '.pdf' ? ReportSource.pdf : ReportSource.image);
 
-    final String localPath;
-    try {
-      localPath = await _persistFile(name, sourcePath, readBytes);
-    } catch (e) {
-      throw ReportImportException(AppLocale.strings.svcImportFileNotSaved, e);
+    // Text aus dem Klartext lesen, bevor die Datei verschlüsselt abgelegt
+    // wird; ohne lokalen Pfad (SAF-URI) über eine Kopie im Cache.
+    String? plainPath = kIsWeb ? null : sourcePath;
+    File? staged;
+    if (!kIsWeb &&
+        (plainPath == null ||
+            plainPath.isEmpty ||
+            !await File(plainPath).exists())) {
+      plainPath = null;
+      try {
+        staged = await _stage(name, await readBytes());
+        plainPath = staged.path;
+      } catch (e) {
+        // Ohne Kopie kein Volltext; abgelegt wird trotzdem (aus den Bytes).
+        debugPrint('Keine Arbeitskopie für Texterkennung: $e');
+      }
     }
 
     String? extracted;
     int? pageCount;
-    if (ext == '.pdf' && !kIsWeb) {
-      try {
-        final result = await extractPdfText(localPath);
-        extracted = result.text;
-        pageCount = result.pageCount;
-      } catch (_) {
-        // Best effort: Bericht bleibt ohne Volltext gespeichert.
+    final String localPath;
+    try {
+      if (ext == '.pdf' && plainPath != null) {
+        try {
+          final result = await extractPdfText(plainPath);
+          extracted = result.text;
+          pageCount = result.pageCount;
+        } catch (_) {
+          // Best effort: Bericht bleibt ohne Volltext gespeichert.
+        }
       }
-    }
-    if (extracted == null && !kIsWeb) {
-      extracted = await _recognize(
-        localPath,
-        isPdf: ext == '.pdf',
-        images: ocrImages,
-      );
+      if (extracted == null && plainPath != null) {
+        extracted = await _recognize(
+          plainPath,
+          isPdf: ext == '.pdf',
+          images: ocrImages,
+        );
+      }
+      try {
+        localPath = await _persistFile(name, plainPath, readBytes);
+      } catch (e) {
+        throw ReportImportException(AppLocale.strings.svcImportFileNotSaved, e);
+      }
+    } finally {
+      if (staged != null) await _deleteQuietly(staged.path);
     }
 
     try {
@@ -200,18 +235,31 @@ class ReportImportService {
   Future<bool> reindex(Report report) async {
     if (kIsWeb || !await File(report.localPath).exists()) return false;
     final isPdf = report.mimeType == 'application/pdf';
+    // Verschlüsselte Datei: Klartext nur kurz im Cache für PDFium/OCR.
+    final plain = File(
+      p.join(
+        (await _tempDir()).path,
+        'import_${DateTime.now().microsecondsSinceEpoch}'
+        '${p.extension(report.localPath)}',
+      ),
+    );
+    await FileVault.current.decryptTo(report.localPath, plain.path);
     String? text;
     int? pageCount = report.pageCount;
-    if (isPdf) {
-      try {
-        final result = await extractPdfText(report.localPath);
-        text = result.text;
-        pageCount = result.pageCount;
-      } catch (e) {
-        debugPrint('PDF-Text für ${report.id} fehlgeschlagen: $e');
+    try {
+      if (isPdf) {
+        try {
+          final result = await extractPdfText(plain.path);
+          text = result.text;
+          pageCount = result.pageCount;
+        } catch (e) {
+          debugPrint('PDF-Text für ${report.id} fehlgeschlagen: $e');
+        }
       }
+      text ??= await _recognize(plain.path, isPdf: isPdf);
+    } finally {
+      await _deleteQuietly(plain.path);
     }
-    text ??= await _recognize(report.localPath, isPdf: isPdf);
     await _records.setReportText(report.id, text, pageCount);
     return text != null;
   }
@@ -255,21 +303,35 @@ class ReportImportService {
       return 'web-memory://$name#${bytes.length}';
     }
 
-    final dir = Directory(p.join((await _baseDir()).path, 'reports'));
+    final dir = await reportsDirectory(_baseDir);
     await dir.create(recursive: true);
     final safeName =
         '${DateTime.now().millisecondsSinceEpoch}_'
         '${name.replaceAll(RegExp(r'[^\w.\-]+'), '_')}';
     final targetPath = p.join(dir.path, safeName);
 
+    // Auf dem Gerät nur verschlüsselt (siehe FileVault).
     if (sourcePath != null &&
         sourcePath.isNotEmpty &&
         await File(sourcePath).exists()) {
-      await File(sourcePath).copy(targetPath);
+      await FileVault.current.encryptFile(sourcePath, targetPath);
     } else {
-      await File(targetPath).writeAsBytes(await readBytes(), flush: true);
+      await FileVault.current.writeBytes(targetPath, await readBytes());
     }
     return targetPath;
+  }
+
+  /// Klartext-Kopie im Cache (für Text/OCR), danach gelöscht.
+  Future<File> _stage(String name, Uint8List bytes) async {
+    final dir = await _tempDir();
+    final file = File(
+      p.join(
+        dir.path,
+        'import_${DateTime.now().microsecondsSinceEpoch}'
+        '${p.extension(name).toLowerCase()}',
+      ),
+    );
+    return file.writeAsBytes(bytes, flush: true);
   }
 
   Future<void> _deleteQuietly(String path) async {

@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mai_doctor_hub/data/app_database.dart';
+import 'package:mai_doctor_hub/services/file_vault.dart';
 import 'package:mai_doctor_hub/data/connection/connection_io.dart';
 import 'package:mai_doctor_hub/data/repositories/appointment_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/doctor_repository.dart';
@@ -80,6 +81,41 @@ void main() {
       () => BackupCrypto.decrypt(Uint8List.fromList([1, 2, 3]), _pass),
       throwsA(isA<BackupException>()),
     );
+  });
+
+  test('encrypted report files move between devices with their keys', () async {
+    final vaultA = await AesFileVault.fromDatabaseKey('a1' * 32);
+    final vaultB = await AesFileVault.fromDatabaseKey('b2' * 32);
+    addTearDown(() => FileVault.current = const PlainFileVault());
+
+    final (dbA, backupA, docsA) = await device('a');
+    final pdf = '${docsA.path}/reports/brief.pdf';
+    Directory('${docsA.path}/reports').createSync(recursive: true);
+    await vaultA.writeBytes(pdf, Uint8List.fromList('%PDF-Brief'.codeUnits));
+    await RecordsRepository(dbA).createReport(
+      title: 'Arztbrief',
+      mimeType: 'application/pdf',
+      localPath: pdf,
+      source: ReportSource.pdf,
+    );
+    FileVault.current = vaultA;
+    final sealed = await backupA.createBackupFile(_pass);
+
+    // In der Sicherung liegt die Datei lesbar (geschützt durch das Passwort).
+    final peek = await Directory('${root.path}/peek2').create();
+    final opened = await BackupStream.open(sealed.path, _pass, peek.path);
+    expect(
+      File(opened.files.values.single).readAsStringSync(),
+      '%PDF-Brief',
+    );
+
+    final (dbB, backupB, _) = await device('b');
+    FileVault.current = vaultB;
+    await backupB.restoreFile(sealed.path, _pass);
+    final report = (await dbB.select(dbB.reports).get()).single;
+    expect(await isVaultFile(report.localPath), isTrue);
+    expect(await vaultB.readBytes(report.localPath), '%PDF-Brief'.codeUnits);
+    await expectLater(vaultA.readBytes(report.localPath), throwsA(anything));
   });
 
   test('backup on device A restores everything on device B', () async {

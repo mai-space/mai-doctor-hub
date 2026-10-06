@@ -6,6 +6,7 @@ import 'package:pdfrx/pdfrx.dart';
 
 import 'data/app_database.dart';
 import 'data/database_provider.dart';
+import 'data/repositories/records_repository.dart' show reportsDirectory;
 import 'data/repositories/settings_repository.dart';
 import 'features/check_in/check_in_sheet.dart';
 import 'features/home/appointment_detail_page.dart';
@@ -21,6 +22,7 @@ import 'services/notifications/medication_reminders.dart';
 import 'services/notifications/notification_plan.dart';
 import 'services/notifications/reminder_service.dart';
 import 'services/notifications/vaccination_reminders.dart';
+import 'services/file_vault.dart';
 import 'services/temp_files.dart';
 import 'services/time_change_observer.dart';
 import 'data/connection/connection.dart';
@@ -54,6 +56,15 @@ Future<void> _start() async {
     runApp(_KeyUnavailableApp(onRetry: _start));
     return;
   }
+  // Berichte/Medien verschlüsselt; Altdateien im Hintergrund nachziehen.
+  FileVault.current = await FileVault.open();
+  reportsDirectory()
+      .then(FileVault.current.migrate)
+      .then((n) {
+        if (n > 0) debugPrint('$n Dateien verschlüsselt');
+      })
+      .catchError((Object e) => debugPrint('Verschlüsselung: $e'));
+
   final notifications = NotificationService.instance;
   await notifications.initialize();
   notifications.onNotificationTap = _openFromNotification;

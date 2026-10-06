@@ -9,6 +9,7 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../l10n/l10n.dart';
+import '../../services/file_vault.dart';
 import '../../services/report_import_service.dart';
 import '../archive/archive_page.dart';
 import '../records/entity_forms.dart';
@@ -154,23 +155,60 @@ class _ReportViewerPageState extends State<ReportViewerPage> {
   }
 }
 
-class _ReportBody extends StatelessWidget {
+class _ReportBody extends StatefulWidget {
   const _ReportBody({required this.report});
 
   final Report report;
 
   @override
-  Widget build(BuildContext context) {
+  State<_ReportBody> createState() => _ReportBodyState();
+}
+
+class _ReportBodyState extends State<_ReportBody> {
+  /// Entschlüsselt nur in den Speicher — kein Klartext auf dem Datenträger.
+  Future<Uint8List>? _bytes;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(_ReportBody old) {
+    super.didUpdateWidget(old);
+    if (old.report.localPath != widget.report.localPath) _load();
+  }
+
+  void _load() {
+    final report = widget.report;
     final missing = kIsWeb || report.localPath.startsWith('web-memory://');
-    if (missing || !File(report.localPath).existsSync()) {
-      return _Unavailable(report: report);
-    }
-    if (report.mimeType == 'application/pdf') {
-      return PdfViewer.file(report.localPath);
-    }
-    return InteractiveViewer(
-      maxScale: 6,
-      child: Center(child: Image.file(File(report.localPath))),
+    _bytes = missing || !File(report.localPath).existsSync()
+        ? null
+        : FileVault.current.readBytes(report.localPath);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final report = widget.report;
+    final bytes = _bytes;
+    if (bytes == null) return _Unavailable(report: report);
+    return FutureBuilder<Uint8List>(
+      future: bytes,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return _Unavailable(report: report);
+        final data = snapshot.data;
+        if (data == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (report.mimeType == 'application/pdf') {
+          return PdfViewer.data(data, sourceName: report.id);
+        }
+        return InteractiveViewer(
+          maxScale: 6,
+          child: Center(child: Image.memory(data)),
+        );
+      },
     );
   }
 }

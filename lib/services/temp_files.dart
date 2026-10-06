@@ -11,7 +11,12 @@ import 'package:path_provider/path_provider.dart';
 /// Start, wenn nichts davon mehr gebraucht wird.
 abstract final class TempFiles {
   /// Ordner, die Plugins bzw. der Scanner im Cache anlegen.
-  static const _directories = {'file_picker', 'share_plus', 'scans'};
+  static const _directories = {
+    'file_picker',
+    'share_plus',
+    'scans',
+    'vault_tmp',
+  };
 
   /// Eigene Temp-Dateien/-Ordner (siehe Backup, Export, OCR, Scanner).
   static final _names = RegExp(

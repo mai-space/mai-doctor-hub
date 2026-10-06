@@ -9,6 +9,7 @@ import '../data/app_database.dart';
 import '../data/repositories/records_repository.dart'
     show ownedReportFile, reportsDirectory;
 import '../l10n/l10n.dart';
+import 'file_vault.dart';
 
 /// Ergebnis eines Dokument-Exports.
 class DocumentExport {
@@ -87,8 +88,15 @@ class DocumentExportService {
       final day = DateFormat('yyyy-MM-dd');
       for (final row in rows) {
         final name = _unique(_fileNameFor(row), used);
-        // PDFs/Bilder sind schon komprimiert → nur speichern.
-        await encoder.addFile(row.file, name, ZipFileEncoder.store);
+        // Auf dem Gerät verschlüsselt → Klartext nur kurz im Cache.
+        final plain = File('${out.path}.part');
+        await FileVault.current.decryptTo(row.file.path, plain.path);
+        try {
+          // PDFs/Bilder sind schon komprimiert → nur speichern.
+          await encoder.addFile(plain, name, ZipFileEncoder.store);
+        } finally {
+          await plain.delete();
+        }
         csv.write(
           [
             day.format(row.date),
