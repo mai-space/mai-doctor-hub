@@ -79,14 +79,21 @@ class ReportImportService {
     } catch (e) {
       throw ReportImportException(AppLocale.strings.svcImportPickFailed, e);
     }
-    return importAll([
-      for (final file in files)
-        (
-          name: file.name,
-          path: kIsWeb ? null : file.path,
-          readBytes: file.readAsBytes,
-        ),
-    ], appointmentId: appointmentId);
+    try {
+      return await importAll([
+        for (final file in files)
+          (
+            name: file.name,
+            path: kIsWeb ? null : file.path,
+            readBytes: file.readAsBytes,
+          ),
+      ], appointmentId: appointmentId);
+    } finally {
+      // Android kopiert die Auswahl unverschlüsselt in den Cache.
+      if (!kIsWeb && files.isNotEmpty) {
+        await FilePicker.clearTemporaryFiles().catchError((Object _) {});
+      }
+    }
   }
 
   /// Legt mehrere Dateien nacheinander ab (je Datei nur eine im Speicher).

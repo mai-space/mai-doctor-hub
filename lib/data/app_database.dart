@@ -307,6 +307,10 @@ class AppSettings extends Table {
   TextColumn get appointmentReminderLeads =>
       text().withDefault(const Constant('1440,60'))();
 
+  // v11: Benachrichtigungs-Themen (JSON: an/aus, Wichtigkeit, diskret).
+  TextColumn get notificationTopics =>
+      text().withDefault(const Constant(''))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -381,7 +385,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? openAppDatabase());
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -486,6 +490,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 10) {
         await _createRecordVectors();
+      }
+      if (from < 11) {
+        await migrator.addColumn(appSettings, appSettings.notificationTopics);
       }
     },
     beforeOpen: (details) async {

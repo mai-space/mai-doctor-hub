@@ -9,6 +9,8 @@ import 'package:mai_doctor_hub/data/repositories/doctor_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/records_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/symptom_repository.dart';
 
+import 'helpers/test_env.dart';
+
 void main() {
   late AppDatabase db;
   late AppointmentRepository appointments;
@@ -165,7 +167,11 @@ void main() {
     test('delete cascades reports (incl. file) and unlinks notes', () async {
       final dir = await Directory.systemTemp.createTemp('cascade');
       addTearDown(() => dir.delete(recursive: true));
-      final file = File('${dir.path}/r.pdf')..writeAsStringSync('%PDF');
+      // Gelöscht werden nur Dateien im eigenen Berichte-Ordner.
+      useFakePathProvider(dir.path);
+      final file = File('${dir.path}/docs/reports/r.pdf')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('%PDF');
 
       final id = await appointments.create(
         doctorId: doctorId,

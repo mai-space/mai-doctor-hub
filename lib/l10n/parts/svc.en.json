@@ -141,5 +141,21 @@
   "svcBackupTooNew": "This backup is from a newer app version — please update the app.",
   "svcAssistantEmptyAnswer": "No answer received. Please ask a shorter or more specific question.",
   "svcQueryExpansionSystem": "You help search a personal health record. Reply only with search terms separated by commas, nothing else.",
-  "svcQueryExpansionPrompt": "List up to 8 search terms that would find answers to this question in doctor reports, notes and entries: synonyms, medical terms, lay terms, common abbreviations, lab values or medication names. Question: {question}"
+  "svcQueryExpansionPrompt": "List up to 8 search terms that would find answers to this question in doctor reports, notes and entries: synonyms, medical terms, lay terms, common abbreviations, lab values or medication names. Question: {question}",
+
+  "svcTopicMedication": "Medication intake",
+  "svcTopicAppointmentSoon": "Upcoming appointment",
+  "svcTopicAppointmentSoonDescription": "Reminders shortly before a doctor's appointment (less than a day)",
+  "svcTopicAppointmentAhead": "Appointment preview",
+  "svcTopicAppointmentAheadDescription": "Heads-ups about appointments a day or more ahead",
+  "svcTopicVaccination": "Vaccinations",
+  "svcTopicVaccinationDescription": "Boosters that are due",
+  "svcDiscreetMedicationTitle": "Time for your medication",
+  "svcDiscreetAppointmentTitle": "Appointment reminder",
+  "svcDiscreetVaccinationTitle": "A vaccination is due soon",
+  "svcDiscreetCheckInTitle": "Time for your check-in",
+  "svcDiscreetBody": "Details in Doctor Hub",
+  "svcReminderVaccinationSoon": "{vaccine}: due in one week",
+  "svcReminderVaccinationToday": "{vaccine}: due today",
+  "svcReminderVaccinationBody": "Book an appointment for the booster"
 }

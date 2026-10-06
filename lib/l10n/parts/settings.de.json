@@ -176,5 +176,22 @@
   "settingsObservationScale": "Stärke {value}/10",
   "@settingsObservationScale": {"placeholders": {"value": {"type": "String"}}},
   "settingsObservationColor": "Farbe {value}",
-  "@settingsObservationColor": {"placeholders": {"value": {"type": "String"}}}
+  "@settingsObservationColor": {"placeholders": {"value": {"type": "String"}}},
+
+  "settingsNotificationsTitle": "Benachrichtigungen",
+  "settingsNotificationsSubtitle": "Themen, Wichtigkeit und Sperrbildschirm",
+  "settingsNotificationsIntro": "Jedes Thema hat einen eigenen Kanal. Lege fest, was dich laut erreichen soll, was leise reicht und was du gar nicht brauchst.",
+  "settingsNotificationLevelImportant": "Wichtig",
+  "settingsNotificationLevelNormal": "Normal",
+  "settingsNotificationLevelSilent": "Leise",
+  "settingsNotificationLevelImportantHint": "Ton und Banner oben auf dem Bildschirm",
+  "settingsNotificationLevelNormalHint": "Ton, nur in der Benachrichtigungsleiste",
+  "settingsNotificationLevelSilentHint": "Ohne Ton, nur in der Benachrichtigungsleiste",
+  "settingsNotificationDiscreet": "Diskret",
+  "settingsNotificationDiscreetSubtitle": "Ohne Namen von Medikamenten, Ärzten, Impfungen oder Symptomen – sinnvoll, wenn andere deinen Bildschirm sehen.",
+  "settingsNotificationOff": "Aus",
+  "settingsNotificationSystemHint": "Feinheiten wie Klingelton oder „Nicht stören“ kannst du zusätzlich in den Android-Einstellungen der App je Kanal anpassen.",
+  "settingsLockReasonDisable": "App-Sperre ausschalten",
+  "settingsKeyUnavailableTitle": "Daten gerade nicht lesbar",
+  "settingsKeyUnavailableText": "Der Schlüssel deiner Akte ist im Moment nicht verfügbar. Deine Daten sind unverändert – bitte versuche es gleich noch einmal oder starte das Gerät neu."
 }

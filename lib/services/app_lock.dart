@@ -108,6 +108,17 @@ class AppLockController extends ChangeNotifier with WidgetsBindingObserver {
     return ok;
   }
 
+  /// Ausschalten nur nach Authentifizierung — sonst könnte jeder mit dem
+  /// entsperrten Gerät in der Hand den Schutz still abschalten.
+  Future<bool> disableWithConfirmation() async {
+    if (!_enabled) return true;
+    final ok = await _authenticate(
+      AppLocale.strings.settingsLockReasonDisable,
+    );
+    if (ok) setEnabled(false);
+    return ok;
+  }
+
   Future<bool> unlock() async {
     if (!locked) return true;
     final ok = await _authenticate(

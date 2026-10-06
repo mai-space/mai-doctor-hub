@@ -6,6 +6,8 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../data/app_database.dart';
+import '../data/repositories/records_repository.dart'
+    show ownedReportFile, reportsDirectory;
 import '../l10n/l10n.dart';
 
 /// Ergebnis eines Dokument-Exports.
@@ -24,11 +26,17 @@ class DocumentExport {
 /// Anders als die Sicherung ist das Archiv **nicht verschlüsselt** — für die
 /// Weitergabe an Ärzte oder die eigene Ablage.
 class DocumentExportService {
-  DocumentExportService(this._db, {Future<Directory> Function()? tempDir})
-    : _tempDir = tempDir ?? getTemporaryDirectory;
+  DocumentExportService(
+    this._db, {
+    Future<Directory> Function()? tempDir,
+    this._baseDir,
+  }) : _tempDir = tempDir ?? getTemporaryDirectory;
 
   final AppDatabase _db;
   final Future<Directory> Function() _tempDir;
+
+  /// App-Dokumente (Standard: path_provider); in Tests ersetzt.
+  final Future<Directory> Function()? _baseDir;
 
   static String suggestedFileName(DateTime now) =>
       AppLocale.strings.svcExportFileName(
@@ -44,16 +52,18 @@ class DocumentExportService {
       for (final d in await _db.select(_db.doctors).get()) d.id: d.name,
     };
 
+    final reportsDir = await reportsDirectory(_baseDir);
     final rows = <_Row>[];
     for (final report in reports) {
-      if (report.localPath.startsWith('web-memory://') ||
-          !await File(report.localPath).exists()) {
-        continue;
-      }
+      // Nur Dateien aus dem eigenen Berichtsordner — der Pfad kann aus einer
+      // fremden Sicherung stammen.
+      final file = await ownedReportFile(report.localPath, reportsDir);
+      if (file == null) continue;
       final appointment = appointments[report.appointmentId];
       rows.add(
         _Row(
           report,
+          file,
           date: appointment?.scheduledAt ?? report.createdAt,
           doctor: doctors[appointment?.doctorId],
           appointment: appointment?.title,
@@ -78,11 +88,7 @@ class DocumentExportService {
       for (final row in rows) {
         final name = _unique(_fileNameFor(row), used);
         // PDFs/Bilder sind schon komprimiert → nur speichern.
-        await encoder.addFile(
-          File(row.report.localPath),
-          name,
-          ZipFileEncoder.store,
-        );
+        await encoder.addFile(row.file, name, ZipFileEncoder.store);
         csv.write(
           [
             day.format(row.date),
@@ -153,9 +159,16 @@ class DocumentExportService {
 }
 
 class _Row {
-  _Row(this.report, {required this.date, this.doctor, this.appointment});
+  _Row(
+    this.report,
+    this.file, {
+    required this.date,
+    this.doctor,
+    this.appointment,
+  });
 
   final Report report;
+  final File file;
   final DateTime date;
   final String? doctor;
   final String? appointment;

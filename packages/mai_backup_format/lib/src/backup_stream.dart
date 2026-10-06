@@ -24,6 +24,16 @@ abstract final class BackupStream {
   static const _magicV2 = [0x4D, 0x41, 0x49, 0x42, 0x4B, 0x02];
   static const defaultChunk = 1 << 20; // 1 MiB
 
+  // Obergrenzen für Werte aus der (noch ungeprüften) Datei: Längenfelder
+  // bis 4 GiB dürfen nicht ungeprüft Speicher anfordern.
+  static const maxHeaderLength = 64 * 1024;
+  static const maxChunk = 16 << 20; // 16 MiB
+
+  // Obergrenzen beim Entpacken (Zip-Bomben, volle Platte).
+  static const maxManifestSize = 16 << 20; // 16 MiB
+  static const maxEntrySize = 2 << 30; // 2 GiB
+  static const maxTotalSize = 4 << 30; // 4 GiB
+
   /// 1 = v1 (im Speicher), 2 = v2 (gestreamt), 0 = keine Sicherung.
   static Future<int> versionOf(String path) async {
     final raf = await File(path).open();
@@ -132,6 +142,9 @@ abstract final class BackupStream {
       final total = await input.length();
       await input.setPosition(6);
       final headerLength = _readUint32(await input.read(4));
+      if (headerLength > maxHeaderLength) {
+        throw const BackupException('Sicherung ist beschädigt.');
+      }
       final header = await input.read(headerLength);
       if (header.length != headerLength) {
         throw const BackupException('Sicherung ist beschädigt.');
@@ -147,10 +160,14 @@ abstract final class BackupStream {
           'Sicherungsformat wird nicht unterstützt — App aktualisieren.',
         );
       }
+      final chunk = meta['chunk'];
+      if (chunk is! int || chunk < 1 || chunk > maxChunk) {
+        throw const BackupException('Sicherung ist beschädigt.');
+      }
       final key = await _deriveKey(
         passphrase,
         base64Decode(meta['salt'] as String),
-        meta['iterations'] as int,
+        BackupCrypto.iterationsOf(meta),
       );
       final prefix = base64Decode(meta['nonce'] as String);
       final algorithm = AesGcm.with256bits();
@@ -162,6 +179,9 @@ abstract final class BackupStream {
           throw const BackupException('Sicherung ist beschädigt.');
         }
         final length = _readUint32(await input.read(4));
+        if (length > chunk + 16) {
+          throw const BackupException('Sicherung ist beschädigt.');
+        }
         final sealed = await input.read(length);
         if (sealed.length != length || length < 16) {
           throw const BackupException('Sicherung ist unvollständig.');
@@ -223,6 +243,10 @@ abstract final class BackupStream {
 
   /// Entpackt eine Klartext-Sicherung nach [dir], Eintrag für Eintrag.
   /// Mit [databaseOnly] werden Berichtsdateien übersprungen.
+  ///
+  /// Entpackt werden nur die Datenbank und die im Manifest genannten
+  /// Berichte, jeweils unter erzeugten Namen — Eintragsnamen aus dem Archiv
+  /// landen nie im Dateisystem (Zip-Slip, Kollisionen, `backup.zip`).
   static Future<ExtractedBackup> extractZip(
     String zipPath,
     String dir, {
@@ -230,40 +254,62 @@ abstract final class BackupStream {
   }) async {
     final input = InputFileStream(zipPath);
     try {
+      final decoder = ZipDecoder();
       final Archive archive;
       try {
-        archive = ZipDecoder().decodeStream(input);
+        archive = decoder.decodeStream(input);
       } catch (e) {
         throw BackupException('Sicherung ist beschädigt.', e);
       }
-      Map<String, dynamic>? manifest;
-      String? databasePath;
-      final files = <String, String>{};
-      for (final entry in archive.files) {
-        if (!entry.isFile) continue;
-        if (entry.name == 'manifest.json') {
-          manifest =
-              jsonDecode(utf8.decode(entry.content)) as Map<String, dynamic>;
-          continue;
-        }
-        if (databaseOnly && entry.name != 'db.sqlite') continue;
-        // Keine Pfade außerhalb von [dir] (Zip-Slip).
-        final safe = entry.name
-            .split('/')
-            .where((p) => p.isNotEmpty && p != '..' && p != '.')
-            .join('_');
-        final target = '$dir/$safe';
-        final out = OutputFileStream(target);
-        entry.writeContent(out);
-        await out.close();
-        if (entry.name == 'db.sqlite') {
-          databasePath = target;
-        } else {
-          files[entry.name] = target;
-        }
+      // Doppelte Namen (das Archive behält still nur einen): unklar,
+      // welcher gilt → ablehnen.
+      final names = decoder.directory.fileHeaders.map((h) => h.filename);
+      if (names.toSet().length != names.length) {
+        throw const BackupException('Sicherung ist beschädigt.');
       }
-      if (manifest == null || databasePath == null) {
+      final entries = {
+        for (final entry in archive.files)
+          if (entry.isFile) entry.name: entry,
+      };
+      final manifestEntry = entries['manifest.json'];
+      final databaseEntry = entries['db.sqlite'];
+      if (manifestEntry == null || databaseEntry == null) {
         throw const BackupException('Sicherung ist unvollständig.');
+      }
+
+      var budget = maxTotalSize;
+      int extract(ArchiveFile entry, String target, int limit) {
+        final written = _extractEntry(entry, target, min(limit, budget));
+        budget -= written;
+        return written;
+      }
+
+      final manifestPath = '$dir/.manifest.json';
+      extract(manifestEntry, manifestPath, maxManifestSize);
+      final Map<String, dynamic> manifest;
+      try {
+        manifest =
+            jsonDecode(await File(manifestPath).readAsString())
+                as Map<String, dynamic>;
+      } catch (e) {
+        throw BackupException('Sicherung ist beschädigt.', e);
+      } finally {
+        await File(manifestPath).delete();
+      }
+
+      final databasePath = '$dir/database.sqlite';
+      extract(databaseEntry, databasePath, maxEntrySize);
+
+      final files = <String, String>{};
+      if (!databaseOnly) {
+        final wanted = _reportEntriesOf(manifest).values;
+        for (final name in wanted.toSet()) {
+          final entry = entries[name];
+          if (entry == null) continue;
+          final target = '$dir/file_${files.length}';
+          extract(entry, target, maxEntrySize);
+          files[name] = target;
+        }
       }
       return ExtractedBackup(
         databasePath: databasePath,
@@ -273,6 +319,25 @@ abstract final class BackupStream {
     } finally {
       await input.close();
     }
+  }
+
+  /// Schreibt [entry] nach [target]; bricht ab, sobald mehr als [limit]
+  /// Byte entpackt würden (die Größe im ZIP-Header ist nicht verlässlich).
+  static int _extractEntry(ArchiveFile entry, String target, int limit) {
+    if (entry.size > limit) {
+      throw const BackupException('Sicherung ist zu groß.');
+    }
+    final out = _LimitedOutputFileStream(target, limit);
+    try {
+      entry.writeContent(out);
+    } on BackupException {
+      rethrow;
+    } catch (e) {
+      throw BackupException('Sicherung ist beschädigt.', e);
+    } finally {
+      out.closeSync();
+    }
+    return out.length;
   }
 
   /// Entschlüsseln + entpacken nach [workDir] (Klartext-ZIP wird gelöscht).
@@ -340,12 +405,50 @@ class ExtractedBackup {
   /// Pfad im Archiv → entpackte Datei.
   final Map<String, String> files;
 
-  int get schemaVersion => manifest['schemaVersion'] as int? ?? 0;
+  // Das Manifest kann aus einer präparierten Sicherung stammen — Typen
+  // nicht blind vertrauen.
+  int get schemaVersion => switch (manifest['schemaVersion']) {
+    final int v => v,
+    _ => 0,
+  };
 
-  DateTime? get createdAt =>
-      DateTime.tryParse(manifest['createdAt'] as String? ?? '');
+  DateTime? get createdAt => switch (manifest['createdAt']) {
+    final String v => DateTime.tryParse(v),
+    _ => null,
+  };
 
-  Map<String, String> get reportEntries =>
-      (manifest['reports'] as Map<String, dynamic>? ?? const {})
-          .cast<String, String>();
+  Map<String, String> get reportEntries => _reportEntriesOf(manifest);
+}
+
+/// Bericht-ID → Pfad im Archiv; Einträge mit falschem Typ entfallen.
+Map<String, String> _reportEntriesOf(Map<String, dynamic> manifest) => {
+  if (manifest['reports'] case final Map<String, dynamic> reports)
+    for (final MapEntry(:key, :value) in reports.entries)
+      if (value is String) key: value,
+};
+
+/// [OutputFileStream], der nach [limit] Byte mit [BackupException] abbricht.
+class _LimitedOutputFileStream extends OutputFileStream {
+  _LimitedOutputFileStream(String path, this.limit)
+    : super.withFileHandle(FileHandle(path, mode: FileAccess.write));
+
+  final int limit;
+
+  void _check(int more) {
+    if (length + more > limit) {
+      throw const BackupException('Sicherung ist zu groß.');
+    }
+  }
+
+  @override
+  void writeByte(int value) {
+    _check(1);
+    super.writeByte(value);
+  }
+
+  @override
+  void writeBytes(List<int> bytes, {int? length}) {
+    _check(length ?? bytes.length);
+    super.writeBytes(bytes, length: length);
+  }
 }

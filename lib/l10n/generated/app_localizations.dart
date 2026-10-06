@@ -2948,6 +2948,102 @@ abstract class AppLocalizations {
   /// **'Farbe {value}'**
   String settingsObservationColor(String value);
 
+  /// No description provided for @settingsNotificationsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Benachrichtigungen'**
+  String get settingsNotificationsTitle;
+
+  /// No description provided for @settingsNotificationsSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Themen, Wichtigkeit und Sperrbildschirm'**
+  String get settingsNotificationsSubtitle;
+
+  /// No description provided for @settingsNotificationsIntro.
+  ///
+  /// In de, this message translates to:
+  /// **'Jedes Thema hat einen eigenen Kanal. Lege fest, was dich laut erreichen soll, was leise reicht und was du gar nicht brauchst.'**
+  String get settingsNotificationsIntro;
+
+  /// No description provided for @settingsNotificationLevelImportant.
+  ///
+  /// In de, this message translates to:
+  /// **'Wichtig'**
+  String get settingsNotificationLevelImportant;
+
+  /// No description provided for @settingsNotificationLevelNormal.
+  ///
+  /// In de, this message translates to:
+  /// **'Normal'**
+  String get settingsNotificationLevelNormal;
+
+  /// No description provided for @settingsNotificationLevelSilent.
+  ///
+  /// In de, this message translates to:
+  /// **'Leise'**
+  String get settingsNotificationLevelSilent;
+
+  /// No description provided for @settingsNotificationLevelImportantHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Ton und Banner oben auf dem Bildschirm'**
+  String get settingsNotificationLevelImportantHint;
+
+  /// No description provided for @settingsNotificationLevelNormalHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Ton, nur in der Benachrichtigungsleiste'**
+  String get settingsNotificationLevelNormalHint;
+
+  /// No description provided for @settingsNotificationLevelSilentHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Ohne Ton, nur in der Benachrichtigungsleiste'**
+  String get settingsNotificationLevelSilentHint;
+
+  /// No description provided for @settingsNotificationDiscreet.
+  ///
+  /// In de, this message translates to:
+  /// **'Diskret'**
+  String get settingsNotificationDiscreet;
+
+  /// No description provided for @settingsNotificationDiscreetSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Ohne Namen von Medikamenten, Ärzten, Impfungen oder Symptomen – sinnvoll, wenn andere deinen Bildschirm sehen.'**
+  String get settingsNotificationDiscreetSubtitle;
+
+  /// No description provided for @settingsNotificationOff.
+  ///
+  /// In de, this message translates to:
+  /// **'Aus'**
+  String get settingsNotificationOff;
+
+  /// No description provided for @settingsNotificationSystemHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Feinheiten wie Klingelton oder „Nicht stören“ kannst du zusätzlich in den Android-Einstellungen der App je Kanal anpassen.'**
+  String get settingsNotificationSystemHint;
+
+  /// No description provided for @settingsLockReasonDisable.
+  ///
+  /// In de, this message translates to:
+  /// **'App-Sperre ausschalten'**
+  String get settingsLockReasonDisable;
+
+  /// No description provided for @settingsKeyUnavailableTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Daten gerade nicht lesbar'**
+  String get settingsKeyUnavailableTitle;
+
+  /// No description provided for @settingsKeyUnavailableText.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Schlüssel deiner Akte ist im Moment nicht verfügbar. Deine Daten sind unverändert – bitte versuche es gleich noch einmal oder starte das Gerät neu.'**
+  String get settingsKeyUnavailableText;
+
   /// No description provided for @svcAssistantTitle.
   ///
   /// In de, this message translates to:
@@ -3810,6 +3906,96 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Nenne bis zu 8 Suchbegriffe, mit denen man in Arztberichten, Notizen und Einträgen Antworten auf diese Frage findet: Synonyme, Fachbegriffe, Laienbegriffe, gängige Abkürzungen, Laborwerte oder Medikamentennamen. Frage: {question}'**
   String svcQueryExpansionPrompt(String question);
+
+  /// No description provided for @svcTopicMedication.
+  ///
+  /// In de, this message translates to:
+  /// **'Medikamenteneinnahme'**
+  String get svcTopicMedication;
+
+  /// No description provided for @svcTopicAppointmentSoon.
+  ///
+  /// In de, this message translates to:
+  /// **'Termin steht bevor'**
+  String get svcTopicAppointmentSoon;
+
+  /// No description provided for @svcTopicAppointmentSoonDescription.
+  ///
+  /// In de, this message translates to:
+  /// **'Erinnerungen kurz vor einem Arzttermin (unter einem Tag)'**
+  String get svcTopicAppointmentSoonDescription;
+
+  /// No description provided for @svcTopicAppointmentAhead.
+  ///
+  /// In de, this message translates to:
+  /// **'Termin-Vorschau'**
+  String get svcTopicAppointmentAhead;
+
+  /// No description provided for @svcTopicAppointmentAheadDescription.
+  ///
+  /// In de, this message translates to:
+  /// **'Hinweise auf Arzttermine ab einem Tag vorher'**
+  String get svcTopicAppointmentAheadDescription;
+
+  /// No description provided for @svcTopicVaccination.
+  ///
+  /// In de, this message translates to:
+  /// **'Impfungen'**
+  String get svcTopicVaccination;
+
+  /// No description provided for @svcTopicVaccinationDescription.
+  ///
+  /// In de, this message translates to:
+  /// **'Fällige Auffrischungen'**
+  String get svcTopicVaccinationDescription;
+
+  /// No description provided for @svcDiscreetMedicationTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zeit für deine Einnahme'**
+  String get svcDiscreetMedicationTitle;
+
+  /// No description provided for @svcDiscreetAppointmentTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Erinnerung an einen Termin'**
+  String get svcDiscreetAppointmentTitle;
+
+  /// No description provided for @svcDiscreetVaccinationTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Eine Impfung ist bald fällig'**
+  String get svcDiscreetVaccinationTitle;
+
+  /// No description provided for @svcDiscreetCheckInTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zeit für deinen Check-in'**
+  String get svcDiscreetCheckInTitle;
+
+  /// No description provided for @svcDiscreetBody.
+  ///
+  /// In de, this message translates to:
+  /// **'Details in Doctor Hub'**
+  String get svcDiscreetBody;
+
+  /// No description provided for @svcReminderVaccinationSoon.
+  ///
+  /// In de, this message translates to:
+  /// **'{vaccine}: in einer Woche fällig'**
+  String svcReminderVaccinationSoon(String vaccine);
+
+  /// No description provided for @svcReminderVaccinationToday.
+  ///
+  /// In de, this message translates to:
+  /// **'{vaccine}: heute fällig'**
+  String svcReminderVaccinationToday(String vaccine);
+
+  /// No description provided for @svcReminderVaccinationBody.
+  ///
+  /// In de, this message translates to:
+  /// **'Termin für die Auffrischung vereinbaren'**
+  String get svcReminderVaccinationBody;
 }
 
 class _AppLocalizationsDelegate

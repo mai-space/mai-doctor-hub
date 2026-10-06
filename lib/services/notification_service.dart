@@ -141,19 +141,81 @@ class NotificationService
     }
   }
 
+  static Importance _importance(NotificationLevel level) => switch (level) {
+    NotificationLevel.important => Importance.high,
+    NotificationLevel.normal => Importance.defaultImportance,
+    NotificationLevel.silent => Importance.low,
+  };
+
+  static Priority _priority(NotificationLevel level) => switch (level) {
+    NotificationLevel.important => Priority.high,
+    NotificationLevel.normal => Priority.defaultPriority,
+    NotificationLevel.silent => Priority.low,
+  };
+
+  /// Legt je Thema den Kanal der gewählten Stufe an (Namen in App-Sprache)
+  /// und entfernt die übrigen — so zeigt Android genau einen Kanal je Thema.
+  Future<void> applyChannels(NotificationPreferences preferences) async {
+    if (kIsWeb) return;
+    await initialize();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (android == null) return;
+    for (final id in NotificationTopic.legacyChannelIds) {
+      await android.deleteNotificationChannel(channelId: id);
+    }
+    for (final topic in NotificationTopic.values) {
+      final level = preferences.of(topic).level;
+      await android.createNotificationChannel(
+        AndroidNotificationChannel(
+          topic.channelId(level),
+          topic.label,
+          description: topic.description,
+          importance: _importance(level),
+          playSound: level != NotificationLevel.silent,
+          enableVibration: level != NotificationLevel.silent,
+        ),
+      );
+      for (final other in NotificationLevel.values) {
+        if (other == level) continue;
+        await android.deleteNotificationChannel(
+          channelId: topic.channelId(other),
+        );
+      }
+    }
+  }
+
   Future<void> _schedule(PlannedNotification plan) async {
+    final level = plan.effectiveLevel;
     final details = NotificationDetails(
       android: AndroidNotificationDetails(
-        plan.channel.id,
-        plan.channel.label,
-        channelDescription: plan.channel.description,
-        importance: Importance.defaultImportance,
-        priority: Priority.defaultPriority,
-        // Gesundheitsdaten: auf dem gesperrten Bildschirm nur „Inhalt
-        // ausgeblendet“ (sofern Android so eingestellt ist).
-        visibility: NotificationVisibility.private,
+        plan.topic.channelId(level),
+        plan.topic.label,
+        channelDescription: plan.topic.description,
+        importance: _importance(level),
+        priority: _priority(level),
+        playSound: level != NotificationLevel.silent,
+        enableVibration: level != NotificationLevel.silent,
+        category: plan.topic == NotificationTopic.medication
+            ? AndroidNotificationCategory.reminder
+            : AndroidNotificationCategory.event,
+        // Mit Gesundheitsdaten (Medikament, Arzt, Symptom) nie auf dem
+        // gesperrten Bildschirm — „private“ allein greift nur, wenn Android
+        // sensible Inhalte ausblendet. Diskrete Texte dürfen dort stehen.
+        visibility: plan.discreet
+            ? NotificationVisibility.public
+            : NotificationVisibility.secret,
       ),
-      iOS: const DarwinNotificationDetails(),
+      iOS: DarwinNotificationDetails(
+        interruptionLevel: switch (level) {
+          NotificationLevel.important => InterruptionLevel.timeSensitive,
+          NotificationLevel.normal => InterruptionLevel.active,
+          NotificationLevel.silent => InterruptionLevel.passive,
+        },
+        presentSound: level != NotificationLevel.silent,
+      ),
     );
 
     final tz.TZDateTime when;

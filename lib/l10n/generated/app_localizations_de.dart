@@ -1590,6 +1590,62 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get settingsNotificationsTitle => 'Benachrichtigungen';
+
+  @override
+  String get settingsNotificationsSubtitle =>
+      'Themen, Wichtigkeit und Sperrbildschirm';
+
+  @override
+  String get settingsNotificationsIntro =>
+      'Jedes Thema hat einen eigenen Kanal. Lege fest, was dich laut erreichen soll, was leise reicht und was du gar nicht brauchst.';
+
+  @override
+  String get settingsNotificationLevelImportant => 'Wichtig';
+
+  @override
+  String get settingsNotificationLevelNormal => 'Normal';
+
+  @override
+  String get settingsNotificationLevelSilent => 'Leise';
+
+  @override
+  String get settingsNotificationLevelImportantHint =>
+      'Ton und Banner oben auf dem Bildschirm';
+
+  @override
+  String get settingsNotificationLevelNormalHint =>
+      'Ton, nur in der Benachrichtigungsleiste';
+
+  @override
+  String get settingsNotificationLevelSilentHint =>
+      'Ohne Ton, nur in der Benachrichtigungsleiste';
+
+  @override
+  String get settingsNotificationDiscreet => 'Diskret';
+
+  @override
+  String get settingsNotificationDiscreetSubtitle =>
+      'Ohne Namen von Medikamenten, Ärzten, Impfungen oder Symptomen – sinnvoll, wenn andere deinen Bildschirm sehen.';
+
+  @override
+  String get settingsNotificationOff => 'Aus';
+
+  @override
+  String get settingsNotificationSystemHint =>
+      'Feinheiten wie Klingelton oder „Nicht stören“ kannst du zusätzlich in den Android-Einstellungen der App je Kanal anpassen.';
+
+  @override
+  String get settingsLockReasonDisable => 'App-Sperre ausschalten';
+
+  @override
+  String get settingsKeyUnavailableTitle => 'Daten gerade nicht lesbar';
+
+  @override
+  String get settingsKeyUnavailableText =>
+      'Der Schlüssel deiner Akte ist im Moment nicht verfügbar. Deine Daten sind unverändert – bitte versuche es gleich noch einmal oder starte das Gerät neu.';
+
+  @override
   String get svcAssistantTitle => 'Assistent';
 
   @override
@@ -2130,4 +2186,56 @@ class AppLocalizationsDe extends AppLocalizations {
   String svcQueryExpansionPrompt(String question) {
     return 'Nenne bis zu 8 Suchbegriffe, mit denen man in Arztberichten, Notizen und Einträgen Antworten auf diese Frage findet: Synonyme, Fachbegriffe, Laienbegriffe, gängige Abkürzungen, Laborwerte oder Medikamentennamen. Frage: $question';
   }
+
+  @override
+  String get svcTopicMedication => 'Medikamenteneinnahme';
+
+  @override
+  String get svcTopicAppointmentSoon => 'Termin steht bevor';
+
+  @override
+  String get svcTopicAppointmentSoonDescription =>
+      'Erinnerungen kurz vor einem Arzttermin (unter einem Tag)';
+
+  @override
+  String get svcTopicAppointmentAhead => 'Termin-Vorschau';
+
+  @override
+  String get svcTopicAppointmentAheadDescription =>
+      'Hinweise auf Arzttermine ab einem Tag vorher';
+
+  @override
+  String get svcTopicVaccination => 'Impfungen';
+
+  @override
+  String get svcTopicVaccinationDescription => 'Fällige Auffrischungen';
+
+  @override
+  String get svcDiscreetMedicationTitle => 'Zeit für deine Einnahme';
+
+  @override
+  String get svcDiscreetAppointmentTitle => 'Erinnerung an einen Termin';
+
+  @override
+  String get svcDiscreetVaccinationTitle => 'Eine Impfung ist bald fällig';
+
+  @override
+  String get svcDiscreetCheckInTitle => 'Zeit für deinen Check-in';
+
+  @override
+  String get svcDiscreetBody => 'Details in Doctor Hub';
+
+  @override
+  String svcReminderVaccinationSoon(String vaccine) {
+    return '$vaccine: in einer Woche fällig';
+  }
+
+  @override
+  String svcReminderVaccinationToday(String vaccine) {
+    return '$vaccine: heute fällig';
+  }
+
+  @override
+  String get svcReminderVaccinationBody =>
+      'Termin für die Auffrischung vereinbaren';
 }

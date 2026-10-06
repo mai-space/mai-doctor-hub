@@ -457,5 +457,23 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "svcTopicMedication": "Medikamenteneinnahme",
+  "svcTopicAppointmentSoon": "Termin steht bevor",
+  "svcTopicAppointmentSoonDescription": "Erinnerungen kurz vor einem Arzttermin (unter einem Tag)",
+  "svcTopicAppointmentAhead": "Termin-Vorschau",
+  "svcTopicAppointmentAheadDescription": "Hinweise auf Arzttermine ab einem Tag vorher",
+  "svcTopicVaccination": "Impfungen",
+  "svcTopicVaccinationDescription": "Fällige Auffrischungen",
+  "svcDiscreetMedicationTitle": "Zeit für deine Einnahme",
+  "svcDiscreetAppointmentTitle": "Erinnerung an einen Termin",
+  "svcDiscreetVaccinationTitle": "Eine Impfung ist bald fällig",
+  "svcDiscreetCheckInTitle": "Zeit für deinen Check-in",
+  "svcDiscreetBody": "Details in Doctor Hub",
+  "svcReminderVaccinationSoon": "{vaccine}: in einer Woche fällig",
+  "@svcReminderVaccinationSoon": {"placeholders": {"vaccine": {"type": "String"}}},
+  "svcReminderVaccinationToday": "{vaccine}: heute fällig",
+  "@svcReminderVaccinationToday": {"placeholders": {"vaccine": {"type": "String"}}},
+  "svcReminderVaccinationBody": "Termin für die Auffrischung vereinbaren"
 }

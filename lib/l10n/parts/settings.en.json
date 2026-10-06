@@ -153,5 +153,22 @@
   "settingsSymptomReportCount": "{count, plural, =1{1 check-in} other{{count} check-ins}}",
   "settingsSymptomReportCountStats": "{count, plural, =1{1 check-in} other{{count} check-ins}} · avg {avg} · latest {latest}/10",
   "settingsObservationScale": "Intensity {value}/10",
-  "settingsObservationColor": "Color {value}"
+  "settingsObservationColor": "Color {value}",
+
+  "settingsNotificationsTitle": "Notifications",
+  "settingsNotificationsSubtitle": "Topics, importance and lock screen",
+  "settingsNotificationsIntro": "Each topic has its own channel. Decide what should reach you loudly, what can be quiet and what you don't need at all.",
+  "settingsNotificationLevelImportant": "Important",
+  "settingsNotificationLevelNormal": "Normal",
+  "settingsNotificationLevelSilent": "Quiet",
+  "settingsNotificationLevelImportantHint": "Sound and a banner at the top of the screen",
+  "settingsNotificationLevelNormalHint": "Sound, only in the notification shade",
+  "settingsNotificationLevelSilentHint": "No sound, only in the notification shade",
+  "settingsNotificationDiscreet": "Discreet",
+  "settingsNotificationDiscreetSubtitle": "Without names of medications, doctors, vaccinations or symptoms — useful when others can see your screen.",
+  "settingsNotificationOff": "Off",
+  "settingsNotificationSystemHint": "You can fine-tune details like the sound or Do Not Disturb per channel in the app's Android settings.",
+  "settingsLockReasonDisable": "Turn off app lock",
+  "settingsKeyUnavailableTitle": "Data can't be read right now",
+  "settingsKeyUnavailableText": "The key for your records isn't available at the moment. Your data is unchanged — please try again shortly or restart the device."
 }

@@ -14,6 +14,7 @@ import '../../data/repositories/symptom_repository.dart';
 import '../../l10n/l10n.dart';
 import '../../services/ocr/document_scanner.dart';
 import '../../services/report_import_service.dart';
+import '../../services/temp_files.dart';
 import '../../widgets/suggestion_text_field.dart';
 import '../medications/medication_form_page.dart';
 
@@ -633,6 +634,9 @@ Future<ImportedReport?> scanReport(
   } on ReportImportException catch (e) {
     messenger.showSnackBar(SnackBar(content: Text(e.message)));
     return null;
+  } finally {
+    // Klartext-Scan im Cache: liegt jetzt (oder gar nicht) in der Akte.
+    await TempFiles.delete([scan.pdfPath, ...scan.imagePaths]);
   }
 }
 

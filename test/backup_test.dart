@@ -164,6 +164,34 @@ void main() {
     expect(await dbB.select(dbB.calendarLinks).get(), isEmpty);
   });
 
+  test('restore drops report paths outside the reports folder', () async {
+    final (dbA, backupA, _) = await device('a');
+    final (dbB, backupB, docsB) = await device('b');
+    // Präparierte Sicherung: Bericht zeigt auf den Schlüssel von Gerät B.
+    final secret = File('${root.path}/b/no_backup/db.key')
+      ..createSync(recursive: true)
+      ..writeAsStringSync('geheim');
+    final id = await RecordsRepository(dbA).createReport(
+      title: 'Fremd',
+      mimeType: 'application/pdf',
+      localPath: secret.path,
+      source: ReportSource.pdf,
+    );
+
+    final sealed = await backupA.createBackupFile(_pass);
+    // Datei außerhalb des Berichtsordners wird nicht mitgesichert.
+    final peek = await Directory('${root.path}/peek').create();
+    final opened = await BackupStream.open(sealed.path, _pass, peek.path);
+    expect(opened.reportEntries, isEmpty);
+
+    final result = await backupB.restoreFile(sealed.path, _pass);
+    expect(result.missingFiles, 1);
+    final records = RecordsRepository(dbB, baseDir: () async => docsB);
+    expect((await records.getReport(id))!.localPath, isEmpty);
+    await records.deleteReport(id);
+    expect(secret.readAsStringSync(), 'geheim');
+  });
+
   test('restores a v1 backup through migration', () async {
     final (dbB, backupB, _) = await device('b');
 

@@ -17,6 +17,7 @@ import 'package:mai_doctor_hub/services/calendar/calendar_sync_service.dart';
 import 'package:mai_doctor_hub/services/notifications/medication_reminders.dart';
 
 import 'helpers/fake_calendar.dart';
+import 'helpers/test_env.dart';
 
 void main() {
   late AppDatabase db;
@@ -112,7 +113,11 @@ void main() {
   test('purge deletes for good incl. files; purgeAll orders doctors last', () async {
     final dir = await Directory.systemTemp.createTemp('archive');
     addTearDown(() => dir.delete(recursive: true));
-    final file = File('${dir.path}/r.pdf')..writeAsStringSync('%PDF');
+    // Gelöscht werden nur Dateien im eigenen Berichte-Ordner.
+    useFakePathProvider(dir.path);
+    final file = File('${dir.path}/docs/reports/r.pdf')
+      ..createSync(recursive: true)
+      ..writeAsStringSync('%PDF');
     final id = await appointments.create(
       doctorId: doctorId,
       scheduledAt: DateTime(2030),

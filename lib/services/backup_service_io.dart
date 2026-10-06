@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -9,6 +10,8 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 import 'package:mai_backup_format/mai_backup_format.dart';
 
 import '../data/app_database.dart';
+import '../data/repositories/records_repository.dart'
+    show ownedReportFile, reportsDirectory;
 import '../l10n/l10n.dart';
 
 export 'package:mai_backup_format/mai_backup_format.dart'
@@ -70,15 +73,15 @@ class BackupService {
       }
 
       final reports = await _db.select(_db.reports).get();
+      final reportsDir = await reportsDirectory(_baseDir);
       final files = <String, String>{};
       final entries = <String, String>{};
       for (final report in reports) {
-        if (report.localPath.startsWith('web-memory://') ||
-            !await File(report.localPath).exists()) {
-          continue;
-        }
+        // Nur Dateien aus dem eigenen Berichtsordner sichern.
+        final file = await ownedReportFile(report.localPath, reportsDir);
+        if (file == null) continue;
         final entry = 'reports/${report.id}${p.extension(report.localPath)}';
-        files[entry] = report.localPath;
+        files[entry] = file.path;
         entries[report.id] = entry;
       }
       final zip = p.join(work.path, 'backup.zip');
@@ -119,11 +122,11 @@ class BackupService {
   Future<RestoreResult> restoreFile(String path, String passphrase) async {
     final work = await _workDir();
     try {
-      final contents = await BackupStream.open(path, passphrase, work.path);
+      final contents = await _open(path, passphrase, work.path);
       final restorePath = contents.databasePath;
       await _migrateSnapshot(restorePath);
 
-      final reportsDir = Directory(p.join((await _baseDir()).path, 'reports'));
+      final reportsDir = await reportsDirectory(_baseDir);
       final oldFiles = await _listFiles(reportsDir);
       await reportsDir.create(recursive: true);
 
@@ -164,6 +167,15 @@ class BackupService {
       await work.delete(recursive: true);
     }
   }
+
+  /// Entschlüsseln + entpacken im Hintergrund-Isolate: PBKDF2 und große
+  /// Sicherungen blockieren sonst die Oberfläche. Statisch, damit die
+  /// Closure nur die Strings mitnimmt.
+  static Future<ExtractedBackup> _open(
+    String path,
+    String passphrase,
+    String workDir,
+  ) => Isolate.run(() => BackupStream.open(path, passphrase, workDir));
 
   /// Umbenennen; über Dateisystemgrenzen hinweg kopieren.
   static Future<void> _move(File source, String target) async {
@@ -235,7 +247,12 @@ class BackupService {
           'INSERT OR IGNORE INTO app_settings (id) VALUES (1)',
         );
 
-        // Berichtspfade auf dieses Gerät umbiegen.
+        // Berichtspfade auf dieses Gerät umbiegen; alle übrigen Pfade aus
+        // der Sicherung verwerfen (leer = Datei fehlt) — sie könnten auf
+        // beliebige Dateien zeigen, die sonst gelöscht/exportiert würden.
+        await _db
+            .update(_db.reports)
+            .write(const ReportsCompanion(localPath: Value('')));
         for (final MapEntry(key: id, value: path) in newPaths.entries) {
           await (_db.update(_db.reports)..where((t) => t.id.equals(id))).write(
             ReportsCompanion(localPath: Value(path)),

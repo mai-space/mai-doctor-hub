@@ -848,6 +848,22 @@
       }
     }
   },
+  "settingsNotificationsTitle": "Benachrichtigungen",
+  "settingsNotificationsSubtitle": "Themen, Wichtigkeit und Sperrbildschirm",
+  "settingsNotificationsIntro": "Jedes Thema hat einen eigenen Kanal. Lege fest, was dich laut erreichen soll, was leise reicht und was du gar nicht brauchst.",
+  "settingsNotificationLevelImportant": "Wichtig",
+  "settingsNotificationLevelNormal": "Normal",
+  "settingsNotificationLevelSilent": "Leise",
+  "settingsNotificationLevelImportantHint": "Ton und Banner oben auf dem Bildschirm",
+  "settingsNotificationLevelNormalHint": "Ton, nur in der Benachrichtigungsleiste",
+  "settingsNotificationLevelSilentHint": "Ohne Ton, nur in der Benachrichtigungsleiste",
+  "settingsNotificationDiscreet": "Diskret",
+  "settingsNotificationDiscreetSubtitle": "Ohne Namen von Medikamenten, Ärzten, Impfungen oder Symptomen – sinnvoll, wenn andere deinen Bildschirm sehen.",
+  "settingsNotificationOff": "Aus",
+  "settingsNotificationSystemHint": "Feinheiten wie Klingelton oder „Nicht stören“ kannst du zusätzlich in den Android-Einstellungen der App je Kanal anpassen.",
+  "settingsLockReasonDisable": "App-Sperre ausschalten",
+  "settingsKeyUnavailableTitle": "Daten gerade nicht lesbar",
+  "settingsKeyUnavailableText": "Der Schlüssel deiner Akte ist im Moment nicht verfügbar. Deine Daten sind unverändert – bitte versuche es gleich noch einmal oder starte das Gerät neu.",
   "svcAssistantTitle": "Assistent",
   "svcAssistantExample1": "Wann ist mein nächster Termin?",
   "svcAssistantExample2": "Welche Medikamente nehme ich gerade?",
@@ -1306,5 +1322,34 @@
         "type": "String"
       }
     }
-  }
+  },
+  "svcTopicMedication": "Medikamenteneinnahme",
+  "svcTopicAppointmentSoon": "Termin steht bevor",
+  "svcTopicAppointmentSoonDescription": "Erinnerungen kurz vor einem Arzttermin (unter einem Tag)",
+  "svcTopicAppointmentAhead": "Termin-Vorschau",
+  "svcTopicAppointmentAheadDescription": "Hinweise auf Arzttermine ab einem Tag vorher",
+  "svcTopicVaccination": "Impfungen",
+  "svcTopicVaccinationDescription": "Fällige Auffrischungen",
+  "svcDiscreetMedicationTitle": "Zeit für deine Einnahme",
+  "svcDiscreetAppointmentTitle": "Erinnerung an einen Termin",
+  "svcDiscreetVaccinationTitle": "Eine Impfung ist bald fällig",
+  "svcDiscreetCheckInTitle": "Zeit für deinen Check-in",
+  "svcDiscreetBody": "Details in Doctor Hub",
+  "svcReminderVaccinationSoon": "{vaccine}: in einer Woche fällig",
+  "@svcReminderVaccinationSoon": {
+    "placeholders": {
+      "vaccine": {
+        "type": "String"
+      }
+    }
+  },
+  "svcReminderVaccinationToday": "{vaccine}: heute fällig",
+  "@svcReminderVaccinationToday": {
+    "placeholders": {
+      "vaccine": {
+        "type": "String"
+      }
+    }
+  },
+  "svcReminderVaccinationBody": "Termin für die Auffrischung vereinbaren"
 }

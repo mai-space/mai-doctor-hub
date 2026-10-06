@@ -68,7 +68,10 @@ abstract final class AppointmentReminderPlanner {
             if (s.doctor?.address?.isNotEmpty == true) s.doctor!.address!,
           ].join(' · ').ifEmpty(AppLocale.strings.svcReminderAppointmentFallback),
           payload: AppointmentPayload.encode(a.id),
-          channel: NotificationChannel.appointment,
+          // Kurz vorher drängt mehr als die Vorschau am Vortag.
+          topic: lead < 1440
+              ? NotificationTopic.appointmentSoon
+              : NotificationTopic.appointmentAhead,
           at: at,
         ),
       );

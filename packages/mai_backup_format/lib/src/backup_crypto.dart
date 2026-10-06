@@ -30,6 +30,22 @@ abstract final class BackupCrypto {
   static const defaultIterations = 600000;
   static const minPassphraseLength = 8;
 
+  /// Zulässige PBKDF2-Runden beim Lesen. Der Header ist vor der
+  /// Passwortprüfung nicht authentifiziert — ohne Obergrenze ließe eine
+  /// präparierte Datei die Schlüsselableitung beliebig lange laufen.
+  /// Untergrenze niedrig, weil Tests mit 1000 Runden arbeiten.
+  static const minIterations = 1000;
+  static const maxIterations = 10000000;
+
+  /// `iterations` aus einem (noch nicht authentifizierten) Header.
+  static int iterationsOf(Map<String, dynamic> header) {
+    final value = header['iterations'];
+    if (value is! int || value < minIterations || value > maxIterations) {
+      throw const BackupException('Sicherung ist beschädigt.');
+    }
+    return value;
+  }
+
   static bool looksLikeBackup(Uint8List data) {
     if (data.length < _magic.length) return false;
     for (var i = 0; i < _magic.length; i++) {
@@ -107,7 +123,7 @@ abstract final class BackupCrypto {
     final key = await _deriveKey(
       passphrase,
       base64Decode(header['salt'] as String),
-      header['iterations'] as int,
+      iterationsOf(header),
     );
     final box = SecretBox(
       data.sublist(bodyStart, data.length - 16),

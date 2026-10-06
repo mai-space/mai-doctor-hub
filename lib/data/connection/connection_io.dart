@@ -47,21 +47,25 @@ void applyKey(CommonDatabase db, String key) {
 /// - unverschlüsselte Bestandsdatenbank → wird an Ort und Stelle
 ///   verschlüsselt (einmalig nach dem Update);
 /// - nicht entschlüsselbar (Schlüssel verloren, fremde Datei) → wird
-///   beiseitegelegt, die App startet leer und bittet um Wiederherstellung.
+///   beiseitegelegt, die App startet leer und bittet um Wiederherstellung;
+/// - Schlüssel nur vorübergehend nicht lesbar → einige Wiederholungen, danach
+///   [DatabaseKeyUnavailable] weiterwerfen. Lieber nicht starten als Daten
+///   beiseitelegen, die nach einem Neustart wieder lesbar wären.
 @visibleForTesting
 Future<(String?, DatabaseOpenStatus)> prepareDatabase(
   String path,
-  DatabaseKeyStore keys,
-) async {
+  DatabaseKeyStore keys, {
+  List<Duration> retryDelays = keyRetryDelays,
+}) async {
   String? key;
   String? unreadable;
   try {
-    key = await keys.getOrCreate();
+    key = await _getKey(keys, retryDelays);
   } on DatabaseKeyLost catch (e) {
     debugPrint('$e');
     unreadable = await _moveAside(path);
     await keys.reset();
-    key = await keys.getOrCreate();
+    key = await _getKey(keys, retryDelays);
   }
   if (key == null) return (null, const DatabaseOpenStatus(encrypted: false));
 
@@ -74,6 +78,28 @@ Future<(String?, DatabaseOpenStatus)> prepareDatabase(
     }
   }
   return (key, DatabaseOpenStatus(encrypted: true, unreadableCopy: unreadable));
+}
+
+/// Wartezeiten zwischen den Versuchen bei [DatabaseKeyUnavailable].
+@visibleForTesting
+const keyRetryDelays = [
+  Duration(milliseconds: 200),
+  Duration(milliseconds: 500),
+  Duration(seconds: 1),
+];
+
+/// [DatabaseKeyLost] geht sofort durch; [DatabaseKeyUnavailable] wird nach
+/// jeder Wartezeit erneut versucht und zuletzt weitergeworfen.
+Future<String?> _getKey(DatabaseKeyStore keys, List<Duration> delays) async {
+  for (var attempt = 0; ; attempt++) {
+    try {
+      return await keys.getOrCreate();
+    } on DatabaseKeyUnavailable catch (e) {
+      if (attempt >= delays.length) rethrow;
+      debugPrint('$e — neuer Versuch');
+      await Future<void>.delayed(delays[attempt]);
+    }
+  }
 }
 
 Future<bool> _isPlaintext(File file) async {

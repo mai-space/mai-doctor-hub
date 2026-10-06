@@ -19,7 +19,8 @@ void main() {
   setUp(() async {
     root = await Directory.systemTemp.createTemp('doc_export');
     db = AppDatabase(NativeDatabase.memory());
-    records = RecordsRepository(db);
+    records = RecordsRepository(db, baseDir: () async => root);
+    Directory('${root.path}/reports').createSync();
   });
   tearDown(() async {
     await db.close();
@@ -32,7 +33,7 @@ void main() {
     String? appointmentId,
     ReportSource source = ReportSource.pdf,
   }) async {
-    final path = '${root.path}/$file';
+    final path = '${root.path}/reports/$file';
     File(path).writeAsStringSync('inhalt $title');
     return records.createReport(
       title: title,
@@ -60,13 +61,14 @@ void main() {
       await records.createReport(
         title: 'Weg',
         mimeType: 'application/pdf',
-        localPath: '${root.path}/fehlt.pdf',
+        localPath: '${root.path}/reports/fehlt.pdf',
         source: ReportSource.pdf,
       );
 
       final export = await DocumentExportService(
         db,
         tempDir: () async => root,
+        baseDir: () async => root,
       ).export();
       expect(export, isNotNull);
       expect(export!.count, 3);
@@ -104,7 +106,65 @@ void main() {
     final export = await DocumentExportService(
       db,
       tempDir: () async => root,
+      baseDir: () async => root,
     ).export();
     expect(export, isNull);
+  });
+
+  group('files outside the reports folder', () {
+    late File secret;
+    setUp(() async {
+      // Z. B. aus einer präparierten Sicherung: Pfad auf den DB-Schlüssel,
+      // direkt, per `..` oder per Symlink im Berichtsordner.
+      secret = File('${root.path}/no_backup/db.key')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('geheim');
+      Link('${root.path}/reports/link.pdf').createSync(secret.path);
+    });
+
+    Future<List<Report>> craft() async {
+      for (final path in [
+        secret.path,
+        '${root.path}/reports/../no_backup/db.key',
+        '${root.path}/reports/link.pdf',
+      ]) {
+        await records.createReport(
+          title: 'Fremd',
+          mimeType: 'application/pdf',
+          localPath: path,
+          source: ReportSource.pdf,
+        );
+      }
+      return db.select(db.reports).get();
+    }
+
+    test('are not exported', () async {
+      await craft();
+      final export = await DocumentExportService(
+        db,
+        tempDir: () async => root,
+        baseDir: () async => root,
+      ).export();
+      expect(export, isNull);
+    });
+
+    test('are not deleted', () async {
+      // Gegenprobe: eigene Datei wird gelöscht.
+      final own = File('${root.path}/reports/own.pdf')..writeAsStringSync('x');
+      await records.deleteReport(
+        await records.createReport(
+          title: 'Eigen',
+          mimeType: 'application/pdf',
+          localPath: own.path,
+          source: ReportSource.pdf,
+        ),
+      );
+      expect(own.existsSync(), isFalse);
+
+      for (final report in await craft()) {
+        await records.deleteReport(report.id);
+      }
+      expect(secret.readAsStringSync(), 'geheim');
+    });
   });
 }

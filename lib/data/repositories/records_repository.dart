@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../l10n/l10n.dart';
@@ -16,6 +18,31 @@ String diagnosisStatusLabel(DiagnosisStatus status) => switch (status) {
 };
 
 enum RecordSort { date, name, updated }
+
+/// Ordner der Berichtsdateien unter [baseDir] (Standard: App-Dokumente) —
+/// dorthin legt der Import neue Dateien ab.
+Future<Directory> reportsDirectory([
+  Future<Directory> Function()? baseDir,
+]) async {
+  final base = await (baseDir ?? getApplicationDocumentsDirectory)();
+  return Directory(p.join(base.path, 'reports'));
+}
+
+/// [localPath] als Datei, wenn sie (Symlinks aufgelöst) in [reportsDir]
+/// liegt, sonst null. Pfade stammen aus der DB und damit evtl. aus einer
+/// fremden Sicherung — z. B. auf den Datenbankschlüssel.
+Future<File?> ownedReportFile(String localPath, Directory reportsDir) async {
+  if (localPath.isEmpty || localPath.startsWith('web-memory://')) return null;
+  try {
+    final dir = await reportsDir.resolveSymbolicLinks();
+    final file = await File(localPath).resolveSymbolicLinks();
+    return p.isWithin(dir, file) && await File(file).exists()
+        ? File(file)
+        : null;
+  } on FileSystemException {
+    return null; // Datei oder Ordner fehlt.
+  }
+}
 
 class RecordListItem {
   const RecordListItem({
@@ -38,20 +65,25 @@ class RecordListItem {
 }
 
 class RecordsRepository {
-  RecordsRepository(this._db);
+  RecordsRepository(this._db, {this._baseDir});
 
   final AppDatabase _db;
+
+  /// App-Dokumente (Standard: path_provider); in Tests ersetzt.
+  final Future<Directory> Function()? _baseDir;
 
   Future<List<QueryRow>> search(String query, {String? entityType}) async {
     final tokens = query
         .trim()
         .split(RegExp(r'\s+'))
         .where((t) => t.isNotEmpty)
-        .map((t) {
-          final cleaned = t.replaceAll('"', ' ');
-          return cleaned.endsWith('*') ? cleaned : '$cleaned*';
-        })
+        // Jedes Wort als Phrase quoten: sonst sind „Covid-19“, „OR“ oder
+        // „a:b“ FTS5-Syntax und die Suche bricht mit einem Fehler ab.
+        .map((t) => t.replaceAll('"', '').replaceAll(RegExp(r'\*+$'), ''))
+        .where((t) => t.isNotEmpty)
+        .map((t) => '"$t"*')
         .join(' ');
+    if (tokens.isEmpty) return const [];
     return _withoutArchived(
       await _db.searchFts(tokens, entityType: entityType, limit: 200),
     );
@@ -629,8 +661,12 @@ class RecordsRepository {
   Future<void> deleteReportFile(Report report) async {
     if (kIsWeb || report.localPath.startsWith('web-memory://')) return;
     try {
-      final file = File(report.localPath);
-      if (await file.exists()) await file.delete();
+      // Nur Dateien im eigenen Berichtsordner löschen.
+      final file = await ownedReportFile(
+        report.localPath,
+        await reportsDirectory(_baseDir),
+      );
+      await file?.delete();
     } catch (_) {
       // Datei bereits weg oder nicht zugreifbar — DB ist maßgeblich.
     }

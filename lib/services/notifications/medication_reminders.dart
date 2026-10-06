@@ -74,7 +74,7 @@ abstract final class MedicationReminderPlanner {
                   m.id,
                   DateTime(0, 1, 1, s.hour, s.minute),
                 ),
-                channel: NotificationChannel.medication,
+                topic: NotificationTopic.medication,
                 hour: s.hour,
                 minute: s.minute,
                 weekday: day,
@@ -95,7 +95,7 @@ abstract final class MedicationReminderPlanner {
               title: title,
               body: body,
               payload: MedicationPayload.encode(m.id, at),
-              channel: NotificationChannel.medication,
+              topic: NotificationTopic.medication,
               at: at,
             ),
           );
@@ -111,7 +111,7 @@ abstract final class MedicationReminderPlanner {
           title: p.title,
           body: p.body,
           payload: p.payload,
-          channel: p.channel,
+          topic: p.topic,
           at: p.at!,
         ),
       );

@@ -35,6 +35,13 @@ Future<void> main(List<String> arguments) async {
     exit(0);
   }
 
+  // Entschlüsselte Kopien abgebrochener Läufe (kill -9, Absturz) entfernen.
+  try {
+    await MaiSnapshot.deleteStale();
+  } catch (_) {
+    // Aufräumen ist best effort.
+  }
+
   final MaiSnapshot snapshot;
   try {
     if (args.option('backup') case final backup?) {
@@ -58,6 +65,20 @@ Future<void> main(List<String> arguments) async {
     null => null,
   };
 
+  // Bei Strg+C/kill die entschlüsselte Kopie nicht liegen lassen.
+  final signals = [
+    ProcessSignal.sigint,
+    if (!Platform.isWindows) ...[ProcessSignal.sigterm, ProcessSignal.sighup],
+  ];
+  final subscriptions = [
+    for (final signal in signals)
+      signal.watch().listen((_) async {
+        await audit?.close();
+        await snapshot.close();
+        exit(128 + signal.signalNumber);
+      }),
+  ];
+
   // stdout gehört dem MCP-Protokoll; Hinweise nur auf stderr.
   stderr.writeln('mai_mcp bereit (read-only).');
   final server = MaiMcpServer(
@@ -67,6 +88,9 @@ Future<void> main(List<String> arguments) async {
     snapshotCreatedAt: snapshot.createdAt,
   );
   await server.done;
+  for (final subscription in subscriptions) {
+    await subscription.cancel();
+  }
   await audit?.close();
   await snapshot.close();
 }

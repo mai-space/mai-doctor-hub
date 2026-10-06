@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../../services/notifications/notification_plan.dart';
 import '../app_database.dart';
 
 class SettingsRepository {
@@ -40,6 +41,12 @@ class SettingsRepository {
   Future<void> completeOnboarding() {
     return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
       const AppSettingsCompanion(onboardingCompleted: Value(true)),
+    );
+  }
+
+  Future<void> setNotificationPreferences(NotificationPreferences preferences) {
+    return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
+      AppSettingsCompanion(notificationTopics: Value(preferences.encode())),
     );
   }
 

@@ -1658,6 +1658,62 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get settingsNotificationsTitle => 'Notifications';
+
+  @override
+  String get settingsNotificationsSubtitle =>
+      'Topics, importance and lock screen';
+
+  @override
+  String get settingsNotificationsIntro =>
+      'Each topic has its own channel. Decide what should reach you loudly, what can be quiet and what you don\'t need at all.';
+
+  @override
+  String get settingsNotificationLevelImportant => 'Important';
+
+  @override
+  String get settingsNotificationLevelNormal => 'Normal';
+
+  @override
+  String get settingsNotificationLevelSilent => 'Quiet';
+
+  @override
+  String get settingsNotificationLevelImportantHint =>
+      'Sound and a banner at the top of the screen';
+
+  @override
+  String get settingsNotificationLevelNormalHint =>
+      'Sound, only in the notification shade';
+
+  @override
+  String get settingsNotificationLevelSilentHint =>
+      'No sound, only in the notification shade';
+
+  @override
+  String get settingsNotificationDiscreet => 'Discreet';
+
+  @override
+  String get settingsNotificationDiscreetSubtitle =>
+      'Without names of medications, doctors, vaccinations or symptoms — useful when others can see your screen.';
+
+  @override
+  String get settingsNotificationOff => 'Off';
+
+  @override
+  String get settingsNotificationSystemHint =>
+      'You can fine-tune details like the sound or Do Not Disturb per channel in the app\'s Android settings.';
+
+  @override
+  String get settingsLockReasonDisable => 'Turn off app lock';
+
+  @override
+  String get settingsKeyUnavailableTitle => 'Data can\'t be read right now';
+
+  @override
+  String get settingsKeyUnavailableText =>
+      'The key for your records isn\'t available at the moment. Your data is unchanged — please try again shortly or restart the device.';
+
+  @override
   String get svcAssistantTitle => 'Assistant';
 
   @override
@@ -2207,4 +2263,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String svcQueryExpansionPrompt(String question) {
     return 'List up to 8 search terms that would find answers to this question in doctor reports, notes and entries: synonyms, medical terms, lay terms, common abbreviations, lab values or medication names. Question: $question';
   }
+
+  @override
+  String get svcTopicMedication => 'Medication intake';
+
+  @override
+  String get svcTopicAppointmentSoon => 'Upcoming appointment';
+
+  @override
+  String get svcTopicAppointmentSoonDescription =>
+      'Reminders shortly before a doctor\'s appointment (less than a day)';
+
+  @override
+  String get svcTopicAppointmentAhead => 'Appointment preview';
+
+  @override
+  String get svcTopicAppointmentAheadDescription =>
+      'Heads-ups about appointments a day or more ahead';
+
+  @override
+  String get svcTopicVaccination => 'Vaccinations';
+
+  @override
+  String get svcTopicVaccinationDescription => 'Boosters that are due';
+
+  @override
+  String get svcDiscreetMedicationTitle => 'Time for your medication';
+
+  @override
+  String get svcDiscreetAppointmentTitle => 'Appointment reminder';
+
+  @override
+  String get svcDiscreetVaccinationTitle => 'A vaccination is due soon';
+
+  @override
+  String get svcDiscreetCheckInTitle => 'Time for your check-in';
+
+  @override
+  String get svcDiscreetBody => 'Details in Doctor Hub';
+
+  @override
+  String svcReminderVaccinationSoon(String vaccine) {
+    return '$vaccine: due in one week';
+  }
+
+  @override
+  String svcReminderVaccinationToday(String vaccine) {
+    return '$vaccine: due today';
+  }
+
+  @override
+  String get svcReminderVaccinationBody =>
+      'Book an appointment for the booster';
 }

@@ -7,7 +7,9 @@ import '../../l10n/l10n.dart';
 import '../archive/archive_page.dart';
 import 'appointment_reminders_tile.dart';
 import 'backup_section.dart';
+import '../../services/notifications/notification_plan.dart';
 import 'calendar_section.dart';
+import 'notification_topics_page.dart';
 import 'reminders_section.dart';
 import 'security_section.dart';
 
@@ -62,6 +64,28 @@ class SettingsPage extends StatelessWidget {
               const RemindersSection(),
               const SizedBox(height: 8),
               AppointmentRemindersTile(settings: settings),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.tune),
+                title: Text(l10n.settingsNotificationsTitle),
+                subtitle: Text(
+                  [
+                    l10n.settingsNotificationsSubtitle,
+                    notificationTopicsSummary(
+                      l10n,
+                      NotificationPreferences.parse(
+                        settings.notificationTopics,
+                      ),
+                    ),
+                  ].where((s) => s.isNotEmpty).join('\n'),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const NotificationTopicsPage(),
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
               CalendarSection(settings: settings),
               const SizedBox(height: 24),

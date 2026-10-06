@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../data/app_database.dart';
+import '../../data/repositories/settings_repository.dart';
 import 'notification_plan.dart';
 
 /// Hält eine Benachrichtigungs-Gruppe synchron mit der Datenbank: bei jeder
@@ -35,7 +36,11 @@ class PlanSync {
       await _running;
     }
     final run = () async {
-      await scheduler.replace(group, await plan());
+      final settings = await SettingsRepository(db).get();
+      final preferences = NotificationPreferences.parse(
+        settings.notificationTopics,
+      );
+      await scheduler.replace(group, preferences.apply(await plan()));
     }();
     _running = run;
     try {
@@ -46,7 +51,8 @@ class PlanSync {
   }
 
   void start() {
-    _subscription ??= db.watchTables(tables).listen((_) {
+    // App-Settings: Themen-Einstellungen (an/aus, Stufe, diskret).
+    _subscription ??= db.watchTables({...tables, db.appSettings}).listen((_) {
           _timer?.cancel();
           _timer = Timer(debounce, () {
             sync().catchError((Object e) {

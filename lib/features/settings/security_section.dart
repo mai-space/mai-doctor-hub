@@ -23,7 +23,7 @@ class SecuritySection extends StatelessWidget {
       }
       if (!await lock.enableWithConfirmation()) return;
     } else {
-      lock.setEnabled(false);
+      if (!await lock.disableWithConfirmation()) return;
     }
     await settings.setAppLock(value);
   }
