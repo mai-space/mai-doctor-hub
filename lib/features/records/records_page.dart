@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../assistant/assistant_page.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../theme/app_theme.dart';
@@ -190,6 +191,15 @@ class _RecordsPageState extends State<RecordsPage> {
                     'Meine Akte',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Assistent — Fragen an deine Akte',
+                  icon: const Icon(Icons.auto_awesome_outlined),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const AssistantPage(),
                     ),
                   ),
                 ),
