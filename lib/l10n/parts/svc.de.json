@@ -80,7 +80,7 @@
       }
     }
   },
-  "svcSemanticIntro": "Findet auch Einträge, in denen die Wörter deiner Frage nicht vorkommen (z. B. „Schilddrüse“ → TSH-Wert). Lädt {model} ({size}); die Suche läuft danach offline.\n\nGoogle stellt das Modell nur nach Annahme der Gemma-Lizenz bereit: kostenloses Hugging-Face-Konto, Lizenz auf der Modellseite akzeptieren, Lese-Token erstellen und hier einfügen. Der Token wird nur für den Download genutzt und nicht gespeichert.",
+  "svcSemanticIntro": "Findet auch Einträge, in denen die Wörter deiner Frage nicht vorkommen (z. B. „Schilddrüse“ → TSH-Wert). Lädt {model} ({size}); die Suche läuft danach offline.\n\nGoogle gibt das Modell nur nach Annahme der Gemma-Lizenz frei. Dafür brauchst du einmalig einen kostenlosen Hugging-Face-Token:",
   "@svcSemanticIntro": {
     "placeholders": {
       "model": {
@@ -92,6 +92,23 @@
     }
   },
   "svcSemanticTokenLabel": "Hugging-Face-Token (hf_…)",
+  "svcSemanticStep1": "Bei Hugging Face ein kostenloses Konto anlegen oder anmelden.",
+  "svcSemanticStep1Link": "Hugging Face öffnen",
+  "svcSemanticStep2": "Die Modellseite öffnen und „Agree and access repository“ tippen (Googles Gemma-Lizenz). Erscheint dort kein Button, die Lizenz einmal auf Googles Originalseite akzeptieren.",
+  "svcSemanticStep2Link": "Modellseite öffnen",
+  "svcSemanticStep2Google": "Googles Originalseite",
+  "svcSemanticStep3": "Auf der Token-Seite „Create new token“ tippen, Typ „Read“ wählen, einen Namen vergeben und den Token (beginnt mit hf_) kopieren.",
+  "svcSemanticStep3Link": "Token-Seite öffnen",
+  "svcSemanticStep4": "Den Token hier einfügen und „Semantische Suche aktivieren“ tippen. Er wird nur für den Download genutzt und nicht gespeichert.",
+  "svcSemanticLicenseHint": "Schlägt der Download fehl, ist meist die Lizenz (Schritt 2) noch nicht akzeptiert.",
+  "svcLinkCopied": "Link konnte nicht geöffnet werden und wurde kopiert: {url}",
+  "@svcLinkCopied": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "svcSemanticEnable": "Semantische Suche aktivieren",
   "svcDownloadFailed": "Download fehlgeschlagen: {error}",
   "@svcDownloadFailed": {

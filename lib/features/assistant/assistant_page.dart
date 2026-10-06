@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/database_provider.dart';
 import '../../l10n/l10n.dart';
@@ -458,6 +460,83 @@ class _SemanticCard extends StatefulWidget {
   State<_SemanticCard> createState() => _SemanticCardState();
 }
 
+const _hfJoin = 'https://huggingface.co/join';
+const _modelPage = 'https://huggingface.co/litert-community/embeddinggemma-300m';
+const _googlePage = 'https://huggingface.co/google/embeddinggemma-300m';
+const _tokenPage = 'https://huggingface.co/settings/tokens';
+
+/// Nummerierter Schritt der Token-Anleitung mit antippbaren Links.
+class _Step extends StatelessWidget {
+  const _Step(this.number, this.text, this.links);
+
+  final int number;
+  final String text;
+  final List<(String label, String url)> links;
+
+  Future<void> _open(BuildContext context, String url) async {
+    var opened = false;
+    try {
+      opened = await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {}
+    if (opened || !context.mounted) return;
+    await Clipboard.setData(ClipboardData(text: url));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.svcLinkCopied(url))),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 11,
+            backgroundColor: theme.colorScheme.primaryContainer,
+            child: Text(
+              '$number',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onPrimaryContainer,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(text),
+                for (final (label, url) in links)
+                  Tooltip(
+                    message: url,
+                    child: TextButton.icon(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      onPressed: () => _open(context, url),
+                      onLongPress: () =>
+                          Clipboard.setData(ClipboardData(text: url)),
+                      icon: const Icon(Icons.open_in_new, size: 18),
+                      label: Text(label),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _SemanticCardState extends State<_SemanticCard> {
   final _token = TextEditingController();
 
@@ -502,12 +581,26 @@ class _SemanticCardState extends State<_SemanticCard> {
             model.embedder.downloadSize,
           ),
         ),
+        const SizedBox(height: 8),
+        _Step(1, l10n.svcSemanticStep1, [
+          (l10n.svcSemanticStep1Link, _hfJoin),
+        ]),
+        _Step(2, l10n.svcSemanticStep2, [
+          (l10n.svcSemanticStep2Link, _modelPage),
+          (l10n.svcSemanticStep2Google, _googlePage),
+        ]),
+        _Step(3, l10n.svcSemanticStep3, [
+          (l10n.svcSemanticStep3Link, _tokenPage),
+        ]),
+        _Step(4, l10n.svcSemanticStep4, const []),
         if (model.semanticMessage != null) ...[
           const SizedBox(height: 8),
           Text(
             model.semanticMessage!,
             style: TextStyle(color: theme.colorScheme.error),
           ),
+          const SizedBox(height: 4),
+          Text(l10n.svcSemanticLicenseHint),
         ],
         const SizedBox(height: 12),
         TextField(

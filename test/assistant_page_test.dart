@@ -216,6 +216,32 @@ void main() {
     expect(engine.lastPrompt, contains('TSH 3,1'));
   });
 
+  testWidgets('semantic card explains how to get the token, with links', (
+    tester,
+  ) async {
+    engine.installed = true;
+    await pump(tester);
+    await tester.scrollUntilVisible(
+      find.text('Token-Seite öffnen'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.textContaining('Agree and access repository'), findsOneWidget);
+    expect(find.text('Hugging Face öffnen'), findsOneWidget);
+    expect(find.text('Modellseite öffnen'), findsOneWidget);
+    expect(find.text('Googles Originalseite'), findsOneWidget);
+    expect(
+      find.byTooltip(
+        'https://huggingface.co/litert-community/embeddinggemma-300m',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byTooltip('https://huggingface.co/settings/tokens'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('empty answer is retried once with a shorter extract', (
     tester,
   ) async {

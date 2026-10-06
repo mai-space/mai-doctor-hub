@@ -3107,7 +3107,7 @@ abstract class AppLocalizations {
   /// No description provided for @svcSemanticIntro.
   ///
   /// In de, this message translates to:
-  /// **'Findet auch Einträge, in denen die Wörter deiner Frage nicht vorkommen (z. B. „Schilddrüse“ → TSH-Wert). Lädt {model} ({size}); die Suche läuft danach offline.\n\nGoogle stellt das Modell nur nach Annahme der Gemma-Lizenz bereit: kostenloses Hugging-Face-Konto, Lizenz auf der Modellseite akzeptieren, Lese-Token erstellen und hier einfügen. Der Token wird nur für den Download genutzt und nicht gespeichert.'**
+  /// **'Findet auch Einträge, in denen die Wörter deiner Frage nicht vorkommen (z. B. „Schilddrüse“ → TSH-Wert). Lädt {model} ({size}); die Suche läuft danach offline.\n\nGoogle gibt das Modell nur nach Annahme der Gemma-Lizenz frei. Dafür brauchst du einmalig einen kostenlosen Hugging-Face-Token:'**
   String svcSemanticIntro(String model, String size);
 
   /// No description provided for @svcSemanticTokenLabel.
@@ -3115,6 +3115,66 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Hugging-Face-Token (hf_…)'**
   String get svcSemanticTokenLabel;
+
+  /// No description provided for @svcSemanticStep1.
+  ///
+  /// In de, this message translates to:
+  /// **'Bei Hugging Face ein kostenloses Konto anlegen oder anmelden.'**
+  String get svcSemanticStep1;
+
+  /// No description provided for @svcSemanticStep1Link.
+  ///
+  /// In de, this message translates to:
+  /// **'Hugging Face öffnen'**
+  String get svcSemanticStep1Link;
+
+  /// No description provided for @svcSemanticStep2.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Modellseite öffnen und „Agree and access repository“ tippen (Googles Gemma-Lizenz). Erscheint dort kein Button, die Lizenz einmal auf Googles Originalseite akzeptieren.'**
+  String get svcSemanticStep2;
+
+  /// No description provided for @svcSemanticStep2Link.
+  ///
+  /// In de, this message translates to:
+  /// **'Modellseite öffnen'**
+  String get svcSemanticStep2Link;
+
+  /// No description provided for @svcSemanticStep2Google.
+  ///
+  /// In de, this message translates to:
+  /// **'Googles Originalseite'**
+  String get svcSemanticStep2Google;
+
+  /// No description provided for @svcSemanticStep3.
+  ///
+  /// In de, this message translates to:
+  /// **'Auf der Token-Seite „Create new token“ tippen, Typ „Read“ wählen, einen Namen vergeben und den Token (beginnt mit hf_) kopieren.'**
+  String get svcSemanticStep3;
+
+  /// No description provided for @svcSemanticStep3Link.
+  ///
+  /// In de, this message translates to:
+  /// **'Token-Seite öffnen'**
+  String get svcSemanticStep3Link;
+
+  /// No description provided for @svcSemanticStep4.
+  ///
+  /// In de, this message translates to:
+  /// **'Den Token hier einfügen und „Semantische Suche aktivieren“ tippen. Er wird nur für den Download genutzt und nicht gespeichert.'**
+  String get svcSemanticStep4;
+
+  /// No description provided for @svcSemanticLicenseHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Schlägt der Download fehl, ist meist die Lizenz (Schritt 2) noch nicht akzeptiert.'**
+  String get svcSemanticLicenseHint;
+
+  /// No description provided for @svcLinkCopied.
+  ///
+  /// In de, this message translates to:
+  /// **'Link konnte nicht geöffnet werden und wurde kopiert: {url}'**
+  String svcLinkCopied(String url);
 
   /// No description provided for @svcSemanticEnable.
   ///

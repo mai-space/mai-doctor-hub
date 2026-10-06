@@ -1688,11 +1688,48 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String svcSemanticIntro(String model, String size) {
-    return 'Findet auch Einträge, in denen die Wörter deiner Frage nicht vorkommen (z. B. „Schilddrüse“ → TSH-Wert). Lädt $model ($size); die Suche läuft danach offline.\n\nGoogle stellt das Modell nur nach Annahme der Gemma-Lizenz bereit: kostenloses Hugging-Face-Konto, Lizenz auf der Modellseite akzeptieren, Lese-Token erstellen und hier einfügen. Der Token wird nur für den Download genutzt und nicht gespeichert.';
+    return 'Findet auch Einträge, in denen die Wörter deiner Frage nicht vorkommen (z. B. „Schilddrüse“ → TSH-Wert). Lädt $model ($size); die Suche läuft danach offline.\n\nGoogle gibt das Modell nur nach Annahme der Gemma-Lizenz frei. Dafür brauchst du einmalig einen kostenlosen Hugging-Face-Token:';
   }
 
   @override
   String get svcSemanticTokenLabel => 'Hugging-Face-Token (hf_…)';
+
+  @override
+  String get svcSemanticStep1 =>
+      'Bei Hugging Face ein kostenloses Konto anlegen oder anmelden.';
+
+  @override
+  String get svcSemanticStep1Link => 'Hugging Face öffnen';
+
+  @override
+  String get svcSemanticStep2 =>
+      'Die Modellseite öffnen und „Agree and access repository“ tippen (Googles Gemma-Lizenz). Erscheint dort kein Button, die Lizenz einmal auf Googles Originalseite akzeptieren.';
+
+  @override
+  String get svcSemanticStep2Link => 'Modellseite öffnen';
+
+  @override
+  String get svcSemanticStep2Google => 'Googles Originalseite';
+
+  @override
+  String get svcSemanticStep3 =>
+      'Auf der Token-Seite „Create new token“ tippen, Typ „Read“ wählen, einen Namen vergeben und den Token (beginnt mit hf_) kopieren.';
+
+  @override
+  String get svcSemanticStep3Link => 'Token-Seite öffnen';
+
+  @override
+  String get svcSemanticStep4 =>
+      'Den Token hier einfügen und „Semantische Suche aktivieren“ tippen. Er wird nur für den Download genutzt und nicht gespeichert.';
+
+  @override
+  String get svcSemanticLicenseHint =>
+      'Schlägt der Download fehl, ist meist die Lizenz (Schritt 2) noch nicht akzeptiert.';
+
+  @override
+  String svcLinkCopied(String url) {
+    return 'Link konnte nicht geöffnet werden und wurde kopiert: $url';
+  }
 
   @override
   String get svcSemanticEnable => 'Semantische Suche aktivieren';

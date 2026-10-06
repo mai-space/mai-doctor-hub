@@ -1755,11 +1755,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String svcSemanticIntro(String model, String size) {
-    return 'Also finds entries that don\'t contain the words of your question (e.g. “thyroid” → TSH level). Downloads $model ($size); search then works offline.\n\nGoogle only provides the model once you accept the Gemma license: create a free Hugging Face account, accept the license on the model page, create a read token and paste it here. The token is only used for the download and is not stored.';
+    return 'Also finds entries that don\'t contain the words of your question (e.g. “thyroid” → TSH level). Downloads $model ($size); search then works offline.\n\nGoogle only releases the model once you accept the Gemma license. For that you need a free Hugging Face token once:';
   }
 
   @override
   String get svcSemanticTokenLabel => 'Hugging Face token (hf_…)';
+
+  @override
+  String get svcSemanticStep1 =>
+      'Create a free Hugging Face account or sign in.';
+
+  @override
+  String get svcSemanticStep1Link => 'Open Hugging Face';
+
+  @override
+  String get svcSemanticStep2 =>
+      'Open the model page and tap “Agree and access repository” (Google\'s Gemma license). If there is no button, accept the license once on Google\'s original page.';
+
+  @override
+  String get svcSemanticStep2Link => 'Open model page';
+
+  @override
+  String get svcSemanticStep2Google => 'Google\'s original page';
+
+  @override
+  String get svcSemanticStep3 =>
+      'On the token page tap “Create new token”, choose type “Read”, give it a name and copy the token (starts with hf_).';
+
+  @override
+  String get svcSemanticStep3Link => 'Open token page';
+
+  @override
+  String get svcSemanticStep4 =>
+      'Paste the token here and tap “Enable semantic search”. It is only used for the download and is not stored.';
+
+  @override
+  String get svcSemanticLicenseHint =>
+      'If the download fails, the license (step 2) usually hasn\'t been accepted yet.';
+
+  @override
+  String svcLinkCopied(String url) {
+    return 'Couldn\'t open the link, so it was copied: $url';
+  }
 
   @override
   String get svcSemanticEnable => 'Enable semantic search';
