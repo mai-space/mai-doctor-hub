@@ -1,0 +1,26 @@
+# Einmalig: Revision und SHA-256 der Modelle bei Hugging Face nachschlagen.
+name: Model pins
+on:
+  push:
+    branches: ["ccr-98fe9266-tmlx5r"]
+    paths: [".github/workflows/model-pins.yml"]
+permissions:
+  contents: read
+jobs:
+  lookup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Lookup
+        run: |
+          for repo in litert-community/gemma-4-E2B-it-litert-lm litert-community/embeddinggemma-300m google/embeddinggemma-300m; do
+            echo "== $repo"
+            curl -sS "https://huggingface.co/api/models/$repo/revision/main?blobs=true" | python3 -c '
+          import json,sys
+          d=json.load(sys.stdin)
+          print("sha", d.get("sha"), "gated", d.get("gated"))
+          for s in d.get("siblings",[]):
+              lfs=s.get("lfs") or {}
+              print("FILE", s["rfilename"], lfs.get("sha256"), s.get("size"))
+          ' || true
+          done
