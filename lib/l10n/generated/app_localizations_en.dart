@@ -839,7 +839,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String recordsScannerUnavailableBody(String details) {
-    return 'The document scanner needs Google Play services and may download itself the first time. Please try again in a moment or choose a photo/PDF as a file.\n\nDetails: $details';
+    return 'Google\'s document scanner won\'t start on this device. Taking a photo with the camera always works — the text is recognized just the same.\n\nDetails: $details';
   }
 
   @override
@@ -1070,6 +1070,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recordsRelatedDiagnosis => 'Related diagnosis';
+
+  @override
+  String get recordsTakePhoto => 'Take photo';
+
+  @override
+  String get recordsTakePhotoHint =>
+      'Camera app · text is recognized and searchable';
 
   @override
   String get settingsTitle => 'Settings';

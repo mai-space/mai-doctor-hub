@@ -38,9 +38,13 @@ class FakeRecognizer implements TextRecognizerApi {
 }
 
 class FakeScanner implements DocumentScannerApi {
-  FakeScanner(this.result);
+  FakeScanner(this.result, {this.photo});
 
   final ScannedDocument? result;
+  final String? photo;
+
+  @override
+  Future<String?> takePhoto() async => photo;
 
   @override
   bool get isSupported => true;
@@ -56,6 +60,11 @@ class _UnavailableScanner implements DocumentScannerApi {
   @override
   Future<ScannedDocument?> scan() =>
       throw const ScannerUnavailable('Waiting for module download');
+
+  @override
+  Future<String?> takePhoto() async => photo;
+
+  String? photo;
 }
 
 Uint8List pngBytes() => img.encodePng(img.Image(width: 40, height: 30));
@@ -232,9 +241,61 @@ void main() {
     expect(find.text('Scanner startet nicht'), findsOneWidget);
     expect(find.textContaining('Waiting for module download'), findsOneWidget);
     expect(find.text('Datei wählen'), findsOneWidget);
+    expect(find.text('Foto aufnehmen'), findsOneWidget);
     await tester.tap(find.text('Abbrechen'));
     await tester.pumpAndSettle();
     expect(find.text('Scanner startet nicht'), findsNothing);
+  });
+
+  testWidgets('scanner failure: photo fallback stores a scan report', (
+    tester,
+  ) async {
+    late String photo;
+    await tester.runAsync(() async {
+      photo = '${dir.path}/photo.png';
+      await File(photo).writeAsBytes(pngBytes());
+    });
+    useFakePathProvider(dir.path);
+    TextRecognizerApi.current = recognizer;
+    DocumentScannerApi.current = _UnavailableScanner()..photo = photo;
+    addTearDown(() {
+      DocumentScannerApi.current = MlKitDocumentScanner();
+      TextRecognizerApi.current = MlKitTextRecognizer();
+    });
+    await tester.pumpWidget(
+      DatabaseScope(
+        database: db,
+        child: MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => importReport(context),
+                child: const Text('add'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('add'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Dokument scannen'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Foto aufnehmen'));
+    List<Report>? reports;
+    for (var i = 0; i < 50 && (reports?.isEmpty ?? true); i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 20)),
+      );
+      await tester.pump(const Duration(milliseconds: 50));
+      reports = await tester.runAsync(() => db.select(db.reports).get());
+    }
+    expect(reports!.single.source, ReportSource.scan);
+    expect(reports.single.mimeType, 'application/pdf');
+    expect(reports.single.extractedText, contains('Laborbefund'));
+    expect(recognizer.calls, [photo]);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(const Duration(seconds: 5));
   });
 }
 

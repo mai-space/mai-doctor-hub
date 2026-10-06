@@ -77,7 +77,7 @@
   "recordsPickFiles": "Dateien wählen",
   "recordsPickFilesHint": "PDFs oder Bilder · auch mehrere auf einmal",
   "recordsScannerUnavailableTitle": "Scanner startet nicht",
-  "recordsScannerUnavailableBody": "Der Dokumentenscanner braucht die Google-Play-Dienste; beim ersten Mal lädt er sich ggf. erst herunter. Bitte gleich noch einmal versuchen oder ein Foto/PDF als Datei wählen.\n\nDetails: {details}",
+  "recordsScannerUnavailableBody": "Der Dokumentenscanner von Google startet auf diesem Gerät nicht. Ein Foto mit der Kamera funktioniert immer — der Text wird genauso erkannt.\n\nDetails: {details}",
   "@recordsScannerUnavailableBody": {
     "placeholders": {
       "details": {
@@ -246,5 +246,7 @@
     }
   },
   "recordsRelatedAppointment": "Zugehöriger Termin",
-  "recordsRelatedDiagnosis": "Zugehörige Diagnose"
+  "recordsRelatedDiagnosis": "Zugehörige Diagnose",
+  "recordsTakePhoto": "Foto aufnehmen",
+  "recordsTakePhotoHint": "Kamera-App · Text wird erkannt und durchsuchbar"
 }

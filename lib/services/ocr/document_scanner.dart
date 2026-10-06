@@ -28,6 +28,10 @@ abstract interface class DocumentScannerApi {
 
   /// `null`, wenn abgebrochen; [ScannerUnavailable], wenn er nicht startet.
   Future<ScannedDocument?> scan();
+
+  /// Foto mit der Kamera-App (Ersatz ohne Google-Scanner): Pfad des JPEG
+  /// oder `null`, wenn abgebrochen.
+  Future<String?> takePhoto();
 }
 
 /// Google ML Kit Dokumentenscanner (Android): Kantenerkennung, Zuschnitt,
@@ -55,5 +59,14 @@ class MlKitDocumentScanner implements DocumentScannerApi {
           path! as String,
       ],
     );
+  }
+
+  @override
+  Future<String?> takePhoto() async {
+    try {
+      return await _channel.invokeMethod<String>('takePhoto');
+    } on PlatformException catch (e) {
+      throw ScannerUnavailable(e.message ?? e.code);
+    }
   }
 }

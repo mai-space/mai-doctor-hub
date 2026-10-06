@@ -60,6 +60,17 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Foto-Ersatz für den Dokumentenscanner: Kamera-App schreibt ins
+             App-Cache (scans/). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.scanfiles"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/scan_files" />
+        </provider>
         <!-- Modell-Download (mehrere GB) als Vordergrunddienst, sonst bricht
              Android ihn nach ~9 Minuten ab. -->
         <service

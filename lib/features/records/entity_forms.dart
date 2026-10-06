@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
@@ -513,6 +515,12 @@ Future<ImportedReport?> importReport(
             onTap: () => Navigator.pop(context, 'scan'),
           ),
           ListTile(
+            leading: const Icon(Icons.photo_camera_outlined),
+            title: Text(context.l10n.recordsTakePhoto),
+            subtitle: Text(context.l10n.recordsTakePhotoHint),
+            onTap: () => Navigator.pop(context, 'photo'),
+          ),
+          ListTile(
             leading: const Icon(Icons.upload_file),
             title: Text(context.l10n.recordsPickFiles),
             subtitle: Text(context.l10n.recordsPickFilesHint),
@@ -523,43 +531,75 @@ Future<ImportedReport?> importReport(
     ),
   );
   if (!context.mounted || choice == null) return null;
-  return choice == 'scan'
-      ? scanReport(context, appointmentId: appointmentId)
-      : pickReportFile(context, appointmentId: appointmentId);
+  return switch (choice) {
+    'scan' => scanReport(context, appointmentId: appointmentId),
+    'photo' => scanReport(context, appointmentId: appointmentId, photo: true),
+    _ => pickReportFile(context, appointmentId: appointmentId),
+  };
+}
+
+/// Foto als einseitiges PDF — wird wie ein Scan abgelegt und per OCR erkannt.
+Future<ScannedDocument?> _photoAsScan() async {
+  final photo = await DocumentScannerApi.current.takePhoto();
+  if (photo == null) return null;
+  final image = pw.MemoryImage(await File(photo).readAsBytes());
+  final doc = pw.Document()
+    ..addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        margin: pw.EdgeInsets.zero,
+        build: (_) => pw.Center(child: pw.Image(image, fit: pw.BoxFit.contain)),
+      ),
+    );
+  final pdf = File('${File(photo).parent.path}/${DateTime.now().millisecondsSinceEpoch}.pdf');
+  await pdf.writeAsBytes(await doc.save());
+  return ScannedDocument(pdfPath: pdf.path, imagePaths: [photo]);
 }
 
 /// Scannt ein Dokument und legt es als PDF-Bericht (Quelle „Scan“) ab.
 Future<ImportedReport?> scanReport(
   BuildContext context, {
   String? appointmentId,
+  bool photo = false,
 }) async {
   final records = RecordsRepository(DatabaseScope.of(context));
   final messenger = ScaffoldMessenger.of(context);
   final l10n = context.l10n;
   final ScannedDocument? result;
   try {
-    result = await DocumentScannerApi.current.scan();
+    result = photo
+        ? await _photoAsScan()
+        : await DocumentScannerApi.current.scan();
   } on ScannerUnavailable catch (e) {
     if (!context.mounted) return null;
-    final pickFile = await showDialog<bool>(
+    final next = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.recordsScannerUnavailableTitle),
         content: Text(l10n.recordsScannerUnavailableBody('$e')),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(context),
             child: Text(l10n.commonCancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'file'),
             child: Text(l10n.recordsPickFile),
           ),
+          if (!photo)
+            FilledButton(
+              onPressed: () => Navigator.pop(context, 'photo'),
+              child: Text(l10n.recordsTakePhoto),
+            ),
         ],
       ),
     );
-    if (pickFile != true || !context.mounted) return null;
-    return pickReportFile(context, appointmentId: appointmentId);
+    if (!context.mounted) return null;
+    return switch (next) {
+      'photo' => scanReport(context, appointmentId: appointmentId, photo: true),
+      'file' => pickReportFile(context, appointmentId: appointmentId),
+      _ => null,
+    };
   }
   if (result == null) return null;
   final scan = result;

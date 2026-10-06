@@ -56,7 +56,7 @@
   "recordsPickFiles": "Choose files",
   "recordsPickFilesHint": "PDFs or images · several at once",
   "recordsScannerUnavailableTitle": "Scanner won't start",
-  "recordsScannerUnavailableBody": "The document scanner needs Google Play services and may download itself the first time. Please try again in a moment or choose a photo/PDF as a file.\n\nDetails: {details}",
+  "recordsScannerUnavailableBody": "Google's document scanner won't start on this device. Taking a photo with the camera always works — the text is recognized just the same.\n\nDetails: {details}",
   "recordsPickFile": "Choose file",
   "recordsScanSaving": "Saving scan, recognizing text…",
   "recordsScanFileName": "Scan {date}.pdf",
@@ -121,5 +121,7 @@
   "recordsVaccinatedBy": "Vaccinated by",
   "recordsLastModified": "Last modified {date}",
   "recordsRelatedAppointment": "Related appointment",
-  "recordsRelatedDiagnosis": "Related diagnosis"
+  "recordsRelatedDiagnosis": "Related diagnosis",
+  "recordsTakePhoto": "Take photo",
+  "recordsTakePhotoHint": "Camera app · text is recognized and searchable"
 }

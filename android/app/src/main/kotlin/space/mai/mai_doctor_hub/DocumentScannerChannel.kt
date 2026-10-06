@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
@@ -28,6 +29,7 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
     }
 
     private var pending: MethodChannel.Result? = null
+    private var pendingPhoto: Pair<MethodChannel.Result, File>? = null
 
     // Muss vor onCreate/STARTED registriert werden — daher im Konstruktor.
     private val launcher: ActivityResultLauncher<IntentSenderRequest> =
@@ -36,10 +38,27 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
             ::onResult,
         )
 
+    // Ersatz ohne Google-Scanner: Foto mit der System-Kamera-App (braucht
+    // keine Kamera-Berechtigung der App).
+    private val photoLauncher: ActivityResultLauncher<Uri> =
+        activity.registerForActivityResult(
+            ActivityResultContracts.TakePicture(),
+            ::onPhoto,
+        )
+
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        when (call.method) {
-            "scan" -> start(result)
-            else -> result.notImplemented()
+        // Jeder Fehler mit Typ und Meldung zurück — sonst kommt in Dart nur
+        // „error“ ohne Details an.
+        try {
+            when (call.method) {
+                "scan" -> start(result)
+                "takePhoto" -> takePhoto(result)
+                else -> result.notImplemented()
+            }
+        } catch (e: Throwable) {
+            pending = null
+            pendingPhoto = null
+            result.error("unavailable", describe(e), null)
         }
     }
 
@@ -63,11 +82,11 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
             .addOnSuccessListener { sender ->
                 try {
                     launcher.launch(IntentSenderRequest.Builder(sender).build())
-                } catch (e: Exception) {
+                } catch (e: Throwable) {
                     fail(e)
                 }
             }
-            .addOnFailureListener(::fail)
+            .addOnFailureListener { fail(it) }
     }
 
     private fun onResult(activityResult: ActivityResult) {
@@ -90,15 +109,49 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
                     "images" to (scan.pages ?: emptyList()).map { localPath(it.imageUri, "jpg") },
                 ),
             )
-        } catch (e: Exception) {
-            result.error("failed", e.message ?: e.javaClass.simpleName, null)
+        } catch (e: Throwable) {
+            result.error("failed", describe(e), null)
         }
     }
 
-    private fun fail(e: Exception) {
+    private fun fail(e: Throwable) {
         val result = pending ?: return
         pending = null
-        result.error("unavailable", e.message ?: e.javaClass.simpleName, null)
+        result.error("unavailable", describe(e), null)
+    }
+
+    private fun takePhoto(result: MethodChannel.Result) {
+        if (pendingPhoto != null) {
+            result.error("busy", "Es läuft bereits eine Aufnahme.", null)
+            return
+        }
+        val dir = File(activity.cacheDir, "scans").apply { mkdirs() }
+        val file = File.createTempFile("photo", ".jpg", dir)
+        val uri = FileProvider.getUriForFile(
+            activity,
+            "${activity.packageName}.scanfiles",
+            file,
+        )
+        pendingPhoto = result to file
+        photoLauncher.launch(uri)
+    }
+
+    private fun onPhoto(saved: Boolean) {
+        val (result, file) = pendingPhoto ?: return
+        pendingPhoto = null
+        if (saved && file.length() > 0) {
+            result.success(file.absolutePath)
+        } else {
+            file.delete()
+            result.success(null)
+        }
+    }
+
+    /** „Typ: Meldung (Ursache: …)“ — auch wenn die Meldung fehlt. */
+    private fun describe(e: Throwable): String {
+        val text = listOfNotNull(e.javaClass.simpleName, e.message).joinToString(": ")
+        val cause = e.cause ?: return text
+        return "$text (Ursache: ${cause.javaClass.simpleName}: ${cause.message})"
     }
 
     /** Dateipfad für Dart; content://-URIs werden in den Cache kopiert. */

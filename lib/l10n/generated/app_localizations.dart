@@ -1673,7 +1673,7 @@ abstract class AppLocalizations {
   /// No description provided for @recordsScannerUnavailableBody.
   ///
   /// In de, this message translates to:
-  /// **'Der Dokumentenscanner braucht die Google-Play-Dienste; beim ersten Mal lädt er sich ggf. erst herunter. Bitte gleich noch einmal versuchen oder ein Foto/PDF als Datei wählen.\n\nDetails: {details}'**
+  /// **'Der Dokumentenscanner von Google startet auf diesem Gerät nicht. Ein Foto mit der Kamera funktioniert immer — der Text wird genauso erkannt.\n\nDetails: {details}'**
   String recordsScannerUnavailableBody(String details);
 
   /// No description provided for @recordsPickFile.
@@ -2065,6 +2065,18 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Zugehörige Diagnose'**
   String get recordsRelatedDiagnosis;
+
+  /// No description provided for @recordsTakePhoto.
+  ///
+  /// In de, this message translates to:
+  /// **'Foto aufnehmen'**
+  String get recordsTakePhoto;
+
+  /// No description provided for @recordsTakePhotoHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Kamera-App · Text wird erkannt und durchsuchbar'**
+  String get recordsTakePhotoHint;
 
   /// No description provided for @settingsTitle.
   ///

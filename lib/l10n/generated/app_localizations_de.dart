@@ -834,7 +834,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String recordsScannerUnavailableBody(String details) {
-    return 'Der Dokumentenscanner braucht die Google-Play-Dienste; beim ersten Mal lädt er sich ggf. erst herunter. Bitte gleich noch einmal versuchen oder ein Foto/PDF als Datei wählen.\n\nDetails: $details';
+    return 'Der Dokumentenscanner von Google startet auf diesem Gerät nicht. Ein Foto mit der Kamera funktioniert immer — der Text wird genauso erkannt.\n\nDetails: $details';
   }
 
   @override
@@ -1064,6 +1064,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get recordsRelatedDiagnosis => 'Zugehörige Diagnose';
+
+  @override
+  String get recordsTakePhoto => 'Foto aufnehmen';
+
+  @override
+  String get recordsTakePhotoHint =>
+      'Kamera-App · Text wird erkannt und durchsuchbar';
 
   @override
   String get settingsTitle => 'Einstellungen';
