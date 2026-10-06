@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:pdfrx/pdfrx.dart';
 
@@ -18,6 +19,7 @@ import 'services/notifications/medication_reminders.dart';
 import 'services/notifications/reminder_service.dart';
 import 'services/time_change_observer.dart';
 import 'data/connection/connection.dart';
+import 'l10n/l10n.dart';
 import 'shell/app_shell.dart';
 import 'theme/app_theme.dart';
 import 'widgets/app_lock_gate.dart';
@@ -27,7 +29,10 @@ final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   pdfrxFlutterInitialize();
-  await initializeDateFormatting('de');
+  await initializeDateFormatting();
+  AppLocale.update(
+    AppLocale.resolve(WidgetsBinding.instance.platformDispatcher.locales),
+  );
 
   final database = AppDatabase();
   final notifications = NotificationService.instance;
@@ -41,10 +46,8 @@ Future<void> main() async {
     database,
     notifications,
   )..start();
-  final medicationReminders = MedicationReminderService(
-    database,
-    notifications,
-  )..start();
+  final medicationReminders = MedicationReminderService(database, notifications)
+    ..start();
 
   var lockEnabled = false;
   try {
@@ -167,8 +170,20 @@ class _MaiDoctorHubAppState extends State<MaiDoctorHubApp> {
         controller: _lock,
         child: MaterialApp(
           navigatorKey: appNavigatorKey,
-          title: 'Mai Doctor Hub',
+          onGenerateTitle: (context) => context.l10n.appTitle,
           debugShowCheckedModeBanner: false,
+          supportedLocales: AppLocale.supported,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          localeListResolutionCallback: (locales, _) {
+            final locale = AppLocale.resolve(locales ?? const []);
+            AppLocale.update(locale);
+            return locale;
+          },
           theme: AppTheme.light(),
           builder: (context, child) => AppLockGate(child: child!),
           home: const _Home(),
@@ -186,9 +201,10 @@ class _Home extends StatelessWidget {
   Widget build(BuildContext context) {
     final db = DatabaseScope.of(context);
     return StreamBuilder<bool>(
-      stream: SettingsRepository(
-        db,
-      ).watch().map((s) => s.onboardingCompleted).distinct(),
+      stream: SettingsRepository(db)
+          .watch()
+          .map((s) => s.onboardingCompleted)
+          .distinct(),
       builder: (context, snapshot) => switch (snapshot.data) {
         null => const Scaffold(body: SizedBox.shrink()),
         false => const OnboardingPage(),

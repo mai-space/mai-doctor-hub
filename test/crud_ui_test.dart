@@ -145,7 +145,7 @@ void main() {
     await settle(tester);
     expect(find.text('Abgesagt'), findsOneWidget);
 
-    await tester.pageBack();
+    await tester.tap(find.byType(BackButton));
     await settle(tester);
     await tester.pump(const Duration(seconds: 1));
     expect(find.text('Bericht fehlt'), findsNothing);
