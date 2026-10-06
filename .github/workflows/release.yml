@@ -1,0 +1,167 @@
+# Mai Doctor Hub — Release in den Play Store
+# Auslöser: Tag vX.Y.Z (z. B. `git tag v1.2.0 && git push origin v1.2.0`).
+# Signatur und Play-Zugang kommen ausschließlich aus GitHub-Secrets;
+# key.properties und Keystore entstehen nur zur Laufzeit im Runner.
+# Anleitung: docs/RELEASE.md
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      track:
+        description: "Play track (internal, alpha, beta, production)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build & upload to Google Play
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Secrets können hier als Environment-Secrets liegen; mit „Required
+    # reviewers“ wird jeder Upload zusätzlich manuell freigegeben.
+    environment: play-store
+    env:
+      PACKAGE_NAME: space.mai.mai_doctor_hub
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Version from tag
+        id: version
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [ "$REF_TYPE" != "tag" ] || ! [[ "$REF_NAME" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "::error::Release needs a tag like v1.2.3 (got $REF_TYPE '$REF_NAME'). For a manual run pick the tag under 'Use workflow from'."
+            exit 1
+          fi
+          major=${BASH_REMATCH[1]}; minor=${BASH_REMATCH[2]}; patch=${BASH_REMATCH[3]}
+          if [ "$minor" -gt 999 ] || [ "$patch" -gt 999 ]; then
+            echo "::error::Minor and patch must be below 1000."
+            exit 1
+          fi
+          # Monoton steigend aus der Version: 1.2.3 → 1002003.
+          code=$((major * 1000000 + minor * 1000 + patch))
+          echo "name=$major.$minor.$patch" >> "$GITHUB_OUTPUT"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "Version $major.$minor.$patch (versionCode $code)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check secrets
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          missing=""
+          [ -n "$KEYSTORE_BASE64" ] || missing="$missing ANDROID_KEYSTORE_BASE64"
+          [ -n "$KEYSTORE_PASSWORD" ] || missing="$missing ANDROID_KEYSTORE_PASSWORD"
+          [ -n "$KEY_ALIAS" ] || missing="$missing ANDROID_KEY_ALIAS"
+          [ -n "$KEY_PASSWORD" ] || missing="$missing ANDROID_KEY_PASSWORD"
+          [ -n "$PLAY_JSON" ] || missing="$missing PLAY_SERVICE_ACCOUNT_JSON"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing secrets:$missing — see docs/RELEASE.md"
+            exit 1
+          fi
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.6"
+          channel: stable
+          cache: true
+
+      - name: Accept Android licenses
+        run: yes | flutter doctor --android-licenses >/dev/null 2>&1 || true
+
+      - name: Pub get
+        run: flutter pub get
+
+      - name: Analyze & test
+        run: |
+          flutter analyze
+          flutter test
+
+      # Keystore und key.properties nur im Runner, nie im Repo oder Log.
+      - name: Write signing config
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          umask 077
+          keystore="$RUNNER_TEMP/upload-keystore.jks"
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$keystore"
+          {
+            printf 'storeFile=%s\n' "$keystore"
+            printf 'storePassword=%s\n' "$KEYSTORE_PASSWORD"
+            printf 'keyAlias=%s\n' "$KEY_ALIAS"
+            printf 'keyPassword=%s\n' "$KEY_PASSWORD"
+          } > android/key.properties
+
+      - name: Build app bundle and APK
+        env:
+          REQUIRE_RELEASE_SIGNING: "true"
+          BUILD_NAME: ${{ steps.version.outputs.name }}
+          BUILD_NUMBER: ${{ steps.version.outputs.code }}
+        run: |
+          flutter build appbundle --release --build-name="$BUILD_NAME" --build-number="$BUILD_NUMBER"
+          flutter build apk --release --build-name="$BUILD_NAME" --build-number="$BUILD_NUMBER"
+
+      - name: Verify upload signature
+        run: |
+          cert=$(keytool -printcert -jarfile build/app/outputs/bundle/release/app-release.aab)
+          if [ -z "$cert" ] || printf '%s' "$cert" | grep -q 'CN=Android Debug'; then
+            echo "::error::App bundle is not signed with the upload key."
+            exit 1
+          fi
+          printf '%s\n' "$cert" | grep -E 'Owner:|SHA256:' || true
+
+      - name: Remove signing files
+        if: always()
+        run: rm -f android/key.properties "$RUNNER_TEMP/upload-keystore.jks"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ steps.version.outputs.name }}
+          path: |
+            build/app/outputs/bundle/release/app-release.aab
+            build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ env.PACKAGE_NAME }}
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          releaseName: ${{ steps.version.outputs.name }}
+          # Standard: interner Test. Weitergeben an Produktion bleibt ein
+          # Klick in der Play Console.
+          track: ${{ inputs.track || vars.PLAY_TRACK || 'internal' }}
+          # „draft“, solange die App noch nie veröffentlicht wurde; danach
+          # Variable PLAY_RELEASE_STATUS=completed setzen.
+          status: ${{ vars.PLAY_RELEASE_STATUS || 'draft' }}

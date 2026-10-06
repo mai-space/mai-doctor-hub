@@ -39,6 +39,11 @@ android {
         versionName = flutter.versionName
     }
 
+    // Release-Workflow: nie versehentlich mit dem Debug-Key hochladen.
+    if (System.getenv("REQUIRE_RELEASE_SIGNING") == "true" && !keyPropertiesFile.exists()) {
+        throw GradleException("REQUIRE_RELEASE_SIGNING is set but android/key.properties is missing")
+    }
+
     signingConfigs {
         if (keyPropertiesFile.exists()) {
             create("release") {
