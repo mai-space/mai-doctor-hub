@@ -63,6 +63,8 @@ class FakeEmbedder implements RecordEmbedder {
 }
 
 void main() {
+  keywordChunkTests();
+
   late AppDatabase db;
   late RecordsRepository records;
   late FakeEmbedder embedder;
@@ -176,5 +178,34 @@ void main() {
     expect(context, contains('Werte vom Tag')); // nur per Stichwort
     expect(context.length, lessThanOrEqualTo(4000));
     expect(context.length, greaterThan(3500)); // so viel wie Platz ist
+  });
+}
+
+void keywordChunkTests() {
+  test('keyword hits pick the best sections of long reports', () {
+    final filler = List.generate(40, (i) => 'Allgemeiner Befundtext Nummer $i.').join(' ');
+    final body = '$filler Schilddrüse: TSH 3,1 mU/l, fT4 normal. $filler '
+        'Kontrolle der Schilddrüse in 6 Monaten. $filler';
+    final hits = keywordChunks(
+      [
+        (type: 'report', id: 'r1', title: 'Labor', body: body),
+        (type: 'note', id: 'n1', title: 'Notiz', body: 'Frage zu TSH'),
+      ],
+      ['schilddrüse', 'tsh'],
+    );
+    // Abschnitt mit beiden Begriffen zuerst, nicht der Anfang des Berichts.
+    expect(hits.first.text, contains('TSH 3,1'));
+    expect(hits.first.chunk, greaterThan(0));
+    // Höchstens zwei Abschnitte pro Eintrag.
+    expect(hits.where((h) => h.entityId == 'r1'), hasLength(2));
+    expect(hits.map((h) => h.entityId), contains('n1'));
+    expect(hits.every((h) => h.text.length <= SemanticIndex.chunkSize), isTrue);
+  });
+
+  test('keyword and semantic hit on the same section appear once', () {
+    const a = RecordHit(entityType: 'report', entityId: 'r', title: 'L', text: 'x', chunk: 2);
+    const b = RecordHit(entityType: 'report', entityId: 'r', title: 'L', text: 'x (anders zugeschnitten)', chunk: 2);
+    const c = RecordHit(entityType: 'report', entityId: 'r', title: 'L', text: 'y', chunk: 3);
+    expect(mergeHits([a], [b, c]).map((h) => h.chunk), [2, 3]);
   });
 }

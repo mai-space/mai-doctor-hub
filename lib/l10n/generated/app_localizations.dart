@@ -3738,6 +3738,18 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Keine Antwort erhalten. Bitte die Frage kürzer oder genauer stellen.'**
   String get svcAssistantEmptyAnswer;
+
+  /// No description provided for @svcQueryExpansionSystem.
+  ///
+  /// In de, this message translates to:
+  /// **'Du hilfst bei der Suche in einer persönlichen Gesundheitsakte. Antworte nur mit Suchbegriffen, durch Kommas getrennt, ohne weitere Worte.'**
+  String get svcQueryExpansionSystem;
+
+  /// No description provided for @svcQueryExpansionPrompt.
+  ///
+  /// In de, this message translates to:
+  /// **'Nenne bis zu 8 Suchbegriffe, mit denen man in Arztberichten, Notizen und Einträgen Antworten auf diese Frage findet: Synonyme, Fachbegriffe, Laienbegriffe, gängige Abkürzungen, Laborwerte oder Medikamentennamen. Frage: {question}'**
+  String svcQueryExpansionPrompt(String question);
 }
 
 class _AppLocalizationsDelegate

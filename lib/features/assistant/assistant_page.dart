@@ -22,6 +22,9 @@ class _Turn {
   final answer = StringBuffer();
   bool done = false;
   String? error;
+
+  /// Vom Modell ergänzte Suchbegriffe (einmal pro Frage).
+  List<String> expansion = const [];
 }
 
 class _AssistantPageState extends State<AssistantPage> {
@@ -67,6 +70,8 @@ class _AssistantPageState extends State<AssistantPage> {
       _turns.add(turn);
       _input.clear();
     });
+    turn.expansion = await expandQuery(_model.engine, turn.question);
+    if (!mounted) return;
     await _answer(turn, _model.engine.contextChars);
   }
 
@@ -79,7 +84,7 @@ class _AssistantPageState extends State<AssistantPage> {
       db,
       maxChars: maxChars,
       semantic: await _model.ensureIndexed(db),
-    ).build(turn.question);
+    ).build(turn.question, expansion: turn.expansion);
     if (!mounted) return;
     _answering = _model.engine
         .answer(

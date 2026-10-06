@@ -2161,4 +2161,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get svcAssistantEmptyAnswer =>
       'No answer received. Please ask a shorter or more specific question.';
+
+  @override
+  String get svcQueryExpansionSystem =>
+      'You help search a personal health record. Reply only with search terms separated by commas, nothing else.';
+
+  @override
+  String svcQueryExpansionPrompt(String question) {
+    return 'List up to 8 search terms that would find answers to this question in doctor reports, notes and entries: synonyms, medical terms, lay terms, common abbreviations, lab values or medication names. Question: $question';
+  }
 }

@@ -2084,4 +2084,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get svcAssistantEmptyAnswer =>
       'Keine Antwort erhalten. Bitte die Frage kürzer oder genauer stellen.';
+
+  @override
+  String get svcQueryExpansionSystem =>
+      'Du hilfst bei der Suche in einer persönlichen Gesundheitsakte. Antworte nur mit Suchbegriffen, durch Kommas getrennt, ohne weitere Worte.';
+
+  @override
+  String svcQueryExpansionPrompt(String question) {
+    return 'Nenne bis zu 8 Suchbegriffe, mit denen man in Arztberichten, Notizen und Einträgen Antworten auf diese Frage findet: Synonyme, Fachbegriffe, Laienbegriffe, gängige Abkürzungen, Laborwerte oder Medikamentennamen. Frage: $question';
+  }
 }

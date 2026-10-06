@@ -8,6 +8,7 @@ import '../../data/repositories/records_repository.dart';
 import '../../l10n/l10n.dart';
 import '../../widgets/symptom_report_card.dart' show observationLabel;
 import '../visit_summary.dart';
+import 'assistant_engine.dart';
 import 'semantic_index.dart';
 
 /// Systemanweisung: nur aus der Akte antworten, keine Diagnosen stellen —
@@ -220,7 +221,13 @@ class AssistantContextBuilder {
         word,
   }.toList();
 
-  Future<String> build(String question, {DateTime? now}) async {
+  /// [expansion]: zusätzliche Suchbegriffe (Synonyme, Fachbegriffe), siehe
+  /// [expandQuery].
+  Future<String> build(
+    String question, {
+    DateTime? now,
+    List<String> expansion = const [],
+  }) async {
     final current = now ?? DateTime.now();
     final l10n = _l10n;
     final summary = await VisitSummaryBuilder(_db)
@@ -253,7 +260,7 @@ class AssistantContextBuilder {
     ];
 
     final base = sections.where((s) => s.isNotEmpty).join('\n\n');
-    final hits = await relevantHits(question);
+    final hits = await relevantHits(question, expansion: expansion);
     if (hits.isEmpty) return _clip(base, maxChars);
 
     // Treffer bekommen, was sie brauchen — mindestens aber die Hälfte des
@@ -274,20 +281,23 @@ class AssistantContextBuilder {
     return _clip(base, maxChars - found.length) + found.toString();
   }
 
-  /// Beste Stichworttreffer und beste Bedeutungstreffer im Wechsel.
-  Future<List<RecordHit>> relevantHits(String question) async {
-    final terms = keywords(question);
-    final keyword = [
-      for (final row in await RecordsRepository(
-        _db,
-      ).searchAny(terms, limit: 10))
-        RecordHit(
-          entityType: row.read<String>('entity_type'),
-          entityId: row.read<String>('entity_id'),
+  /// Beste Stichworttreffer und beste Bedeutungstreffer im Wechsel, beide
+  /// auf Abschnittsebene.
+  Future<List<RecordHit>> relevantHits(
+    String question, {
+    List<String> expansion = const [],
+  }) async {
+    final terms = {...keywords(question), ...expansion}.toList();
+    final rows = await RecordsRepository(_db).searchAny(terms, limit: 20);
+    final keyword = keywordChunks([
+      for (final row in rows)
+        (
+          type: row.read<String>('entity_type'),
+          id: row.read<String>('entity_id'),
           title: row.read<String>('title'),
-          text: _excerpt(row.read<String>('body'), terms),
+          body: row.read<String>('body'),
         ),
-    ];
+    ], terms);
     final semantic = _semantic == null
         ? const <RecordHit>[]
         : await _semantic.search(
@@ -386,20 +396,6 @@ class AssistantContextBuilder {
   static String _clip(String text, int max) =>
       text.length <= max ? text : '${text.substring(0, max - 1)}…';
 
-  /// Ausschnitt rund um den ersten Treffer (Berichte können lang sein).
-  static String _excerpt(String body, List<String> terms, {int size = 600}) {
-    final text = body.replaceAll(RegExp(r'\s+'), ' ').trim();
-    if (text.length <= size) return text;
-    final lower = text.toLowerCase();
-    var hit = -1;
-    for (final term in terms) {
-      final i = lower.indexOf(term);
-      if (i >= 0 && (hit < 0 || i < hit)) hit = i;
-    }
-    final start = hit < 0 ? 0 : (hit - size ~/ 3).clamp(0, text.length - size);
-    return '${start > 0 ? '…' : ''}${text.substring(start, start + size)}…';
-  }
-
   static String _typeLabel(String type) => switch (type) {
     'doctor' => _l10n.entityDoctor,
     'diagnosis' => _l10n.entityDiagnosis,
@@ -418,3 +414,45 @@ class AssistantContextBuilder {
 String assistantPrompt(String context, String question) =>
     '${AppLocale.strings.svcContextRecordHeading}:\n$context\n\n'
     '${AppLocale.strings.svcContextQuestionHeading}:\n${question.trim()}';
+
+/// Lässt das Sprachmodell Suchbegriffe ergänzen (Synonyme, Fach- und
+/// Laienbegriffe, Abkürzungen), damit die Stichwortsuche auch Einträge
+/// findet, in denen die Wörter der Frage nicht vorkommen. Schlägt das fehl
+/// oder dauert es zu lange, wird ohne Ergänzung gesucht.
+Future<List<String>> expandQuery(
+  AssistantEngine engine,
+  String question, {
+  Duration timeout = const Duration(seconds: 20),
+}) async {
+  final l10n = AppLocale.strings;
+  try {
+    final reply = await engine
+        .complete(
+          system: l10n.svcQueryExpansionSystem,
+          prompt: l10n.svcQueryExpansionPrompt(question.trim()),
+        )
+        .timeout(timeout);
+    return parseExpansion(reply, exclude: AssistantContextBuilder.keywords(question));
+  } catch (_) {
+    return const [];
+  }
+}
+
+/// Begriffe aus der Modellantwort: durch Komma/Zeile getrennt, ohne
+/// Aufzählungszeichen, Doppelte und schon vorhandene Wörter; höchstens 10.
+List<String> parseExpansion(String reply, {List<String> exclude = const []}) {
+  final known = {for (final w in exclude) w.toLowerCase()};
+  final terms = <String>[];
+  for (final raw in reply.split(RegExp(r'[,;\n]'))) {
+    final term = raw
+        .replaceAll(RegExp(r'^[\s\-•*\d.)]+'), '')
+        .replaceAll(RegExp(r'["„“”«»*]'), '')
+        .trim()
+        .toLowerCase();
+    if (term.length < 2 || term.length > 40) continue;
+    if (term.split(' ').length > 3) continue;
+    if (known.add(term)) terms.add(term);
+    if (terms.length == 10) break;
+  }
+  return terms;
+}

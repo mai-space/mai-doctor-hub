@@ -9,6 +9,8 @@ import 'package:mai_doctor_hub/data/repositories/records_repository.dart';
 import 'package:mai_doctor_hub/services/assistant/record_context.dart';
 
 void main() {
+  expansionTests();
+
   late AppDatabase db;
   late RecordsRepository records;
   final now = DateTime(2026, 10, 6, 9);
@@ -82,5 +84,19 @@ void main() {
     expect(context, isNot(contains('Alte Diagnose')));
     expect(context, contains('[Notiz]'));
     expect(context.length, lessThanOrEqualTo(3000));
+  });
+}
+
+void expansionTests() {
+  test('model terms are cleaned, deduplicated and capped', () {
+    expect(
+      parseExpansion(
+        '- TSH, Hypothyreose\n2. „L-Thyroxin“; schilddrüse, fT4, '
+        'ein viel zu langer Satz mit sehr vielen Wörtern',
+        exclude: ['schilddrüse'],
+      ),
+      ['tsh', 'hypothyreose', 'l-thyroxin', 'ft4'],
+    );
+    expect(parseExpansion(List.generate(20, (i) => 'w$i').join(',')), hasLength(10));
   });
 }

@@ -129,5 +129,7 @@
   "svcExportCsvHeader": "Date;Title;Doctor;Appointment;Source;Pages;File",
   "svcExportSourceImage": "Image",
   "svcBackupTooNew": "This backup is from a newer app version — please update the app.",
-  "svcAssistantEmptyAnswer": "No answer received. Please ask a shorter or more specific question."
+  "svcAssistantEmptyAnswer": "No answer received. Please ask a shorter or more specific question.",
+  "svcQueryExpansionSystem": "You help search a personal health record. Reply only with search terms separated by commas, nothing else.",
+  "svcQueryExpansionPrompt": "List up to 8 search terms that would find answers to this question in doctor reports, notes and entries: synonyms, medical terms, lay terms, common abbreviations, lab values or medication names. Question: {question}"
 }

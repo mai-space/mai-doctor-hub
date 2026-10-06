@@ -49,6 +49,20 @@ class FakeEngine implements AssistantEngine {
   @override
   int get contextChars => 6000;
 
+  /// Antwort auf die Suchbegriff-Ergänzung.
+  String expansionReply = '';
+  final completions = <String>[];
+
+  @override
+  Future<String> complete({
+    required String system,
+    required String prompt,
+    int maxTokens = 64,
+  }) async {
+    completions.add(prompt);
+    return expansionReply;
+  }
+
   @override
   Future<AssistantSupport> support() async => supportResult;
 
@@ -234,5 +248,27 @@ void main() {
     await tester.tap(find.text('Wann ist mein nächster Termin?'));
     await settle(tester);
     expect(find.textContaining('Keine Antwort erhalten'), findsOneWidget);
+  });
+
+  testWidgets('model-suggested terms find reports the question misses', (
+    tester,
+  ) async {
+    engine.installed = true;
+    engine.expansionReply = 'TSH, Hypothyreose';
+    await tester.runAsync(
+      () => RecordsRepository(db).createReport(
+        title: 'Laborbefund',
+        mimeType: 'application/pdf',
+        localPath: '/tmp/l.pdf',
+        source: ReportSource.pdf,
+        extractedText: 'TSH 3,1 mU/l im Normbereich',
+      ),
+    );
+    await pump(tester);
+    await tester.enterText(find.byType(TextField).last, 'Wie geht es meiner Schilddrüse?');
+    await tester.tap(find.byTooltip('Fragen'));
+    await settle(tester);
+    expect(engine.completions.single, contains('Schilddrüse'));
+    expect(engine.lastPrompt, contains('TSH 3,1'));
   });
 }

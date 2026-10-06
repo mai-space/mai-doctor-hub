@@ -1280,5 +1280,14 @@
   "svcExportCsvHeader": "Datum;Titel;Arzt;Termin;Quelle;Seiten;Datei",
   "svcExportSourceImage": "Bild",
   "svcBackupTooNew": "Sicherung stammt aus einer neueren App-Version — bitte App aktualisieren.",
-  "svcAssistantEmptyAnswer": "Keine Antwort erhalten. Bitte die Frage kürzer oder genauer stellen."
+  "svcAssistantEmptyAnswer": "Keine Antwort erhalten. Bitte die Frage kürzer oder genauer stellen.",
+  "svcQueryExpansionSystem": "Du hilfst bei der Suche in einer persönlichen Gesundheitsakte. Antworte nur mit Suchbegriffen, durch Kommas getrennt, ohne weitere Worte.",
+  "svcQueryExpansionPrompt": "Nenne bis zu 8 Suchbegriffe, mit denen man in Arztberichten, Notizen und Einträgen Antworten auf diese Frage findet: Synonyme, Fachbegriffe, Laienbegriffe, gängige Abkürzungen, Laborwerte oder Medikamentennamen. Frage: {question}",
+  "@svcQueryExpansionPrompt": {
+    "placeholders": {
+      "question": {
+        "type": "String"
+      }
+    }
+  }
 }

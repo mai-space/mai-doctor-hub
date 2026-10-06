@@ -29,7 +29,7 @@ flutter pub get
 - **Eingaben:** Autovervollständigung aus allem, was schon einmal eingegeben wurde
 - **Einstellungen:** Erinnerungen, Kalender-Export, App-Sperre, verschlüsselte Datensicherung
 - **Kalender-Export (opt-in):** Termine einseitig in einen Gerätekalender (z. B. Google) — nur „Arzttermin“, Arzt, Ort; `.ics` pro Termin
-- **Assistent auf dem Handy (optional):** „Frag deine Akte“ (✨ in Meine Akte) — Gemma 4 E2B läuft per LiteRT-LM komplett auf dem Gerät; Modell (~2,6 GB) wird auf Wunsch geladen und lässt sich wieder löschen. Android 11+, arm64, empfohlen ≥ 6 GB RAM. Optional **semantische Suche**: EmbeddingGemma (~180 MB, einmalig mit Hugging-Face-Token wegen Gemma-Lizenz) — Antworten nutzen dann die besten Treffer per Stichwort (BM25) *und* per Bedeutung; Vektoren liegen in der verschlüsselten App-Datenbank
+- **Assistent auf dem Handy (optional):** „Frag deine Akte“ (✨ in Meine Akte) — Gemma 4 E2B läuft per LiteRT-LM komplett auf dem Gerät; Modell (~2,6 GB) wird auf Wunsch geladen und lässt sich wieder löschen. Android 11+, arm64, empfohlen ≥ 6 GB RAM. Optional **semantische Suche**: EmbeddingGemma (~180 MB, einmalig mit Hugging-Face-Token wegen Gemma-Lizenz) — Antworten nutzen dann die besten Treffer per Stichwort (BM25) *und* per Bedeutung; Vektoren liegen in der verschlüsselten App-Datenbank. Ohne Zusatzmodell ergänzt Gemma 4 jede Frage um Suchbegriffe (Synonyme, Fachbegriffe, Abkürzungen); beide Suchen arbeiten auf ~600-Zeichen-Abschnitten, damit möglichst viele passende Stellen ins Kontextfenster passen
 - **Assistent am Rechner (optional):** [`tools/mai_mcp`](tools/mai_mcp/README.md) macht eine Sicherung read-only per MCP für Gemini oder lokales Gemma abfragbar
 
 Review, Roadmap und Konzepte: [`docs/ROADMAP.md`](docs/ROADMAP.md)

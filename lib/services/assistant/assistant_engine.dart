@@ -53,6 +53,13 @@ abstract interface class AssistantEngine {
 
   /// Streamt die Antwort Token für Token.
   Stream<String> answer({required String system, required String prompt});
+
+  /// Kurze, sachliche Vervollständigung (z. B. Suchbegriffe), ganz.
+  Future<String> complete({
+    required String system,
+    required String prompt,
+    int maxTokens = 64,
+  });
 }
 
 class AssistantCancelled implements Exception {
@@ -199,6 +206,27 @@ class GemmaAssistantEngine implements AssistantEngine {
     try {
       await session.addQueryChunk(Message(text: prompt, isUser: true));
       yield* session.getResponseAsync();
+    } finally {
+      await session.close();
+    }
+  }
+
+  @override
+  Future<String> complete({
+    required String system,
+    required String prompt,
+    int maxTokens = 64,
+  }) async {
+    final model = await _load();
+    final session = await model.createSession(
+      systemInstruction: system,
+      temperature: 0.2,
+      topK: 40,
+      maxOutputTokens: maxTokens,
+    );
+    try {
+      await session.addQueryChunk(Message(text: prompt, isUser: true));
+      return await session.getResponse();
     } finally {
       await session.close();
     }
