@@ -69,11 +69,11 @@ class RecordsRepository {
     return rows.take(limit).toList();
   }
 
-  Future<List<QueryRow>> _withoutArchived(List<QueryRow> rows) async {
-    // Archivierte Einträge bleiben im Index (für die Wiederherstellung),
-    // werden aber nicht gefunden.
+  /// `typ:id` aller archivierten Einträge (bleiben im Suchindex, damit sie
+  /// wiederherstellbar sind, werden aber nie gefunden).
+  Future<Set<String>> archivedKeys([Iterable<String>? types]) async {
     final archived = <String>{};
-    for (final type in rows.map((r) => r.read<String>('entity_type')).toSet()) {
+    for (final type in types ?? AppDatabase.entityTables.keys) {
       final table = AppDatabase.entityTables[type];
       if (table == null) continue;
       final ids = await _db
@@ -81,6 +81,13 @@ class RecordsRepository {
           .get();
       archived.addAll(ids.map((r) => '$type:${r.read<String>('id')}'));
     }
+    return archived;
+  }
+
+  Future<List<QueryRow>> _withoutArchived(List<QueryRow> rows) async {
+    final archived = await archivedKeys(
+      rows.map((r) => r.read<String>('entity_type')).toSet(),
+    );
     return rows
         .where(
           (r) => !archived.contains(

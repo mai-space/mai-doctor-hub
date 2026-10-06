@@ -10,6 +10,24 @@ import 'package:mai_doctor_hub/data/repositories/records_repository.dart';
 import 'package:mai_doctor_hub/features/assistant/assistant_page.dart';
 import 'package:mai_doctor_hub/services/assistant/assistant_engine.dart';
 import 'package:mai_doctor_hub/services/assistant/assistant_model.dart';
+import 'package:mai_doctor_hub/services/assistant/record_embedder.dart';
+
+import 'semantic_search_test.dart' show FakeEmbedder;
+
+class DownloadingEmbedder extends FakeEmbedder {
+  bool installed = false;
+  String? token;
+  StreamController<int>? controller;
+
+  @override
+  Future<bool> isInstalled() async => installed;
+
+  @override
+  Stream<int> install({String? token}) {
+    this.token = token;
+    return (controller = StreamController<int>()).stream;
+  }
+}
 
 class FakeEngine implements AssistantEngine {
   AssistantSupport supportResult = const AssistantSupported();
@@ -56,12 +74,14 @@ class FakeEngine implements AssistantEngine {
 void main() {
   late AppDatabase db;
   late FakeEngine engine;
+  late DownloadingEmbedder embedder;
 
   setUpAll(() => initializeDateFormatting('de'));
   setUp(() {
     db = AppDatabase(NativeDatabase.memory());
     engine = FakeEngine();
     AssistantEngine.current = engine;
+    RecordEmbedder.current = embedder = DownloadingEmbedder();
     AssistantModel.reset();
   });
   tearDown(() async {
@@ -131,5 +151,45 @@ void main() {
     await settle(tester);
     expect(find.text('Modell herunterladen (1 GB)'), findsOneWidget);
     expect(find.textContaining('fehlgeschlagen'), findsNothing);
+  });
+
+  testWidgets('semantic search: token, download, index, then used', (
+    tester,
+  ) async {
+    engine.installed = true;
+    await tester.runAsync(
+      () => RecordsRepository(db).createReport(
+        title: 'Laborbefund',
+        mimeType: 'application/pdf',
+        localPath: '/tmp/l.pdf',
+        source: ReportSource.pdf,
+        extractedText: 'TSH 3,1 mU/l',
+      ),
+    );
+    await pump(tester);
+    await tester.scrollUntilVisible(
+      find.text('Semantische Suche aktivieren'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.enterText(find.byType(TextField).first, 'hf_test');
+    await settle(tester);
+    await tester.tap(find.text('Semantische Suche aktivieren'));
+    await settle(tester);
+    expect(embedder.token, 'hf_test');
+    embedder.controller!.add(50);
+    await settle(tester);
+    expect(find.textContaining('50 %'), findsOneWidget);
+
+    embedder.installed = true;
+    await embedder.controller!.close();
+    await settle(tester);
+    expect(find.textContaining('Aktiv:'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).last, 'Schilddrüse?');
+    await tester.tap(find.byTooltip('Fragen'));
+    await settle(tester);
+    // Nur per Bedeutung auffindbar: „Schilddrüse“ steht nicht im Bericht.
+    expect(engine.lastPrompt, contains('TSH 3,1'));
   });
 }

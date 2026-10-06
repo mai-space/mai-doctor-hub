@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
-import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
+
+import 'gemma_runtime.dart';
 
 /// Kann dieses Gerät das lokale Modell ausführen?
 sealed class AssistantSupport {
@@ -76,7 +77,7 @@ class GemmaAssistantEngine implements AssistantEngine {
 
   Future<void> _init() async {
     if (_initialized) return;
-    await FlutterGemma.initialize(inferenceEngines: [LiteRtLmEngine()]);
+    await GemmaRuntime.ensureInitialized();
     _initialized = true;
   }
 

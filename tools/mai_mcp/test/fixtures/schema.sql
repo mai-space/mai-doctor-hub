@@ -1,4 +1,4 @@
--- schemaVersion 9
+-- schemaVersion 10
 ---
 CREATE TABLE "app_settings" ("id" INTEGER NOT NULL DEFAULT 1, "morning_reminder_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("morning_reminder_enabled" IN (0, 1)), "evening_reminder_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("evening_reminder_enabled" IN (0, 1)), "morning_hour" INTEGER NOT NULL DEFAULT 8, "morning_minute" INTEGER NOT NULL DEFAULT 0, "evening_hour" INTEGER NOT NULL DEFAULT 20, "evening_minute" INTEGER NOT NULL DEFAULT 0, "calendar_sync_enabled" INTEGER NOT NULL DEFAULT 0 CHECK ("calendar_sync_enabled" IN (0, 1)), "calendar_id" TEXT NULL, "calendar_include_title" INTEGER NOT NULL DEFAULT 0 CHECK ("calendar_include_title" IN (0, 1)), "app_lock_enabled" INTEGER NOT NULL DEFAULT 0 CHECK ("app_lock_enabled" IN (0, 1)), "onboarding_completed" INTEGER NOT NULL DEFAULT 0 CHECK ("onboarding_completed" IN (0, 1)), "appointment_reminders_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("appointment_reminders_enabled" IN (0, 1)), "appointment_reminder_leads" TEXT NOT NULL DEFAULT '1440,60', PRIMARY KEY ("id"));
 ---
@@ -25,6 +25,17 @@ CREATE TABLE "medications" ("archived_at" INTEGER NULL, "id" TEXT NOT NULL, "nam
 CREATE TABLE "notes" ("archived_at" INTEGER NULL, "id" TEXT NOT NULL, "body" TEXT NOT NULL, "related_appointment_id" TEXT NULL REFERENCES appointments (id), "related_diagnosis_id" TEXT NULL REFERENCES diagnoses (id), "created_at" INTEGER NOT NULL, "updated_at" INTEGER NOT NULL, PRIMARY KEY ("id"));
 ---
 CREATE TABLE "pharmacies" ("archived_at" INTEGER NULL, "id" TEXT NOT NULL, "name" TEXT NOT NULL, "address" TEXT NULL, "phone" TEXT NULL, "notes" TEXT NULL, "created_at" INTEGER NOT NULL, "updated_at" INTEGER NOT NULL, PRIMARY KEY ("id"));
+---
+CREATE TABLE record_vectors (
+      entity_type TEXT NOT NULL,
+      entity_id TEXT NOT NULL,
+      chunk INTEGER NOT NULL,
+      model TEXT NOT NULL,
+      source_hash TEXT NOT NULL,
+      content TEXT NOT NULL,
+      vector BLOB NOT NULL,
+      PRIMARY KEY (entity_type, entity_id, chunk)
+    );
 ---
 CREATE VIRTUAL TABLE records_fts USING fts5(
           entity_type,

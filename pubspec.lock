@@ -249,6 +249,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  dart_sentencepiece_tokenizer:
+    dependency: transitive
+    description:
+      name: dart_sentencepiece_tokenizer
+      sha256: "23fd14a3a7a736e0a85c329ab0227f8eaf9626ef83b1d98b6f37fbc284fca8c8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.1"
   dart_style:
     dependency: transitive
     description:
@@ -398,6 +406,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.4"
+  flutter_gemma_embeddings:
+    dependency: "direct main"
+    description:
+      name: flutter_gemma_embeddings
+      sha256: b78214e6132cb609ccfa0047db46833dbe5f42718f231986e0dbd76a21dfc7e0
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.2"
   flutter_gemma_litertlm:
     dependency: "direct main"
     description:

@@ -66,8 +66,10 @@ class _AssistantPageState extends State<AssistantPage> {
       _turns.add(turn);
       _input.clear();
     });
+    final db = DatabaseScope.of(this.context);
     final context = await AssistantContextBuilder(
-      DatabaseScope.of(this.context),
+      db,
+      semantic: await _model.ensureIndexed(db),
     ).build(turn.question);
     if (!mounted) return;
     _answering = _model.engine
@@ -138,9 +140,19 @@ class _AssistantPageState extends State<AssistantPage> {
         actions: [
           if (_model.phase == AssistantPhase.ready)
             PopupMenuButton<String>(
-              onSelected: (_) => _confirmDelete(),
-              itemBuilder: (context) => const [
-                PopupMenuItem(value: 'delete', child: Text('Modell löschen')),
+              onSelected: (value) => value == 'semantic'
+                  ? _model.deleteSemantic(DatabaseScope.of(context))
+                  : _confirmDelete(),
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'delete',
+                  child: Text('Modell löschen'),
+                ),
+                if (_model.semanticPhase == SemanticPhase.ready)
+                  const PopupMenuItem(
+                    value: 'semantic',
+                    child: Text('Suchmodell löschen'),
+                  ),
               ],
             ),
         ],
@@ -194,6 +206,8 @@ class _AssistantPageState extends State<AssistantPage> {
                           ActionChip(label: Text(q), onPressed: () => _ask(q)),
                       ],
                     ),
+                    const SizedBox(height: 24),
+                    _SemanticCard(model: _model),
                   ],
                 )
               : ListView.builder(
@@ -401,6 +415,122 @@ class _Info extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(text, textAlign: TextAlign.center),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Optionale semantische Suche: findet auch Berichte, in denen die Wörter
+/// der Frage nicht vorkommen (z. B. „Schilddrüse“ → „TSH“).
+class _SemanticCard extends StatefulWidget {
+  const _SemanticCard({required this.model});
+
+  final AssistantModel model;
+
+  @override
+  State<_SemanticCard> createState() => _SemanticCardState();
+}
+
+class _SemanticCardState extends State<_SemanticCard> {
+  final _token = TextEditingController();
+
+  @override
+  void dispose() {
+    _token.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final model = widget.model;
+    final theme = Theme.of(context);
+    final body = switch (model.semanticPhase) {
+      SemanticPhase.ready => <Widget>[
+        const Text(
+          'Aktiv: Antworten nutzen die besten Treffer per Stichwort und per '
+          'Bedeutung.',
+        ),
+      ],
+      SemanticPhase.indexing => <Widget>[
+        LinearProgressIndicator(
+          value: model.indexTotal == 0
+              ? null
+              : model.indexDone / model.indexTotal,
+        ),
+        const SizedBox(height: 8),
+        Text('Akte wird indexiert… ${model.indexDone}/${model.indexTotal}'),
+      ],
+      SemanticPhase.downloading => <Widget>[
+        LinearProgressIndicator(value: model.semanticProgress / 100),
+        const SizedBox(height: 8),
+        Text('Suchmodell wird geladen… ${model.semanticProgress} %'),
+        const SizedBox(height: 8),
+        OutlinedButton(
+          onPressed: model.cancelSemantic,
+          child: const Text('Abbrechen'),
+        ),
+      ],
+      SemanticPhase.notInstalled => <Widget>[
+        Text(
+          'Findet auch Einträge, in denen die Wörter deiner Frage nicht '
+          'vorkommen (z. B. „Schilddrüse“ → TSH-Wert). Lädt '
+          '${model.embedder.modelName} (${model.embedder.downloadSize}); '
+          'die Suche läuft danach offline.\n\n'
+          'Google stellt das Modell nur nach Annahme der Gemma-Lizenz bereit: '
+          'kostenloses Hugging-Face-Konto, Lizenz auf der Modellseite '
+          'akzeptieren, Lese-Token erstellen und hier einfügen. Der Token '
+          'wird nur für den Download genutzt und nicht gespeichert.',
+        ),
+        if (model.semanticMessage != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            model.semanticMessage!,
+            style: TextStyle(color: theme.colorScheme.error),
+          ),
+        ],
+        const SizedBox(height: 12),
+        TextField(
+          controller: _token,
+          obscureText: true,
+          autocorrect: false,
+          decoration: const InputDecoration(
+            labelText: 'Hugging-Face-Token (hf_…)',
+          ),
+          onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 8),
+        FilledButton.icon(
+          onPressed: _token.text.trim().isEmpty
+              ? null
+              : () => model.downloadSemantic(
+                  DatabaseScope.of(context),
+                  token: _token.text.trim(),
+                ),
+          icon: const Icon(Icons.download),
+          label: const Text('Semantische Suche aktivieren'),
+        ),
+      ],
+    };
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.hub_outlined, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Semantische Suche (optional)',
+                  style: theme.textTheme.titleMedium,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ...body,
           ],
         ),
       ),

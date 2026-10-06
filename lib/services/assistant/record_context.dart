@@ -7,6 +7,7 @@ import '../../data/repositories/medication_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../widgets/symptom_report_card.dart' show observationLabel;
 import '../visit_summary.dart';
+import 'semantic_index.dart';
 
 /// Systemanweisung: nur aus der Akte antworten, keine Diagnosen stellen.
 const assistantSystemPrompt = '''
@@ -23,9 +24,12 @@ Regeln:
 /// Stellt den Akte-Auszug für eine Frage zusammen — begrenzt, damit er ins
 /// Kontextfenster des Modells passt.
 class AssistantContextBuilder {
-  AssistantContextBuilder(this._db, {this.maxChars = 7000});
+  AssistantContextBuilder(this._db, {this.maxChars = 7000, this._semantic});
 
   final AppDatabase _db;
+
+  /// Ohne Embedding-Modell nur Stichwortsuche.
+  final SemanticIndex? _semantic;
 
   /// ≈ 2 000 Tokens; Rest des 4k-Fensters bleibt für Frage und Antwort.
   final int maxChars;
@@ -34,29 +38,105 @@ class AssistantContextBuilder {
   static final _dayTime = DateFormat('dd.MM.yyyy HH:mm', 'de');
 
   static const _stopWords = {
-    'aber', 'alle', 'also', 'auch', 'bitte', 'dass', 'dein', 'deine', 'dem',
-    'den', 'der', 'des', 'die', 'dies', 'diese', 'doch', 'eine', 'einem',
-    'einen', 'einer', 'eines', 'habe', 'haben', 'hatte', 'heute', 'ich',
-    'ihre', 'immer', 'kann', 'mein', 'meine', 'meinem', 'meinen', 'meiner',
-    'mich', 'mir', 'nach', 'nicht', 'noch', 'oder', 'schon', 'sein', 'sind',
-    'soll', 'über', 'und', 'viel', 'von', 'wann', 'warum', 'was', 'welche',
-    'welcher', 'welches', 'wenn', 'wer', 'wie', 'wieder', 'wird', 'wo',
-    'zum', 'zur', 'gibt', 'gab', 'letzte', 'letzten', 'nächste', 'nächsten',
-    'ist', 'bin', 'war', 'beim', 'mit', 'für', 'auf', 'aus', 'bei', 'hat',
-    'ein', 'das', 'man', 'muss', 'darf', 'wurde', 'werden',
+    'aber',
+    'alle',
+    'also',
+    'auch',
+    'bitte',
+    'dass',
+    'dein',
+    'deine',
+    'dem',
+    'den',
+    'der',
+    'des',
+    'die',
+    'dies',
+    'diese',
+    'doch',
+    'eine',
+    'einem',
+    'einen',
+    'einer',
+    'eines',
+    'habe',
+    'haben',
+    'hatte',
+    'heute',
+    'ich',
+    'ihre',
+    'immer',
+    'kann',
+    'mein',
+    'meine',
+    'meinem',
+    'meinen',
+    'meiner',
+    'mich',
+    'mir',
+    'nach',
+    'nicht',
+    'noch',
+    'oder',
+    'schon',
+    'sein',
+    'sind',
+    'soll',
+    'über',
+    'und',
+    'viel',
+    'von',
+    'wann',
+    'warum',
+    'was',
+    'welche',
+    'welcher',
+    'welches',
+    'wenn',
+    'wer',
+    'wie',
+    'wieder',
+    'wird',
+    'wo',
+    'zum',
+    'zur',
+    'gibt',
+    'gab',
+    'letzte',
+    'letzten',
+    'nächste',
+    'nächsten',
+    'ist',
+    'bin',
+    'war',
+    'beim',
+    'mit',
+    'für',
+    'auf',
+    'aus',
+    'bei',
+    'hat',
+    'ein',
+    'das',
+    'man',
+    'muss',
+    'darf',
+    'wurde',
+    'werden',
   };
 
   /// Suchbegriffe einer Frage in Alltagssprache.
   static List<String> keywords(String question) => {
-    for (final word in question.toLowerCase().split(RegExp(r'[^\p{L}\p{N}]+', unicode: true)))
+    for (final word in question.toLowerCase().split(
+      RegExp(r'[^\p{L}\p{N}]+', unicode: true),
+    ))
       if (word.length >= 3 && !_stopWords.contains(word)) word,
   }.toList();
 
   Future<String> build(String question, {DateTime? now}) async {
     final current = now ?? DateTime.now();
-    final summary = await VisitSummaryBuilder(
-      _db,
-    ).build(const VisitSummaryOptions(), now: current);
+    final summary = await VisitSummaryBuilder(_db)
+        .build(const VisitSummaryOptions(), now: current);
     final sections = <String>[
       'Heute: ${_dayTime.format(current)}',
       _section('Aktive Diagnosen', [
@@ -78,29 +158,56 @@ class AssistantContextBuilder {
           [
             '${v.vaccine} am ${_day.format(v.administeredAt)}',
             if (v.doseNumber != null) '${v.doseNumber}. Dosis',
-            if (v.nextDueAt != null) 'nächste fällig ${_day.format(v.nextDueAt!)}',
+            if (v.nextDueAt != null)
+              'nächste fällig ${_day.format(v.nextDueAt!)}',
           ].join(', '),
       ]),
     ];
 
     final base = sections.where((s) => s.isNotEmpty).join('\n\n');
-    final buffer = StringBuffer(_clip(base, maxChars));
-    final matches = await RecordsRepository(
-      _db,
-    ).searchAny(keywords(question));
-    if (matches.isNotEmpty && buffer.length < maxChars - 200) {
-      buffer.write('\n\nPassende Einträge zur Frage:');
-      for (final row in matches) {
-        final remaining = maxChars - buffer.length;
-        if (remaining < 200) break;
-        final entry =
-            '\n- [${_typeLabel(row.read<String>('entity_type'))}] '
-            '${row.read<String>('title')}: '
-            '${_excerpt(row.read<String>('body'), keywords(question))}';
-        buffer.write(_clip(entry, remaining));
+    final hits = await relevantHits(question);
+    if (hits.isEmpty) return _clip(base, maxChars);
+
+    // Treffer bekommen, was sie brauchen — mindestens aber die Hälfte des
+    // Budgets; der Überblick wird notfalls gekürzt.
+    final hitBudget = (maxChars - base.length).clamp(maxChars ~/ 2, maxChars);
+    final found = StringBuffer('\n\nPassende Einträge zur Frage:');
+    for (final hit in hits) {
+      final entry =
+          '\n- [${_typeLabel(hit.entityType)}] ${hit.title}: ${hit.text}';
+      if (found.length + entry.length > hitBudget) {
+        if (hitBudget - found.length >= 200) {
+          found.write(_clip(entry, hitBudget - found.length));
+        }
+        break;
       }
+      found.write(entry);
     }
-    return buffer.toString();
+    return _clip(base, maxChars - found.length) + found.toString();
+  }
+
+  /// Beste Stichworttreffer und beste Bedeutungstreffer im Wechsel.
+  Future<List<RecordHit>> relevantHits(String question) async {
+    final terms = keywords(question);
+    final keyword = [
+      for (final row in await RecordsRepository(
+        _db,
+      ).searchAny(terms, limit: 10))
+        RecordHit(
+          entityType: row.read<String>('entity_type'),
+          entityId: row.read<String>('entity_id'),
+          title: row.read<String>('title'),
+          text: _excerpt(row.read<String>('body'), terms),
+        ),
+    ];
+    final semantic = _semantic == null
+        ? const <RecordHit>[]
+        : await _semantic.search(
+            question,
+            limit: 10,
+            exclude: await RecordsRepository(_db).archivedKeys(),
+          );
+    return mergeHits(keyword, semantic);
   }
 
   Future<List<String>> _appointments(DateTime now) async {
@@ -134,7 +241,8 @@ class AssistantContextBuilder {
       if (s.doctor?.specialty != null) s.doctor!.specialty!,
       if (a.title?.isNotEmpty == true) a.title!,
       if (a.status == AppointmentStatus.cancelled) 'abgesagt',
-      if (s.diagnosisTitles.isNotEmpty) 'Diagnosen: ${s.diagnosisTitles.join(', ')}',
+      if (s.diagnosisTitles.isNotEmpty)
+        'Diagnosen: ${s.diagnosisTitles.join(', ')}',
     ].join(' · ');
   }
 
@@ -164,7 +272,9 @@ class AssistantContextBuilder {
     final s = t.symptom;
     final latest = t.observations.isEmpty
         ? null
-        : t.observations.reduce((a, b) => a.recordedAt.isAfter(b.recordedAt) ? a : b);
+        : t.observations.reduce(
+            (a, b) => a.recordedAt.isAfter(b.recordedAt) ? a : b,
+          );
     return [
       s.label,
       if (s.bodyRegion?.isNotEmpty == true) s.bodyRegion!,

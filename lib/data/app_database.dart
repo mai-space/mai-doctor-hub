@@ -380,7 +380,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? openAppDatabase());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -395,6 +395,7 @@ class AppDatabase extends _$AppDatabase {
           tokenize = 'unicode61'
         );
       ''');
+      await _createRecordVectors();
       await into(appSettings).insert(AppSettingsCompanion.insert());
       await _insertDefaultReminders();
     },
@@ -481,6 +482,9 @@ class AppDatabase extends _$AppDatabase {
             table.columnsByName['archived_at']!,
           );
         }
+      }
+      if (from < 10) {
+        await _createRecordVectors();
       }
     },
     beforeOpen: (details) async {
@@ -574,6 +578,21 @@ class AppDatabase extends _$AppDatabase {
       readsFrom: tables,
     ).watch().map((_) {});
   }
+
+  /// Abschnitte der Akte mit Embedding-Vektor (semantische Suche des
+  /// Assistenten). Abgeleitet aus `records_fts`, jederzeit neu aufbaubar.
+  Future<void> _createRecordVectors() => customStatement('''
+    CREATE TABLE IF NOT EXISTS record_vectors (
+      entity_type TEXT NOT NULL,
+      entity_id TEXT NOT NULL,
+      chunk INTEGER NOT NULL,
+      model TEXT NOT NULL,
+      source_hash TEXT NOT NULL,
+      content TEXT NOT NULL,
+      vector BLOB NOT NULL,
+      PRIMARY KEY (entity_type, entity_id, chunk)
+    )
+  ''');
 
   /// Lädt [load] neu, sobald sich eine der [tables] ändert.
   Stream<T> watchWith<T>(
