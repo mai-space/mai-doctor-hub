@@ -81,6 +81,15 @@ Future<void> main() async {
     calendarSync?.trigger();
   }).attach();
 
+  // Sprache im System gewechselt: Texte in Benachrichtigungen und
+  // Kalendereinträgen neu erzeugen.
+  AppLocale.changes.addListener(() async {
+    await reminders.sync();
+    await appointmentReminders.sync();
+    await medicationReminders.sync();
+    calendarSync?.trigger();
+  });
+
   runApp(MaiDoctorHubApp(database: database, appLock: appLock));
 
   if (databaseOpenStatus.value?.unreadableCopy != null) {
@@ -104,17 +113,12 @@ void _showUnreadableData() {
     context: context,
     builder: (context) => AlertDialog(
       icon: const Icon(Icons.lock_reset),
-      title: const Text('Daten nicht lesbar'),
-      content: const Text(
-        'Die gespeicherten Daten konnten auf diesem Gerät nicht entschlüsselt '
-        'werden. Die App startet deshalb leer.\n\n'
-        'Mit einer .maibackup-Sicherung lässt sich alles wiederherstellen: '
-        'Einstellungen → Datensicherung → „Sicherung wiederherstellen“.',
-      ),
+      title: Text(context.l10n.settingsUnreadableTitle),
+      content: Text(context.l10n.settingsUnreadableText),
       actions: [
         FilledButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Verstanden'),
+          child: Text(context.l10n.commonUnderstood),
         ),
       ],
     ),

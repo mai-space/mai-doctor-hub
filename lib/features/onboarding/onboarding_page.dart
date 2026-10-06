@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../services/notification_service.dart';
 import '../../widgets/app_logo.dart';
 
@@ -49,6 +50,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -57,7 +59,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: _finish,
-                child: const Text('Überspringen'),
+                child: Text(l10n.settingsOnboardingSkip),
               ),
             ),
             Expanded(
@@ -65,47 +67,34 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 controller: _pages,
                 onPageChanged: (i) => setState(() => _index = i),
                 children: [
-                  const _Step(
-                    visual: AppLogo(size: 96),
-                    title: 'Deine Akte bleibt bei dir',
-                    text:
-                        'Mai Doctor Hub speichert alles nur auf diesem Gerät. '
-                        'Kein Konto, kein Server. Was das Gerät verlässt — '
-                        'Sicherung, Kalender, Assistent — entscheidest du.',
+                  _Step(
+                    visual: const AppLogo(size: 96),
+                    title: l10n.settingsOnboardingPrivacyTitle,
+                    text: l10n.settingsOnboardingPrivacyText,
                   ),
-                  const _Step(
-                    visual: _StepIcon(Icons.medical_services_outlined),
-                    title: 'Alles an einem Ort',
-                    text:
-                        'Termine, Ärzte, Diagnosen, Symptome, Medikamente und '
-                        'Arztberichte — durchsuchbar und miteinander '
-                        'verknüpft. Für den nächsten Arztbesuch hast du alles '
-                        'parat.',
+                  _Step(
+                    visual: const _StepIcon(Icons.medical_services_outlined),
+                    title: l10n.settingsOnboardingAllInOneTitle,
+                    text: l10n.settingsOnboardingAllInOneText,
                   ),
                   _Step(
                     visual: const _StepIcon(
                       Icons.notifications_active_outlined,
                     ),
-                    title: 'Erinnerungen',
-                    text:
-                        'Damit wir dich an Check-ins, Termine und Medikamente '
-                        'erinnern können, braucht die App die Erlaubnis für '
-                        'Benachrichtigungen. Sie werden lokal auf dem Gerät '
-                        'geplant — ohne Push-Server. Du kannst das später '
-                        'jederzeit ändern.',
+                    title: l10n.settingsOnboardingRemindersTitle,
+                    text: l10n.settingsOnboardingRemindersText,
                     action: switch (_notificationsGranted) {
                       null => FilledButton.icon(
                         onPressed: _askNotifications,
                         icon: const Icon(Icons.notifications_outlined),
-                        label: const Text('Benachrichtigungen erlauben'),
+                        label: Text(l10n.settingsOnboardingAllowNotifications),
                       ),
-                      true => const Chip(
-                        avatar: Icon(Icons.check),
-                        label: Text('Erlaubt'),
+                      true => Chip(
+                        avatar: const Icon(Icons.check),
+                        label: Text(l10n.settingsOnboardingAllowed),
                       ),
                       false => Text(
-                        'Nicht erlaubt — in den Einstellungen der App '
-                        'jederzeit nachholbar.',
+                        l10n.settingsOnboardingDenied,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodySmall,
                       ),
@@ -137,7 +126,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       minimumSize: const Size(140, 48),
                     ),
                     onPressed: _next,
-                    child: Text(_index == _count - 1 ? 'Los geht’s' : 'Weiter'),
+                    child: Text(
+                      _index == _count - 1
+                          ? l10n.settingsOnboardingStart
+                          : l10n.commonNext,
+                    ),
                   ),
                 ],
               ),

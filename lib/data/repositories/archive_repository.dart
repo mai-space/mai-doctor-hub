@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
+import '../../l10n/l10n.dart';
 import '../app_database.dart';
 import 'appointment_repository.dart';
 import 'doctor_repository.dart';
@@ -40,8 +41,6 @@ class ArchiveRepository {
 
   final AppDatabase _db;
 
-  static final _date = DateFormat('d.M.yyyy', 'de');
-
   String _table(String type) {
     final table = AppDatabase.entityTables[type];
     if (table == null) throw ArgumentError('Unbekannter Typ $type');
@@ -57,9 +56,7 @@ class ArchiveRepository {
                 ..where((t) => t.doctorId.equals(id)))
               .get();
       if (active.isNotEmpty) {
-        throw const ArchiveBlocked(
-          'Arzt hat noch Termine — erst Termine archivieren oder umhängen.',
-        );
+        throw ArchiveBlocked(AppLocale.strings.homeArchiveBlockedDoctor);
       }
     }
     // Sekundengenau, wie drift Zeitstempel speichert.
@@ -122,9 +119,8 @@ class ArchiveRepository {
     switch (type) {
       case 'doctor':
         if (!await DoctorRepository(_db).delete(id)) {
-          throw const ArchiveBlocked(
-            'Arzt hat noch (archivierte) Termine — diese zuerst endgültig '
-            'löschen.',
+          throw ArchiveBlocked(
+            AppLocale.strings.homeArchivePurgeBlockedDoctor,
           );
         }
       case 'diagnosis':
@@ -193,6 +189,8 @@ class ArchiveRepository {
         'WHERE archived_at IS NOT NULL';
     DateTime d(QueryRow r, String c) =>
         DateTime.fromMillisecondsSinceEpoch(r.read<int>(c) * 1000);
+    final strings = AppLocale.strings;
+    final date = DateFormat(strings.homeArchiveDatePattern);
 
     final items = [
       ...await load('doctor', w('doctors', 'name'), (r) => r.read('name')),
@@ -206,8 +204,8 @@ class ArchiveRepository {
         'appointment',
         w('appointments', 'title, scheduled_at'),
         (r) =>
-            '${r.read<String?>('title') ?? 'Termin'} · '
-            '${_date.format(d(r, 'scheduled_at'))}',
+            '${r.read<String?>('title') ?? strings.entityAppointment} · '
+            '${date.format(d(r, 'scheduled_at'))}',
       ),
       ...await load('report', w('reports', 'title'), (r) => r.read('title')),
       ...await load(
@@ -229,7 +227,7 @@ class ArchiveRepository {
         w('vaccinations', 'vaccine, administered_at'),
         (r) =>
             '${r.read<String>('vaccine')} · '
-            '${_date.format(d(r, 'administered_at'))}',
+            '${date.format(d(r, 'administered_at'))}',
       ),
     ];
     items.sort((a, b) => b.archivedAt.compareTo(a.archivedAt));

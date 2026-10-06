@@ -8,6 +8,7 @@ import '../data/repositories/appointment_repository.dart';
 import '../data/repositories/medication_repository.dart';
 import '../data/repositories/symptom_repository.dart';
 import '../data/repositories/vaccination_repository.dart';
+import '../l10n/l10n.dart';
 import '../widgets/symptom_report_card.dart' show observationLabel;
 
 /// Was in die Zusammenfassung soll.
@@ -165,15 +166,20 @@ class VisitSummaryBuilder {
 
 /// Rendert die Zusammenfassung als A4-PDF.
 abstract final class VisitSummaryPdf {
-  static final _date = DateFormat('dd.MM.yyyy', 'de');
-  static final _dateTime = DateFormat('dd.MM. HH:mm', 'de');
-
   static String fileName(VisitSummaryData data) =>
-      'Arztbesuch_${DateFormat('yyyy-MM-dd').format(data.appointment?.appointment.scheduledAt ?? data.generatedAt)}.pdf';
+      AppLocale.strings.svcSummaryPdfFileName(
+        DateFormat('yyyy-MM-dd').format(
+          data.appointment?.appointment.scheduledAt ?? data.generatedAt,
+        ),
+      );
 
   static Future<Uint8List> render(VisitSummaryData data) {
+    final l10n = AppLocale.strings;
+    final date = DateFormat(l10n.svcSummaryPdfDatePattern);
+    final dateTime = DateFormat(l10n.svcSummaryPdfDateTimePattern);
+    final decimalSeparator = NumberFormat().symbols.DECIMAL_SEP;
     final doc = pw.Document(
-      title: 'Zusammenfassung für den Arztbesuch',
+      title: l10n.svcSummaryPdfTitle,
       creator: 'Mai Doctor Hub',
     );
     final a = data.appointment;
@@ -198,8 +204,7 @@ abstract final class VisitSummaryPdf {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
             pw.Text(
-              'Erstellt am ${_date.format(data.generatedAt)} mit Mai Doctor Hub '
-              '· Angaben des Patienten, keine ärztliche Dokumentation',
+              l10n.svcSummaryPdfFooter(date.format(data.generatedAt)),
               style: muted,
             ),
             pw.Text('${context.pageNumber}/${context.pagesCount}', style: muted),
@@ -207,7 +212,7 @@ abstract final class VisitSummaryPdf {
         ),
         build: (context) => [
           pw.Text(
-            'Zusammenfassung für den Arztbesuch',
+            l10n.svcSummaryPdfTitle,
             style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
           ),
           pw.SizedBox(height: 4),
@@ -215,52 +220,73 @@ abstract final class VisitSummaryPdf {
             [
               ?data.patientName,
               if (a != null)
-                'Termin ${_date.format(a.appointment.scheduledAt)} bei ${a.doctorName}',
-              'Zeitraum ${_date.format(data.from)} – ${_date.format(data.to)}',
+                l10n.svcSummaryPdfAppointment(
+                  date.format(a.appointment.scheduledAt),
+                  a.doctorName,
+                ),
+              l10n.svcSummaryPdfPeriod(
+                date.format(data.from),
+                date.format(data.to),
+              ),
             ].join(' · '),
           ),
           if (data.questions.isNotEmpty)
-            section('Meine Fragen & Anliegen', [
+            section(l10n.svcSummaryPdfQuestions, [
               for (final q in data.questions) pw.Bullet(text: q),
             ]),
           if (data.diagnoses.isNotEmpty)
-            section('Bekannte Diagnosen', [
+            section(l10n.svcSummaryPdfDiagnoses, [
               for (final d in data.diagnoses)
                 pw.Bullet(
                   text: [
                     d.title,
-                    if (d.startedAt != null) 'seit ${_date.format(d.startedAt!)}',
+                    if (d.startedAt != null)
+                      l10n.svcSince(date.format(d.startedAt!)),
                   ].join(' · '),
                 ),
             ]),
           if (data.symptoms.isNotEmpty)
-            section('Symptome', [
+            section(l10n.entitySymptoms, [
               for (final t in data.symptoms) ...[
                 pw.SizedBox(height: 6),
                 pw.Text(
                   [
                     t.symptom.label,
                     ?t.symptom.bodyRegion,
-                    t.symptom.healedAt == null ? 'aktiv' : 'abgeklungen',
+                    t.symptom.healedAt == null
+                        ? l10n.svcSummaryPdfActive
+                        : l10n.svcSummaryPdfResolved,
                   ].join(' · '),
                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
                 pw.Text(
                   t.observations.isEmpty
-                      ? 'Keine Check-ins im Zeitraum.'
+                      ? l10n.svcSummaryPdfNoCheckIns
                       : [
-                          '${t.observations.length} Check-ins',
+                          l10n.svcCheckInCount(t.observations.length),
                           if (t.average != null)
-                            'Ø ${t.average!.toStringAsFixed(1).replaceAll('.', ',')}/10, '
-                                'min ${t.scale.reduce((a, b) => a < b ? a : b).toStringAsFixed(0)}, '
-                                'max ${t.scale.reduce((a, b) => a > b ? a : b).toStringAsFixed(0)}, '
-                                'zuletzt ${t.scale.last.toStringAsFixed(0)}',
+                            l10n.svcSummaryPdfStats(
+                              t.average!
+                                  .toStringAsFixed(1)
+                                  .replaceAll('.', decimalSeparator),
+                              t.scale
+                                  .reduce((a, b) => a < b ? a : b)
+                                  .toStringAsFixed(0),
+                              t.scale
+                                  .reduce((a, b) => a > b ? a : b)
+                                  .toStringAsFixed(0),
+                              t.scale.last.toStringAsFixed(0),
+                            ),
                         ].join(' · '),
                   style: muted,
                 ),
                 if (t.observations.isNotEmpty)
                   pw.TableHelper.fromTextArray(
-                    headers: ['Datum', 'Wert', 'Notiz'],
+                    headers: [
+                      l10n.svcSummaryPdfDate,
+                      l10n.svcSummaryPdfValue,
+                      l10n.entityNote,
+                    ],
                     cellStyle: const pw.TextStyle(fontSize: 9),
                     headerStyle: pw.TextStyle(
                       fontSize: 9,
@@ -269,7 +295,7 @@ abstract final class VisitSummaryPdf {
                     data: [
                       for (final o in t.observations.reversed.take(14))
                         [
-                          _dateTime.format(o.recordedAt),
+                          dateTime.format(o.recordedAt),
                           observationLabel(o),
                           o.note ?? '',
                         ],
@@ -278,9 +304,14 @@ abstract final class VisitSummaryPdf {
               ],
             ]),
           if (data.medications.isNotEmpty)
-            section('Aktuelle Medikamente', [
+            section(l10n.svcCurrentMedications, [
               pw.TableHelper.fromTextArray(
-                headers: ['Medikament', 'Dosis', 'Einnahme', 'Seit / bis'],
+                headers: [
+                  l10n.entityMedication,
+                  l10n.svcSummaryPdfDose,
+                  l10n.svcSummaryPdfIntake,
+                  l10n.svcSummaryPdfSinceUntil,
+                ],
                 cellStyle: const pw.TextStyle(fontSize: 9),
                 headerStyle: pw.TextStyle(
                   fontSize: 9,
@@ -302,18 +333,23 @@ abstract final class VisitSummaryPdf {
                       ].join(' · '),
                       [
                         if (m.medication.startedAt != null)
-                          _date.format(m.medication.startedAt!),
+                          date.format(m.medication.startedAt!),
                         if (m.medication.endedAt != null)
-                          _date.format(m.medication.endedAt!),
+                          date.format(m.medication.endedAt!),
                       ].join(' – '),
                     ],
                 ],
               ),
             ]),
           if (data.vaccinations.isNotEmpty)
-            section('Impfungen', [
+            section(l10n.entityVaccinations, [
               pw.TableHelper.fromTextArray(
-                headers: ['Datum', 'Impfung', 'Impfstoff / Charge', 'Nächste'],
+                headers: [
+                  l10n.svcSummaryPdfDate,
+                  l10n.entityVaccination,
+                  l10n.svcSummaryPdfProductBatch,
+                  l10n.svcSummaryPdfNextDue,
+                ],
                 cellStyle: const pw.TextStyle(fontSize: 9),
                 headerStyle: pw.TextStyle(
                   fontSize: 9,
@@ -322,20 +358,22 @@ abstract final class VisitSummaryPdf {
                 data: [
                   for (final v in data.vaccinations)
                     [
-                      _date.format(v.administeredAt),
+                      date.format(v.administeredAt),
                       [
                         v.vaccine,
                         if (v.doseNumber != null) '(${v.doseNumber}.)',
                       ].join(' '),
                       [?v.product, ?v.batch].join(' / '),
-                      v.nextDueAt == null ? '' : _date.format(v.nextDueAt!),
+                      v.nextDueAt == null ? '' : date.format(v.nextDueAt!),
                     ],
                 ],
               ),
               if (data.dueVaccinations.isNotEmpty) ...[
                 pw.SizedBox(height: 4),
                 pw.Text(
-                  'Fällig: ${data.dueVaccinations.map((v) => v.vaccine).join(', ')}',
+                  l10n.svcSummaryPdfDue(
+                    data.dueVaccinations.map((v) => v.vaccine).join(', '),
+                  ),
                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
               ],

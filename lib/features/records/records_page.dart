@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../assistant/assistant_page.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/records_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../theme/app_theme.dart';
 import '../home/add_appointment_sheet.dart';
 import 'detail_pages.dart';
@@ -101,8 +102,8 @@ class _RecordsPageState extends State<RecordsPage> {
       entityId: id,
       title: title,
       subtitle: snippet.isEmpty
-          ? _typeLabel(type)
-          : '${_typeLabel(type)} · ${snippet.replaceAll('\n', ' ')}',
+          ? _typeLabel(context, type)
+          : '${_typeLabel(context, type)} · ${snippet.replaceAll('\n', ' ')}',
       sortDate: DateTime.now(),
     );
   }
@@ -156,11 +157,11 @@ class _RecordsPageState extends State<RecordsPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            for (final entry in _filterLabels.entries)
-              if (entry.key != RecordEntityFilter.all)
+            for (final filter in RecordEntityFilter.values)
+              if (filter != RecordEntityFilter.all)
                 ListTile(
-                  title: Text('${entry.value} anlegen'),
-                  onTap: () => Navigator.pop(context, entry.key),
+                  title: Text(_createLabel(context, filter)),
+                  onTap: () => Navigator.pop(context, filter),
                 ),
           ],
         ),
@@ -177,6 +178,7 @@ class _RecordsPageState extends State<RecordsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return SafeArea(
       child: Column(
@@ -188,14 +190,14 @@ class _RecordsPageState extends State<RecordsPage> {
               children: [
                 Expanded(
                   child: Text(
-                    'Meine Akte',
+                    l10n.recordsTitle,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Assistent — Fragen an deine Akte',
+                  tooltip: l10n.recordsAssistantTooltip,
                   icon: const Icon(Icons.auto_awesome_outlined),
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -204,7 +206,7 @@ class _RecordsPageState extends State<RecordsPage> {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Zusammenfassung für den Arztbesuch',
+                  tooltip: l10n.recordsVisitSummaryTooltip,
                   icon: const Icon(Icons.summarize_outlined),
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -213,24 +215,24 @@ class _RecordsPageState extends State<RecordsPage> {
                   ),
                 ),
                 PopupMenuButton<RecordSort>(
-                  tooltip: 'Sortierung',
+                  tooltip: l10n.recordsSortTooltip,
                   initialValue: _sort,
                   onSelected: (value) {
                     setState(() => _sort = value);
                     _reload();
                   },
-                  itemBuilder: (context) => const [
+                  itemBuilder: (context) => [
                     PopupMenuItem(
                       value: RecordSort.date,
-                      child: Text('Datum'),
+                      child: Text(l10n.recordsSortDate),
                     ),
                     PopupMenuItem(
                       value: RecordSort.name,
-                      child: Text('Name'),
+                      child: Text(l10n.recordsSortName),
                     ),
                     PopupMenuItem(
                       value: RecordSort.updated,
-                      child: Text('Zuletzt geändert'),
+                      child: Text(l10n.recordsSortUpdated),
                     ),
                   ],
                   child: const Padding(
@@ -239,7 +241,7 @@ class _RecordsPageState extends State<RecordsPage> {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Eintrag anlegen',
+                  tooltip: l10n.recordsAddEntry,
                   onPressed: _createForFilter,
                   icon: const Icon(Icons.add),
                 ),
@@ -250,7 +252,7 @@ class _RecordsPageState extends State<RecordsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: SearchBar(
               controller: _searchController,
-              hintText: 'Suche in Akte & Berichten…',
+              hintText: l10n.recordsSearchHint,
               leading: const Icon(Icons.search),
               trailing: [
                 if (_searchController.text.isNotEmpty)
@@ -272,14 +274,14 @@ class _RecordsPageState extends State<RecordsPage> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-                for (final entry in _filterLabels.entries)
+                for (final filter in RecordEntityFilter.values)
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: FilterChip(
-                      label: Text(entry.value),
-                      selected: _filter == entry.key,
+                      label: Text(_filterLabel(context, filter)),
+                      selected: _filter == filter,
                       onSelected: (_) {
-                        setState(() => _filter = entry.key);
+                        setState(() => _filter = filter);
                         _reload();
                       },
                     ),
@@ -292,7 +294,7 @@ class _RecordsPageState extends State<RecordsPage> {
               stream: _stream,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return const Center(child: Text('Akte wird geladen…'));
+                  return Center(child: Text(l10n.recordsLoading));
                 }
                 final items = snapshot.data ?? const [];
                 if (items.isEmpty) {
@@ -310,8 +312,10 @@ class _RecordsPageState extends State<RecordsPage> {
                           const SizedBox(height: 12),
                           Text(
                             _searchController.text.trim().isEmpty
-                                ? 'Noch keine Einträge'
-                                : 'Keine Treffer für „${_searchController.text.trim()}“',
+                                ? l10n.recordsEmpty
+                                : l10n.recordsNoResults(
+                                    _searchController.text.trim(),
+                                  ),
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -319,7 +323,7 @@ class _RecordsPageState extends State<RecordsPage> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Filter und Suche sind bereit — lege den ersten Eintrag an.',
+                            l10n.recordsEmptyHint,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: AppColors.muted,
                             ),
@@ -329,7 +333,7 @@ class _RecordsPageState extends State<RecordsPage> {
                           OutlinedButton.icon(
                             onPressed: _createForFilter,
                             icon: const Icon(Icons.add),
-                            label: const Text('Eintrag anlegen'),
+                            label: Text(l10n.recordsAddEntry),
                           ),
                         ],
                       ),
@@ -383,28 +387,51 @@ IconData _iconFor(String type) => switch (type) {
   _ => Icons.folder_outlined,
 };
 
-String _typeLabel(String type) => switch (type) {
-  'doctor' => 'Arzt',
-  'diagnosis' => 'Diagnose',
-  'symptom' => 'Symptom',
-  'appointment' => 'Termin',
-  'report' => 'Bericht',
-  'medication' => 'Medikament',
-  'pharmacy' => 'Apotheke',
-  'vaccination' => 'Impfung',
-  'note' => 'Notiz',
-  _ => type,
-};
+String _typeLabel(BuildContext context, String type) {
+  final l10n = context.l10n;
+  return switch (type) {
+    'doctor' => l10n.entityDoctor,
+    'diagnosis' => l10n.entityDiagnosis,
+    'symptom' => l10n.entitySymptom,
+    'appointment' => l10n.entityAppointment,
+    'report' => l10n.entityReport,
+    'medication' => l10n.entityMedication,
+    'pharmacy' => l10n.entityPharmacy,
+    'vaccination' => l10n.entityVaccination,
+    'note' => l10n.entityNote,
+    _ => type,
+  };
+}
 
-const _filterLabels = <RecordEntityFilter, String>{
-  RecordEntityFilter.all: 'Alle',
-  RecordEntityFilter.doctors: 'Ärzte',
-  RecordEntityFilter.diagnoses: 'Diagnosen',
-  RecordEntityFilter.symptoms: 'Symptome',
-  RecordEntityFilter.appointments: 'Termine',
-  RecordEntityFilter.reports: 'Berichte',
-  RecordEntityFilter.medications: 'Medikamente',
-  RecordEntityFilter.pharmacies: 'Apotheken',
-  RecordEntityFilter.vaccinations: 'Impfungen',
-  RecordEntityFilter.notes: 'Notizen',
-};
+String _filterLabel(BuildContext context, RecordEntityFilter filter) {
+  final l10n = context.l10n;
+  return switch (filter) {
+    RecordEntityFilter.all => l10n.recordsFilterAll,
+    RecordEntityFilter.doctors => l10n.entityDoctors,
+    RecordEntityFilter.diagnoses => l10n.entityDiagnoses,
+    RecordEntityFilter.symptoms => l10n.entitySymptoms,
+    RecordEntityFilter.appointments => l10n.entityAppointments,
+    RecordEntityFilter.reports => l10n.entityReports,
+    RecordEntityFilter.medications => l10n.entityMedications,
+    RecordEntityFilter.pharmacies => l10n.entityPharmacies,
+    RecordEntityFilter.vaccinations => l10n.entityVaccinations,
+    RecordEntityFilter.notes => l10n.entityNotes,
+  };
+}
+
+/// Eintrag im „+“-Menü (Deutsch: Plural wie bisher, z. B. „Ärzte anlegen“).
+String _createLabel(BuildContext context, RecordEntityFilter filter) {
+  final l10n = context.l10n;
+  return switch (filter) {
+    RecordEntityFilter.all => l10n.recordsAddEntry,
+    RecordEntityFilter.doctors => l10n.recordsCreateDoctors,
+    RecordEntityFilter.diagnoses => l10n.recordsCreateDiagnoses,
+    RecordEntityFilter.symptoms => l10n.recordsCreateSymptoms,
+    RecordEntityFilter.appointments => l10n.recordsCreateAppointments,
+    RecordEntityFilter.reports => l10n.recordsCreateReports,
+    RecordEntityFilter.medications => l10n.recordsCreateMedications,
+    RecordEntityFilter.pharmacies => l10n.recordsCreatePharmacies,
+    RecordEntityFilter.vaccinations => l10n.recordsCreateVaccinations,
+    RecordEntityFilter.notes => l10n.recordsCreateNotes,
+  };
+}

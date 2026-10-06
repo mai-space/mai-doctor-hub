@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -17,6 +18,11 @@ abstract final class AppLocale {
   static Locale _current = resolve(PlatformDispatcher.instance.locales);
 
   static Locale get current => _current;
+
+  /// Meldet einen Sprachwechsel zur Laufzeit (Systemeinstellung geändert):
+  /// bereits geplante Benachrichtigungen und exportierte Kalendertermine
+  /// tragen Texte und müssen neu erzeugt werden.
+  static final changes = ValueNotifier<Locale>(_current);
 
   /// Texte außerhalb von Widgets (Benachrichtigungen, Kalender, PDF …).
   static AppLocalizations get strings => lookupAppLocalizations(_current);
@@ -36,6 +42,7 @@ abstract final class AppLocale {
     final changed = locale != _current;
     _current = locale;
     Intl.defaultLocale = locale.languageCode;
+    changes.value = locale;
     return changed;
   }
 }

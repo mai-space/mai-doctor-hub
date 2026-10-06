@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../data/app_database.dart';
 import '../../data/repositories/appointment_repository.dart';
+import '../../l10n/l10n.dart';
 import '../device_time.dart';
 import 'calendar_gateway.dart';
 
@@ -53,7 +54,9 @@ class CalendarSyncService {
   final Future<String> Function() _timeZone;
 
   static const defaultDuration = Duration(minutes: 30);
-  static const managedBy = 'Verwaltet von Mai Doctor Hub';
+  /// In der App-Sprache; Teil des Hashes → ein Sprachwechsel aktualisiert
+  /// beim nächsten Abgleich alle exportierten Events.
+  static String get managedBy => AppLocale.strings.svcCalendarManagedBy;
 
   /// Datensparsamer Event-Inhalt: nie Diagnosen, Symptome, Notizen, Berichte.
   static CalendarEventData eventFor(
@@ -66,7 +69,7 @@ class CalendarSyncService {
     final who = summary.doctorName;
     final title = includeTitle && a.title?.isNotEmpty == true
         ? '${a.title} · $who'
-        : 'Arzttermin · $who';
+        : AppLocale.strings.svcCalendarEventTitle(who);
     final location = [
       doctor?.practiceName,
       doctor?.address,
@@ -113,7 +116,7 @@ class CalendarSyncService {
       return const CalendarSyncReport();
     }
     if (!await _gateway.hasPermission()) {
-      throw const CalendarException('Kalenderzugriff nicht erlaubt');
+      throw CalendarException(AppLocale.strings.svcCalendarNoPermission);
     }
 
     // Abgesagte Termine gehören nicht (mehr) in den Kalender.

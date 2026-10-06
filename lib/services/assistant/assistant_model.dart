@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../data/app_database.dart';
+import '../../l10n/l10n.dart';
 import 'assistant_engine.dart';
 import 'record_embedder.dart';
 import 'semantic_index.dart';
@@ -81,7 +82,7 @@ class AssistantModel extends ChangeNotifier {
         phase = AssistantPhase.notInstalled;
         message = e is AssistantCancelled
             ? null
-            : 'Download fehlgeschlagen: $e';
+            : AppLocale.strings.svcDownloadFailed('$e');
         notifyListeners();
       },
       onDone: () {
@@ -118,7 +119,7 @@ class AssistantModel extends ChangeNotifier {
         semanticPhase = SemanticPhase.notInstalled;
         semanticMessage = e is AssistantCancelled
             ? null
-            : 'Download fehlgeschlagen — Token und Lizenz prüfen. ($e)';
+            : AppLocale.strings.svcSemanticDownloadFailed('$e');
         notifyListeners();
       },
       onDone: () {
@@ -143,7 +144,7 @@ class AssistantModel extends ChangeNotifier {
       await (_indexing ??= _sync(index));
     } catch (e) {
       // Ohne aktuellen Index trotzdem antworten: nur Stichwortsuche.
-      semanticMessage = 'Index nicht aktualisiert: $e';
+      semanticMessage = AppLocale.strings.svcIndexNotUpdated('$e');
       notifyListeners();
       return null;
     } finally {

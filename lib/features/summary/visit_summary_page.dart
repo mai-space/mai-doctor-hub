@@ -7,6 +7,7 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/medication_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../services/visit_summary.dart';
 
 /// Zusammenfassung für den Arztbesuch zusammenstellen und als PDF teilen.
@@ -75,6 +76,7 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
   Future<void> _export({required bool share}) async {
     final db = DatabaseScope.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     setState(() => _busy = true);
     try {
       final data = await VisitSummaryBuilder(db).build(_options);
@@ -85,7 +87,7 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
           ShareParams(
             files: [XFile.fromData(bytes, mimeType: visitSummaryMime, name: name)],
             fileNameOverrides: [name],
-            subject: 'Zusammenfassung für den Arztbesuch',
+            subject: l10n.svcSummaryPdfTitle,
           ),
         );
       } else {
@@ -93,14 +95,16 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
           fileName: name,
           bytes: bytes,
           mimeType: visitSummaryMime,
-          dialogTitle: 'Zusammenfassung speichern',
+          dialogTitle: l10n.svcSummarySaveDialog,
         );
         if (saved != null) {
-          messenger.showSnackBar(const SnackBar(content: Text('PDF gespeichert')));
+          messenger.showSnackBar(SnackBar(content: Text(l10n.svcSummarySaved)));
         }
       }
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('Export fehlgeschlagen: $e')));
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.svcSummaryExportFailed('$e'))),
+      );
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -109,7 +113,8 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final format = DateFormat('d. MMM yyyy', 'de');
+    final l10n = context.l10n;
+    final format = DateFormat(l10n.svcSummaryAppointmentDatePattern);
     Widget heading(String text) => Padding(
       padding: const EdgeInsets.only(top: 20, bottom: 4),
       child: Text(
@@ -119,7 +124,7 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Für den Arztbesuch')),
+      appBar: AppBar(title: Text(l10n.svcSummaryTitle)),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
@@ -129,7 +134,7 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
                 child: OutlinedButton.icon(
                   onPressed: _busy ? null : () => _export(share: false),
                   icon: const Icon(Icons.save_alt),
-                  label: const Text('Speichern'),
+                  label: Text(l10n.commonSave),
                 ),
               ),
               const SizedBox(width: 12),
@@ -138,7 +143,7 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
                   style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
                   onPressed: _busy ? null : () => _export(share: true),
                   icon: const Icon(Icons.share),
-                  label: const Text('PDF teilen'),
+                  label: Text(l10n.svcSummaryShare),
                 ),
               ),
             ],
@@ -150,18 +155,17 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
         children: [
           if (_busy) const LinearProgressIndicator(),
           Text(
-            'Fragen, Symptom-Verläufe, Medikamente und Impfungen auf einen '
-            'Blick — als PDF für die Praxis.',
+            l10n.svcSummaryIntro,
             style: theme.textTheme.bodyMedium,
           ),
-          heading('Termin'),
+          heading(l10n.entityAppointment),
           DropdownMenu<String?>(
             key: ValueKey(_appointments.length),
             initialSelection: _appointmentId,
-            label: const Text('Bezug (bestimmt Zeitraum)'),
+            label: Text(l10n.svcSummaryReference),
             expandedInsets: EdgeInsets.zero,
             dropdownMenuEntries: [
-              const DropdownMenuEntry(value: null, label: 'Ohne — letzte 30 Tage'),
+              DropdownMenuEntry(value: null, label: l10n.svcSummaryNoAppointment),
               for (final a in _appointments)
                 DropdownMenuEntry(
                   value: a.appointment.id,
@@ -173,22 +177,22 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
           ),
           TextField(
             controller: _name,
-            decoration: const InputDecoration(labelText: 'Name (optional, steht im PDF)'),
+            decoration: InputDecoration(labelText: l10n.svcSummaryName),
           ),
-          heading('Fragen & Anliegen'),
+          heading(l10n.svcSummaryQuestions),
           TextField(
             controller: _questions,
             minLines: 3,
             maxLines: 8,
-            decoration: const InputDecoration(
-              hintText: 'Eine Frage pro Zeile — Notizen zum Termin kommen automatisch dazu',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: l10n.svcSummaryQuestionsHint,
+              border: const OutlineInputBorder(),
             ),
           ),
-          heading('Symptome'),
+          heading(l10n.entitySymptoms),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Alle offenen Symptome'),
+            title: Text(l10n.svcSummaryAllSymptoms),
             value: _allSymptoms,
             onChanged: (v) => setState(() => _allSymptoms = v),
           ),
@@ -206,10 +210,10 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
                   ),
               ],
             ),
-          heading('Medikamente'),
+          heading(l10n.entityMedications),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Alle aktuellen Medikamente'),
+            title: Text(l10n.svcSummaryAllMedications),
             value: _allMedications,
             onChanged: (v) => setState(() => _allMedications = v),
           ),
@@ -229,16 +233,16 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
                   ),
               ],
             ),
-          heading('Weiteres'),
+          heading(l10n.svcSummaryMore),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Diagnosen'),
+            title: Text(l10n.entityDiagnoses),
             value: _diagnoses,
             onChanged: (v) => setState(() => _diagnoses = v),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Impfungen'),
+            title: Text(l10n.entityVaccinations),
             value: _vaccinations,
             onChanged: (v) => setState(() => _vaccinations = v),
           ),

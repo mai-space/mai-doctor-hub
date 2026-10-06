@@ -9,6 +9,7 @@ import '../../data/repositories/doctor_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/suggestion_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../services/ocr/document_scanner.dart';
 import '../../services/report_import_service.dart';
 import '../../widgets/suggestion_text_field.dart';
@@ -39,11 +40,11 @@ Future<bool> _showFormDialog(
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Abbrechen'),
+            child: Text(context.l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Speichern'),
+            child: Text(context.l10n.commonSave),
           ),
         ],
       ),
@@ -76,10 +77,13 @@ class DiagnosisPicker extends StatelessWidget {
           padding: const EdgeInsets.only(top: 12),
           child: DropdownMenu<String?>(
             initialSelection: value,
-            label: const Text('Diagnose'),
+            label: Text(context.l10n.entityDiagnosis),
             expandedInsets: EdgeInsets.zero,
             dropdownMenuEntries: [
-              const DropdownMenuEntry(value: null, label: 'Keine'),
+              DropdownMenuEntry(
+                value: null,
+                label: context.l10n.recordsDiagnosisNone,
+              ),
               for (final d in diagnoses)
                 DropdownMenuEntry(value: d.id, label: d.title),
             ],
@@ -110,12 +114,14 @@ class DateField extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       title: Text(label),
       subtitle: Text(
-        value == null ? '—' : DateFormat('d. MMM yyyy', 'de').format(value!),
+        value == null
+            ? '—'
+            : DateFormat(context.l10n.recordsDatePattern).format(value!),
       ),
       trailing: value == null
           ? const Icon(Icons.event_outlined)
           : IconButton(
-              tooltip: '$label entfernen',
+              tooltip: context.l10n.recordsDateClearTooltip(label),
               icon: const Icon(Icons.clear),
               onPressed: () => onChanged(null),
             ),
@@ -140,40 +146,43 @@ Future<String?> showDoctorForm(BuildContext context, {Doctor? doctor}) async {
   final address = TextEditingController(text: doctor?.address);
   final notes = TextEditingController(text: doctor?.notes);
   final repo = DoctorRepository(DatabaseScope.of(context));
+  final l10n = context.l10n;
 
   final ok = await _showFormDialog(
     context,
-    title: doctor == null ? 'Arzt anlegen' : 'Arzt bearbeiten',
+    title: doctor == null
+        ? l10n.recordsDoctorCreateTitle
+        : l10n.recordsDoctorEditTitle,
     fields: (_) => [
       TextField(
         controller: name,
-        decoration: const InputDecoration(labelText: 'Name'),
+        decoration: InputDecoration(labelText: l10n.recordsFieldName),
         textCapitalization: TextCapitalization.words,
         autofocus: doctor == null,
       ),
       SuggestionTextField(
         controller: specialty,
         field: SuggestionField.specialty,
-        decoration: const InputDecoration(labelText: 'Fachrichtung'),
+        decoration: InputDecoration(labelText: l10n.recordsFieldSpecialty),
       ),
       TextField(
         controller: practice,
-        decoration: const InputDecoration(labelText: 'Praxis / Klinik'),
+        decoration: InputDecoration(labelText: l10n.recordsFieldPractice),
       ),
       TextField(
         controller: phone,
         keyboardType: TextInputType.phone,
-        decoration: const InputDecoration(labelText: 'Telefon'),
+        decoration: InputDecoration(labelText: l10n.recordsFieldPhone),
       ),
       TextField(
         controller: address,
         maxLines: 2,
-        decoration: const InputDecoration(labelText: 'Adresse'),
+        decoration: InputDecoration(labelText: l10n.recordsFieldAddress),
       ),
       TextField(
         controller: notes,
         maxLines: 3,
-        decoration: const InputDecoration(labelText: 'Notizen'),
+        decoration: InputDecoration(labelText: l10n.commonNotes),
       ),
     ],
   );
@@ -210,42 +219,48 @@ Future<String?> showDiagnosisForm(
   var startedAt = diagnosis?.startedAt;
   var endedAt = diagnosis?.endedAt;
   final repo = RecordsRepository(DatabaseScope.of(context));
+  final l10n = context.l10n;
 
   final ok = await _showFormDialog(
     context,
-    title: diagnosis == null ? 'Diagnose anlegen' : 'Diagnose bearbeiten',
+    title: diagnosis == null
+        ? l10n.recordsDiagnosisCreateTitle
+        : l10n.recordsDiagnosisEditTitle,
     fields: (setState) => [
       SuggestionTextField(
         controller: title,
         field: SuggestionField.diagnosisTitle,
-        decoration: const InputDecoration(labelText: 'Titel'),
+        decoration: InputDecoration(labelText: l10n.recordsFieldTitle),
         autofocus: diagnosis == null,
       ),
       TextField(
         controller: notes,
         maxLines: 3,
-        decoration: const InputDecoration(labelText: 'Notizen'),
+        decoration: InputDecoration(labelText: l10n.commonNotes),
       ),
       const SizedBox(height: 12),
       SegmentedButton<DiagnosisStatus>(
-        segments: const [
-          ButtonSegment(value: DiagnosisStatus.active, label: Text('Aktiv')),
+        segments: [
+          ButtonSegment(
+            value: DiagnosisStatus.active,
+            label: Text(l10n.recordsDiagnosisActive),
+          ),
           ButtonSegment(
             value: DiagnosisStatus.resolved,
-            label: Text('Abgeschlossen'),
+            label: Text(l10n.recordsDiagnosisResolved),
           ),
         ],
         selected: {status},
         onSelectionChanged: (v) => setState(() => status = v.first),
       ),
       DateField(
-        label: 'Seit',
+        label: l10n.recordsDiagnosisSince,
         value: startedAt,
         onChanged: (v) => setState(() => startedAt = v),
       ),
       if (status == DiagnosisStatus.resolved)
         DateField(
-          label: 'Bis',
+          label: l10n.recordsDiagnosisUntil,
           value: endedAt,
           onChanged: (v) => setState(() => endedAt = v),
         ),
@@ -296,21 +311,24 @@ Future<String?> showSymptomForm(
       for (final d in await repo.doctorsFor(symptom.id)) d.id,
   };
   if (!context.mounted) return null;
+  final l10n = context.l10n;
 
   final ok = await _showFormDialog(
     context,
-    title: symptom == null ? 'Symptom anlegen' : 'Symptom bearbeiten',
+    title: symptom == null
+        ? l10n.recordsSymptomCreateTitle
+        : l10n.recordsSymptomEditTitle,
     fields: (setState) => [
       SuggestionTextField(
         controller: label,
         field: SuggestionField.symptomLabel,
-        decoration: const InputDecoration(labelText: 'Bezeichnung'),
+        decoration: InputDecoration(labelText: l10n.recordsFieldSymptomLabel),
         autofocus: symptom == null,
       ),
       SuggestionTextField(
         controller: region,
         field: SuggestionField.bodyRegion,
-        decoration: const InputDecoration(labelText: 'Körperregion'),
+        decoration: InputDecoration(labelText: l10n.recordsFieldBodyRegion),
       ),
       DiagnosisPicker(
         value: diagnosisId,
@@ -318,7 +336,7 @@ Future<String?> showSymptomForm(
       ),
       if (doctors.isNotEmpty) ...[
         const SizedBox(height: 12),
-        const Text('Ärzte'),
+        Text(l10n.entityDoctors),
         const SizedBox(height: 4),
         Wrap(
           spacing: 6,
@@ -371,16 +389,17 @@ Future<String?> showNoteForm(
   final body = TextEditingController(text: note?.body);
   var diagnosisId = note?.relatedDiagnosisId ?? relatedDiagnosisId;
   final repo = RecordsRepository(DatabaseScope.of(context));
+  final l10n = context.l10n;
 
   final ok = await _showFormDialog(
     context,
-    title: note == null ? 'Notiz anlegen' : 'Notiz bearbeiten',
+    title: note == null ? l10n.recordsNoteCreateTitle : l10n.recordsNoteEditTitle,
     fields: (setState) => [
       TextField(
         controller: body,
         maxLines: 6,
         minLines: 3,
-        decoration: const InputDecoration(labelText: 'Text'),
+        decoration: InputDecoration(labelText: l10n.recordsFieldText),
         autofocus: note == null,
       ),
       DiagnosisPicker(
@@ -409,14 +428,15 @@ Future<String?> showNoteForm(
 Future<void> showReportRenameForm(BuildContext context, Report report) async {
   final title = TextEditingController(text: report.title);
   final repo = RecordsRepository(DatabaseScope.of(context));
+  final l10n = context.l10n;
   final ok = await _showFormDialog(
     context,
-    title: 'Bericht umbenennen',
+    title: l10n.recordsReportRenameTitle,
     fields: (_) => [
       TextField(
         controller: title,
         autofocus: true,
-        decoration: const InputDecoration(labelText: 'Titel'),
+        decoration: InputDecoration(labelText: l10n.recordsFieldTitle),
       ),
     ],
   );
@@ -437,12 +457,12 @@ Future<bool> confirmDelete(
   final ok = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text('$what löschen?'),
-      content: Text(detail ?? 'Das kann nicht rückgängig gemacht werden.'),
+      title: Text(context.l10n.recordsDeleteConfirmTitle(what)),
+      content: Text(detail ?? context.l10n.recordsDeleteConfirmBody),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Abbrechen'),
+          child: Text(context.l10n.commonCancel),
         ),
         FilledButton(
           style: FilledButton.styleFrom(
@@ -450,7 +470,7 @@ Future<bool> confirmDelete(
             foregroundColor: Theme.of(context).colorScheme.onError,
           ),
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Löschen'),
+          child: Text(context.l10n.commonDelete),
         ),
       ],
     ),
@@ -488,14 +508,14 @@ Future<ImportedReport?> importReport(
         children: [
           ListTile(
             leading: const Icon(Icons.document_scanner_outlined),
-            title: const Text('Dokument scannen'),
-            subtitle: const Text('Kamera · Text wird erkannt und durchsuchbar'),
+            title: Text(context.l10n.recordsScanDocument),
+            subtitle: Text(context.l10n.recordsScanDocumentHint),
             onTap: () => Navigator.pop(context, 'scan'),
           ),
           ListTile(
             leading: const Icon(Icons.upload_file),
-            title: const Text('Dateien wählen'),
-            subtitle: const Text('PDFs oder Bilder · auch mehrere auf einmal'),
+            title: Text(context.l10n.recordsPickFiles),
+            subtitle: Text(context.l10n.recordsPickFilesHint),
             onTap: () => Navigator.pop(context, 'file'),
           ),
         ],
@@ -515,6 +535,7 @@ Future<ImportedReport?> scanReport(
 }) async {
   final records = RecordsRepository(DatabaseScope.of(context));
   final messenger = ScaffoldMessenger.of(context);
+  final l10n = context.l10n;
   final ScannedDocument? result;
   try {
     result = await DocumentScannerApi.current.scan();
@@ -523,20 +544,16 @@ Future<ImportedReport?> scanReport(
     final pickFile = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Scanner startet nicht'),
-        content: Text(
-          'Der Dokumentenscanner braucht die Google-Play-Dienste; beim ersten '
-          'Mal lädt er sich ggf. erst herunter. Bitte gleich noch einmal '
-          'versuchen oder ein Foto/PDF als Datei wählen.\n\nDetails: $e',
-        ),
+        title: Text(l10n.recordsScannerUnavailableTitle),
+        content: Text(l10n.recordsScannerUnavailableBody('$e')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Abbrechen'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Datei wählen'),
+            child: Text(l10n.recordsPickFile),
           ),
         ],
       ),
@@ -547,11 +564,12 @@ Future<ImportedReport?> scanReport(
   if (result == null) return null;
   final scan = result;
   messenger.showSnackBar(
-    const SnackBar(content: Text('Scan wird gespeichert, Text wird erkannt…')),
+    SnackBar(content: Text(l10n.recordsScanSaving)),
   );
   try {
-    final name =
-        'Scan ${DateFormat('dd.MM.yyyy HH-mm', 'de').format(DateTime.now())}.pdf';
+    final name = l10n.recordsScanFileName(
+      DateFormat(l10n.recordsScanFileDatePattern).format(DateTime.now()),
+    );
     final imported = await ReportImportService(records).importFile(
       name: name,
       sourcePath: scan.pdfPath,
@@ -566,8 +584,8 @@ Future<ImportedReport?> scanReport(
         SnackBar(
           content: Text(
             imported.extractedText == null
-                ? 'Scan gespeichert (kein Text erkannt)'
-                : 'Scan gespeichert — Text durchsuchbar',
+                ? l10n.recordsScanSavedNoText
+                : l10n.recordsScanSavedWithText,
           ),
         ),
       );
@@ -586,6 +604,7 @@ Future<ImportedReport?> pickReportFile(
 }) async {
   final records = RecordsRepository(DatabaseScope.of(context));
   final messenger = ScaffoldMessenger.of(context);
+  final l10n = context.l10n;
   try {
     final result = await ReportImportService(records)
         .pickAndImport(appointmentId: appointmentId);
@@ -595,14 +614,16 @@ Future<ImportedReport?> pickReportFile(
     final String message;
     if (failed.isEmpty) {
       message = ok.length == 1
-          ? 'Bericht „${ok.single.title}“ gespeichert'
-          : '${ok.length} Berichte gespeichert';
+          ? l10n.recordsReportSaved(ok.single.title)
+          : l10n.recordsReportsSaved(ok.length);
     } else if (ok.isEmpty && failed.length == 1) {
       message = failed.values.single;
     } else {
-      message =
-          '${ok.length} gespeichert, ${failed.length} fehlgeschlagen: '
-          '${failed.keys.join(', ')}';
+      message = l10n.recordsImportPartial(
+        ok.length,
+        failed.length,
+        failed.keys.join(', '),
+      );
     }
     messenger.showSnackBar(SnackBar(content: Text(message)));
     return ok.isEmpty ? null : ok.first;

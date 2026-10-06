@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../../l10n/l10n.dart';
+
 class DeviceCalendar {
   const DeviceCalendar({
     required this.id,
@@ -130,7 +132,9 @@ class AndroidCalendarGateway implements CalendarGateway {
       'eventId': eventId,
       ...event.toJson(),
     });
-    if (id == null) throw const CalendarException('Keine Event-ID erhalten');
+    if (id == null) {
+      throw CalendarException(AppLocale.strings.svcCalendarNoEventId);
+    }
     return id;
   }
 

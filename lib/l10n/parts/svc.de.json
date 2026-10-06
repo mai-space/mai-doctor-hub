@@ -1,0 +1,434 @@
+{
+  "svcAssistantTitle": "Assistent",
+  "svcAssistantExample1": "Wann ist mein nächster Termin?",
+  "svcAssistantExample2": "Welche Medikamente nehme ich gerade?",
+  "svcAssistantExample3": "Wie haben sich meine Symptome entwickelt?",
+  "svcAssistantExample4": "Was stand im letzten Bericht?",
+  "svcAssistantDeleteModelQuestion": "Modell löschen?",
+  "svcAssistantDeleteModelBody": "Gibt {size} Speicher frei. Für den Assistenten musst du es danach neu herunterladen.",
+  "@svcAssistantDeleteModelBody": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantDeleteModel": "Modell löschen",
+  "svcAssistantDeleteSearchModel": "Suchmodell löschen",
+  "svcAssistantUnsupportedTitle": "Auf diesem Gerät nicht verfügbar",
+  "svcAssistantAskTitle": "Frag deine Akte",
+  "svcAssistantIntro": "Antworten entstehen auf diesem Gerät aus deinen Einträgen und Berichten — nichts wird hochgeladen, der Verlauf wird nicht gespeichert.",
+  "svcAssistantDisclaimer": "Keine ärztliche Beratung — Antworten können Fehler enthalten.",
+  "svcAssistantInputHint": "Frage zu deiner Akte…",
+  "svcAssistantSend": "Fragen",
+  "svcAssistantNoAnswer": "Keine Antwort: {error}",
+  "@svcAssistantNoAnswer": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantReading": "Liest deine Akte…",
+  "svcAssistantSetupTitle": "Lokaler Assistent",
+  "svcAssistantSetupBody": "Stell Fragen zu Terminen, Medikamenten, Symptomen und Berichten. Das KI-Modell {model} läuft vollständig auf diesem Gerät — deine Akte wird nie hochgeladen. Nur das Modell selbst wird einmalig heruntergeladen ({size}, am besten im WLAN).",
+  "@svcAssistantSetupBody": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantLowMemory": "Hinweis: Dieses Gerät hat wenig Arbeitsspeicher. Der Assistent kann langsam sein oder von Android beendet werden.",
+  "svcAssistantDownloading": "Wird geladen… {percent} % — läuft auch weiter, wenn du die App verlässt.",
+  "@svcAssistantDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "svcAssistantDownloadModel": "Modell herunterladen ({size})",
+  "@svcAssistantDownloadModel": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSemanticTitle": "Semantische Suche (optional)",
+  "svcSemanticActive": "Aktiv: Antworten nutzen die besten Treffer per Stichwort und per Bedeutung.",
+  "svcSemanticIndexing": "Akte wird indexiert… {done}/{total}",
+  "@svcSemanticIndexing": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "svcSemanticDownloading": "Suchmodell wird geladen… {percent} %",
+  "@svcSemanticDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "svcSemanticIntro": "Findet auch Einträge, in denen die Wörter deiner Frage nicht vorkommen (z. B. „Schilddrüse“ → TSH-Wert). Lädt {model} ({size}); die Suche läuft danach offline.\n\nGoogle stellt das Modell nur nach Annahme der Gemma-Lizenz bereit: kostenloses Hugging-Face-Konto, Lizenz auf der Modellseite akzeptieren, Lese-Token erstellen und hier einfügen. Der Token wird nur für den Download genutzt und nicht gespeichert.",
+  "@svcSemanticIntro": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSemanticTokenLabel": "Hugging-Face-Token (hf_…)",
+  "svcSemanticEnable": "Semantische Suche aktivieren",
+  "svcDownloadFailed": "Download fehlgeschlagen: {error}",
+  "@svcDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSemanticDownloadFailed": "Download fehlgeschlagen — Token und Lizenz prüfen. ({error})",
+  "@svcSemanticDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcIndexNotUpdated": "Index nicht aktualisiert: {error}",
+  "@svcIndexNotUpdated": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantModelSize": "ca. 2,6 GB",
+  "svcEmbedderModelSize": "ca. 180 MB",
+  "svcAssistantAndroidOnly": "Der Assistent läuft nur auf Android.",
+  "svcAssistantDeviceCheckFailed": "Gerät nicht prüfbar: {error}",
+  "@svcAssistantDeviceCheckFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantNeedsAndroid11": "Der lokale Assistent braucht mindestens Android 11.",
+  "svcAssistantNeedsArm64": "Der lokale Assistent braucht einen 64-Bit-ARM-Prozessor.",
+  "svcContextSystemPrompt": "Du bist der Assistent der App „Mai Doctor Hub“. Du beantwortest Fragen zur\npersönlichen Gesundheitsakte des Nutzers auf Deutsch, kurz und klar.\nRegeln:\n- Nutze nur die Informationen aus dem Abschnitt AKTE. Steht etwas nicht darin,\n  sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen;\n  verweise bei medizinischen Fragen an Arzt, Ärztin oder Apotheke.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.",
+  "svcContextRecordHeading": "AKTE",
+  "svcContextQuestionHeading": "FRAGE",
+  "svcContextToday": "Heute: {date}",
+  "@svcContextToday": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextActiveDiagnoses": "Aktive Diagnosen",
+  "svcSince": "seit {date}",
+  "@svcSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcCurrentMedications": "Aktuelle Medikamente",
+  "svcContextOpenSymptoms": "Offene Symptome (letzte 30 Tage)",
+  "svcContextVaccineOn": "{vaccine} am {date}",
+  "@svcContextVaccineOn": {
+    "placeholders": {
+      "vaccine": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextDoseNumber": "{number}. Dosis",
+  "@svcContextDoseNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "svcContextNextDue": "nächste fällig {date}",
+  "@svcContextNextDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextMatchingEntries": "Passende Einträge zur Frage:",
+  "svcContextUpcomingAppointments": "Nächste Termine",
+  "svcContextPastAppointments": "Letzte Termine",
+  "svcContextCancelled": "abgesagt",
+  "svcContextDiagnosesList": "Diagnosen: {list}",
+  "@svcContextDiagnosesList": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextIntake": "Einnahme {times}",
+  "@svcContextIntake": {
+    "placeholders": {
+      "times": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextFor": "gegen {diagnosis}",
+  "@svcContextFor": {
+    "placeholders": {
+      "diagnosis": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextUntil": "bis {date}",
+  "@svcContextUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcCheckInCount": "{count} Check-ins",
+  "@svcCheckInCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "svcContextLatest": "zuletzt {date}: {value}",
+  "@svcContextLatest": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextDayPattern": "dd.MM.yyyy",
+  "svcContextDayTimePattern": "dd.MM.yyyy HH:mm",
+  "svcSummaryPdfTitle": "Zusammenfassung für den Arztbesuch",
+  "svcSummaryPdfFileName": "Arztbesuch_{date}.pdf",
+  "@svcSummaryPdfFileName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryPdfDatePattern": "dd.MM.yyyy",
+  "svcSummaryPdfDateTimePattern": "dd.MM. HH:mm",
+  "svcSummaryPdfFooter": "Erstellt am {date} mit Mai Doctor Hub · Angaben des Patienten, keine ärztliche Dokumentation",
+  "@svcSummaryPdfFooter": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryPdfAppointment": "Termin {date} bei {doctor}",
+  "@svcSummaryPdfAppointment": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "doctor": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryPdfPeriod": "Zeitraum {from} – {to}",
+  "@svcSummaryPdfPeriod": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryPdfQuestions": "Meine Fragen & Anliegen",
+  "svcSummaryPdfDiagnoses": "Bekannte Diagnosen",
+  "svcSummaryPdfActive": "aktiv",
+  "svcSummaryPdfResolved": "abgeklungen",
+  "svcSummaryPdfNoCheckIns": "Keine Check-ins im Zeitraum.",
+  "svcSummaryPdfStats": "Ø {average}/10, min {min}, max {max}, zuletzt {last}",
+  "@svcSummaryPdfStats": {
+    "placeholders": {
+      "average": {
+        "type": "String"
+      },
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryPdfDate": "Datum",
+  "svcSummaryPdfValue": "Wert",
+  "svcSummaryPdfDose": "Dosis",
+  "svcSummaryPdfIntake": "Einnahme",
+  "svcSummaryPdfSinceUntil": "Seit / bis",
+  "svcSummaryPdfProductBatch": "Impfstoff / Charge",
+  "svcSummaryPdfNextDue": "Nächste",
+  "svcSummaryPdfDue": "Fällig: {list}",
+  "@svcSummaryPdfDue": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryTitle": "Für den Arztbesuch",
+  "svcSummarySaveDialog": "Zusammenfassung speichern",
+  "svcSummarySaved": "PDF gespeichert",
+  "svcSummaryExportFailed": "Export fehlgeschlagen: {error}",
+  "@svcSummaryExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryShare": "PDF teilen",
+  "svcSummaryIntro": "Fragen, Symptom-Verläufe, Medikamente und Impfungen auf einen Blick — als PDF für die Praxis.",
+  "svcSummaryAppointmentDatePattern": "d. MMM yyyy",
+  "svcSummaryReference": "Bezug (bestimmt Zeitraum)",
+  "svcSummaryNoAppointment": "Ohne — letzte 30 Tage",
+  "svcSummaryName": "Name (optional, steht im PDF)",
+  "svcSummaryQuestions": "Fragen & Anliegen",
+  "svcSummaryQuestionsHint": "Eine Frage pro Zeile — Notizen zum Termin kommen automatisch dazu",
+  "svcSummaryAllSymptoms": "Alle offenen Symptome",
+  "svcSummaryAllMedications": "Alle aktuellen Medikamente",
+  "svcSummaryMore": "Weiteres",
+  "svcReminderLead15Min": "15 Min.",
+  "svcReminderLead1Hour": "1 Std.",
+  "svcReminderLead2Hours": "2 Std.",
+  "svcReminderLead1Day": "1 Tag",
+  "svcReminderLead2Days": "2 Tage",
+  "svcReminderLead1Week": "1 Woche",
+  "svcReminderInMinutes": "In {minutes} Minuten ({time})",
+  "@svcReminderInMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "svcReminderInHours": "{hours, plural, =1{In 1 Stunde ({time})} other{In {hours} Stunden ({time})}}",
+  "@svcReminderInHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "svcReminderTomorrow": "Morgen {time}",
+  "@svcReminderTomorrow": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "svcReminderTimePattern": "HH:mm",
+  "svcReminderDayPattern": "EEE, d.M.",
+  "svcReminderAppointmentFallback": "Arzttermin",
+  "svcReminderMedicationTitle": "Einnahme: {name}",
+  "@svcReminderMedicationTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "svcReminderTakeNow": "Einnehmen",
+  "svcReminderCheckInDefault": "Symptome kurz protokollieren.",
+  "svcReminderCheckInSymptoms": "Check-in: {symptoms}",
+  "@svcReminderCheckInSymptoms": {
+    "placeholders": {
+      "symptoms": {
+        "type": "String"
+      }
+    }
+  },
+  "svcChannelCheckIn": "Symptom-Check-in",
+  "svcChannelCheckInDescription": "Erinnerungen für Check-ins",
+  "svcChannelAppointmentDescription": "Erinnerungen vor Arztterminen",
+  "svcChannelMedicationDescription": "Einnahme-Erinnerungen",
+  "svcCalendarEventTitle": "Arzttermin · {doctor}",
+  "@svcCalendarEventTitle": {
+    "placeholders": {
+      "doctor": {
+        "type": "String"
+      }
+    }
+  },
+  "svcCalendarManagedBy": "Verwaltet von Mai Doctor Hub",
+  "svcCalendarNoPermission": "Kalenderzugriff nicht erlaubt",
+  "svcCalendarNoEventId": "Keine Event-ID erhalten",
+  "svcImportPickFailed": "Dateiauswahl fehlgeschlagen",
+  "svcImportUnsupportedType": "Dateityp „{ext}“ wird nicht unterstützt (PDF oder Bild).",
+  "@svcImportUnsupportedType": {
+    "placeholders": {
+      "ext": {
+        "type": "String"
+      }
+    }
+  },
+  "svcImportFileNotSaved": "Datei konnte nicht lokal gespeichert werden.",
+  "svcImportReportNotSaved": "Bericht konnte nicht gespeichert werden.",
+  "svcExportFileName": "Mai-Doctor-Hub-Dokumente-{date}.zip",
+  "@svcExportFileName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcExportOverviewFile": "Übersicht.csv",
+  "svcExportCsvHeader": "Datum;Titel;Arzt;Termin;Quelle;Seiten;Datei",
+  "svcExportSourceImage": "Bild",
+  "svcBackupTooNew": "Sicherung stammt aus einer neueren App-Version — bitte App aktualisieren."
+}

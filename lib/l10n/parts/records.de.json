@@ -1,0 +1,250 @@
+{
+  "recordsTitle": "Meine Akte",
+  "recordsAssistantTooltip": "Assistent — Fragen an deine Akte",
+  "recordsVisitSummaryTooltip": "Zusammenfassung für den Arztbesuch",
+  "recordsSortTooltip": "Sortierung",
+  "recordsSortDate": "Datum",
+  "recordsSortName": "Name",
+  "recordsSortUpdated": "Zuletzt geändert",
+  "recordsAddEntry": "Eintrag anlegen",
+  "recordsSearchHint": "Suche in Akte & Berichten…",
+  "recordsLoading": "Akte wird geladen…",
+  "recordsEmpty": "Noch keine Einträge",
+  "recordsNoResults": "Keine Treffer für „{query}“",
+  "@recordsNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsEmptyHint": "Filter und Suche sind bereit — lege den ersten Eintrag an.",
+  "recordsFilterAll": "Alle",
+  "recordsCreateDoctors": "Ärzte anlegen",
+  "recordsCreateDiagnoses": "Diagnosen anlegen",
+  "recordsCreateSymptoms": "Symptome anlegen",
+  "recordsCreateAppointments": "Termine anlegen",
+  "recordsCreateReports": "Berichte anlegen",
+  "recordsCreateMedications": "Medikamente anlegen",
+  "recordsCreatePharmacies": "Apotheken anlegen",
+  "recordsCreateVaccinations": "Impfungen anlegen",
+  "recordsCreateNotes": "Notizen anlegen",
+  "recordsDatePattern": "d. MMM yyyy",
+  "recordsDateTimePattern": "d. MMM yyyy · HH:mm",
+  "recordsTimePattern": "HH:mm",
+  "recordsDiagnosisNone": "Keine",
+  "recordsDateClearTooltip": "{label} entfernen",
+  "@recordsDateClearTooltip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsDoctorCreateTitle": "Arzt anlegen",
+  "recordsDoctorEditTitle": "Arzt bearbeiten",
+  "recordsFieldName": "Name",
+  "recordsFieldSpecialty": "Fachrichtung",
+  "recordsFieldPractice": "Praxis / Klinik",
+  "recordsFieldPhone": "Telefon",
+  "recordsFieldAddress": "Adresse",
+  "recordsDiagnosisCreateTitle": "Diagnose anlegen",
+  "recordsDiagnosisEditTitle": "Diagnose bearbeiten",
+  "recordsFieldTitle": "Titel",
+  "recordsDiagnosisActive": "Aktiv",
+  "recordsDiagnosisResolved": "Abgeschlossen",
+  "recordsDiagnosisSince": "Seit",
+  "recordsDiagnosisUntil": "Bis",
+  "recordsSymptomCreateTitle": "Symptom anlegen",
+  "recordsSymptomEditTitle": "Symptom bearbeiten",
+  "recordsFieldSymptomLabel": "Bezeichnung",
+  "recordsFieldBodyRegion": "Körperregion",
+  "recordsNoteCreateTitle": "Notiz anlegen",
+  "recordsNoteEditTitle": "Notiz bearbeiten",
+  "recordsFieldText": "Text",
+  "recordsReportRenameTitle": "Bericht umbenennen",
+  "recordsDeleteConfirmTitle": "{what} löschen?",
+  "@recordsDeleteConfirmTitle": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsDeleteConfirmBody": "Das kann nicht rückgängig gemacht werden.",
+  "recordsScanDocument": "Dokument scannen",
+  "recordsScanDocumentHint": "Kamera · Text wird erkannt und durchsuchbar",
+  "recordsPickFiles": "Dateien wählen",
+  "recordsPickFilesHint": "PDFs oder Bilder · auch mehrere auf einmal",
+  "recordsScannerUnavailableTitle": "Scanner startet nicht",
+  "recordsScannerUnavailableBody": "Der Dokumentenscanner braucht die Google-Play-Dienste; beim ersten Mal lädt er sich ggf. erst herunter. Bitte gleich noch einmal versuchen oder ein Foto/PDF als Datei wählen.\n\nDetails: {details}",
+  "@recordsScannerUnavailableBody": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsPickFile": "Datei wählen",
+  "recordsScanSaving": "Scan wird gespeichert, Text wird erkannt…",
+  "recordsScanFileName": "Scan {date}.pdf",
+  "@recordsScanFileName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsScanFileDatePattern": "dd.MM.yyyy HH-mm",
+  "recordsScanSavedNoText": "Scan gespeichert (kein Text erkannt)",
+  "recordsScanSavedWithText": "Scan gespeichert — Text durchsuchbar",
+  "recordsReportSaved": "Bericht „{title}“ gespeichert",
+  "@recordsReportSaved": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsReportsSaved": "{count, plural, =1{1 Bericht gespeichert} other{{count} Berichte gespeichert}}",
+  "@recordsReportsSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recordsImportPartial": "{saved} gespeichert, {failed} fehlgeschlagen: {files}",
+  "@recordsImportPartial": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      },
+      "files": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsDeleteToArchive": "Löschen (ins Archiv)",
+  "recordsNotFound": "Eintrag nicht gefunden",
+  "recordsPractice": "Praxis",
+  "recordsPhoneTapToCall": "Telefon · tippen zum Anrufen",
+  "recordsAddressOpenMaps": "Adresse · in Karten öffnen",
+  "recordsDoctorNoSymptoms": "Noch keine Symptome bei diesem Arzt.",
+  "recordsAssign": "Zuordnen",
+  "recordsStatusActive": "aktiv",
+  "recordsStatusHealed": "geheilt",
+  "recordsLinkedDirect": "zugeordnet",
+  "recordsLinkedViaAppointments": "aus Terminen",
+  "recordsDoctorNoAppointments": "Keine Termine bei diesem Arzt.",
+  "recordsAssignSymptomsTitle": "Symptome bei {name}",
+  "@recordsAssignSymptomsTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsNoSymptomsYet": "Noch keine Symptome angelegt.",
+  "recordsSince": "seit {date}",
+  "@recordsSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsUntil": "bis {date}",
+  "@recordsUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsDiagnosisNoAppointments": "Noch keinem Termin zugeordnet.",
+  "recordsNoSymptomsLinked": "Keine Symptome verknüpft.",
+  "recordsNoMedicationsLinked": "Keine Medikamente verknüpft.",
+  "recordsDiagnosisNoReports": "Keine Berichte zu den Terminen.",
+  "recordsHealedOn": "geheilt am {date}",
+  "@recordsHealedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsMarkHealed": "Als geheilt markieren",
+  "recordsReopen": "Wieder aktiv",
+  "recordsDiscussedAtAppointments": "Besprochen bei Terminen",
+  "recordsHistory": "Verlauf",
+  "recordsCheckIns": "Check-ins",
+  "recordsNoCheckIns": "Noch keine Check-ins.",
+  "recordsDeleteValue": "Wert löschen",
+  "recordsFrom": "ab {date}",
+  "@recordsFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsOngoing": "dauerhaft",
+  "recordsDosePerIntake": "Dosis je Einnahme",
+  "recordsInstructions": "Hinweis",
+  "recordsPeriod": "Zeitraum",
+  "recordsIntakeTimes": "Einnahmezeiten",
+  "recordsNoIntakeTimes": "Keine festen Einnahmezeiten.",
+  "recordsIntake": "Einnahme",
+  "recordsRemindIntake": "An Einnahme erinnern",
+  "recordsPrescribedBy": "Verschrieben von",
+  "recordsIntakeLog": "Einnahme-Protokoll",
+  "recordsTakenNow": "Jetzt genommen",
+  "recordsNoIntakesYet": "Noch keine Einnahme erfasst.",
+  "recordsAdherence": "Letzte 14 Tage: {percent} % der geplanten Einnahmen genommen",
+  "@recordsAdherence": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "recordsTaken": "Genommen",
+  "recordsSkipped": "Ausgelassen",
+  "recordsPlannedAt": "geplant {time}",
+  "@recordsPlannedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsDeleteEntry": "Eintrag löschen",
+  "recordsPharmacyNoMedications": "Keine Medikamente von dieser Apotheke.",
+  "recordsDoseNumber": "{number}. Dosis",
+  "@recordsDoseNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "recordsVaccineProduct": "Impfstoff",
+  "recordsBatch": "Charge",
+  "recordsBoosterOverdue": "Auffrischung überfällig",
+  "recordsNextDoseDue": "Nächste Impfung fällig",
+  "recordsVaccinatedBy": "Geimpft von",
+  "recordsLastModified": "Zuletzt geändert {date}",
+  "@recordsLastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsRelatedAppointment": "Zugehöriger Termin",
+  "recordsRelatedDiagnosis": "Zugehörige Diagnose"
+}

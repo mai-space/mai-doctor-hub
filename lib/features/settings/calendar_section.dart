@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../services/calendar/calendar_gateway.dart';
 import '../../services/calendar/calendar_sync_service.dart';
 
@@ -57,19 +58,18 @@ class _CalendarSectionState extends State<CalendarSection> {
 
   Future<void> _toggle(bool enabled) async {
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     if (enabled) {
       await _loadCalendars(request: true);
       if (_calendars == null) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Ohne Kalenderzugriff kein Export.')),
+          SnackBar(content: Text(l10n.settingsCalendarNoPermission)),
         );
         return;
       }
       if (_calendars!.isEmpty) {
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Kein beschreibbarer Kalender auf dem Gerät.'),
-          ),
+          SnackBar(content: Text(l10n.settingsCalendarNoWritable)),
         );
         return;
       }
@@ -89,40 +89,43 @@ class _CalendarSectionState extends State<CalendarSection> {
     final remove = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Kalender-Export beenden'),
-        content: const Text(
-          'Sollen die bereits übertragenen Termine aus dem Kalender '
-          'entfernt werden?',
-        ),
+        title: Text(l10n.settingsCalendarStopTitle),
+        content: Text(l10n.settingsCalendarStopText),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Behalten'),
+            child: Text(l10n.settingsCalendarKeep),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Entfernen'),
+            child: Text(l10n.settingsCalendarRemove),
           ),
         ],
       ),
     );
     if (remove == null) return;
     await _save(enabled: false);
-    if (remove) await _run(() async => _service().removeAll(), 'entfernt');
+    if (remove) {
+      await _run(
+        () async => _service().removeAll(),
+        count: l10n.settingsCalendarRemovedCount,
+        other: l10n.settingsCalendarRemovedResult,
+      );
+    }
   }
 
-  Future<void> _run(Future<Object?> Function() task, String verb) async {
+  Future<void> _run(
+    Future<Object?> Function() task, {
+    required String Function(int count) count,
+    required String Function(String result) other,
+  }) async {
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _busy = true);
     try {
       final result = await task();
       messenger.showSnackBar(
         SnackBar(
-          content: Text(
-            result is int
-                ? '$result Termin(e) aus dem Kalender $verb.'
-                : 'Kalender $verb: $result',
-          ),
+          content: Text(result is int ? count(result) : other('$result')),
         ),
       );
     } on CalendarException catch (e) {
@@ -138,12 +141,13 @@ class _CalendarSectionState extends State<CalendarSection> {
     final db = DatabaseScope.of(context);
     final supported = _gateway.isSupported;
     final calendars = _calendars;
+    final l10n = context.l10n;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Kalender',
+          l10n.settingsCalendarSection,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -151,13 +155,11 @@ class _CalendarSectionState extends State<CalendarSection> {
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           secondary: const Icon(Icons.event_available_outlined),
-          title: const Text('Termine in Kalender übertragen'),
+          title: Text(l10n.settingsCalendarExportTitle),
           subtitle: Text(
             supported
-                ? 'Nur in eine Richtung, z. B. in deinen Google Kalender. '
-                      'Es wird nur „Arzttermin“, Arzt und Ort übertragen — '
-                      'keine Diagnosen oder Notizen.'
-                : 'Nur in der Android-App verfügbar.',
+                ? l10n.settingsCalendarExportSubtitle
+                : l10n.settingsCalendarAndroidOnly,
           ),
           value: _s.calendarSyncEnabled,
           onChanged: !supported || _busy ? null : _toggle,
@@ -166,7 +168,7 @@ class _CalendarSectionState extends State<CalendarSection> {
           if (calendars != null)
             DropdownMenu<String>(
               initialSelection: _s.calendarId,
-              label: const Text('Zielkalender'),
+              label: Text(l10n.settingsCalendarTarget),
               expandedInsets: EdgeInsets.zero,
               dropdownMenuEntries: [
                 for (final c in calendars)
@@ -184,14 +186,12 @@ class _CalendarSectionState extends State<CalendarSection> {
             TextButton.icon(
               onPressed: () => _loadCalendars(request: true),
               icon: const Icon(Icons.lock_open),
-              label: const Text('Kalenderzugriff erlauben'),
+              label: Text(l10n.settingsCalendarAllowAccess),
             ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Termintitel mit übertragen'),
-            subtitle: const Text(
-              'Aus: „Arzttermin · Dr. …“. An: z. B. „MRT Knie · Dr. …“.',
-            ),
+            title: Text(l10n.settingsCalendarIncludeTitle),
+            subtitle: Text(l10n.settingsCalendarIncludeTitleSubtitle),
             value: _s.calendarIncludeTitle,
             onChanged: (v) => _save(includeTitle: v),
           ),
@@ -214,19 +214,29 @@ class _CalendarSectionState extends State<CalendarSection> {
                   color: errors > 0 ? theme.colorScheme.error : null,
                 ),
                 title: Text(
-                  '${links.length - errors} Termin(e) im Kalender'
-                  '${errors > 0 ? ' · $errors Fehler' : ''}',
+                  errors > 0
+                      ? l10n.settingsCalendarLinkedWithErrors(
+                          links.length - errors,
+                          errors,
+                        )
+                      : l10n.settingsCalendarLinkedCount(links.length),
                 ),
                 subtitle: last == null
                     ? null
                     : Text(
-                        'Zuletzt ${DateFormat('d. MMM, HH:mm', 'de').format(last)}',
+                        l10n.settingsCalendarLastSynced(
+                          DateFormat(l10n.settingsDateTimePattern).format(last),
+                        ),
                       ),
                 trailing: TextButton(
                   onPressed: _busy
                       ? null
-                      : () => _run(() => _service().syncAll(), 'abgeglichen'),
-                  child: const Text('Jetzt'),
+                      : () => _run(
+                          () => _service().syncAll(),
+                          count: l10n.settingsCalendarSyncedCount,
+                          other: l10n.settingsCalendarSyncedResult,
+                        ),
+                  child: Text(l10n.settingsCalendarSyncNow),
                 ),
               );
             },

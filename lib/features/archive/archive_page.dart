@@ -3,17 +3,19 @@ import 'package:intl/intl.dart' show DateFormat;
 
 import '../../data/database_provider.dart';
 import '../../data/repositories/archive_repository.dart';
+import '../../l10n/l10n.dart';
 
-const _typeLabels = {
-  'doctor': 'Arzt',
-  'diagnosis': 'Diagnose',
-  'symptom': 'Symptom',
-  'appointment': 'Termin',
-  'report': 'Bericht',
-  'medication': 'Medikament',
-  'note': 'Notiz',
-  'pharmacy': 'Apotheke',
-  'vaccination': 'Impfung',
+String? _typeLabel(AppLocalizations l10n, String type) => switch (type) {
+  'doctor' => l10n.entityDoctor,
+  'diagnosis' => l10n.entityDiagnosis,
+  'symptom' => l10n.entitySymptom,
+  'appointment' => l10n.entityAppointment,
+  'report' => l10n.entityReport,
+  'medication' => l10n.entityMedication,
+  'note' => l10n.entityNote,
+  'pharmacy' => l10n.entityPharmacy,
+  'vaccination' => l10n.entityVaccination,
+  _ => null,
 };
 
 const _typeIcons = {
@@ -38,6 +40,7 @@ Future<bool> archiveWithUndo(
 }) async {
   final repo = ArchiveRepository(DatabaseScope.of(context));
   final messenger = ScaffoldMessenger.of(context);
+  final l10n = context.l10n;
   try {
     await repo.archive(type, id);
   } on ArchiveBlocked catch (e) {
@@ -48,12 +51,16 @@ Future<bool> archiveWithUndo(
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
-        content: Text('${label ?? _typeLabels[type] ?? 'Eintrag'} im Archiv'),
+        content: Text(
+          l10n.settingsArchiveSnack(
+            label ?? _typeLabel(l10n, type) ?? l10n.entityEntry,
+          ),
+        ),
         duration: const Duration(seconds: 6),
         // Mit Action bleibt eine SnackBar sonst stehen, bis man sie wegwischt.
         persist: false,
         action: SnackBarAction(
-          label: 'Rückgängig',
+          label: l10n.commonUndo,
           onPressed: () => repo.restore(type, id),
         ),
       ),
@@ -87,7 +94,7 @@ class _ArchivePageState extends State<ArchivePage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Abbrechen'),
+              child: Text(context.l10n.commonCancel),
             ),
             FilledButton(
               style: FilledButton.styleFrom(
@@ -95,7 +102,7 @@ class _ArchivePageState extends State<ArchivePage> {
                 foregroundColor: Theme.of(context).colorScheme.onError,
               ),
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Endgültig löschen'),
+              child: Text(context.l10n.settingsArchivePurgeAction),
             ),
           ],
         ),
@@ -105,9 +112,10 @@ class _ArchivePageState extends State<ArchivePage> {
   Future<void> _purge(ArchivedItem item) async {
     final repo = ArchiveRepository(DatabaseScope.of(context));
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     if (!await _confirm(
-      'Endgültig löschen?',
-      '„${item.title}“ wird unwiderruflich gelöscht (inkl. Dateien).',
+      l10n.settingsArchivePurgeTitle,
+      l10n.settingsArchivePurgeText(item.title),
     )) {
       return;
     }
@@ -121,34 +129,36 @@ class _ArchivePageState extends State<ArchivePage> {
   Future<void> _purgeAll() async {
     final repo = ArchiveRepository(DatabaseScope.of(context));
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     if (!await _confirm(
-      'Archiv leeren?',
-      'Alle archivierten Einträge werden unwiderruflich gelöscht.',
+      l10n.settingsArchivePurgeAllTitle,
+      l10n.settingsArchivePurgeAllText,
     )) {
       return;
     }
     final count = await repo.purgeAll();
     messenger.showSnackBar(
-      SnackBar(content: Text('$count Einträge endgültig gelöscht')),
+      SnackBar(content: Text(l10n.settingsArchivePurgedCount(count))),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final repo = ArchiveRepository(DatabaseScope.of(context));
-    final format = DateFormat('d. MMM, HH:mm', 'de');
+    final l10n = context.l10n;
+    final format = DateFormat(l10n.settingsDateTimePattern);
     return StreamBuilder<List<ArchivedItem>>(
       stream: _items,
       builder: (context, snapshot) {
         final items = snapshot.data ?? const <ArchivedItem>[];
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Archiv'),
+            title: Text(l10n.settingsArchiveTitle),
             actions: [
               if (items.isNotEmpty)
                 TextButton(
                   onPressed: _purgeAll,
-                  child: const Text('Leeren'),
+                  child: Text(l10n.settingsArchiveEmptyAction),
                 ),
             ],
           ),
@@ -158,9 +168,8 @@ class _ArchivePageState extends State<ArchivePage> {
                     padding: const EdgeInsets.all(32),
                     child: Text(
                       snapshot.hasData
-                          ? 'Das Archiv ist leer. Gelöschte Einträge landen '
-                                'hier und lassen sich wiederherstellen.'
-                          : 'Wird geladen…',
+                          ? l10n.settingsArchiveEmpty
+                          : l10n.settingsArchiveLoading,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -175,20 +184,22 @@ class _ArchivePageState extends State<ArchivePage> {
                       leading: Icon(_typeIcons[item.entityType]),
                       title: Text(item.title),
                       subtitle: Text(
-                        '${_typeLabels[item.entityType]} · archiviert '
-                        '${format.format(item.archivedAt)}',
+                        l10n.settingsArchiveItemSubtitle(
+                          '${_typeLabel(l10n, item.entityType)}',
+                          format.format(item.archivedAt),
+                        ),
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            tooltip: 'Wiederherstellen',
+                            tooltip: l10n.commonRestore,
                             icon: const Icon(Icons.restore),
                             onPressed: () =>
                                 repo.restore(item.entityType, item.id),
                           ),
                           IconButton(
-                            tooltip: 'Endgültig löschen',
+                            tooltip: l10n.settingsArchivePurgeAction,
                             icon: const Icon(Icons.delete_forever_outlined),
                             onPressed: () => _purge(item),
                           ),

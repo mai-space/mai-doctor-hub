@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../data/app_database.dart';
+import '../l10n/l10n.dart';
 import 'observation_chart.dart';
 
 /// Symptom mit den im Zeitraum gemeldeten Check-ins (Diagramm + Werte).
@@ -21,12 +22,12 @@ class SymptomReportCard extends StatelessWidget {
   final DateTime to;
   final VoidCallback? onTap;
 
-  static final _day = DateFormat('d.M.', 'de');
-  static final _dayTime = DateFormat('d.M. HH:mm', 'de');
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final day = DateFormat(l10n.settingsChartDayPattern);
+    final dayTime = DateFormat(l10n.settingsChartDayTimePattern);
     final points = scalePoints(observations);
     final latest = observations.reversed.take(5).toList();
     return Card(
@@ -52,7 +53,7 @@ class SymptomReportCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${_day.format(from)} – ${_day.format(to)}',
+                    '${day.format(from)} – ${day.format(to)}',
                     style: theme.textTheme.labelSmall,
                   ),
                 ],
@@ -60,15 +61,20 @@ class SymptomReportCard extends StatelessWidget {
               const SizedBox(height: 4),
               if (observations.isEmpty)
                 Text(
-                  'Keine Check-ins in diesem Zeitraum.',
+                  l10n.settingsSymptomReportNoCheckIns,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 )
               else ...[
                 Text(
-                  '${observations.length} Check-in(s)'
-                  '${points.isEmpty ? '' : ' · Ø ${_avg(points)} · zuletzt ${points.last.value.toStringAsFixed(0)}/10'}',
+                  points.isEmpty
+                      ? l10n.settingsSymptomReportCount(observations.length)
+                      : l10n.settingsSymptomReportCountStats(
+                          observations.length,
+                          _avg(points),
+                          points.last.value.toStringAsFixed(0),
+                        ),
                   style: theme.textTheme.bodySmall,
                 ),
                 if (points.length > 1) ...[
@@ -78,7 +84,7 @@ class SymptomReportCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 for (final o in latest)
                   Text(
-                    '${_dayTime.format(o.recordedAt)} · ${observationLabel(o)}',
+                    '${dayTime.format(o.recordedAt)} · ${observationLabel(o)}',
                     style: theme.textTheme.bodySmall,
                   ),
               ],
@@ -94,12 +100,15 @@ class SymptomReportCard extends StatelessWidget {
           .toStringAsFixed(1);
 }
 
-/// Lesbarer Wert eines Check-ins.
+/// Lesbarer Wert eines Check-ins (auch außerhalb von Widgets genutzt).
 String observationLabel(SymptomObservation o) => switch (o.kind) {
-  ObservationKind.scale_1_10 =>
-    'Stärke ${o.valueNumber?.toStringAsFixed(0) ?? '–'}/10',
+  ObservationKind.scale_1_10 => AppLocale.strings.settingsObservationScale(
+    o.valueNumber?.toStringAsFixed(0) ?? '–',
+  ),
   ObservationKind.quantity =>
     '${o.valueNumber?.toString() ?? '–'} ${o.unit ?? ''}'.trim(),
-  ObservationKind.color => 'Farbe ${o.valueColor ?? o.valueText ?? ''}',
-  ObservationKind.note => o.valueText ?? o.note ?? 'Notiz',
+  ObservationKind.color => AppLocale.strings.settingsObservationColor(
+    o.valueColor ?? o.valueText ?? '',
+  ),
+  ObservationKind.note => o.valueText ?? o.note ?? AppLocale.strings.entityNote,
 };

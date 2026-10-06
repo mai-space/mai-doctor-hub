@@ -4,6 +4,7 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/reminder_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../services/notification_service.dart';
 import '../check_in/check_in_sheet.dart';
 import '../records/entity_forms.dart';
@@ -47,6 +48,7 @@ class _RemindersSectionState extends State<RemindersSection> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final repo = ReminderRepository(DatabaseScope.of(context));
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -54,7 +56,7 @@ class _RemindersSectionState extends State<RemindersSection> {
           children: [
             Expanded(
               child: Text(
-                'Erinnerungen',
+                l10n.settingsRemindersSection,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -66,7 +68,7 @@ class _RemindersSectionState extends State<RemindersSection> {
                 await _ensurePermission();
               },
               icon: const Icon(Icons.add_alarm),
-              label: const Text('Neu'),
+              label: Text(l10n.settingsRemindersNew),
             ),
           ],
         ),
@@ -80,16 +82,16 @@ class _RemindersSectionState extends State<RemindersSection> {
                 color: theme.colorScheme.onErrorContainer,
               ),
               title: Text(
-                'Benachrichtigungen sind aus',
+                l10n.settingsRemindersNotificationsOff,
                 style: TextStyle(color: theme.colorScheme.onErrorContainer),
               ),
               subtitle: Text(
-                'Erinnerungen werden geplant, aber nicht angezeigt.',
+                l10n.settingsRemindersNotificationsOffText,
                 style: TextStyle(color: theme.colorScheme.onErrorContainer),
               ),
               trailing: TextButton(
                 onPressed: _ensurePermission,
-                child: const Text('Erlauben'),
+                child: Text(l10n.settingsRemindersAllow),
               ),
             ),
           ),
@@ -101,7 +103,7 @@ class _RemindersSectionState extends State<RemindersSection> {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
-                  'Keine Erinnerungen — mit „Neu“ anlegen.',
+                  l10n.settingsRemindersEmpty,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -127,7 +129,7 @@ class _RemindersSectionState extends State<RemindersSection> {
         OutlinedButton.icon(
           onPressed: () => showCheckInSheet(context),
           icon: const Icon(Icons.favorite_outline),
-          label: const Text('Check-in jetzt öffnen'),
+          label: Text(l10n.settingsRemindersOpenCheckIn),
         ),
       ],
     );
@@ -150,7 +152,7 @@ class _ReminderTile extends StatelessWidget {
     final r = item.reminder;
     final time = TimeOfDay(hour: r.hour, minute: r.minute).format(context);
     final scope = item.symptoms.isEmpty
-        ? 'alle offenen Symptome'
+        ? context.l10n.settingsRemindersAllOpenSymptoms
         : item.symptoms.map((s) => s.label).join(', ');
     return SwitchListTile(
       contentPadding: EdgeInsets.zero,
@@ -179,19 +181,16 @@ Future<bool> ensureNotificationPermission(BuildContext context) async {
     context: context,
     builder: (context) => AlertDialog(
       icon: const Icon(Icons.notifications_active_outlined),
-      title: const Text('Benachrichtigungen erlauben?'),
-      content: const Text(
-        'Damit Erinnerungen erscheinen, braucht die App die Erlaubnis für '
-        'Benachrichtigungen. Sie werden lokal geplant — ohne Server.',
-      ),
+      title: Text(context.l10n.settingsRemindersPermissionTitle),
+      content: Text(context.l10n.settingsRemindersPermissionText),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Später'),
+          child: Text(context.l10n.settingsRemindersLater),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Erlauben'),
+          child: Text(context.l10n.settingsRemindersAllow),
         ),
       ],
     ),
@@ -217,11 +216,16 @@ Future<void> showReminderForm(
   var weekdays = r?.weekdays ?? Weekdays.all;
   final selected = {...?existing?.symptoms.map((s) => s.id)};
 
+  final l10n = context.l10n;
   final result = await showDialog<String>(
     context: context,
     builder: (context) => StatefulBuilder(
       builder: (context, setState) => AlertDialog(
-        title: Text(existing == null ? 'Neue Erinnerung' : 'Erinnerung'),
+        title: Text(
+          existing == null
+              ? l10n.settingsReminderNewTitle
+              : l10n.settingsReminderTitle,
+        ),
         scrollable: true,
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -229,19 +233,21 @@ Future<void> showReminderForm(
           children: [
             TextField(
               controller: title,
-              decoration: const InputDecoration(labelText: 'Titel'),
+              decoration: InputDecoration(
+                labelText: l10n.settingsReminderFieldTitle,
+              ),
             ),
             TextField(
               controller: body,
-              decoration: const InputDecoration(
-                labelText: 'Text (optional)',
+              decoration: InputDecoration(
+                labelText: l10n.settingsReminderFieldBody,
               ),
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.schedule),
               title: Text(time.format(context)),
-              subtitle: const Text('Uhrzeit'),
+              subtitle: Text(l10n.settingsReminderTime),
               onTap: () async {
                 final picked = await showTimePicker(
                   context: context,
@@ -250,7 +256,7 @@ Future<void> showReminderForm(
                 if (picked != null) setState(() => time = picked);
               },
             ),
-            const Text('Wochentage'),
+            Text(l10n.settingsReminderWeekdays),
             const SizedBox(height: 4),
             Wrap(
               spacing: 4,
@@ -268,7 +274,7 @@ Future<void> showReminderForm(
             ),
             if (symptoms.isNotEmpty) ...[
               const SizedBox(height: 12),
-              const Text('Nur für Symptome (leer = alle offenen)'),
+              Text(l10n.settingsReminderSymptomsHint),
               const SizedBox(height: 4),
               Wrap(
                 spacing: 6,
@@ -291,15 +297,15 @@ Future<void> showReminderForm(
           if (existing != null)
             TextButton(
               onPressed: () => Navigator.pop(context, 'delete'),
-              child: const Text('Löschen'),
+              child: Text(l10n.commonDelete),
             ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Abbrechen'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, 'save'),
-            child: const Text('Speichern'),
+            child: Text(l10n.commonSave),
           ),
         ],
       ),
@@ -307,7 +313,7 @@ Future<void> showReminderForm(
   );
   if (!context.mounted || result == null) return;
   if (result == 'delete') {
-    if (await confirmDelete(context, what: 'Erinnerung')) {
+    if (await confirmDelete(context, what: l10n.settingsReminderTitle)) {
       await repo.delete(existing!.reminder.id);
     }
     return;

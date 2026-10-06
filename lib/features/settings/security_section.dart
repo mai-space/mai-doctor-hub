@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../services/app_lock.dart';
 
 /// Einstellungen → App-Sperre.
@@ -12,15 +13,11 @@ class SecuritySection extends StatelessWidget {
     final lock = AppLockScope.of(context);
     final settings = SettingsRepository(DatabaseScope.of(context));
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     if (value) {
       if (!await lock.authenticator.isAvailable()) {
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Keine Displaysperre eingerichtet — bitte zuerst in den '
-              'Geräteeinstellungen PIN oder Biometrie aktivieren.',
-            ),
-          ),
+          SnackBar(content: Text(l10n.settingsLockNoDeviceLock)),
         );
         return;
       }
@@ -35,11 +32,12 @@ class SecuritySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final lock = AppLockScope.of(context);
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Sicherheit',
+          l10n.settingsSecuritySection,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -47,12 +45,8 @@ class SecuritySection extends StatelessWidget {
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           secondary: const Icon(Icons.fingerprint),
-          title: const Text('App-Sperre'),
-          subtitle: const Text(
-            'Beim Öffnen und nach 1 Minute im Hintergrund mit Biometrie oder '
-            'Geräte-PIN entsperren. Inhalte erscheinen nicht in Screenshots '
-            'oder der App-Übersicht.',
-          ),
+          title: Text(l10n.settingsLockTitle),
+          subtitle: Text(l10n.settingsLockSubtitle),
           value: lock.enabled,
           onChanged: lock.authenticating ? null : (v) => _toggle(context, v),
         ),

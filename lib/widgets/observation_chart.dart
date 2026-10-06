@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../data/app_database.dart';
+import '../l10n/l10n.dart';
 
 /// Punkt im Verlauf (Skalenwert 1–10).
 class ChartPoint {
@@ -29,12 +30,13 @@ class ObservationChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme.labelSmall!;
+    final l10n = context.l10n;
     if (points.isEmpty) {
       return SizedBox(
         height: height / 2,
         child: Center(
           child: Text(
-            'Noch keine Skalenwerte — per Check-in erfassen.',
+            l10n.settingsChartEmpty,
             style: TextStyle(color: scheme.onSurfaceVariant),
           ),
         ),
@@ -42,11 +44,13 @@ class ObservationChart extends StatelessWidget {
     }
     final first = points.first.at;
     final last = points.last.at;
-    final format = DateFormat('d.M.', 'de');
+    final format = DateFormat(l10n.settingsChartDayPattern);
     return Semantics(
-      label:
-          'Verlauf von ${format.format(first)} bis ${format.format(last)}, '
-          'zuletzt ${points.last.value.toStringAsFixed(0)} von 10',
+      label: l10n.settingsChartSemantics(
+        format.format(first),
+        format.format(last),
+        points.last.value.toStringAsFixed(0),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

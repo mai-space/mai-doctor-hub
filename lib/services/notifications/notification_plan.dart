@@ -1,3 +1,5 @@
+import '../../l10n/l10n.dart';
+
 /// Bereiche für Benachrichtigungs-IDs — jede Quelle ersetzt nur ihren eigenen.
 enum NotificationGroup {
   reminders(100000),
@@ -13,15 +15,32 @@ enum NotificationGroup {
 
 /// Kanäle (Android: in den System-Einstellungen einzeln abschaltbar).
 enum NotificationChannel {
-  checkIn('check_in', 'Symptom-Check-in', 'Erinnerungen für Check-ins'),
-  appointment('appointment', 'Termine', 'Erinnerungen vor Arztterminen'),
-  medication('medication', 'Medikamente', 'Einnahme-Erinnerungen');
+  checkIn('check_in'),
+  appointment('appointment'),
+  medication('medication');
 
-  const NotificationChannel(this.id, this.label, this.description);
+  const NotificationChannel(this.id);
 
   final String id;
-  final String label;
-  final String description;
+
+  /// Name in den Android-Einstellungen (App-Sprache).
+  String get label {
+    final l10n = AppLocale.strings;
+    return switch (this) {
+      checkIn => l10n.svcChannelCheckIn,
+      appointment => l10n.entityAppointments,
+      medication => l10n.entityMedications,
+    };
+  }
+
+  String get description {
+    final l10n = AppLocale.strings;
+    return switch (this) {
+      checkIn => l10n.svcChannelCheckInDescription,
+      appointment => l10n.svcChannelAppointmentDescription,
+      medication => l10n.svcChannelMedicationDescription,
+    };
+  }
 }
 
 /// Eine geplante Benachrichtigung — reine Daten, ohne Plugin.

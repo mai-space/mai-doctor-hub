@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../data/database_provider.dart';
+import '../../l10n/l10n.dart';
 import '../../services/assistant/assistant_model.dart';
 import '../../services/assistant/record_context.dart';
 
@@ -30,11 +31,11 @@ class _AssistantPageState extends State<AssistantPage> {
   final _turns = <_Turn>[];
   StreamSubscription<String>? _answering;
 
-  static const _examples = [
-    'Wann ist mein nächster Termin?',
-    'Welche Medikamente nehme ich gerade?',
-    'Wie haben sich meine Symptome entwickelt?',
-    'Was stand im letzten Bericht?',
+  List<String> _examples(AppLocalizations l10n) => [
+    l10n.svcAssistantExample1,
+    l10n.svcAssistantExample2,
+    l10n.svcAssistantExample3,
+    l10n.svcAssistantExample4,
   ];
 
   @override
@@ -108,19 +109,18 @@ class _AssistantPageState extends State<AssistantPage> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Modell löschen?'),
+        title: Text(context.l10n.svcAssistantDeleteModelQuestion),
         content: Text(
-          'Gibt ${_model.engine.downloadSize} Speicher frei. Für den '
-          'Assistenten musst du es danach neu herunterladen.',
+          context.l10n.svcAssistantDeleteModelBody(_model.engine.downloadSize),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Abbrechen'),
+            child: Text(context.l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Löschen'),
+            child: Text(context.l10n.commonDelete),
           ),
         ],
       ),
@@ -136,7 +136,7 @@ class _AssistantPageState extends State<AssistantPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Assistent'),
+        title: Text(context.l10n.svcAssistantTitle),
         actions: [
           if (_model.phase == AssistantPhase.ready)
             PopupMenuButton<String>(
@@ -144,14 +144,14 @@ class _AssistantPageState extends State<AssistantPage> {
                   ? _model.deleteSemantic(DatabaseScope.of(context))
                   : _confirmDelete(),
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
-                  child: Text('Modell löschen'),
+                  child: Text(context.l10n.svcAssistantDeleteModel),
                 ),
                 if (_model.semanticPhase == SemanticPhase.ready)
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'semantic',
-                    child: Text('Suchmodell löschen'),
+                    child: Text(context.l10n.svcAssistantDeleteSearchModel),
                   ),
               ],
             ),
@@ -164,7 +164,7 @@ class _AssistantPageState extends State<AssistantPage> {
           ),
           AssistantPhase.unsupported => _Info(
             icon: Icons.phonelink_erase_outlined,
-            title: 'Auf diesem Gerät nicht verfügbar',
+            title: context.l10n.svcAssistantUnsupportedTitle,
             text: _model.message ?? '',
           ),
           AssistantPhase.notInstalled ||
@@ -177,6 +177,7 @@ class _AssistantPageState extends State<AssistantPage> {
 
   Widget _chat(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Column(
       children: [
         Expanded(
@@ -185,16 +186,14 @@ class _AssistantPageState extends State<AssistantPage> {
                   padding: const EdgeInsets.all(20),
                   children: [
                     Text(
-                      'Frag deine Akte',
+                      l10n.svcAssistantAskTitle,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Antworten entstehen auf diesem Gerät aus deinen '
-                      'Einträgen und Berichten — nichts wird hochgeladen, '
-                      'der Verlauf wird nicht gespeichert.',
+                      l10n.svcAssistantIntro,
                       style: theme.textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 16),
@@ -202,7 +201,7 @@ class _AssistantPageState extends State<AssistantPage> {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        for (final q in _examples)
+                        for (final q in _examples(l10n))
                           ActionChip(label: Text(q), onPressed: () => _ask(q)),
                       ],
                     ),
@@ -220,7 +219,7 @@ class _AssistantPageState extends State<AssistantPage> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'Keine ärztliche Beratung — Antworten können Fehler enthalten.',
+            l10n.svcAssistantDisclaimer,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -238,14 +237,14 @@ class _AssistantPageState extends State<AssistantPage> {
                   maxLines: 4,
                   textInputAction: TextInputAction.send,
                   onSubmitted: _ask,
-                  decoration: const InputDecoration(
-                    hintText: 'Frage zu deiner Akte…',
+                  decoration: InputDecoration(
+                    hintText: l10n.svcAssistantInputHint,
                   ),
                 ),
               ),
               const SizedBox(width: 8),
               IconButton.filled(
-                tooltip: 'Fragen',
+                tooltip: l10n.svcAssistantSend,
                 onPressed: _busy ? null : () => _ask(_input.text),
                 icon: const Icon(Icons.send),
               ),
@@ -291,18 +290,18 @@ class _TurnView extends StatelessWidget {
             ),
             child: turn.error != null
                 ? Text(
-                    'Keine Antwort: ${turn.error}',
+                    context.l10n.svcAssistantNoAnswer('${turn.error}'),
                     style: TextStyle(color: theme.colorScheme.error),
                   )
                 : answer.isEmpty && !turn.done
-                ? const Row(
+                ? Row(
                     children: [
-                      SizedBox.square(
+                      const SizedBox.square(
                         dimension: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
-                      SizedBox(width: 12),
-                      Text('Liest deine Akte…'),
+                      const SizedBox(width: 12),
+                      Text(context.l10n.svcAssistantReading),
                     ],
                   )
                 : SelectableText(answer),
@@ -322,6 +321,7 @@ class _Setup extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final downloading = model.phase == AssistantPhase.downloading;
+    final l10n = context.l10n;
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
@@ -332,7 +332,7 @@ class _Setup extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'Lokaler Assistent',
+          l10n.svcAssistantSetupTitle,
           textAlign: TextAlign.center,
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w700,
@@ -340,19 +340,17 @@ class _Setup extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          'Stell Fragen zu Terminen, Medikamenten, Symptomen und Berichten. '
-          'Das KI-Modell ${model.engine.modelName} läuft vollständig auf '
-          'diesem Gerät — deine Akte wird nie hochgeladen. Nur das Modell '
-          'selbst wird einmalig heruntergeladen (${model.engine.downloadSize}, '
-          'am besten im WLAN).',
+          l10n.svcAssistantSetupBody(
+            model.engine.modelName,
+            model.engine.downloadSize,
+          ),
           textAlign: TextAlign.center,
           style: theme.textTheme.bodyLarge,
         ),
         if (model.lowMemory) ...[
           const SizedBox(height: 12),
           Text(
-            'Hinweis: Dieses Gerät hat wenig Arbeitsspeicher. Der Assistent '
-            'kann langsam sein oder von Android beendet werden.',
+            l10n.svcAssistantLowMemory,
             textAlign: TextAlign.center,
             style: TextStyle(color: theme.colorScheme.error),
           ),
@@ -370,20 +368,19 @@ class _Setup extends StatelessWidget {
           LinearProgressIndicator(value: model.progress / 100),
           const SizedBox(height: 8),
           Text(
-            'Wird geladen… ${model.progress} % — läuft auch weiter, wenn du '
-            'die App verlässt.',
+            l10n.svcAssistantDownloading(model.progress),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: model.cancel,
-            child: const Text('Abbrechen'),
+            child: Text(l10n.commonCancel),
           ),
         ] else
           FilledButton.icon(
             onPressed: model.download,
             icon: const Icon(Icons.download),
-            label: Text('Modell herunterladen (${model.engine.downloadSize})'),
+            label: Text(l10n.svcAssistantDownloadModel(model.engine.downloadSize)),
           ),
       ],
     );
@@ -446,12 +443,10 @@ class _SemanticCardState extends State<_SemanticCard> {
   Widget build(BuildContext context) {
     final model = widget.model;
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final body = switch (model.semanticPhase) {
       SemanticPhase.ready => <Widget>[
-        const Text(
-          'Aktiv: Antworten nutzen die besten Treffer per Stichwort und per '
-          'Bedeutung.',
-        ),
+        Text(l10n.svcSemanticActive),
       ],
       SemanticPhase.indexing => <Widget>[
         LinearProgressIndicator(
@@ -460,28 +455,24 @@ class _SemanticCardState extends State<_SemanticCard> {
               : model.indexDone / model.indexTotal,
         ),
         const SizedBox(height: 8),
-        Text('Akte wird indexiert… ${model.indexDone}/${model.indexTotal}'),
+        Text(l10n.svcSemanticIndexing(model.indexDone, model.indexTotal)),
       ],
       SemanticPhase.downloading => <Widget>[
         LinearProgressIndicator(value: model.semanticProgress / 100),
         const SizedBox(height: 8),
-        Text('Suchmodell wird geladen… ${model.semanticProgress} %'),
+        Text(l10n.svcSemanticDownloading(model.semanticProgress)),
         const SizedBox(height: 8),
         OutlinedButton(
           onPressed: model.cancelSemantic,
-          child: const Text('Abbrechen'),
+          child: Text(l10n.commonCancel),
         ),
       ],
       SemanticPhase.notInstalled => <Widget>[
         Text(
-          'Findet auch Einträge, in denen die Wörter deiner Frage nicht '
-          'vorkommen (z. B. „Schilddrüse“ → TSH-Wert). Lädt '
-          '${model.embedder.modelName} (${model.embedder.downloadSize}); '
-          'die Suche läuft danach offline.\n\n'
-          'Google stellt das Modell nur nach Annahme der Gemma-Lizenz bereit: '
-          'kostenloses Hugging-Face-Konto, Lizenz auf der Modellseite '
-          'akzeptieren, Lese-Token erstellen und hier einfügen. Der Token '
-          'wird nur für den Download genutzt und nicht gespeichert.',
+          l10n.svcSemanticIntro(
+            model.embedder.modelName,
+            model.embedder.downloadSize,
+          ),
         ),
         if (model.semanticMessage != null) ...[
           const SizedBox(height: 8),
@@ -495,8 +486,8 @@ class _SemanticCardState extends State<_SemanticCard> {
           controller: _token,
           obscureText: true,
           autocorrect: false,
-          decoration: const InputDecoration(
-            labelText: 'Hugging-Face-Token (hf_…)',
+          decoration: InputDecoration(
+            labelText: l10n.svcSemanticTokenLabel,
           ),
           onChanged: (_) => setState(() {}),
         ),
@@ -509,7 +500,7 @@ class _SemanticCardState extends State<_SemanticCard> {
                   token: _token.text.trim(),
                 ),
           icon: const Icon(Icons.download),
-          label: const Text('Semantische Suche aktivieren'),
+          label: Text(l10n.svcSemanticEnable),
         ),
       ],
     };
@@ -524,7 +515,7 @@ class _SemanticCardState extends State<_SemanticCard> {
                 Icon(Icons.hub_outlined, color: theme.colorScheme.primary),
                 const SizedBox(width: 8),
                 Text(
-                  'Semantische Suche (optional)',
+                  l10n.svcSemanticTitle,
                   style: theme.textTheme.titleMedium,
                 ),
               ],

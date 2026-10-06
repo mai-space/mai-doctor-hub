@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/appointment_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/icon_mappings.dart';
 import '../../widgets/app_logo.dart';
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     if (id != null && mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Termin gespeichert')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.homeAppointmentSaved)));
     }
   }
 
@@ -90,14 +91,14 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const AppWordmark(
-                            subtitle: 'Deine Termine — lokal auf diesem Gerät',
+                          AppWordmark(
+                            subtitle: context.l10n.homeWordmarkSubtitle,
                           ),
                           const SizedBox(height: 20),
                           FilledButton.icon(
                             onPressed: _addAppointment,
                             icon: const Icon(Icons.add),
-                            label: const Text('Termin hinzufügen'),
+                            label: Text(context.l10n.homeAddAppointment),
                           ),
                           const SizedBox(height: 8),
                           Row(
@@ -106,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                                 child: OutlinedButton.icon(
                                   onPressed: () => showCheckInSheet(context),
                                   icon: const Icon(Icons.favorite_outline),
-                                  label: const Text('Check-in'),
+                                  label: Text(context.l10n.homeCheckIn),
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -115,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: () =>
                                       showTodayMedicationsSheet(context),
                                   icon: const Icon(Icons.medication_outlined),
-                                  label: const Text('Medikamente'),
+                                  label: Text(context.l10n.entityMedications),
                                 ),
                               ),
                             ],
@@ -123,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                           if (!empty) ...[
                             const SizedBox(height: 20),
                             Text(
-                              'Jetzt',
+                              context.l10n.homeNow,
                               style: theme.textTheme.labelLarge?.copyWith(
                                 color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.w700,
@@ -138,11 +139,9 @@ class _HomePageState extends State<HomePage> {
                   if (empty)
                     EmptyState(
                       icon: Icons.event_available_outlined,
-                      title: 'Noch keine Termine',
-                      message:
-                          'Lege deinen ersten Termin an — danach erscheinen hier '
-                          'nächste Termine nach unten und vergangene nach oben.',
-                      actionLabel: 'Ersten Termin anlegen',
+                      title: context.l10n.homeEmptyTitle,
+                      message: context.l10n.homeEmptyMessage,
+                      actionLabel: context.l10n.homeEmptyAction,
                       onAction: _addAppointment,
                     )
                   else
@@ -174,7 +173,9 @@ class _AppointmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final a = summary.appointment;
-    final when = DateFormat('EEE d. MMM · HH:mm', 'de').format(a.scheduledAt);
+    final when = DateFormat(
+      context.l10n.homeCardDateTimePattern,
+    ).format(a.scheduledAt);
     final chips = [...summary.diagnosisTitles, ...summary.symptomLabels];
     final theme = Theme.of(context);
 
@@ -221,9 +222,9 @@ class _AppointmentCard extends StatelessWidget {
                             color: AppColors.danger.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text(
-                            'Bericht fehlt',
-                            style: TextStyle(
+                          child: Text(
+                            context.l10n.homeReportMissing,
+                            style: const TextStyle(
                               color: AppColors.danger,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,

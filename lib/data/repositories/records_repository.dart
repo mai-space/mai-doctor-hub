@@ -2,15 +2,17 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:uuid/uuid.dart';
 
+import '../../l10n/l10n.dart';
 import '../app_database.dart';
 
 const _uuid = Uuid();
 
 String diagnosisStatusLabel(DiagnosisStatus status) => switch (status) {
-  DiagnosisStatus.active => 'aktiv',
-  DiagnosisStatus.resolved => 'abgeschlossen',
+  DiagnosisStatus.active => AppLocale.strings.homeDiagnosisStatusActive,
+  DiagnosisStatus.resolved => AppLocale.strings.homeDiagnosisStatusResolved,
 };
 
 enum RecordSort { date, name, updated }
@@ -154,6 +156,9 @@ class RecordsRepository {
     String? entityType,
   }) async {
     final items = <RecordListItem>[];
+    final t = AppLocale.strings;
+    final dateFormat = DateFormat(t.homeRecordsDatePattern);
+    String formatDate(DateTime dt) => dateFormat.format(dt);
 
     if (entityType == null || entityType == 'doctor') {
       final doctors = await _db.selectActive(_db.doctors).get();
@@ -164,7 +169,7 @@ class RecordsRepository {
             entityId: d.id,
             title: d.name,
             subtitle: [
-              'Arzt',
+              t.entityDoctor,
               if (d.specialty != null) d.specialty!,
             ].join(' · '),
             sortDate: d.createdAt,
@@ -181,7 +186,7 @@ class RecordsRepository {
             entityType: 'diagnosis',
             entityId: d.id,
             title: d.title,
-            subtitle: 'Diagnose · ${diagnosisStatusLabel(d.status)}',
+            subtitle: '${t.entityDiagnosis} · ${diagnosisStatusLabel(d.status)}',
             sortDate: d.startedAt ?? d.createdAt,
             updatedAt: d.updatedAt,
           ),
@@ -197,8 +202,8 @@ class RecordsRepository {
             entityId: s.id,
             title: s.label,
             subtitle: s.healedAt == null
-                ? 'Symptom · aktiv'
-                : 'Symptom · geheilt',
+                ? '${t.entitySymptom} · ${t.homeDiagnosisStatusActive}'
+                : '${t.entitySymptom} · ${t.homeSymptomHealed}',
             sortDate: s.createdAt,
             updatedAt: s.updatedAt,
           ),
@@ -212,8 +217,8 @@ class RecordsRepository {
           RecordListItem(
             entityType: 'appointment',
             entityId: a.id,
-            title: a.title ?? 'Termin',
-            subtitle: 'Termin · ${_formatDate(a.scheduledAt)}',
+            title: a.title ?? t.entityAppointment,
+            subtitle: '${t.entityAppointment} · ${formatDate(a.scheduledAt)}',
             sortDate: a.scheduledAt,
             updatedAt: a.updatedAt,
           ),
@@ -228,7 +233,7 @@ class RecordsRepository {
             entityType: 'report',
             entityId: r.id,
             title: r.title,
-            subtitle: 'Bericht · ${_formatDate(r.createdAt)}',
+            subtitle: '${t.entityReport} · ${formatDate(r.createdAt)}',
             sortDate: r.createdAt,
           ),
         );
@@ -243,7 +248,7 @@ class RecordsRepository {
             entityId: m.id,
             title: m.name,
             subtitle: [
-              'Medikament',
+              t.entityMedication,
               if (m.dosage != null) m.dosage!,
             ].join(' · '),
             sortDate: m.startedAt ?? m.createdAt,
@@ -260,7 +265,7 @@ class RecordsRepository {
             entityType: 'pharmacy',
             entityId: p.id,
             title: p.name,
-            subtitle: ['Apotheke', ?p.address].join(' · '),
+            subtitle: [t.entityPharmacy, ?p.address].join(' · '),
             sortDate: p.createdAt,
             updatedAt: p.updatedAt,
           ),
@@ -276,9 +281,9 @@ class RecordsRepository {
             entityId: v.id,
             title: v.vaccine,
             subtitle: [
-              'Impfung',
-              _formatDate(v.administeredAt),
-              if (v.doseNumber != null) '${v.doseNumber}. Dosis',
+              t.entityVaccination,
+              formatDate(v.administeredAt),
+              if (v.doseNumber != null) t.homeVaccinationDoseLabel(v.doseNumber!),
             ].join(' · '),
             sortDate: v.administeredAt,
             updatedAt: v.updatedAt,
@@ -297,7 +302,7 @@ class RecordsRepository {
             entityType: 'note',
             entityId: n.id,
             title: preview,
-            subtitle: 'Notiz · ${_formatDate(n.updatedAt)}',
+            subtitle: '${t.entityNote} · ${formatDate(n.updatedAt)}',
             sortDate: n.createdAt,
             updatedAt: n.updatedAt,
           ),
@@ -316,12 +321,6 @@ class RecordsRepository {
       }
     });
     return items;
-  }
-
-  String _formatDate(DateTime dt) {
-    final d = dt.day.toString().padLeft(2, '0');
-    final m = dt.month.toString().padLeft(2, '0');
-    return '$d.$m.${dt.year}';
   }
 
   Future<String> createDiagnosis({

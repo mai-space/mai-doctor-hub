@@ -5,21 +5,14 @@ import '../../data/app_database.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/medication_repository.dart';
 import '../../data/repositories/records_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../widgets/symptom_report_card.dart' show observationLabel;
 import '../visit_summary.dart';
 import 'semantic_index.dart';
 
-/// Systemanweisung: nur aus der Akte antworten, keine Diagnosen stellen.
-const assistantSystemPrompt = '''
-Du bist der Assistent der App „Mai Doctor Hub“. Du beantwortest Fragen zur
-persönlichen Gesundheitsakte des Nutzers auf Deutsch, kurz und klar.
-Regeln:
-- Nutze nur die Informationen aus dem Abschnitt AKTE. Steht etwas nicht darin,
-  sag ehrlich, dass es in der Akte nicht vermerkt ist.
-- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.
-- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen;
-  verweise bei medizinischen Fragen an Arzt, Ärztin oder Apotheke.
-- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.''';
+/// Systemanweisung: nur aus der Akte antworten, keine Diagnosen stellen —
+/// in der App-Sprache (antwortet dann auch in dieser Sprache).
+String get assistantSystemPrompt => AppLocale.strings.svcContextSystemPrompt;
 
 /// Stellt den Akte-Auszug für eine Frage zusammen — begrenzt, damit er ins
 /// Kontextfenster des Modells passt.
@@ -34,8 +27,14 @@ class AssistantContextBuilder {
   /// ≈ 2 000 Tokens; Rest des 4k-Fensters bleibt für Frage und Antwort.
   final int maxChars;
 
-  static final _day = DateFormat('dd.MM.yyyy', 'de');
-  static final _dayTime = DateFormat('dd.MM.yyyy HH:mm', 'de');
+  /// Datumsformate in der App-Sprache (bei jedem Aufruf neu, damit ein
+  /// Sprachwechsel greift).
+  static DateFormat get _day =>
+      DateFormat(AppLocale.strings.svcContextDayPattern);
+  static DateFormat get _dayTime =>
+      DateFormat(AppLocale.strings.svcContextDayTimePattern);
+
+  static AppLocalizations get _l10n => AppLocale.strings;
 
   static const _stopWords = {
     'aber',
@@ -125,41 +124,130 @@ class AssistantContextBuilder {
     'werden',
   };
 
+  /// Englische Füllwörter — gelten zusätzlich, egal in welcher Sprache.
+  static const _englishStopWords = {
+    'about',
+    'after',
+    'again',
+    'all',
+    'also',
+    'and',
+    'any',
+    'are',
+    'been',
+    'before',
+    'being',
+    'but',
+    'can',
+    'could',
+    'did',
+    'does',
+    'doing',
+    'for',
+    'from',
+    'get',
+    'got',
+    'had',
+    'has',
+    'have',
+    'how',
+    'into',
+    'its',
+    'just',
+    'last',
+    'latest',
+    'many',
+    'more',
+    'most',
+    'much',
+    'next',
+    'not',
+    'now',
+    'one',
+    'only',
+    'other',
+    'our',
+    'please',
+    'should',
+    'some',
+    'still',
+    'tell',
+    'than',
+    'that',
+    'the',
+    'their',
+    'them',
+    'then',
+    'there',
+    'these',
+    'they',
+    'this',
+    'those',
+    'was',
+    'were',
+    'what',
+    'when',
+    'where',
+    'which',
+    'while',
+    'who',
+    'whom',
+    'why',
+    'will',
+    'with',
+    'would',
+    'you',
+    'your',
+    'yours',
+    'currently',
+    'right',
+    'show',
+    'know',
+    'take',
+    'taking',
+    'recent',
+    'recently',
+  };
+
   /// Suchbegriffe einer Frage in Alltagssprache.
   static List<String> keywords(String question) => {
     for (final word in question.toLowerCase().split(
       RegExp(r'[^\p{L}\p{N}]+', unicode: true),
     ))
-      if (word.length >= 3 && !_stopWords.contains(word)) word,
+      if (word.length >= 3 &&
+          !_stopWords.contains(word) &&
+          !_englishStopWords.contains(word))
+        word,
   }.toList();
 
   Future<String> build(String question, {DateTime? now}) async {
     final current = now ?? DateTime.now();
+    final l10n = _l10n;
     final summary = await VisitSummaryBuilder(_db)
         .build(const VisitSummaryOptions(), now: current);
     final sections = <String>[
-      'Heute: ${_dayTime.format(current)}',
-      _section('Aktive Diagnosen', [
+      l10n.svcContextToday(_dayTime.format(current)),
+      _section(l10n.svcContextActiveDiagnoses, [
         for (final d in summary.diagnoses)
           [
             d.title,
-            if (d.startedAt != null) 'seit ${_day.format(d.startedAt!)}',
+            if (d.startedAt != null) l10n.svcSince(_day.format(d.startedAt!)),
           ].join(', '),
       ]),
-      _section('Aktuelle Medikamente', [
+      _section(l10n.svcCurrentMedications, [
         for (final m in summary.medications) _medication(m),
       ]),
-      _section('Offene Symptome (letzte 30 Tage)', [
+      _section(l10n.svcContextOpenSymptoms, [
         for (final t in summary.symptoms) _symptom(t),
       ]),
       ...await _appointments(current),
-      _section('Impfungen', [
+      _section(l10n.entityVaccinations, [
         for (final v in summary.vaccinations)
           [
-            '${v.vaccine} am ${_day.format(v.administeredAt)}',
-            if (v.doseNumber != null) '${v.doseNumber}. Dosis',
+            l10n.svcContextVaccineOn(v.vaccine, _day.format(v.administeredAt)),
+            if (v.doseNumber != null) l10n.svcContextDoseNumber(v.doseNumber!),
             if (v.nextDueAt != null)
-              'nächste fällig ${_day.format(v.nextDueAt!)}',
+              l10n.svcContextNextDue(_day.format(v.nextDueAt!)),
           ].join(', '),
       ]),
     ];
@@ -171,7 +259,7 @@ class AssistantContextBuilder {
     // Treffer bekommen, was sie brauchen — mindestens aber die Hälfte des
     // Budgets; der Überblick wird notfalls gekürzt.
     final hitBudget = (maxChars - base.length).clamp(maxChars ~/ 2, maxChars);
-    final found = StringBuffer('\n\nPassende Einträge zur Frage:');
+    final found = StringBuffer('\n\n${l10n.svcContextMatchingEntries}');
     for (final hit in hits) {
       final entry =
           '\n- [${_typeLabel(hit.entityType)}] ${hit.title}: ${hit.text}';
@@ -228,8 +316,12 @@ class AssistantContextBuilder {
           .get(),
     );
     return [
-      _section('Nächste Termine', [for (final a in upcoming) _appointment(a)]),
-      _section('Letzte Termine', [for (final a in past) _appointment(a)]),
+      _section(_l10n.svcContextUpcomingAppointments, [
+        for (final a in upcoming) _appointment(a),
+      ]),
+      _section(_l10n.svcContextPastAppointments, [
+        for (final a in past) _appointment(a),
+      ]),
     ];
   }
 
@@ -240,9 +332,9 @@ class AssistantContextBuilder {
       s.doctorName,
       if (s.doctor?.specialty != null) s.doctor!.specialty!,
       if (a.title?.isNotEmpty == true) a.title!,
-      if (a.status == AppointmentStatus.cancelled) 'abgesagt',
+      if (a.status == AppointmentStatus.cancelled) _l10n.svcContextCancelled,
       if (s.diagnosisTitles.isNotEmpty)
-        'Diagnosen: ${s.diagnosisTitles.join(', ')}',
+        _l10n.svcContextDiagnosesList(s.diagnosisTitles.join(', ')),
     ].join(' · ');
   }
 
@@ -259,12 +351,12 @@ class AssistantContextBuilder {
     return [
       med.name,
       if (med.dosage?.isNotEmpty == true) med.dosage!,
-      if (times.isNotEmpty) 'Einnahme ${times.join(', ')}',
+      if (times.isNotEmpty) _l10n.svcContextIntake(times.join(', ')),
       if (times.isEmpty && med.scheduleText?.isNotEmpty == true)
         med.scheduleText!,
       if (med.instructions?.isNotEmpty == true) med.instructions!,
-      if (m.diagnosis != null) 'gegen ${m.diagnosis!.title}',
-      if (med.endedAt != null) 'bis ${_day.format(med.endedAt!)}',
+      if (m.diagnosis != null) _l10n.svcContextFor(m.diagnosis!.title),
+      if (med.endedAt != null) _l10n.svcContextUntil(_day.format(med.endedAt!)),
     ].join(', ');
   }
 
@@ -278,10 +370,13 @@ class AssistantContextBuilder {
     return [
       s.label,
       if (s.bodyRegion?.isNotEmpty == true) s.bodyRegion!,
-      '${t.observations.length} Check-ins',
+      _l10n.svcCheckInCount(t.observations.length),
       if (t.average != null) 'Ø ${t.average!.toStringAsFixed(1)}/10',
       if (latest != null)
-        'zuletzt ${_day.format(latest.recordedAt)}: ${observationLabel(latest)}',
+        _l10n.svcContextLatest(
+          _day.format(latest.recordedAt),
+          observationLabel(latest),
+        ),
     ].join(', ');
   }
 
@@ -306,19 +401,20 @@ class AssistantContextBuilder {
   }
 
   static String _typeLabel(String type) => switch (type) {
-    'doctor' => 'Arzt',
-    'diagnosis' => 'Diagnose',
-    'symptom' => 'Symptom',
-    'appointment' => 'Termin',
-    'report' => 'Bericht',
-    'medication' => 'Medikament',
-    'note' => 'Notiz',
-    'pharmacy' => 'Apotheke',
-    'vaccination' => 'Impfung',
+    'doctor' => _l10n.entityDoctor,
+    'diagnosis' => _l10n.entityDiagnosis,
+    'symptom' => _l10n.entitySymptom,
+    'appointment' => _l10n.entityAppointment,
+    'report' => _l10n.entityReport,
+    'medication' => _l10n.entityMedication,
+    'note' => _l10n.entityNote,
+    'pharmacy' => _l10n.entityPharmacy,
+    'vaccination' => _l10n.entityVaccination,
     _ => type,
   };
 }
 
 /// Prompt = Akte-Auszug + Frage.
 String assistantPrompt(String context, String question) =>
-    'AKTE:\n$context\n\nFRAGE:\n${question.trim()}';
+    '${AppLocale.strings.svcContextRecordHeading}:\n$context\n\n'
+    '${AppLocale.strings.svcContextQuestionHeading}:\n${question.trim()}';

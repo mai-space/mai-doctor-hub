@@ -1,56 +1,67 @@
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../l10n/l10n.dart';
 import '../app_database.dart';
 import 'reminder_repository.dart' show Weekdays;
 
 const _uuid = Uuid();
 
-String medicationFormLabel(MedicationForm form) => switch (form) {
-  MedicationForm.tablet => 'Tablette',
-  MedicationForm.capsule => 'Kapsel',
-  MedicationForm.drops => 'Tropfen',
-  MedicationForm.liquid => 'Saft / Lösung',
-  MedicationForm.spray => 'Spray',
-  MedicationForm.inhaler => 'Inhalator',
-  MedicationForm.ointment => 'Salbe / Creme',
-  MedicationForm.injection => 'Spritze',
-  MedicationForm.patch => 'Pflaster',
-  MedicationForm.suppository => 'Zäpfchen',
-  MedicationForm.powder => 'Pulver / Granulat',
-  MedicationForm.other => 'Sonstiges',
-};
+String medicationFormLabel(MedicationForm form) {
+  final t = AppLocale.strings;
+  return switch (form) {
+    MedicationForm.tablet => t.homeMedFormTablet,
+    MedicationForm.capsule => t.homeMedFormCapsule,
+    MedicationForm.drops => t.homeMedFormDrops,
+    MedicationForm.liquid => t.homeMedFormLiquid,
+    MedicationForm.spray => t.homeMedFormSpray,
+    MedicationForm.inhaler => t.homeMedFormInhaler,
+    MedicationForm.ointment => t.homeMedFormOintment,
+    MedicationForm.injection => t.homeMedFormInjection,
+    MedicationForm.patch => t.homeMedFormPatch,
+    MedicationForm.suppository => t.homeMedFormSuppository,
+    MedicationForm.powder => t.homeMedFormPowder,
+    MedicationForm.other => t.homeMedFormOther,
+  };
+}
 
 /// Typische Einheit je Darreichungsform (Vorschlag im Formular).
-String defaultDoseUnit(MedicationForm form) => switch (form) {
-  MedicationForm.tablet => 'Stück',
-  MedicationForm.capsule => 'Stück',
-  MedicationForm.drops => 'Tropfen',
-  MedicationForm.liquid => 'ml',
-  MedicationForm.spray => 'Sprühstoß',
-  MedicationForm.inhaler => 'Hub',
-  MedicationForm.ointment => 'Anwendung',
-  MedicationForm.injection => 'Einheit',
-  MedicationForm.patch => 'Stück',
-  MedicationForm.suppository => 'Stück',
-  MedicationForm.powder => 'Beutel',
-  MedicationForm.other => 'Stück',
-};
+String defaultDoseUnit(MedicationForm form) {
+  final t = AppLocale.strings;
+  return switch (form) {
+    MedicationForm.tablet => t.homeUnitPiece,
+    MedicationForm.capsule => t.homeUnitPiece,
+    MedicationForm.drops => t.homeUnitDrops,
+    MedicationForm.liquid => 'ml',
+    MedicationForm.spray => t.homeUnitSpray,
+    MedicationForm.inhaler => t.homeUnitPuff,
+    MedicationForm.ointment => t.homeUnitApplication,
+    MedicationForm.injection => t.homeUnitUnit,
+    MedicationForm.patch => t.homeUnitPiece,
+    MedicationForm.suppository => t.homeUnitPiece,
+    MedicationForm.powder => t.homeUnitSachet,
+    MedicationForm.other => t.homeUnitPiece,
+  };
+}
 
-const doseUnitCatalog = [
-  'Stück',
-  'Tropfen',
-  'ml',
-  'mg',
-  'g',
-  'Hub',
-  'Sprühstoß',
-  'Beutel',
-  'Messlöffel',
-  'IE',
-  'Einheit',
-  'Anwendung',
-];
+/// Einheiten-Vorschläge im Formular (in der App-Sprache).
+List<String> get doseUnitCatalog {
+  final t = AppLocale.strings;
+  return [
+    t.homeUnitPiece,
+    t.homeUnitDrops,
+    'ml',
+    'mg',
+    'g',
+    t.homeUnitPuff,
+    t.homeUnitSpray,
+    t.homeUnitSachet,
+    t.homeUnitMeasuringSpoon,
+    t.homeUnitIu,
+    t.homeUnitUnit,
+    t.homeUnitApplication,
+  ];
+}
 
 String formatAmount(double amount) => amount == amount.roundToDouble()
     ? amount.toStringAsFixed(0)

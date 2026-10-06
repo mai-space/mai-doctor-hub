@@ -1,6 +1,6 @@
 # Mai Doctor Hub
 
-Lokale Patientenakte — **Privacy first**. Alle Daten bleiben auf dem Gerät. Kein Account, kein Server mit PHI; Kalender-Export und Assistent sind opt-in.
+Lokale Patientenakte — **Privacy first**, auf Deutsch und Englisch. Alle Daten bleiben auf dem Gerät. Kein Account, kein Server mit PHI; Kalender-Export und Assistent sind opt-in.
 
 ## Stack
 
@@ -53,6 +53,14 @@ PDFIUM_PATH=/pfad/libpdfium.so flutter test
 (cd packages/mai_backup_format && dart test)
 (cd tools/mai_mcp && dart test)
 ```
+
+Sprachen (Deutsch/Englisch nach Systemsprache, sonst Englisch): Texte liegen pro Bereich in `lib/l10n/parts/<bereich>.de.json` / `.en.json`. Nach Änderungen:
+
+```bash
+python3 tool/merge_arb.py && flutter gen-l10n
+```
+
+Neue Sprache: `*.<code>.json` je Bereich anlegen, `AppLocale.supported` in `lib/l10n/l10n.dart` und die Sprachliste in `tool/merge_arb.py` ergänzen.
 
 Nach Schema-Änderungen an `lib/data/app_database.dart`:
 

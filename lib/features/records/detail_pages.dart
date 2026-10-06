@@ -13,6 +13,7 @@ import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/reminder_repository.dart' show Weekdays;
 import '../../data/repositories/symptom_repository.dart';
 import '../../data/repositories/vaccination_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../theme/icon_mappings.dart';
 import '../../widgets/observation_chart.dart';
 import '../../widgets/symptom_report_card.dart';
@@ -25,8 +26,10 @@ import '../settings/reminders_section.dart' show ensureNotificationPermission;
 import '../reports/report_viewer_page.dart';
 import 'entity_forms.dart';
 
-final _date = DateFormat('d. MMM yyyy', 'de');
-final _dateTime = DateFormat('d. MMM yyyy · HH:mm', 'de');
+DateFormat _date(BuildContext context) =>
+    DateFormat(context.l10n.recordsDatePattern);
+DateFormat _dateTime(BuildContext context) =>
+    DateFormat(context.l10n.recordsDateTimePattern);
 
 /// Öffnet die passende Detailseite für einen Akten-Eintrag.
 void openRecord(BuildContext context, String entityType, String id) {
@@ -92,12 +95,12 @@ class _DetailScaffoldState<T> extends State<_DetailScaffold<T>> {
                 : [
                     ...?widget.extraActions?.call(context, value),
                     IconButton(
-                      tooltip: 'Bearbeiten',
+                      tooltip: context.l10n.commonEdit,
                       icon: const Icon(Icons.edit_outlined),
                       onPressed: () => widget.onEdit(context, value),
                     ),
                     IconButton(
-                      tooltip: 'Löschen (ins Archiv)',
+                      tooltip: context.l10n.recordsDeleteToArchive,
                       icon: const Icon(Icons.delete_outline),
                       onPressed: () async {
                         final navigator = Navigator.of(context);
@@ -112,7 +115,7 @@ class _DetailScaffoldState<T> extends State<_DetailScaffold<T>> {
               ? Center(
                   child: snapshot.connectionState == ConnectionState.waiting
                       ? const CircularProgressIndicator()
-                      : const Text('Eintrag nicht gefunden'),
+                      : Text(context.l10n.recordsNotFound),
                 )
               : ListView(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
@@ -270,7 +273,7 @@ Widget _appointmentTile(BuildContext context, AppointmentSummary s) {
     icon: Icons.event_outlined,
     title: a.title?.isNotEmpty == true ? a.title! : s.doctorName,
     subtitle: [
-      _dateTime.format(a.scheduledAt),
+      _dateTime(context).format(a.scheduledAt),
       if (a.status != AppointmentStatus.planned)
         appointmentStatusLabel(a.status),
     ].join(' · '),
@@ -299,7 +302,7 @@ class DoctorDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DetailScaffold<_DoctorData>(
-      title: 'Arzt',
+      title: context.l10n.entityDoctor,
       watch: (db) => db.watchWith({
         db.doctors,
         db.appointments,
@@ -325,6 +328,7 @@ class DoctorDetailPage extends StatelessWidget {
           archiveWithUndo(context, 'doctor', data.doctor.id),
       body: (context, data) {
         final d = data.doctor;
+        final l10n = context.l10n;
         return [
           DetailHeader(
             title: d.name,
@@ -333,29 +337,29 @@ class DoctorDetailPage extends StatelessWidget {
                 ? IconMappings.specialtyIcon(d.specialty!)
                 : null,
           ),
-          _infoTile(Icons.business_outlined, 'Praxis', d.practiceName),
+          _infoTile(Icons.business_outlined, l10n.recordsPractice, d.practiceName),
           _infoTile(
             Icons.phone_outlined,
-            'Telefon · tippen zum Anrufen',
+            l10n.recordsPhoneTapToCall,
             d.phone,
             onTap: () => launchUrl(Uri(scheme: 'tel', path: d.phone)),
           ),
           _infoTile(
             Icons.place_outlined,
-            'Adresse · in Karten öffnen',
+            l10n.recordsAddressOpenMaps,
             d.address,
             onTap: () => launchUrl(
               Uri.parse('geo:0,0?q=${Uri.encodeComponent(d.address ?? '')}'),
             ),
           ),
-          _infoTile(Icons.notes_outlined, 'Notizen', d.notes),
+          _infoTile(Icons.notes_outlined, l10n.commonNotes, d.notes),
           DetailSection(
-            title: 'Symptome',
-            empty: 'Noch keine Symptome bei diesem Arzt.',
+            title: l10n.entitySymptoms,
+            empty: l10n.recordsDoctorNoSymptoms,
             trailing: TextButton.icon(
               onPressed: () => _assignSymptoms(context, data),
               icon: const Icon(Icons.add),
-              label: const Text('Zuordnen'),
+              label: Text(l10n.recordsAssign),
             ),
             children: [
               for (final (symptom, direct) in data.symptoms)
@@ -364,8 +368,12 @@ class DoctorDetailPage extends StatelessWidget {
                   icon: Icons.healing_outlined,
                   title: symptom.label,
                   subtitle: [
-                    symptom.healedAt == null ? 'aktiv' : 'geheilt',
-                    direct ? 'zugeordnet' : 'aus Terminen',
+                    symptom.healedAt == null
+                        ? l10n.recordsStatusActive
+                        : l10n.recordsStatusHealed,
+                    direct
+                        ? l10n.recordsLinkedDirect
+                        : l10n.recordsLinkedViaAppointments,
                   ].join(' · '),
                   entityType: 'symptom',
                   id: symptom.id,
@@ -373,8 +381,8 @@ class DoctorDetailPage extends StatelessWidget {
             ],
           ),
           DetailSection(
-            title: 'Termine',
-            empty: 'Keine Termine bei diesem Arzt.',
+            title: l10n.entityAppointments,
+            empty: l10n.recordsDoctorNoAppointments,
             children: [
               for (final s in data.appointments) _appointmentTile(context, s),
             ],
@@ -399,10 +407,10 @@ Future<void> _assignSymptoms(BuildContext context, _DoctorData data) async {
     context: context,
     builder: (context) => StatefulBuilder(
       builder: (context, setState) => AlertDialog(
-        title: Text('Symptome bei ${data.doctor.name}'),
+        title: Text(context.l10n.recordsAssignSymptomsTitle(data.doctor.name)),
         scrollable: true,
         content: all.isEmpty
-            ? const Text('Noch keine Symptome angelegt.')
+            ? Text(context.l10n.recordsNoSymptomsYet)
             : Wrap(
                 spacing: 6,
                 children: [
@@ -419,11 +427,11 @@ Future<void> _assignSymptoms(BuildContext context, _DoctorData data) async {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Abbrechen'),
+            child: Text(context.l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Speichern'),
+            child: Text(context.l10n.commonSave),
           ),
         ],
       ),
@@ -448,7 +456,7 @@ class DiagnosisDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DetailScaffold<DiagnosisHub>(
-      title: 'Diagnose',
+      title: context.l10n.entityDiagnosis,
       watch: (db) => DiagnosisHubRepository(db).watch(diagnosisId),
       onEdit: (context, hub) =>
           showDiagnosisForm(context, diagnosis: hub.diagnosis),
@@ -456,9 +464,12 @@ class DiagnosisDetailPage extends StatelessWidget {
           archiveWithUndo(context, 'diagnosis', hub.diagnosis.id),
       body: (context, hub) {
         final d = hub.diagnosis;
+        final l10n = context.l10n;
         final period = [
-          if (d.startedAt != null) 'seit ${_date.format(d.startedAt!)}',
-          if (d.endedAt != null) 'bis ${_date.format(d.endedAt!)}',
+          if (d.startedAt != null)
+            l10n.recordsSince(_date(context).format(d.startedAt!)),
+          if (d.endedAt != null)
+            l10n.recordsUntil(_date(context).format(d.endedAt!)),
         ].join(' ');
         return [
           DetailHeader(
@@ -470,30 +481,32 @@ class DiagnosisDetailPage extends StatelessWidget {
           ),
           if (d.notes?.isNotEmpty == true) Text(d.notes!),
           DetailSection(
-            title: 'Termine',
-            empty: 'Noch keinem Termin zugeordnet.',
+            title: l10n.entityAppointments,
+            empty: l10n.recordsDiagnosisNoAppointments,
             children: [
               for (final s in hub.appointments) _appointmentTile(context, s),
             ],
           ),
           DetailSection(
-            title: 'Symptome',
-            empty: 'Keine Symptome verknüpft.',
+            title: l10n.entitySymptoms,
+            empty: l10n.recordsNoSymptomsLinked,
             children: [
               for (final s in hub.symptoms)
                 _linkTile(
                   context,
                   icon: Icons.healing_outlined,
                   title: s.label,
-                  subtitle: s.healedAt == null ? 'aktiv' : 'geheilt',
+                  subtitle: s.healedAt == null
+                      ? l10n.recordsStatusActive
+                      : l10n.recordsStatusHealed,
                   entityType: 'symptom',
                   id: s.id,
                 ),
             ],
           ),
           DetailSection(
-            title: 'Medikamente',
-            empty: 'Keine Medikamente verknüpft.',
+            title: l10n.entityMedications,
+            empty: l10n.recordsNoMedicationsLinked,
             children: [
               for (final m in hub.medications)
                 _linkTile(
@@ -509,27 +522,27 @@ class DiagnosisDetailPage extends StatelessWidget {
             ],
           ),
           DetailSection(
-            title: 'Berichte',
-            empty: 'Keine Berichte zu den Terminen.',
+            title: l10n.entityReports,
+            empty: l10n.recordsDiagnosisNoReports,
             children: [
               for (final r in hub.reports)
                 _linkTile(
                   context,
                   icon: Icons.description_outlined,
                   title: r.title,
-                  subtitle: _date.format(r.createdAt),
+                  subtitle: _date(context).format(r.createdAt),
                   entityType: 'report',
                   id: r.id,
                 ),
             ],
           ),
           DetailSection(
-            title: 'Notizen',
+            title: l10n.entityNotes,
             trailing: TextButton.icon(
               onPressed: () =>
                   showNoteForm(context, relatedDiagnosisId: d.id),
               icon: const Icon(Icons.add),
-              label: const Text('Notiz'),
+              label: Text(l10n.commonNote),
             ),
             children: [
               for (final n in hub.notes)
@@ -539,7 +552,7 @@ class DiagnosisDetailPage extends StatelessWidget {
                   title: n.body.length > 60
                       ? '${n.body.substring(0, 60)}…'
                       : n.body,
-                  subtitle: _date.format(n.updatedAt),
+                  subtitle: _date(context).format(n.updatedAt),
                   entityType: 'note',
                   id: n.id,
                 ),
@@ -577,7 +590,7 @@ class SymptomDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DetailScaffold<_SymptomData>(
-      title: 'Symptom',
+      title: context.l10n.entitySymptom,
       watch: (db) => db.watchWith(
         {
           db.symptoms,
@@ -631,14 +644,15 @@ class SymptomDetailPage extends StatelessWidget {
       body: (context, data) {
         final s = data.symptom;
         final repo = SymptomRepository(DatabaseScope.of(context));
+        final l10n = context.l10n;
         return [
           DetailHeader(
             title: s.label,
             subtitle: [
               if (s.bodyRegion != null) s.bodyRegion!,
               s.healedAt == null
-                  ? 'aktiv'
-                  : 'geheilt am ${_date.format(s.healedAt!)}',
+                  ? l10n.recordsStatusActive
+                  : l10n.recordsHealedOn(_date(context).format(s.healedAt!)),
             ].join(' · '),
             icon: s.bodyRegion != null
                 ? IconMappings.bodyRegionIcon(s.bodyRegion!)
@@ -650,12 +664,12 @@ class SymptomDetailPage extends StatelessWidget {
                 ? OutlinedButton.icon(
                     onPressed: () => repo.markHealed(s.id),
                     icon: const Icon(Icons.check),
-                    label: const Text('Als geheilt markieren'),
+                    label: Text(l10n.recordsMarkHealed),
                   )
                 : OutlinedButton.icon(
                     onPressed: () => repo.reopen(s.id),
                     icon: const Icon(Icons.replay),
-                    label: const Text('Wieder aktiv'),
+                    label: Text(l10n.recordsReopen),
                   ),
           ),
           if (data.diagnosis != null)
@@ -663,13 +677,13 @@ class SymptomDetailPage extends StatelessWidget {
               context,
               icon: Icons.biotech_outlined,
               title: data.diagnosis!.title,
-              subtitle: 'Diagnose',
+              subtitle: l10n.entityDiagnosis,
               entityType: 'diagnosis',
               id: data.diagnosis!.id,
             ),
           if (data.doctors.isNotEmpty)
             DetailSection(
-              title: 'Ärzte',
+              title: l10n.entityDoctors,
               children: [
                 for (final d in data.doctors)
                   _linkTile(
@@ -686,20 +700,20 @@ class SymptomDetailPage extends StatelessWidget {
             ),
           if (data.appointments.isNotEmpty)
             DetailSection(
-              title: 'Besprochen bei Terminen',
+              title: l10n.recordsDiscussedAtAppointments,
               children: [
                 for (final a in data.appointments) _appointmentTile(context, a),
               ],
             ),
           DetailSection(
-            title: 'Verlauf',
+            title: l10n.recordsHistory,
             children: [
               ObservationChart(points: scalePoints(data.observations)),
             ],
           ),
           DetailSection(
-            title: 'Check-ins',
-            empty: 'Noch keine Check-ins.',
+            title: l10n.recordsCheckIns,
+            empty: l10n.recordsNoCheckIns,
             children: [
               for (final o in data.observations.take(50))
                 ListTile(
@@ -707,12 +721,12 @@ class SymptomDetailPage extends StatelessWidget {
                   title: Text(observationLabel(o)),
                   subtitle: Text(
                     [
-                      _dateTime.format(o.recordedAt),
+                      _dateTime(context).format(o.recordedAt),
                       if (o.note?.isNotEmpty == true) o.note!,
                     ].join(' · '),
                   ),
                   trailing: IconButton(
-                    tooltip: 'Wert löschen',
+                    tooltip: l10n.recordsDeleteValue,
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () => repo.deleteObservation(o.id),
                   ),
@@ -744,7 +758,7 @@ class MedicationDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DetailScaffold<_MedicationData>(
-      title: 'Medikament',
+      title: context.l10n.entityMedication,
       watch: (db) {
         final repo = MedicationRepository(db);
         return db.watchWith(repo.tables, () async {
@@ -767,9 +781,13 @@ class MedicationDetailPage extends StatelessWidget {
         final d = data.details;
         final m = d.medication;
         final repo = MedicationRepository(DatabaseScope.of(context));
+        final l10n = context.l10n;
         final period = [
-          if (m.startedAt != null) 'ab ${_date.format(m.startedAt!)}',
-          m.endedAt != null ? 'bis ${_date.format(m.endedAt!)}' : 'dauerhaft',
+          if (m.startedAt != null)
+            l10n.recordsFrom(_date(context).format(m.startedAt!)),
+          m.endedAt != null
+              ? l10n.recordsUntil(_date(context).format(m.endedAt!))
+              : l10n.recordsOngoing,
         ].join(' ');
         return [
           DetailHeader(
@@ -779,12 +797,12 @@ class MedicationDetailPage extends StatelessWidget {
               if (m.form != null) medicationFormLabel(m.form!),
             ].join(' · '),
           ),
-          _infoTile(Icons.medication_liquid_outlined, 'Dosis je Einnahme', d.doseFor(null)),
-          _infoTile(Icons.info_outline, 'Hinweis', m.instructions),
-          _infoTile(Icons.date_range_outlined, 'Zeitraum', period),
+          _infoTile(Icons.medication_liquid_outlined, l10n.recordsDosePerIntake, d.doseFor(null)),
+          _infoTile(Icons.info_outline, l10n.recordsInstructions, m.instructions),
+          _infoTile(Icons.date_range_outlined, l10n.recordsPeriod, period),
           DetailSection(
-            title: 'Einnahmezeiten',
-            empty: 'Keine festen Einnahmezeiten.',
+            title: l10n.recordsIntakeTimes,
+            empty: l10n.recordsNoIntakeTimes,
             children: [
               for (final s in d.schedules)
                 ListTile(
@@ -793,14 +811,14 @@ class MedicationDetailPage extends StatelessWidget {
                   title: Text(
                     '${s.hour.toString().padLeft(2, '0')}:'
                     '${s.minute.toString().padLeft(2, '0')}'
-                    ' · ${d.doseFor(s) ?? 'Einnahme'}',
+                    ' · ${d.doseFor(s) ?? l10n.recordsIntake}',
                   ),
                   subtitle: Text(Weekdays.describe(s.weekdays)),
                 ),
               if (d.schedules.isNotEmpty)
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('An Einnahme erinnern'),
+                  title: Text(l10n.recordsRemindIntake),
                   value: m.remindersEnabled,
                   onChanged: (v) async {
                     await repo.setRemindersEnabled(m.id, v);
@@ -816,7 +834,7 @@ class MedicationDetailPage extends StatelessWidget {
               context,
               icon: Icons.medical_services_outlined,
               title: d.prescriber!.name,
-              subtitle: 'Verschrieben von',
+              subtitle: l10n.recordsPrescribedBy,
               entityType: 'doctor',
               id: d.prescriber!.id,
             ),
@@ -825,7 +843,7 @@ class MedicationDetailPage extends StatelessWidget {
               context,
               icon: Icons.local_pharmacy_outlined,
               title: d.pharmacy!.name,
-              subtitle: 'Apotheke',
+              subtitle: l10n.entityPharmacy,
               entityType: 'pharmacy',
               id: d.pharmacy!.id,
             ),
@@ -834,27 +852,26 @@ class MedicationDetailPage extends StatelessWidget {
               context,
               icon: Icons.biotech_outlined,
               title: d.diagnosis!.title,
-              subtitle: 'Diagnose',
+              subtitle: l10n.entityDiagnosis,
               entityType: 'diagnosis',
               id: d.diagnosis!.id,
             ),
-          _infoTile(Icons.notes_outlined, 'Notizen', m.notes),
+          _infoTile(Icons.notes_outlined, l10n.commonNotes, m.notes),
           DetailSection(
-            title: 'Einnahme-Protokoll',
+            title: l10n.recordsIntakeLog,
             trailing: TextButton.icon(
               onPressed: () => repo.recordIntake(
                 medicationId: m.id,
                 doseAmount: m.doseAmount,
               ),
               icon: const Icon(Icons.add_task),
-              label: const Text('Jetzt genommen'),
+              label: Text(l10n.recordsTakenNow),
             ),
-            empty: 'Noch keine Einnahme erfasst.',
+            empty: l10n.recordsNoIntakesYet,
             children: [
               if (data.adherence != null)
                 Text(
-                  'Letzte 14 Tage: ${(data.adherence! * 100).round()} % der '
-                  'geplanten Einnahmen genommen',
+                  l10n.recordsAdherence((data.adherence! * 100).round()),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               for (final i in data.intakes)
@@ -867,18 +884,21 @@ class MedicationDetailPage extends StatelessWidget {
                   ),
                   title: Text(
                     i.status == IntakeStatus.taken
-                        ? 'Genommen${i.doseAmount == null ? '' : ' · ${formatAmount(i.doseAmount!)} ${m.doseUnit ?? ''}'}'
-                        : 'Ausgelassen',
+                        ? '${l10n.recordsTaken}${i.doseAmount == null ? '' : ' · ${formatAmount(i.doseAmount!)} ${m.doseUnit ?? ''}'}'
+                        : l10n.recordsSkipped,
                   ),
                   subtitle: Text(
                     [
-                      _dateTime.format(i.recordedAt),
+                      _dateTime(context).format(i.recordedAt),
                       if (i.scheduledFor != null)
-                        'geplant ${DateFormat('HH:mm', 'de').format(i.scheduledFor!)}',
+                        l10n.recordsPlannedAt(
+                          DateFormat(l10n.recordsTimePattern)
+                              .format(i.scheduledFor!),
+                        ),
                     ].join(' · '),
                   ),
                   trailing: IconButton(
-                    tooltip: 'Eintrag löschen',
+                    tooltip: l10n.recordsDeleteEntry,
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () => repo.deleteIntake(i.id),
                   ),
@@ -908,7 +928,7 @@ class PharmacyDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DetailScaffold<_PharmacyData>(
-      title: 'Apotheke',
+      title: context.l10n.entityPharmacy,
       watch: (db) => db.watchWith({db.pharmacies, db.medications}, () async {
         final repo = PharmacyRepository(db);
         final p = await repo.get(pharmacyId);
@@ -921,26 +941,27 @@ class PharmacyDetailPage extends StatelessWidget {
           archiveWithUndo(context, 'pharmacy', data.pharmacy.id),
       body: (context, data) {
         final p = data.pharmacy;
+        final l10n = context.l10n;
         return [
           DetailHeader(title: p.name),
           _infoTile(
             Icons.phone_outlined,
-            'Telefon · tippen zum Anrufen',
+            l10n.recordsPhoneTapToCall,
             p.phone,
             onTap: () => launchUrl(Uri(scheme: 'tel', path: p.phone)),
           ),
           _infoTile(
             Icons.place_outlined,
-            'Adresse · in Karten öffnen',
+            l10n.recordsAddressOpenMaps,
             p.address,
             onTap: () => launchUrl(
               Uri.parse('geo:0,0?q=${Uri.encodeComponent(p.address ?? '')}'),
             ),
           ),
-          _infoTile(Icons.notes_outlined, 'Notizen', p.notes),
+          _infoTile(Icons.notes_outlined, l10n.commonNotes, p.notes),
           DetailSection(
-            title: 'Medikamente',
-            empty: 'Keine Medikamente von dieser Apotheke.',
+            title: l10n.entityMedications,
+            empty: l10n.recordsPharmacyNoMedications,
             children: [
               for (final m in data.medications)
                 _linkTile(
@@ -969,7 +990,7 @@ class VaccinationDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DetailScaffold<(Vaccination, Doctor?)>(
-      title: 'Impfung',
+      title: context.l10n.entityVaccination,
       watch: (db) => db.watchWith({db.vaccinations, db.doctors}, () async {
         final v = await VaccinationRepository(db).get(vaccinationId);
         if (v == null) return null;
@@ -985,16 +1006,17 @@ class VaccinationDetailPage extends StatelessWidget {
       body: (context, data) {
         final (v, doctor) = data;
         final due = v.nextDueAt;
+        final l10n = context.l10n;
         return [
           DetailHeader(
             title: v.vaccine,
             subtitle: [
-              _date.format(v.administeredAt),
-              if (v.doseNumber != null) '${v.doseNumber}. Dosis',
+              _date(context).format(v.administeredAt),
+              if (v.doseNumber != null) l10n.recordsDoseNumber(v.doseNumber!),
             ].join(' · '),
           ),
-          _infoTile(Icons.vaccines_outlined, 'Impfstoff', v.product),
-          _infoTile(Icons.qr_code_2, 'Charge', v.batch),
+          _infoTile(Icons.vaccines_outlined, l10n.recordsVaccineProduct, v.product),
+          _infoTile(Icons.qr_code_2, l10n.recordsBatch, v.batch),
           if (due != null)
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -1004,11 +1026,11 @@ class VaccinationDetailPage extends StatelessWidget {
                     ? Theme.of(context).colorScheme.error
                     : null,
               ),
-              title: Text(_date.format(due)),
+              title: Text(_date(context).format(due)),
               subtitle: Text(
                 due.isBefore(DateTime.now())
-                    ? 'Auffrischung überfällig'
-                    : 'Nächste Impfung fällig',
+                    ? l10n.recordsBoosterOverdue
+                    : l10n.recordsNextDoseDue,
               ),
             ),
           if (doctor != null)
@@ -1016,11 +1038,11 @@ class VaccinationDetailPage extends StatelessWidget {
               context,
               icon: Icons.medical_services_outlined,
               title: doctor.name,
-              subtitle: 'Geimpft von',
+              subtitle: l10n.recordsVaccinatedBy,
               entityType: 'doctor',
               id: doctor.id,
             ),
-          _infoTile(Icons.notes_outlined, 'Notizen', v.notes),
+          _infoTile(Icons.notes_outlined, l10n.commonNotes, v.notes),
         ];
       },
     );
@@ -1037,7 +1059,7 @@ class NoteDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _DetailScaffold<Note>(
-      title: 'Notiz',
+      title: context.l10n.entityNote,
       watch: (db) =>
           db.watchWith({db.notes}, () => RecordsRepository(db).getNote(noteId)),
       onEdit: (context, note) => showNoteForm(context, note: note),
@@ -1045,7 +1067,9 @@ class NoteDetailPage extends StatelessWidget {
           archiveWithUndo(context, 'note', note.id),
       body: (context, note) => [
         Text(
-          'Zuletzt geändert ${_dateTime.format(note.updatedAt)}',
+          context.l10n.recordsLastModified(
+            _dateTime(context).format(note.updatedAt),
+          ),
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 12),
@@ -1057,7 +1081,7 @@ class NoteDetailPage extends StatelessWidget {
           _linkTile(
             context,
             icon: Icons.event_outlined,
-            title: 'Zugehöriger Termin',
+            title: context.l10n.recordsRelatedAppointment,
             entityType: 'appointment',
             id: note.relatedAppointmentId!,
           ),
@@ -1065,7 +1089,7 @@ class NoteDetailPage extends StatelessWidget {
           _linkTile(
             context,
             icon: Icons.biotech_outlined,
-            title: 'Zugehörige Diagnose',
+            title: context.l10n.recordsRelatedDiagnosis,
             entityType: 'diagnosis',
             id: note.relatedDiagnosisId!,
           ),

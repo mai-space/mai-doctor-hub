@@ -1,4 +1,1281 @@
 {
   "@@locale": "de",
-  "appTitle": "Mai Doctor Hub"
+  "catalogReminderMorningTitle": "Morgen-Check-in",
+  "catalogReminderMorningBody": "Wie geht es dir heute? Symptome kurz protokollieren.",
+  "catalogReminderEveningTitle": "Abend-Check-in",
+  "catalogReminderEveningBody": "Abendliche Symptom-Notizen — dauert nur einen Moment.",
+  "appTitle": "Mai Doctor Hub",
+  "commonCancel": "Abbrechen",
+  "commonSave": "Speichern",
+  "commonDelete": "Löschen",
+  "commonEdit": "Bearbeiten",
+  "commonClose": "Schließen",
+  "commonAdd": "Hinzufügen",
+  "commonBack": "Zurück",
+  "commonNext": "Weiter",
+  "commonDone": "Fertig",
+  "commonYes": "Ja",
+  "commonNo": "Nein",
+  "commonOk": "OK",
+  "commonUnderstood": "Verstanden",
+  "commonRetry": "Erneut versuchen",
+  "commonSearch": "Suchen",
+  "commonNotes": "Notizen",
+  "commonNote": "Notiz",
+  "commonUndo": "Rückgängig",
+  "commonRestore": "Wiederherstellen",
+  "commonOptional": "optional",
+  "commonNone": "Keine Angabe",
+  "commonToday": "Heute",
+  "commonTomorrow": "Morgen",
+  "commonYesterday": "Gestern",
+  "entityDoctor": "Arzt",
+  "entityDoctors": "Ärzte",
+  "entityDiagnosis": "Diagnose",
+  "entityDiagnoses": "Diagnosen",
+  "entitySymptom": "Symptom",
+  "entitySymptoms": "Symptome",
+  "entityAppointment": "Termin",
+  "entityAppointments": "Termine",
+  "entityReport": "Bericht",
+  "entityReports": "Berichte",
+  "entityMedication": "Medikament",
+  "entityMedications": "Medikamente",
+  "entityNote": "Notiz",
+  "entityNotes": "Notizen",
+  "entityPharmacy": "Apotheke",
+  "entityPharmacies": "Apotheken",
+  "entityVaccination": "Impfung",
+  "entityVaccinations": "Impfungen",
+  "entityEntry": "Eintrag",
+  "homeAppointmentSaved": "Termin gespeichert",
+  "homeWordmarkSubtitle": "Deine Termine — lokal auf diesem Gerät",
+  "homeAddAppointment": "Termin hinzufügen",
+  "homeCheckIn": "Check-in",
+  "homeNow": "Jetzt",
+  "homeEmptyTitle": "Noch keine Termine",
+  "homeEmptyMessage": "Lege deinen ersten Termin an — danach erscheinen hier nächste Termine nach unten und vergangene nach oben.",
+  "homeEmptyAction": "Ersten Termin anlegen",
+  "homeCardDateTimePattern": "EEE d. MMM · HH:mm",
+  "homeReportMissing": "Bericht fehlt",
+  "homeDoctorNameMissing": "Arztname fehlt",
+  "homePleaseChooseDoctor": "Bitte einen Arzt wählen",
+  "homeSheetDateTimePattern": "EEE, d. MMM yyyy · HH:mm",
+  "homeEditAppointment": "Termin bearbeiten",
+  "homeDateAndTime": "Datum & Uhrzeit",
+  "homeDuration": "Dauer",
+  "homeDurationMinutes": "{minutes} Min.",
+  "@homeDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTitleOptional": "Titel (optional)",
+  "homeDoctorExisting": "Vorhanden",
+  "homeDoctorCreateNew": "Neu anlegen",
+  "homeDoctorName": "Name",
+  "homeSpecialtyOptional": "Fachrichtung (optional)",
+  "homeNoDoctorsYet": "Noch keine Ärzte — wechsle zu „Neu anlegen“.",
+  "homeChooseDoctor": "Arzt wählen",
+  "homeDiagnosesOptional": "Diagnosen (optional)",
+  "homeNoDiagnoses": "Keine Diagnosen — in der Akte anlegbar.",
+  "homeSymptomsOptional": "Symptome (optional)",
+  "homeNoOpenSymptoms": "Keine offenen Symptome — in der Akte anlegbar.",
+  "homeSaving": "Speichern…",
+  "homeSaveChanges": "Änderungen speichern",
+  "homeSaveAppointment": "Termin speichern",
+  "homeIcsSaveDialogTitle": "Kalenderdatei speichern",
+  "homeIcsSaved": "Kalenderdatei gespeichert — mit Kalender-App öffnen.",
+  "homeAppointmentNotFound": "Termin nicht gefunden",
+  "homeMarkDone": "Als erledigt markieren",
+  "homeCancelAppointment": "Absagen",
+  "homeReopen": "Wieder planen",
+  "homeDoctorSummaryPdf": "Zusammenfassung für Arzt (PDF)",
+  "homeExportIcs": "Als Kalenderdatei (.ics)",
+  "homeDetailDateTimePattern": "EEEE, d. MMMM yyyy · HH:mm",
+  "homeSymptomsAndCheckIns": "Symptome & gemeldete Check-ins",
+  "homeNoReportYet": "Noch kein Bericht — nach dem Termin ablegen.",
+  "homeReportScan": "Scan",
+  "homeReportTextSearchable": "Text durchsuchbar",
+  "homeReportNoText": "Kein Text erkannt",
+  "homeAddReport": "Bericht hinzufügen",
+  "homeNotesTip": "Tipp: Fragen für den Termin vorab als Notiz festhalten.",
+  "homeCalendarTitle": "Kalender",
+  "homeCalendarForward": "Vor",
+  "homeCalendarDay": "Tag",
+  "homeCalendarWeek": "Woche",
+  "homeCalendarMonth": "Monat",
+  "homeCalendarYear": "Jahr",
+  "homeCalendarDayTitlePattern": "EEEE, d. MMMM",
+  "homeCalendarNoAppointmentsOnDay": "Keine Termine an diesem Tag",
+  "homeCalendarWeekFrom": "Woche ab {date}",
+  "@homeCalendarWeekFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCalendarWeekStartPattern": "d. MMM",
+  "homeCalendarAppointmentCount": "{count} Termine",
+  "@homeCalendarAppointmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeCheckInEmptyTitle": "Keine offenen Symptome",
+  "homeCheckInEmptyMessage": "Alle Symptome sind geheilt oder noch keines angelegt.",
+  "homeCheckInHint": "Skala 1–10 oder als geheilt markieren.",
+  "homeCheckInHealed": "Geheilt",
+  "homeCheckInWillBeHealed": "Wird als geheilt gespeichert",
+  "homeCheckInSaved": "Check-in gespeichert",
+  "homeMedsTodayTitle": "Medikamente heute",
+  "homeMedsTodayNone": "Heute ist keine Einnahme geplant.",
+  "homeMedsTodayAllDone": "Alles erledigt.",
+  "homeMedsTodayOpen": "{open} von {total} offen",
+  "@homeMedsTodayOpen": {
+    "placeholders": {
+      "open": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTimePattern": "HH:mm",
+  "homeIntakeSkipped": "Ausgelassen",
+  "homeIntakeTaken": "Eingenommen",
+  "homeIntakeTakenShort": "Genommen",
+  "homeIntakePlannedAt": "Geplant {time}",
+  "@homeIntakePlannedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMedFormTablet": "Tablette",
+  "homeMedFormCapsule": "Kapsel",
+  "homeMedFormDrops": "Tropfen",
+  "homeMedFormLiquid": "Saft / Lösung",
+  "homeMedFormSpray": "Spray",
+  "homeMedFormInhaler": "Inhalator",
+  "homeMedFormOintment": "Salbe / Creme",
+  "homeMedFormInjection": "Spritze",
+  "homeMedFormPatch": "Pflaster",
+  "homeMedFormSuppository": "Zäpfchen",
+  "homeMedFormPowder": "Pulver / Granulat",
+  "homeMedFormOther": "Sonstiges",
+  "homeUnitPiece": "Stück",
+  "homeUnitDrops": "Tropfen",
+  "homeUnitSpray": "Sprühstoß",
+  "homeUnitPuff": "Hub",
+  "homeUnitApplication": "Anwendung",
+  "homeUnitUnit": "Einheit",
+  "homeUnitSachet": "Beutel",
+  "homeUnitMeasuringSpoon": "Messlöffel",
+  "homeUnitIu": "IE",
+  "homeWeekdaysDaily": "täglich",
+  "homeWeekdaysWorkdays": "werktags",
+  "homeWeekdaysWeekend": "am Wochenende",
+  "homeMedNameMissing": "Name fehlt",
+  "homeMedCreate": "Medikament anlegen",
+  "homeMedEdit": "Medikament bearbeiten",
+  "homeMedStrength": "Wirkstärke (z. B. 400 mg)",
+  "homeMedForm": "Darreichungsform",
+  "homeMedDosePerIntake": "Dosis je Einnahme",
+  "homeMedUnit": "Einheit",
+  "homeMedInstructions": "Hinweis (z. B. nach dem Essen)",
+  "homeMedIntakeTimes": "Einnahmezeiten",
+  "homeMedAmount": "Menge",
+  "homeMedAmountSameAsAbove": "wie oben",
+  "homeMedRemoveIntakeTime": "Einnahmezeit entfernen",
+  "homeMedAddIntakeTime": "Einnahmezeit hinzufügen",
+  "homeMedRemind": "An Einnahme erinnern",
+  "homeMedPeriod": "Zeitraum",
+  "homeMedStart": "Beginn",
+  "homeMedOngoing": "Dauerhaft",
+  "homeMedUntilDate": "Bis Datum",
+  "homeMedDays": "Tage",
+  "homeMedEnd": "Ende",
+  "homeMedNumberOfDays": "Anzahl Tage",
+  "homeMedLastIntakeOn": "Letzte Einnahme am {date}",
+  "@homeMedLastIntakeOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMedAssignment": "Zuordnung",
+  "homeMedPrescribedBy": "Verschrieben von",
+  "homeMedAddPharmacy": "Apotheke anlegen",
+  "homePharmacyEdit": "Apotheke bearbeiten",
+  "homePharmacyAddress": "Adresse",
+  "homePharmacyPhone": "Telefon",
+  "homeVaccinationAdd": "Impfung eintragen",
+  "homeVaccinationEdit": "Impfung bearbeiten",
+  "homeVaccinationAgainst": "Impfung gegen",
+  "homeVaccinationProduct": "Impfstoff (Handelsname)",
+  "homeVaccinationDate": "Geimpft am",
+  "homeVaccinationDoseNumber": "Dosis-Nr.",
+  "homeVaccinationBatch": "Charge",
+  "homeVaccinationBy": "Geimpft von",
+  "homeVaccinationNextDue": "Nächste Impfung fällig",
+  "homeVaccinationPlusYears": "+{years} J.",
+  "@homeVaccinationPlusYears": {
+    "placeholders": {
+      "years": {
+        "type": "int"
+      }
+    }
+  },
+  "homeReportTextRecognized": "Text erkannt und durchsuchbar",
+  "homeReportRecognizedText": "Erkannter Text",
+  "homeReportNoTextDot": "Kein Text erkannt.",
+  "homeReportNotFound": "Bericht nicht gefunden",
+  "homeReportRename": "Umbenennen",
+  "homeReportShowText": "Erkannten Text zeigen",
+  "homeReportReindex": "Text neu erkennen",
+  "homeReportDatePattern": "d. MMM yyyy",
+  "homeReportFileUnavailable": "Datei nicht verfügbar",
+  "homeReportFileUnavailableHint": "Abgelegt am {date}. Im Web werden Dateien nicht gespeichert; auf dem Gerät wurde die Datei evtl. entfernt.",
+  "@homeReportFileUnavailableHint": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeStatusPlanned": "Geplant",
+  "homeStatusDone": "Erledigt",
+  "homeStatusCancelled": "Abgesagt",
+  "homeUnknownDoctor": "Unbekannter Arzt",
+  "homeArchiveBlockedDoctor": "Arzt hat noch Termine — erst Termine archivieren oder umhängen.",
+  "homeArchivePurgeBlockedDoctor": "Arzt hat noch (archivierte) Termine — diese zuerst endgültig löschen.",
+  "homeArchiveDatePattern": "d.M.yyyy",
+  "homeDiagnosisStatusActive": "aktiv",
+  "homeDiagnosisStatusResolved": "abgeschlossen",
+  "homeSymptomHealed": "geheilt",
+  "homeRecordsDatePattern": "dd.MM.yyyy",
+  "homeVaccinationDoseLabel": "{number}. Dosis",
+  "@homeVaccinationDoseLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "recordsTitle": "Meine Akte",
+  "recordsAssistantTooltip": "Assistent — Fragen an deine Akte",
+  "recordsVisitSummaryTooltip": "Zusammenfassung für den Arztbesuch",
+  "recordsSortTooltip": "Sortierung",
+  "recordsSortDate": "Datum",
+  "recordsSortName": "Name",
+  "recordsSortUpdated": "Zuletzt geändert",
+  "recordsAddEntry": "Eintrag anlegen",
+  "recordsSearchHint": "Suche in Akte & Berichten…",
+  "recordsLoading": "Akte wird geladen…",
+  "recordsEmpty": "Noch keine Einträge",
+  "recordsNoResults": "Keine Treffer für „{query}“",
+  "@recordsNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsEmptyHint": "Filter und Suche sind bereit — lege den ersten Eintrag an.",
+  "recordsFilterAll": "Alle",
+  "recordsCreateDoctors": "Ärzte anlegen",
+  "recordsCreateDiagnoses": "Diagnosen anlegen",
+  "recordsCreateSymptoms": "Symptome anlegen",
+  "recordsCreateAppointments": "Termine anlegen",
+  "recordsCreateReports": "Berichte anlegen",
+  "recordsCreateMedications": "Medikamente anlegen",
+  "recordsCreatePharmacies": "Apotheken anlegen",
+  "recordsCreateVaccinations": "Impfungen anlegen",
+  "recordsCreateNotes": "Notizen anlegen",
+  "recordsDatePattern": "d. MMM yyyy",
+  "recordsDateTimePattern": "d. MMM yyyy · HH:mm",
+  "recordsTimePattern": "HH:mm",
+  "recordsDiagnosisNone": "Keine",
+  "recordsDateClearTooltip": "{label} entfernen",
+  "@recordsDateClearTooltip": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsDoctorCreateTitle": "Arzt anlegen",
+  "recordsDoctorEditTitle": "Arzt bearbeiten",
+  "recordsFieldName": "Name",
+  "recordsFieldSpecialty": "Fachrichtung",
+  "recordsFieldPractice": "Praxis / Klinik",
+  "recordsFieldPhone": "Telefon",
+  "recordsFieldAddress": "Adresse",
+  "recordsDiagnosisCreateTitle": "Diagnose anlegen",
+  "recordsDiagnosisEditTitle": "Diagnose bearbeiten",
+  "recordsFieldTitle": "Titel",
+  "recordsDiagnosisActive": "Aktiv",
+  "recordsDiagnosisResolved": "Abgeschlossen",
+  "recordsDiagnosisSince": "Seit",
+  "recordsDiagnosisUntil": "Bis",
+  "recordsSymptomCreateTitle": "Symptom anlegen",
+  "recordsSymptomEditTitle": "Symptom bearbeiten",
+  "recordsFieldSymptomLabel": "Bezeichnung",
+  "recordsFieldBodyRegion": "Körperregion",
+  "recordsNoteCreateTitle": "Notiz anlegen",
+  "recordsNoteEditTitle": "Notiz bearbeiten",
+  "recordsFieldText": "Text",
+  "recordsReportRenameTitle": "Bericht umbenennen",
+  "recordsDeleteConfirmTitle": "{what} löschen?",
+  "@recordsDeleteConfirmTitle": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsDeleteConfirmBody": "Das kann nicht rückgängig gemacht werden.",
+  "recordsScanDocument": "Dokument scannen",
+  "recordsScanDocumentHint": "Kamera · Text wird erkannt und durchsuchbar",
+  "recordsPickFiles": "Dateien wählen",
+  "recordsPickFilesHint": "PDFs oder Bilder · auch mehrere auf einmal",
+  "recordsScannerUnavailableTitle": "Scanner startet nicht",
+  "recordsScannerUnavailableBody": "Der Dokumentenscanner braucht die Google-Play-Dienste; beim ersten Mal lädt er sich ggf. erst herunter. Bitte gleich noch einmal versuchen oder ein Foto/PDF als Datei wählen.\n\nDetails: {details}",
+  "@recordsScannerUnavailableBody": {
+    "placeholders": {
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsPickFile": "Datei wählen",
+  "recordsScanSaving": "Scan wird gespeichert, Text wird erkannt…",
+  "recordsScanFileName": "Scan {date}.pdf",
+  "@recordsScanFileName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsScanFileDatePattern": "dd.MM.yyyy HH-mm",
+  "recordsScanSavedNoText": "Scan gespeichert (kein Text erkannt)",
+  "recordsScanSavedWithText": "Scan gespeichert — Text durchsuchbar",
+  "recordsReportSaved": "Bericht „{title}“ gespeichert",
+  "@recordsReportSaved": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsReportsSaved": "{count, plural, =1{1 Bericht gespeichert} other{{count} Berichte gespeichert}}",
+  "@recordsReportsSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recordsImportPartial": "{saved} gespeichert, {failed} fehlgeschlagen: {files}",
+  "@recordsImportPartial": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      },
+      "files": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsDeleteToArchive": "Löschen (ins Archiv)",
+  "recordsNotFound": "Eintrag nicht gefunden",
+  "recordsPractice": "Praxis",
+  "recordsPhoneTapToCall": "Telefon · tippen zum Anrufen",
+  "recordsAddressOpenMaps": "Adresse · in Karten öffnen",
+  "recordsDoctorNoSymptoms": "Noch keine Symptome bei diesem Arzt.",
+  "recordsAssign": "Zuordnen",
+  "recordsStatusActive": "aktiv",
+  "recordsStatusHealed": "geheilt",
+  "recordsLinkedDirect": "zugeordnet",
+  "recordsLinkedViaAppointments": "aus Terminen",
+  "recordsDoctorNoAppointments": "Keine Termine bei diesem Arzt.",
+  "recordsAssignSymptomsTitle": "Symptome bei {name}",
+  "@recordsAssignSymptomsTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsNoSymptomsYet": "Noch keine Symptome angelegt.",
+  "recordsSince": "seit {date}",
+  "@recordsSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsUntil": "bis {date}",
+  "@recordsUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsDiagnosisNoAppointments": "Noch keinem Termin zugeordnet.",
+  "recordsNoSymptomsLinked": "Keine Symptome verknüpft.",
+  "recordsNoMedicationsLinked": "Keine Medikamente verknüpft.",
+  "recordsDiagnosisNoReports": "Keine Berichte zu den Terminen.",
+  "recordsHealedOn": "geheilt am {date}",
+  "@recordsHealedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsMarkHealed": "Als geheilt markieren",
+  "recordsReopen": "Wieder aktiv",
+  "recordsDiscussedAtAppointments": "Besprochen bei Terminen",
+  "recordsHistory": "Verlauf",
+  "recordsCheckIns": "Check-ins",
+  "recordsNoCheckIns": "Noch keine Check-ins.",
+  "recordsDeleteValue": "Wert löschen",
+  "recordsFrom": "ab {date}",
+  "@recordsFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsOngoing": "dauerhaft",
+  "recordsDosePerIntake": "Dosis je Einnahme",
+  "recordsInstructions": "Hinweis",
+  "recordsPeriod": "Zeitraum",
+  "recordsIntakeTimes": "Einnahmezeiten",
+  "recordsNoIntakeTimes": "Keine festen Einnahmezeiten.",
+  "recordsIntake": "Einnahme",
+  "recordsRemindIntake": "An Einnahme erinnern",
+  "recordsPrescribedBy": "Verschrieben von",
+  "recordsIntakeLog": "Einnahme-Protokoll",
+  "recordsTakenNow": "Jetzt genommen",
+  "recordsNoIntakesYet": "Noch keine Einnahme erfasst.",
+  "recordsAdherence": "Letzte 14 Tage: {percent} % der geplanten Einnahmen genommen",
+  "@recordsAdherence": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "recordsTaken": "Genommen",
+  "recordsSkipped": "Ausgelassen",
+  "recordsPlannedAt": "geplant {time}",
+  "@recordsPlannedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsDeleteEntry": "Eintrag löschen",
+  "recordsPharmacyNoMedications": "Keine Medikamente von dieser Apotheke.",
+  "recordsDoseNumber": "{number}. Dosis",
+  "@recordsDoseNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "recordsVaccineProduct": "Impfstoff",
+  "recordsBatch": "Charge",
+  "recordsBoosterOverdue": "Auffrischung überfällig",
+  "recordsNextDoseDue": "Nächste Impfung fällig",
+  "recordsVaccinatedBy": "Geimpft von",
+  "recordsLastModified": "Zuletzt geändert {date}",
+  "@recordsLastModified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recordsRelatedAppointment": "Zugehöriger Termin",
+  "recordsRelatedDiagnosis": "Zugehörige Diagnose",
+  "settingsTitle": "Einstellungen",
+  "settingsLoading": "Einstellungen werden geladen…",
+  "settingsLocalOnlyTitle": "Alles lokal auf diesem Gerät",
+  "settingsLocalOnlySubtitle": "Keine Accounts, keine Patientendaten auf Servern.",
+  "settingsArchiveTitle": "Archiv",
+  "settingsArchiveSubtitle": "Gelöschte Einträge wiederherstellen oder endgültig löschen",
+  "settingsAppSection": "App",
+  "settingsLanguage": "Sprache",
+  "settingsLanguageValue": "Deutsch",
+  "settingsVersion": "Version",
+  "settingsDateTimePattern": "d. MMM, HH:mm",
+  "settingsBackupTaskBackup": "Sicherung",
+  "settingsBackupTaskRestore": "Wiederherstellung",
+  "settingsBackupTaskExport": "Export",
+  "settingsBackupTaskImport": "Import",
+  "settingsBackupTaskReindex": "Indexierung",
+  "settingsBackupFailed": "{task} fehlgeschlagen.",
+  "@settingsBackupFailed": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsBackupRunning": "{task} läuft…",
+  "@settingsBackupRunning": {
+    "placeholders": {
+      "task": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsBackupShareSubject": "Mai Doctor Hub — Sicherung",
+  "settingsBackupCreated": "Sicherung erstellt — Passwort gut aufbewahren!",
+  "settingsBackupPickTitle": "Sicherung wählen",
+  "settingsBackupNotABackup": "Keine Mai-Doctor-Hub-Sicherung (.maibackup).",
+  "settingsBackupRestoreConfirmTitle": "Sicherung wiederherstellen?",
+  "settingsBackupRestoreConfirmText": "Alle aktuellen Daten und Berichte auf diesem Gerät werden durch die Sicherung ersetzt. Der Kalender-Export muss danach neu eingerichtet werden.",
+  "settingsBackupReplace": "Ersetzen",
+  "settingsBackupDatePattern": "d. MMM yyyy",
+  "settingsBackupRestored": "Sicherung vom {date} wiederhergestellt.",
+  "@settingsBackupRestored": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsBackupRestoredMissing": "Sicherung vom {date} wiederhergestellt ({missing} Dateien fehlten).",
+  "@settingsBackupRestoredMissing": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "missing": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsDocumentsExportConfirmTitle": "Dokumente exportieren?",
+  "settingsDocumentsExportConfirmText": "Alle Berichte und Scans werden als ZIP mit lesbaren Dateinamen und einer Übersicht (CSV) geteilt. Das Archiv ist nicht verschlüsselt — nur an vertrauenswürdige Ziele senden.",
+  "settingsDocumentsExportAction": "Exportieren",
+  "settingsDocumentsExportNone": "Keine Dokumente zum Exportieren.",
+  "settingsDocumentsShareSubject": "Mai Doctor Hub — {count} Dokumente",
+  "@settingsDocumentsShareSubject": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsReindexAllDone": "Alle Berichte sind bereits durchsuchbar.",
+  "settingsReindexCount": "{count} Bericht(e) jetzt durchsuchbar.",
+  "@settingsReindexCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsBackupSection": "Datensicherung",
+  "settingsBackupDescription": "Verschlüsselte Datei mit allen Daten und Berichten — z. B. für einen Gerätewechsel. Ohne Passwort nicht lesbar.",
+  "settingsBackupCreate": "Sicherung erstellen",
+  "settingsBackupRestore": "Sicherung wiederherstellen",
+  "settingsDocumentsExport": "Dokumente exportieren",
+  "settingsDocumentsExportSubtitle": "Alle Berichte & Scans als ZIP mit Übersicht",
+  "settingsDocumentsImport": "Dokumente importieren",
+  "settingsDocumentsImportSubtitle": "Mehrere PDFs oder Bilder auf einmal",
+  "settingsBackupWebUnavailable": "Im Web nicht verfügbar",
+  "settingsReindexTitle": "Berichte durchsuchbar machen",
+  "settingsReindexSubtitle": "Text aus älteren PDF-Berichten erkennen",
+  "settingsPassphraseMinLength": "Mindestens {count} Zeichen.",
+  "@settingsPassphraseMinLength": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPassphraseMismatch": "Passwörter stimmen nicht überein.",
+  "settingsPassphraseSetTitle": "Passwort festlegen",
+  "settingsPassphraseEnterTitle": "Passwort eingeben",
+  "settingsPassphraseLabel": "Passwort",
+  "settingsPassphraseShow": "Anzeigen",
+  "settingsPassphraseHide": "Verbergen",
+  "settingsPassphraseRepeat": "Wiederholen",
+  "settingsPassphraseWarning": "Ohne dieses Passwort lässt sich die Sicherung nicht öffnen — es gibt keine Wiederherstellung.",
+  "settingsCalendarNoPermission": "Ohne Kalenderzugriff kein Export.",
+  "settingsCalendarNoWritable": "Kein beschreibbarer Kalender auf dem Gerät.",
+  "settingsCalendarStopTitle": "Kalender-Export beenden",
+  "settingsCalendarStopText": "Sollen die bereits übertragenen Termine aus dem Kalender entfernt werden?",
+  "settingsCalendarKeep": "Behalten",
+  "settingsCalendarRemove": "Entfernen",
+  "settingsCalendarRemovedCount": "{count} Termin(e) aus dem Kalender entfernt.",
+  "@settingsCalendarRemovedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalendarRemovedResult": "Kalender entfernt: {result}",
+  "@settingsCalendarRemovedResult": {
+    "placeholders": {
+      "result": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsCalendarSyncedCount": "{count} Termin(e) aus dem Kalender abgeglichen.",
+  "@settingsCalendarSyncedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalendarSyncedResult": "Kalender abgeglichen: {result}",
+  "@settingsCalendarSyncedResult": {
+    "placeholders": {
+      "result": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsCalendarSection": "Kalender",
+  "settingsCalendarExportTitle": "Termine in Kalender übertragen",
+  "settingsCalendarExportSubtitle": "Nur in eine Richtung, z. B. in deinen Google Kalender. Es wird nur „Arzttermin“, Arzt und Ort übertragen — keine Diagnosen oder Notizen.",
+  "settingsCalendarAndroidOnly": "Nur in der Android-App verfügbar.",
+  "settingsCalendarTarget": "Zielkalender",
+  "settingsCalendarAllowAccess": "Kalenderzugriff erlauben",
+  "settingsCalendarIncludeTitle": "Termintitel mit übertragen",
+  "settingsCalendarIncludeTitleSubtitle": "Aus: „Arzttermin · Dr. …“. An: z. B. „MRT Knie · Dr. …“.",
+  "settingsCalendarLinkedCount": "{count} Termin(e) im Kalender",
+  "@settingsCalendarLinkedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalendarLinkedWithErrors": "{count} Termin(e) im Kalender · {errors} Fehler",
+  "@settingsCalendarLinkedWithErrors": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "errors": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsCalendarLastSynced": "Zuletzt {date}",
+  "@settingsCalendarLastSynced": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsCalendarSyncNow": "Jetzt",
+  "settingsRemindersSection": "Erinnerungen",
+  "settingsRemindersNew": "Neu",
+  "settingsRemindersNotificationsOff": "Benachrichtigungen sind aus",
+  "settingsRemindersNotificationsOffText": "Erinnerungen werden geplant, aber nicht angezeigt.",
+  "settingsRemindersAllow": "Erlauben",
+  "settingsRemindersEmpty": "Keine Erinnerungen — mit „Neu“ anlegen.",
+  "settingsRemindersOpenCheckIn": "Check-in jetzt öffnen",
+  "settingsRemindersAllOpenSymptoms": "alle offenen Symptome",
+  "settingsRemindersPermissionTitle": "Benachrichtigungen erlauben?",
+  "settingsRemindersPermissionText": "Damit Erinnerungen erscheinen, braucht die App die Erlaubnis für Benachrichtigungen. Sie werden lokal geplant — ohne Server.",
+  "settingsRemindersLater": "Später",
+  "settingsReminderNewTitle": "Neue Erinnerung",
+  "settingsReminderTitle": "Erinnerung",
+  "settingsReminderFieldTitle": "Titel",
+  "settingsReminderFieldBody": "Text (optional)",
+  "settingsReminderTime": "Uhrzeit",
+  "settingsReminderWeekdays": "Wochentage",
+  "settingsReminderSymptomsHint": "Nur für Symptome (leer = alle offenen)",
+  "settingsAppointmentRemindersTitle": "Termin-Erinnerungen",
+  "settingsAppointmentRemindersCalendarTip": "Tipp: Termine gehen auch in deinen Kalender — ggf. doppelt erinnert. Eines von beiden abschalten.",
+  "settingsAppointmentRemindersSubtitle": "Benachrichtigung vor Arztterminen. Wer lieber den Google Kalender nutzt, schaltet das aus.",
+  "settingsAppointmentRemindersLeadLabel": "Erinnern vorher",
+  "settingsSecuritySection": "Sicherheit",
+  "settingsLockTitle": "App-Sperre",
+  "settingsLockSubtitle": "Beim Öffnen und nach 1 Minute im Hintergrund mit Biometrie oder Geräte-PIN entsperren. Inhalte erscheinen nicht in Screenshots oder der App-Übersicht.",
+  "settingsLockNoDeviceLock": "Keine Displaysperre eingerichtet — bitte zuerst in den Geräteeinstellungen PIN oder Biometrie aktivieren.",
+  "settingsLockLockedTitle": "Mai Doctor Hub ist gesperrt",
+  "settingsLockLockedText": "Mit Fingerabdruck, Gesicht oder Geräte-PIN entsperren.",
+  "settingsLockUnlock": "Entsperren",
+  "settingsLockReasonSetup": "App-Sperre einrichten",
+  "settingsLockReasonUnlock": "Mai Doctor Hub entsperren",
+  "settingsArchiveSnack": "{label} im Archiv",
+  "@settingsArchiveSnack": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsArchivePurgeAction": "Endgültig löschen",
+  "settingsArchivePurgeTitle": "Endgültig löschen?",
+  "settingsArchivePurgeText": "„{title}“ wird unwiderruflich gelöscht (inkl. Dateien).",
+  "@settingsArchivePurgeText": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsArchivePurgeAllTitle": "Archiv leeren?",
+  "settingsArchivePurgeAllText": "Alle archivierten Einträge werden unwiderruflich gelöscht.",
+  "settingsArchivePurgedCount": "{count} Einträge endgültig gelöscht",
+  "@settingsArchivePurgedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsArchiveEmptyAction": "Leeren",
+  "settingsArchiveEmpty": "Das Archiv ist leer. Gelöschte Einträge landen hier und lassen sich wiederherstellen.",
+  "settingsArchiveLoading": "Wird geladen…",
+  "settingsArchiveItemSubtitle": "{type} · archiviert {date}",
+  "@settingsArchiveItemSubtitle": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsOnboardingSkip": "Überspringen",
+  "settingsOnboardingPrivacyTitle": "Deine Akte bleibt bei dir",
+  "settingsOnboardingPrivacyText": "Mai Doctor Hub speichert alles nur auf diesem Gerät. Kein Konto, kein Server. Was das Gerät verlässt — Sicherung, Kalender, Assistent — entscheidest du.",
+  "settingsOnboardingAllInOneTitle": "Alles an einem Ort",
+  "settingsOnboardingAllInOneText": "Termine, Ärzte, Diagnosen, Symptome, Medikamente und Arztberichte — durchsuchbar und miteinander verknüpft. Für den nächsten Arztbesuch hast du alles parat.",
+  "settingsOnboardingRemindersTitle": "Erinnerungen",
+  "settingsOnboardingRemindersText": "Damit wir dich an Check-ins, Termine und Medikamente erinnern können, braucht die App die Erlaubnis für Benachrichtigungen. Sie werden lokal auf dem Gerät geplant — ohne Push-Server. Du kannst das später jederzeit ändern.",
+  "settingsOnboardingAllowNotifications": "Benachrichtigungen erlauben",
+  "settingsOnboardingAllowed": "Erlaubt",
+  "settingsOnboardingDenied": "Nicht erlaubt — in den Einstellungen der App jederzeit nachholbar.",
+  "settingsOnboardingStart": "Los geht’s",
+  "settingsShellTabHome": "Home",
+  "settingsShellTabCalendar": "Kalender",
+  "settingsShellTabRecords": "Meine Akte",
+  "settingsShellTabSettings": "Einstellungen",
+  "settingsUnreadableTitle": "Daten nicht lesbar",
+  "settingsUnreadableText": "Die gespeicherten Daten konnten auf diesem Gerät nicht entschlüsselt werden. Die App startet deshalb leer.\n\nMit einer .maibackup-Sicherung lässt sich alles wiederherstellen: Einstellungen → Datensicherung → „Sicherung wiederherstellen“.",
+  "settingsChartEmpty": "Noch keine Skalenwerte — per Check-in erfassen.",
+  "settingsChartDayPattern": "d.M.",
+  "settingsChartDayTimePattern": "d.M. HH:mm",
+  "settingsChartSemantics": "Verlauf von {from} bis {to}, zuletzt {value} von 10",
+  "@settingsChartSemantics": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSymptomReportNoCheckIns": "Keine Check-ins in diesem Zeitraum.",
+  "settingsSymptomReportCount": "{count} Check-in(s)",
+  "@settingsSymptomReportCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsSymptomReportCountStats": "{count} Check-in(s) · Ø {avg} · zuletzt {latest}/10",
+  "@settingsSymptomReportCountStats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "avg": {
+        "type": "String"
+      },
+      "latest": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsObservationScale": "Stärke {value}/10",
+  "@settingsObservationScale": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsObservationColor": "Farbe {value}",
+  "@settingsObservationColor": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantTitle": "Assistent",
+  "svcAssistantExample1": "Wann ist mein nächster Termin?",
+  "svcAssistantExample2": "Welche Medikamente nehme ich gerade?",
+  "svcAssistantExample3": "Wie haben sich meine Symptome entwickelt?",
+  "svcAssistantExample4": "Was stand im letzten Bericht?",
+  "svcAssistantDeleteModelQuestion": "Modell löschen?",
+  "svcAssistantDeleteModelBody": "Gibt {size} Speicher frei. Für den Assistenten musst du es danach neu herunterladen.",
+  "@svcAssistantDeleteModelBody": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantDeleteModel": "Modell löschen",
+  "svcAssistantDeleteSearchModel": "Suchmodell löschen",
+  "svcAssistantUnsupportedTitle": "Auf diesem Gerät nicht verfügbar",
+  "svcAssistantAskTitle": "Frag deine Akte",
+  "svcAssistantIntro": "Antworten entstehen auf diesem Gerät aus deinen Einträgen und Berichten — nichts wird hochgeladen, der Verlauf wird nicht gespeichert.",
+  "svcAssistantDisclaimer": "Keine ärztliche Beratung — Antworten können Fehler enthalten.",
+  "svcAssistantInputHint": "Frage zu deiner Akte…",
+  "svcAssistantSend": "Fragen",
+  "svcAssistantNoAnswer": "Keine Antwort: {error}",
+  "@svcAssistantNoAnswer": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantReading": "Liest deine Akte…",
+  "svcAssistantSetupTitle": "Lokaler Assistent",
+  "svcAssistantSetupBody": "Stell Fragen zu Terminen, Medikamenten, Symptomen und Berichten. Das KI-Modell {model} läuft vollständig auf diesem Gerät — deine Akte wird nie hochgeladen. Nur das Modell selbst wird einmalig heruntergeladen ({size}, am besten im WLAN).",
+  "@svcAssistantSetupBody": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantLowMemory": "Hinweis: Dieses Gerät hat wenig Arbeitsspeicher. Der Assistent kann langsam sein oder von Android beendet werden.",
+  "svcAssistantDownloading": "Wird geladen… {percent} % — läuft auch weiter, wenn du die App verlässt.",
+  "@svcAssistantDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "svcAssistantDownloadModel": "Modell herunterladen ({size})",
+  "@svcAssistantDownloadModel": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSemanticTitle": "Semantische Suche (optional)",
+  "svcSemanticActive": "Aktiv: Antworten nutzen die besten Treffer per Stichwort und per Bedeutung.",
+  "svcSemanticIndexing": "Akte wird indexiert… {done}/{total}",
+  "@svcSemanticIndexing": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "svcSemanticDownloading": "Suchmodell wird geladen… {percent} %",
+  "@svcSemanticDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "svcSemanticIntro": "Findet auch Einträge, in denen die Wörter deiner Frage nicht vorkommen (z. B. „Schilddrüse“ → TSH-Wert). Lädt {model} ({size}); die Suche läuft danach offline.\n\nGoogle stellt das Modell nur nach Annahme der Gemma-Lizenz bereit: kostenloses Hugging-Face-Konto, Lizenz auf der Modellseite akzeptieren, Lese-Token erstellen und hier einfügen. Der Token wird nur für den Download genutzt und nicht gespeichert.",
+  "@svcSemanticIntro": {
+    "placeholders": {
+      "model": {
+        "type": "String"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSemanticTokenLabel": "Hugging-Face-Token (hf_…)",
+  "svcSemanticEnable": "Semantische Suche aktivieren",
+  "svcDownloadFailed": "Download fehlgeschlagen: {error}",
+  "@svcDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSemanticDownloadFailed": "Download fehlgeschlagen — Token und Lizenz prüfen. ({error})",
+  "@svcSemanticDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcIndexNotUpdated": "Index nicht aktualisiert: {error}",
+  "@svcIndexNotUpdated": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantModelSize": "ca. 2,6 GB",
+  "svcEmbedderModelSize": "ca. 180 MB",
+  "svcAssistantAndroidOnly": "Der Assistent läuft nur auf Android.",
+  "svcAssistantDeviceCheckFailed": "Gerät nicht prüfbar: {error}",
+  "@svcAssistantDeviceCheckFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcAssistantNeedsAndroid11": "Der lokale Assistent braucht mindestens Android 11.",
+  "svcAssistantNeedsArm64": "Der lokale Assistent braucht einen 64-Bit-ARM-Prozessor.",
+  "svcContextSystemPrompt": "Du bist der Assistent der App „Mai Doctor Hub“. Du beantwortest Fragen zur\npersönlichen Gesundheitsakte des Nutzers auf Deutsch, kurz und klar.\nRegeln:\n- Nutze nur die Informationen aus dem Abschnitt AKTE. Steht etwas nicht darin,\n  sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen;\n  verweise bei medizinischen Fragen an Arzt, Ärztin oder Apotheke.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.",
+  "svcContextRecordHeading": "AKTE",
+  "svcContextQuestionHeading": "FRAGE",
+  "svcContextToday": "Heute: {date}",
+  "@svcContextToday": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextActiveDiagnoses": "Aktive Diagnosen",
+  "svcSince": "seit {date}",
+  "@svcSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcCurrentMedications": "Aktuelle Medikamente",
+  "svcContextOpenSymptoms": "Offene Symptome (letzte 30 Tage)",
+  "svcContextVaccineOn": "{vaccine} am {date}",
+  "@svcContextVaccineOn": {
+    "placeholders": {
+      "vaccine": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextDoseNumber": "{number}. Dosis",
+  "@svcContextDoseNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "svcContextNextDue": "nächste fällig {date}",
+  "@svcContextNextDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextMatchingEntries": "Passende Einträge zur Frage:",
+  "svcContextUpcomingAppointments": "Nächste Termine",
+  "svcContextPastAppointments": "Letzte Termine",
+  "svcContextCancelled": "abgesagt",
+  "svcContextDiagnosesList": "Diagnosen: {list}",
+  "@svcContextDiagnosesList": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextIntake": "Einnahme {times}",
+  "@svcContextIntake": {
+    "placeholders": {
+      "times": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextFor": "gegen {diagnosis}",
+  "@svcContextFor": {
+    "placeholders": {
+      "diagnosis": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextUntil": "bis {date}",
+  "@svcContextUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcCheckInCount": "{count} Check-ins",
+  "@svcCheckInCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "svcContextLatest": "zuletzt {date}: {value}",
+  "@svcContextLatest": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "svcContextDayPattern": "dd.MM.yyyy",
+  "svcContextDayTimePattern": "dd.MM.yyyy HH:mm",
+  "svcSummaryPdfTitle": "Zusammenfassung für den Arztbesuch",
+  "svcSummaryPdfFileName": "Arztbesuch_{date}.pdf",
+  "@svcSummaryPdfFileName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryPdfDatePattern": "dd.MM.yyyy",
+  "svcSummaryPdfDateTimePattern": "dd.MM. HH:mm",
+  "svcSummaryPdfFooter": "Erstellt am {date} mit Mai Doctor Hub · Angaben des Patienten, keine ärztliche Dokumentation",
+  "@svcSummaryPdfFooter": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryPdfAppointment": "Termin {date} bei {doctor}",
+  "@svcSummaryPdfAppointment": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "doctor": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryPdfPeriod": "Zeitraum {from} – {to}",
+  "@svcSummaryPdfPeriod": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryPdfQuestions": "Meine Fragen & Anliegen",
+  "svcSummaryPdfDiagnoses": "Bekannte Diagnosen",
+  "svcSummaryPdfActive": "aktiv",
+  "svcSummaryPdfResolved": "abgeklungen",
+  "svcSummaryPdfNoCheckIns": "Keine Check-ins im Zeitraum.",
+  "svcSummaryPdfStats": "Ø {average}/10, min {min}, max {max}, zuletzt {last}",
+  "@svcSummaryPdfStats": {
+    "placeholders": {
+      "average": {
+        "type": "String"
+      },
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryPdfDate": "Datum",
+  "svcSummaryPdfValue": "Wert",
+  "svcSummaryPdfDose": "Dosis",
+  "svcSummaryPdfIntake": "Einnahme",
+  "svcSummaryPdfSinceUntil": "Seit / bis",
+  "svcSummaryPdfProductBatch": "Impfstoff / Charge",
+  "svcSummaryPdfNextDue": "Nächste",
+  "svcSummaryPdfDue": "Fällig: {list}",
+  "@svcSummaryPdfDue": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryTitle": "Für den Arztbesuch",
+  "svcSummarySaveDialog": "Zusammenfassung speichern",
+  "svcSummarySaved": "PDF gespeichert",
+  "svcSummaryExportFailed": "Export fehlgeschlagen: {error}",
+  "@svcSummaryExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "svcSummaryShare": "PDF teilen",
+  "svcSummaryIntro": "Fragen, Symptom-Verläufe, Medikamente und Impfungen auf einen Blick — als PDF für die Praxis.",
+  "svcSummaryAppointmentDatePattern": "d. MMM yyyy",
+  "svcSummaryReference": "Bezug (bestimmt Zeitraum)",
+  "svcSummaryNoAppointment": "Ohne — letzte 30 Tage",
+  "svcSummaryName": "Name (optional, steht im PDF)",
+  "svcSummaryQuestions": "Fragen & Anliegen",
+  "svcSummaryQuestionsHint": "Eine Frage pro Zeile — Notizen zum Termin kommen automatisch dazu",
+  "svcSummaryAllSymptoms": "Alle offenen Symptome",
+  "svcSummaryAllMedications": "Alle aktuellen Medikamente",
+  "svcSummaryMore": "Weiteres",
+  "svcReminderLead15Min": "15 Min.",
+  "svcReminderLead1Hour": "1 Std.",
+  "svcReminderLead2Hours": "2 Std.",
+  "svcReminderLead1Day": "1 Tag",
+  "svcReminderLead2Days": "2 Tage",
+  "svcReminderLead1Week": "1 Woche",
+  "svcReminderInMinutes": "In {minutes} Minuten ({time})",
+  "@svcReminderInMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "svcReminderInHours": "{hours, plural, =1{In 1 Stunde ({time})} other{In {hours} Stunden ({time})}}",
+  "@svcReminderInHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "svcReminderTomorrow": "Morgen {time}",
+  "@svcReminderTomorrow": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "svcReminderTimePattern": "HH:mm",
+  "svcReminderDayPattern": "EEE, d.M.",
+  "svcReminderAppointmentFallback": "Arzttermin",
+  "svcReminderMedicationTitle": "Einnahme: {name}",
+  "@svcReminderMedicationTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "svcReminderTakeNow": "Einnehmen",
+  "svcReminderCheckInDefault": "Symptome kurz protokollieren.",
+  "svcReminderCheckInSymptoms": "Check-in: {symptoms}",
+  "@svcReminderCheckInSymptoms": {
+    "placeholders": {
+      "symptoms": {
+        "type": "String"
+      }
+    }
+  },
+  "svcChannelCheckIn": "Symptom-Check-in",
+  "svcChannelCheckInDescription": "Erinnerungen für Check-ins",
+  "svcChannelAppointmentDescription": "Erinnerungen vor Arztterminen",
+  "svcChannelMedicationDescription": "Einnahme-Erinnerungen",
+  "svcCalendarEventTitle": "Arzttermin · {doctor}",
+  "@svcCalendarEventTitle": {
+    "placeholders": {
+      "doctor": {
+        "type": "String"
+      }
+    }
+  },
+  "svcCalendarManagedBy": "Verwaltet von Mai Doctor Hub",
+  "svcCalendarNoPermission": "Kalenderzugriff nicht erlaubt",
+  "svcCalendarNoEventId": "Keine Event-ID erhalten",
+  "svcImportPickFailed": "Dateiauswahl fehlgeschlagen",
+  "svcImportUnsupportedType": "Dateityp „{ext}“ wird nicht unterstützt (PDF oder Bild).",
+  "@svcImportUnsupportedType": {
+    "placeholders": {
+      "ext": {
+        "type": "String"
+      }
+    }
+  },
+  "svcImportFileNotSaved": "Datei konnte nicht lokal gespeichert werden.",
+  "svcImportReportNotSaved": "Bericht konnte nicht gespeichert werden.",
+  "svcExportFileName": "Mai-Doctor-Hub-Dokumente-{date}.zip",
+  "@svcExportFileName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "svcExportOverviewFile": "Übersicht.csv",
+  "svcExportCsvHeader": "Datum;Titel;Arzt;Termin;Quelle;Seiten;Datei",
+  "svcExportSourceImage": "Bild",
+  "svcBackupTooNew": "Sicherung stammt aus einer neueren App-Version — bitte App aktualisieren."
 }

@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../data/app_database.dart';
 import '../data/repositories/records_repository.dart';
+import '../l10n/l10n.dart';
 import 'ocr/ocr_service.dart';
 import 'pdf_extractor.dart';
 
@@ -76,7 +77,7 @@ class ReportImportService {
         allowedExtensions: allowedReportExtensions,
       );
     } catch (e) {
-      throw ReportImportException('Dateiauswahl fehlgeschlagen', e);
+      throw ReportImportException(AppLocale.strings.svcImportPickFailed, e);
     }
     return importAll([
       for (final file in files)
@@ -130,7 +131,7 @@ class ReportImportService {
     final ext = p.extension(name).toLowerCase();
     if (!allowedReportExtensions.contains(ext.replaceFirst('.', ''))) {
       throw ReportImportException(
-        'Dateityp „$ext“ wird nicht unterstützt (PDF oder Bild).',
+        AppLocale.strings.svcImportUnsupportedType(ext),
       );
     }
     final mimeType = _mimeForExtension(ext);
@@ -141,10 +142,7 @@ class ReportImportService {
     try {
       localPath = await _persistFile(name, sourcePath, readBytes);
     } catch (e) {
-      throw ReportImportException(
-        'Datei konnte nicht lokal gespeichert werden.',
-        e,
-      );
+      throw ReportImportException(AppLocale.strings.svcImportFileNotSaved, e);
     }
 
     String? extracted;
@@ -184,7 +182,7 @@ class ReportImportService {
     } catch (e) {
       await _deleteQuietly(localPath);
       throw ReportImportException(
-        'Bericht konnte nicht gespeichert werden.',
+        AppLocale.strings.svcImportReportNotSaved,
         e,
       );
     }

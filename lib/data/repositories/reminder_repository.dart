@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:uuid/uuid.dart';
 
+import '../../l10n/l10n.dart';
 import '../app_database.dart';
 
 const _uuid = Uuid();
@@ -9,7 +11,13 @@ const _uuid = Uuid();
 abstract final class Weekdays {
   static const all = 127;
   static const workdays = 31;
-  static const labels = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+
+  /// Kurznamen Mo … So in der App-Sprache („Mo“, „Di“ … / „Mon“, „Tue“ …).
+  static List<String> get labels {
+    // Intl liefert Sonntag zuerst.
+    final names = DateFormat().dateSymbols.STANDALONESHORTWEEKDAYS;
+    return [...names.skip(1), names.first];
+  }
 
   /// [weekday] wie `DateTime.weekday` (1 = Montag).
   static bool contains(int mask, int weekday) =>
@@ -23,10 +31,12 @@ abstract final class Weekdays {
   ];
 
   static String describe(int mask) {
-    if (mask & all == all) return 'täglich';
-    if (mask == workdays) return 'werktags';
-    if (mask == 96) return 'am Wochenende';
-    return [for (final d in days(mask)) labels[d - 1]].join(', ');
+    final t = AppLocale.strings;
+    if (mask & all == all) return t.homeWeekdaysDaily;
+    if (mask == workdays) return t.homeWeekdaysWorkdays;
+    if (mask == 96) return t.homeWeekdaysWeekend;
+    final names = labels;
+    return [for (final d in days(mask)) names[d - 1]].join(', ');
   }
 }
 

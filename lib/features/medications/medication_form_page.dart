@@ -6,6 +6,7 @@ import '../../data/repositories/doctor_repository.dart';
 import '../../data/repositories/medication_repository.dart';
 import '../../data/repositories/reminder_repository.dart' show Weekdays;
 import '../../data/repositories/suggestion_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../widgets/suggestion_text_field.dart';
 import '../records/entity_forms.dart';
 import 'pharmacy_form.dart';
@@ -131,7 +132,7 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
   Future<void> _save() async {
     if (_name.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name fehlt')),
+        SnackBar(content: Text(context.l10n.homeMedNameMissing)),
       );
       return;
     }
@@ -184,6 +185,8 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final weekdayLabels = Weekdays.labels;
     Widget section(String title) => Padding(
       padding: const EdgeInsets.only(top: 20, bottom: 4),
       child: Text(
@@ -194,8 +197,8 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_m == null ? 'Medikament anlegen' : 'Medikament bearbeiten'),
-        actions: [TextButton(onPressed: _save, child: const Text('Speichern'))],
+        title: Text(_m == null ? l10n.homeMedCreate : l10n.homeMedEdit),
+        actions: [TextButton(onPressed: _save, child: Text(l10n.commonSave))],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
@@ -204,19 +207,19 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
             controller: _name,
             field: SuggestionField.medicationName,
             autofocus: _m == null,
-            decoration: const InputDecoration(labelText: 'Name'),
+            decoration: InputDecoration(labelText: l10n.homeDoctorName),
           ),
           SuggestionTextField(
             controller: _strength,
             field: SuggestionField.dosage,
-            decoration: const InputDecoration(
-              labelText: 'Wirkstärke (z. B. 400 mg)',
+            decoration: InputDecoration(
+              labelText: l10n.homeMedStrength,
             ),
           ),
           const SizedBox(height: 12),
           DropdownMenu<MedicationForm?>(
             initialSelection: _form,
-            label: const Text('Darreichungsform'),
+            label: Text(l10n.homeMedForm),
             expandedInsets: EdgeInsets.zero,
             dropdownMenuEntries: [
               const DropdownMenuEntry(value: null, label: '—'),
@@ -238,14 +241,14 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  decoration: const InputDecoration(labelText: 'Dosis je Einnahme'),
+                  decoration: InputDecoration(labelText: l10n.homeMedDosePerIntake),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: TextField(
                   controller: _unit,
-                  decoration: const InputDecoration(labelText: 'Einheit'),
+                  decoration: InputDecoration(labelText: l10n.homeMedUnit),
                 ),
               ),
             ],
@@ -262,12 +265,12 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
           ),
           TextField(
             controller: _instructions,
-            decoration: const InputDecoration(
-              labelText: 'Hinweis (z. B. nach dem Essen)',
+            decoration: InputDecoration(
+              labelText: l10n.homeMedInstructions,
             ),
           ),
 
-          section('Einnahmezeiten'),
+          section(l10n.homeMedIntakeTimes),
           for (final s in _schedules)
             Card(
               elevation: 0,
@@ -299,15 +302,15 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
                             ),
                             decoration: InputDecoration(
                               isDense: true,
-                              labelText: 'Menge',
+                              labelText: l10n.homeMedAmount,
                               hintText: _amount.text.isEmpty
-                                  ? 'wie oben'
+                                  ? l10n.homeMedAmountSameAsAbove
                                   : _amount.text,
                             ),
                           ),
                         ),
                         IconButton(
-                          tooltip: 'Einnahmezeit entfernen',
+                          tooltip: l10n.homeMedRemoveIntakeTime,
                           icon: const Icon(Icons.delete_outline),
                           onPressed: () => setState(() => _schedules.remove(s)),
                         ),
@@ -319,7 +322,7 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
                         for (var d = 1; d <= 7; d++)
                           FilterChip(
                             visualDensity: VisualDensity.compact,
-                            label: Text(Weekdays.labels[d - 1]),
+                            label: Text(weekdayLabels[d - 1]),
                             selected: Weekdays.contains(s.weekdays, d),
                             onSelected: (_) => setState(() {
                               final next = Weekdays.toggle(s.weekdays, d);
@@ -337,34 +340,34 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
             child: TextButton.icon(
               onPressed: _addSchedule,
               icon: const Icon(Icons.add_alarm),
-              label: const Text('Einnahmezeit hinzufügen'),
+              label: Text(l10n.homeMedAddIntakeTime),
             ),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('An Einnahme erinnern'),
+            title: Text(l10n.homeMedRemind),
             value: _reminders,
             onChanged: (v) => setState(() => _reminders = v),
           ),
 
-          section('Zeitraum'),
+          section(l10n.homeMedPeriod),
           DateField(
-            label: 'Beginn',
+            label: l10n.homeMedStart,
             value: _start,
             onChanged: (v) => setState(() => _start = v),
           ),
           SegmentedButton<_Duration>(
-            segments: const [
-              ButtonSegment(value: _Duration.open, label: Text('Dauerhaft')),
-              ButtonSegment(value: _Duration.until, label: Text('Bis Datum')),
-              ButtonSegment(value: _Duration.days, label: Text('Tage')),
+            segments: [
+              ButtonSegment(value: _Duration.open, label: Text(l10n.homeMedOngoing)),
+              ButtonSegment(value: _Duration.until, label: Text(l10n.homeMedUntilDate)),
+              ButtonSegment(value: _Duration.days, label: Text(l10n.homeMedDays)),
             ],
             selected: {_duration},
             onSelectionChanged: (v) => setState(() => _duration = v.first),
           ),
           if (_duration == _Duration.until)
             DateField(
-              label: 'Ende',
+              label: l10n.homeMedEnd,
               value: _until,
               onChanged: (v) => setState(() => _until = v),
             ),
@@ -372,22 +375,24 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
             TextField(
               controller: _days,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Anzahl Tage'),
+              decoration: InputDecoration(labelText: l10n.homeMedNumberOfDays),
               onChanged: (_) => setState(() {}),
             ),
           if (_endDate != null)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                'Letzte Einnahme am ${MaterialLocalizations.of(context).formatMediumDate(_endDate!)}',
+                l10n.homeMedLastIntakeOn(
+                  MaterialLocalizations.of(context).formatMediumDate(_endDate!),
+                ),
                 style: theme.textTheme.bodySmall,
               ),
             ),
 
-          section('Zuordnung'),
+          section(l10n.homeMedAssignment),
           DropdownMenu<String?>(
             initialSelection: _prescriberId,
-            label: const Text('Verschrieben von'),
+            label: Text(l10n.homeMedPrescribedBy),
             expandedInsets: EdgeInsets.zero,
             dropdownMenuEntries: [
               const DropdownMenuEntry(value: null, label: '—'),
@@ -403,7 +408,7 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
                 child: DropdownMenu<String?>(
                   key: ValueKey(_pharmacies.length),
                   initialSelection: _pharmacyId,
-                  label: const Text('Apotheke'),
+                  label: Text(l10n.entityPharmacy),
                   expandedInsets: EdgeInsets.zero,
                   dropdownMenuEntries: [
                     const DropdownMenuEntry(value: null, label: '—'),
@@ -414,7 +419,7 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
                 ),
               ),
               IconButton(
-                tooltip: 'Apotheke anlegen',
+                tooltip: l10n.homeMedAddPharmacy,
                 icon: const Icon(Icons.add_business_outlined),
                 onPressed: () async {
                   final id = await showPharmacyForm(context);
@@ -431,10 +436,10 @@ class _MedicationFormPageState extends State<MedicationFormPage> {
           TextField(
             controller: _notes,
             maxLines: 3,
-            decoration: const InputDecoration(labelText: 'Notizen'),
+            decoration: InputDecoration(labelText: l10n.commonNotes),
           ),
           const SizedBox(height: 24),
-          FilledButton(onPressed: _save, child: const Text('Speichern')),
+          FilledButton(onPressed: _save, child: Text(l10n.commonSave)),
         ],
       ),
     );

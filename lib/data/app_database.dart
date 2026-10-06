@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../l10n/l10n.dart';
 import 'connection/connection.dart';
 
 part 'app_database.g.dart';
@@ -540,12 +541,14 @@ class AppDatabase extends _$AppDatabase {
     (bool, int, int)? evening,
   }) async {
     final now = DateTime.now();
+    // Texte in der App-Sprache beim Anlegen; bestehende Zeilen bleiben.
+    final strings = AppLocale.strings;
     final defaults = [
-      ('reminder-morning', 1, 'Morgen-Check-in',
-          'Wie geht es dir heute? Symptome kurz protokollieren.',
+      ('reminder-morning', 1, strings.catalogReminderMorningTitle,
+          strings.catalogReminderMorningBody,
           morning ?? (true, 8, 0)),
-      ('reminder-evening', 2, 'Abend-Check-in',
-          'Abendliche Symptom-Notizen — dauert nur einen Moment.',
+      ('reminder-evening', 2, strings.catalogReminderEveningTitle,
+          strings.catalogReminderEveningBody,
           evening ?? (true, 20, 0)),
     ];
     for (final (id, slot, title, body, (enabled, hour, minute)) in defaults) {

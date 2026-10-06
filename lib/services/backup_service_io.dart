@@ -9,6 +9,7 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 import 'package:mai_backup_format/mai_backup_format.dart';
 
 import '../data/app_database.dart';
+import '../l10n/l10n.dart';
 
 export 'package:mai_backup_format/mai_backup_format.dart'
     show BackupException, BackupCrypto, BackupStream;
@@ -183,10 +184,7 @@ class BackupService {
       raw.close();
     }
     if (version > _db.schemaVersion) {
-      throw const BackupException(
-        'Sicherung stammt aus einer neueren App-Version — bitte App '
-        'aktualisieren.',
-      );
+      throw BackupException(AppLocale.strings.svcBackupTooNew);
     }
     final snapshot = AppDatabase(NativeDatabase(File(path)));
     try {

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/appointment_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../theme/app_theme.dart';
 import '../home/appointment_detail_page.dart';
 
@@ -61,6 +62,7 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final db = DatabaseScope.of(context);
     final repo = AppointmentRepository(db);
 
@@ -76,20 +78,23 @@ class _CalendarPageState extends State<CalendarPage> {
               children: [
                 Expanded(
                   child: Text(
-                    'Kalender',
+                    l10n.homeCalendarTitle,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Zurück',
+                  tooltip: l10n.commonBack,
                   onPressed: () => _shift(-1),
                   icon: const Icon(Icons.chevron_left),
                 ),
-                TextButton(onPressed: _jumpToToday, child: const Text('Heute')),
+                TextButton(
+                  onPressed: _jumpToToday,
+                  child: Text(l10n.commonToday),
+                ),
                 IconButton(
-                  tooltip: 'Vor',
+                  tooltip: l10n.homeCalendarForward,
                   onPressed: () => _shift(1),
                   icon: const Icon(Icons.chevron_right),
                 ),
@@ -99,19 +104,22 @@ class _CalendarPageState extends State<CalendarPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: SegmentedButton<CalendarViewMode>(
-              segments: const [
-                ButtonSegment(value: CalendarViewMode.day, label: Text('Tag')),
+              segments: [
+                ButtonSegment(
+                  value: CalendarViewMode.day,
+                  label: Text(l10n.homeCalendarDay),
+                ),
                 ButtonSegment(
                   value: CalendarViewMode.week,
-                  label: Text('Woche'),
+                  label: Text(l10n.homeCalendarWeek),
                 ),
                 ButtonSegment(
                   value: CalendarViewMode.month,
-                  label: Text('Monat'),
+                  label: Text(l10n.homeCalendarMonth),
                 ),
                 ButtonSegment(
                   value: CalendarViewMode.year,
-                  label: Text('Jahr'),
+                  label: Text(l10n.homeCalendarYear),
                 ),
               ],
               selected: {_mode},
@@ -217,7 +225,9 @@ class _DayAppointmentList extends StatelessWidget {
       future: repo.forDay(day),
       builder: (context, snapshot) {
         final items = snapshot.data ?? const [];
-        final title = DateFormat('EEEE, d. MMMM', 'de').format(day);
+        final title = DateFormat(
+          context.l10n.homeCalendarDayTitlePattern,
+        ).format(day);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -234,7 +244,7 @@ class _DayAppointmentList extends StatelessWidget {
               child: items.isEmpty
                   ? Center(
                       child: Text(
-                        'Keine Termine an diesem Tag',
+                        context.l10n.homeCalendarNoAppointmentsOnDay,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.muted,
                         ),
@@ -247,7 +257,7 @@ class _DayAppointmentList extends StatelessWidget {
                         final a = items[index];
                         return ListTile(
                           leading: const Icon(Icons.event),
-                          title: Text(a.title ?? 'Termin'),
+                          title: Text(a.title ?? context.l10n.entityAppointment),
                           subtitle: Text(
                             DateFormat('HH:mm').format(a.scheduledAt),
                           ),
@@ -295,7 +305,7 @@ class _MonthGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          DateFormat('MMMM yyyy', 'de').format(focusedDay),
+          DateFormat.yMMMM().format(focusedDay),
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -305,15 +315,9 @@ class _MonthGrid extends StatelessWidget {
           child: GridView.count(
             crossAxisCount: 7,
             children: [
-              for (final label in const [
-                'So',
-                'Mo',
-                'Di',
-                'Mi',
-                'Do',
-                'Fr',
-                'Sa',
-              ])
+              // Sonntag zuerst, Kurzform ohne Punkt („So“, „Mo“ … / „Sun“ …).
+              for (final label
+                  in DateFormat().dateSymbols.STANDALONESHORTWEEKDAYS)
                 Center(
                   child: Text(
                     label,
@@ -365,7 +369,10 @@ class _WeekView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Woche ab ${DateFormat('d. MMM', 'de').format(days.first)}',
+          context.l10n.homeCalendarWeekFrom(
+            DateFormat(context.l10n.homeCalendarWeekStartPattern)
+                .format(days.first),
+          ),
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -436,16 +443,19 @@ class _YearView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          DateFormat(
-                            'MMM',
-                            'de',
-                          ).format(DateTime(year, month)),
+                          DateFormat.MMM().format(DateTime(year, month)),
                           style: Theme.of(context).textTheme.titleSmall
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${markers.where((d) => d.year == year && d.month == month).length} Termine',
+                          context.l10n.homeCalendarAppointmentCount(
+                            markers
+                                .where(
+                                  (d) => d.year == year && d.month == month,
+                                )
+                                .length,
+                          ),
                           style: Theme.of(context).textTheme.labelSmall
                               ?.copyWith(color: AppColors.muted),
                         ),
@@ -493,7 +503,7 @@ class _DayCell extends StatelessWidget {
         children: [
           if (showWeekday)
             Text(
-              DateFormat('E', 'de').format(day),
+              DateFormat('E').format(day),
               style: Theme.of(
                 context,
               ).textTheme.labelSmall?.copyWith(color: AppColors.muted),

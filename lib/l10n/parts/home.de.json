@@ -1,0 +1,225 @@
+{
+  "homeAppointmentSaved": "Termin gespeichert",
+  "homeWordmarkSubtitle": "Deine Termine — lokal auf diesem Gerät",
+  "homeAddAppointment": "Termin hinzufügen",
+  "homeCheckIn": "Check-in",
+  "homeNow": "Jetzt",
+  "homeEmptyTitle": "Noch keine Termine",
+  "homeEmptyMessage": "Lege deinen ersten Termin an — danach erscheinen hier nächste Termine nach unten und vergangene nach oben.",
+  "homeEmptyAction": "Ersten Termin anlegen",
+  "homeCardDateTimePattern": "EEE d. MMM · HH:mm",
+  "homeReportMissing": "Bericht fehlt",
+  "homeDoctorNameMissing": "Arztname fehlt",
+  "homePleaseChooseDoctor": "Bitte einen Arzt wählen",
+  "homeSheetDateTimePattern": "EEE, d. MMM yyyy · HH:mm",
+  "homeEditAppointment": "Termin bearbeiten",
+  "homeDateAndTime": "Datum & Uhrzeit",
+  "homeDuration": "Dauer",
+  "homeDurationMinutes": "{minutes} Min.",
+  "@homeDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTitleOptional": "Titel (optional)",
+  "homeDoctorExisting": "Vorhanden",
+  "homeDoctorCreateNew": "Neu anlegen",
+  "homeDoctorName": "Name",
+  "homeSpecialtyOptional": "Fachrichtung (optional)",
+  "homeNoDoctorsYet": "Noch keine Ärzte — wechsle zu „Neu anlegen“.",
+  "homeChooseDoctor": "Arzt wählen",
+  "homeDiagnosesOptional": "Diagnosen (optional)",
+  "homeNoDiagnoses": "Keine Diagnosen — in der Akte anlegbar.",
+  "homeSymptomsOptional": "Symptome (optional)",
+  "homeNoOpenSymptoms": "Keine offenen Symptome — in der Akte anlegbar.",
+  "homeSaving": "Speichern…",
+  "homeSaveChanges": "Änderungen speichern",
+  "homeSaveAppointment": "Termin speichern",
+  "homeIcsSaveDialogTitle": "Kalenderdatei speichern",
+  "homeIcsSaved": "Kalenderdatei gespeichert — mit Kalender-App öffnen.",
+  "homeAppointmentNotFound": "Termin nicht gefunden",
+  "homeMarkDone": "Als erledigt markieren",
+  "homeCancelAppointment": "Absagen",
+  "homeReopen": "Wieder planen",
+  "homeDoctorSummaryPdf": "Zusammenfassung für Arzt (PDF)",
+  "homeExportIcs": "Als Kalenderdatei (.ics)",
+  "homeDetailDateTimePattern": "EEEE, d. MMMM yyyy · HH:mm",
+  "homeSymptomsAndCheckIns": "Symptome & gemeldete Check-ins",
+  "homeNoReportYet": "Noch kein Bericht — nach dem Termin ablegen.",
+  "homeReportScan": "Scan",
+  "homeReportTextSearchable": "Text durchsuchbar",
+  "homeReportNoText": "Kein Text erkannt",
+  "homeAddReport": "Bericht hinzufügen",
+  "homeNotesTip": "Tipp: Fragen für den Termin vorab als Notiz festhalten.",
+  "homeCalendarTitle": "Kalender",
+  "homeCalendarForward": "Vor",
+  "homeCalendarDay": "Tag",
+  "homeCalendarWeek": "Woche",
+  "homeCalendarMonth": "Monat",
+  "homeCalendarYear": "Jahr",
+  "homeCalendarDayTitlePattern": "EEEE, d. MMMM",
+  "homeCalendarNoAppointmentsOnDay": "Keine Termine an diesem Tag",
+  "homeCalendarWeekFrom": "Woche ab {date}",
+  "@homeCalendarWeekFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCalendarWeekStartPattern": "d. MMM",
+  "homeCalendarAppointmentCount": "{count} Termine",
+  "@homeCalendarAppointmentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeCheckInEmptyTitle": "Keine offenen Symptome",
+  "homeCheckInEmptyMessage": "Alle Symptome sind geheilt oder noch keines angelegt.",
+  "homeCheckInHint": "Skala 1–10 oder als geheilt markieren.",
+  "homeCheckInHealed": "Geheilt",
+  "homeCheckInWillBeHealed": "Wird als geheilt gespeichert",
+  "homeCheckInSaved": "Check-in gespeichert",
+  "homeMedsTodayTitle": "Medikamente heute",
+  "homeMedsTodayNone": "Heute ist keine Einnahme geplant.",
+  "homeMedsTodayAllDone": "Alles erledigt.",
+  "homeMedsTodayOpen": "{open} von {total} offen",
+  "@homeMedsTodayOpen": {
+    "placeholders": {
+      "open": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTimePattern": "HH:mm",
+  "homeIntakeSkipped": "Ausgelassen",
+  "homeIntakeTaken": "Eingenommen",
+  "homeIntakeTakenShort": "Genommen",
+  "homeIntakePlannedAt": "Geplant {time}",
+  "@homeIntakePlannedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMedFormTablet": "Tablette",
+  "homeMedFormCapsule": "Kapsel",
+  "homeMedFormDrops": "Tropfen",
+  "homeMedFormLiquid": "Saft / Lösung",
+  "homeMedFormSpray": "Spray",
+  "homeMedFormInhaler": "Inhalator",
+  "homeMedFormOintment": "Salbe / Creme",
+  "homeMedFormInjection": "Spritze",
+  "homeMedFormPatch": "Pflaster",
+  "homeMedFormSuppository": "Zäpfchen",
+  "homeMedFormPowder": "Pulver / Granulat",
+  "homeMedFormOther": "Sonstiges",
+  "homeUnitPiece": "Stück",
+  "homeUnitDrops": "Tropfen",
+  "homeUnitSpray": "Sprühstoß",
+  "homeUnitPuff": "Hub",
+  "homeUnitApplication": "Anwendung",
+  "homeUnitUnit": "Einheit",
+  "homeUnitSachet": "Beutel",
+  "homeUnitMeasuringSpoon": "Messlöffel",
+  "homeUnitIu": "IE",
+  "homeWeekdaysDaily": "täglich",
+  "homeWeekdaysWorkdays": "werktags",
+  "homeWeekdaysWeekend": "am Wochenende",
+  "homeMedNameMissing": "Name fehlt",
+  "homeMedCreate": "Medikament anlegen",
+  "homeMedEdit": "Medikament bearbeiten",
+  "homeMedStrength": "Wirkstärke (z. B. 400 mg)",
+  "homeMedForm": "Darreichungsform",
+  "homeMedDosePerIntake": "Dosis je Einnahme",
+  "homeMedUnit": "Einheit",
+  "homeMedInstructions": "Hinweis (z. B. nach dem Essen)",
+  "homeMedIntakeTimes": "Einnahmezeiten",
+  "homeMedAmount": "Menge",
+  "homeMedAmountSameAsAbove": "wie oben",
+  "homeMedRemoveIntakeTime": "Einnahmezeit entfernen",
+  "homeMedAddIntakeTime": "Einnahmezeit hinzufügen",
+  "homeMedRemind": "An Einnahme erinnern",
+  "homeMedPeriod": "Zeitraum",
+  "homeMedStart": "Beginn",
+  "homeMedOngoing": "Dauerhaft",
+  "homeMedUntilDate": "Bis Datum",
+  "homeMedDays": "Tage",
+  "homeMedEnd": "Ende",
+  "homeMedNumberOfDays": "Anzahl Tage",
+  "homeMedLastIntakeOn": "Letzte Einnahme am {date}",
+  "@homeMedLastIntakeOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMedAssignment": "Zuordnung",
+  "homeMedPrescribedBy": "Verschrieben von",
+  "homeMedAddPharmacy": "Apotheke anlegen",
+  "homePharmacyEdit": "Apotheke bearbeiten",
+  "homePharmacyAddress": "Adresse",
+  "homePharmacyPhone": "Telefon",
+  "homeVaccinationAdd": "Impfung eintragen",
+  "homeVaccinationEdit": "Impfung bearbeiten",
+  "homeVaccinationAgainst": "Impfung gegen",
+  "homeVaccinationProduct": "Impfstoff (Handelsname)",
+  "homeVaccinationDate": "Geimpft am",
+  "homeVaccinationDoseNumber": "Dosis-Nr.",
+  "homeVaccinationBatch": "Charge",
+  "homeVaccinationBy": "Geimpft von",
+  "homeVaccinationNextDue": "Nächste Impfung fällig",
+  "homeVaccinationPlusYears": "+{years} J.",
+  "@homeVaccinationPlusYears": {
+    "placeholders": {
+      "years": {
+        "type": "int"
+      }
+    }
+  },
+  "homeReportTextRecognized": "Text erkannt und durchsuchbar",
+  "homeReportRecognizedText": "Erkannter Text",
+  "homeReportNoTextDot": "Kein Text erkannt.",
+  "homeReportNotFound": "Bericht nicht gefunden",
+  "homeReportRename": "Umbenennen",
+  "homeReportShowText": "Erkannten Text zeigen",
+  "homeReportReindex": "Text neu erkennen",
+  "homeReportDatePattern": "d. MMM yyyy",
+  "homeReportFileUnavailable": "Datei nicht verfügbar",
+  "homeReportFileUnavailableHint": "Abgelegt am {date}. Im Web werden Dateien nicht gespeichert; auf dem Gerät wurde die Datei evtl. entfernt.",
+  "@homeReportFileUnavailableHint": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "homeStatusPlanned": "Geplant",
+  "homeStatusDone": "Erledigt",
+  "homeStatusCancelled": "Abgesagt",
+  "homeUnknownDoctor": "Unbekannter Arzt",
+  "homeArchiveBlockedDoctor": "Arzt hat noch Termine — erst Termine archivieren oder umhängen.",
+  "homeArchivePurgeBlockedDoctor": "Arzt hat noch (archivierte) Termine — diese zuerst endgültig löschen.",
+  "homeArchiveDatePattern": "d.M.yyyy",
+  "homeDiagnosisStatusActive": "aktiv",
+  "homeDiagnosisStatusResolved": "abgeschlossen",
+  "homeSymptomHealed": "geheilt",
+  "homeRecordsDatePattern": "dd.MM.yyyy",
+  "homeVaccinationDoseLabel": "{number}. Dosis",
+  "@homeVaccinationDoseLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  }
+}

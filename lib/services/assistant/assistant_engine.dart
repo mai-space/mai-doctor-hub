@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 
+import '../../l10n/l10n.dart';
 import 'gemma_runtime.dart';
 
 /// Kann dieses Gerät das lokale Modell ausführen?
@@ -73,7 +74,7 @@ class GemmaAssistantEngine implements AssistantEngine {
   String get modelName => 'Gemma 4 E2B';
 
   @override
-  String get downloadSize => 'ca. 2,6 GB';
+  String get downloadSize => AppLocale.strings.svcAssistantModelSize;
 
   Future<void> _init() async {
     if (_initialized) return;
@@ -89,24 +90,22 @@ class GemmaAssistantEngine implements AssistantEngine {
   @override
   Future<AssistantSupport> support() async {
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
-      return const AssistantUnsupported('Der Assistent läuft nur auf Android.');
+      return AssistantUnsupported(AppLocale.strings.svcAssistantAndroidOnly);
     }
     final Map<Object?, Object?>? info;
     try {
       info = await _device.invokeMapMethod<Object?, Object?>('localAi');
     } on PlatformException catch (e) {
-      return AssistantUnsupported('Gerät nicht prüfbar: ${e.message}');
+      return AssistantUnsupported(
+        AppLocale.strings.svcAssistantDeviceCheckFailed('${e.message}'),
+      );
     }
     final sdk = info?['sdk'] as int? ?? 0;
     if (sdk < 30) {
-      return const AssistantUnsupported(
-        'Der lokale Assistent braucht mindestens Android 11.',
-      );
+      return AssistantUnsupported(AppLocale.strings.svcAssistantNeedsAndroid11);
     }
     if (info?['arm64'] != true) {
-      return const AssistantUnsupported(
-        'Der lokale Assistent braucht einen 64-Bit-ARM-Prozessor.',
-      );
+      return AssistantUnsupported(AppLocale.strings.svcAssistantNeedsArm64);
     }
     final ram = _totalRam = info?['totalRam'] as int? ?? 0;
     return AssistantSupported(lowMemory: ram < 5.5 * 1024 * 1024 * 1024);

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/symptom_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/empty_state.dart';
 
@@ -51,15 +52,14 @@ class _CheckInSheetState extends State<CheckInSheet> {
               ? all
               : all.where((s) => widget.symptomIds.contains(s.id)).toList();
           if (symptoms.isEmpty) {
-            return const SizedBox(
+            return SizedBox(
               height: 280,
               child: CustomScrollView(
                 slivers: [
                   EmptyState(
                     icon: Icons.favorite_border,
-                    title: 'Keine offenen Symptome',
-                    message:
-                        'Alle Symptome sind geheilt oder noch keines angelegt.',
+                    title: context.l10n.homeCheckInEmptyTitle,
+                    message: context.l10n.homeCheckInEmptyMessage,
                   ),
                 ],
               ),
@@ -71,14 +71,14 @@ class _CheckInSheetState extends State<CheckInSheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Check-in',
+                context.l10n.homeCheckIn,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                'Skala 1–10 oder als geheilt markieren.',
+                context.l10n.homeCheckInHint,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: AppColors.muted),
@@ -129,12 +129,12 @@ class _CheckInSheetState extends State<CheckInSheet> {
                             onPressed: () =>
                                 setState(() => _healed.add(symptom.id)),
                             icon: const Icon(Icons.check_circle_outline),
-                            label: const Text('Geheilt'),
+                            label: Text(context.l10n.homeCheckInHealed),
                           ),
                         ] else
-                          const Text(
-                            'Wird als geheilt gespeichert',
-                            style: TextStyle(color: AppColors.accent),
+                          Text(
+                            context.l10n.homeCheckInWillBeHealed,
+                            style: const TextStyle(color: AppColors.accent),
                           ),
                       ],
                     );
@@ -157,12 +157,13 @@ class _CheckInSheetState extends State<CheckInSheet> {
                     );
                   }
                   if (!context.mounted) return;
+                  final saved = context.l10n.homeCheckInSaved;
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Check-in gespeichert')),
+                    SnackBar(content: Text(saved)),
                   );
                 },
-                child: const Text('Speichern'),
+                child: Text(context.l10n.commonSave),
               ),
             ],
           );

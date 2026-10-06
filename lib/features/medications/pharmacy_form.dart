@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/medication_repository.dart';
+import '../../l10n/l10n.dart';
 
 Future<String?> showPharmacyForm(
   BuildContext context, {
@@ -13,10 +14,13 @@ Future<String?> showPharmacyForm(
   final phone = TextEditingController(text: pharmacy?.phone);
   final notes = TextEditingController(text: pharmacy?.notes);
   final repo = PharmacyRepository(DatabaseScope.of(context));
+  final l10n = context.l10n;
   final ok = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text(pharmacy == null ? 'Apotheke anlegen' : 'Apotheke bearbeiten'),
+      title: Text(
+        pharmacy == null ? l10n.homeMedAddPharmacy : l10n.homePharmacyEdit,
+      ),
       scrollable: true,
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -24,33 +28,33 @@ Future<String?> showPharmacyForm(
           TextField(
             controller: name,
             autofocus: pharmacy == null,
-            decoration: const InputDecoration(labelText: 'Name'),
+            decoration: InputDecoration(labelText: l10n.homeDoctorName),
           ),
           TextField(
             controller: address,
             maxLines: 2,
-            decoration: const InputDecoration(labelText: 'Adresse'),
+            decoration: InputDecoration(labelText: l10n.homePharmacyAddress),
           ),
           TextField(
             controller: phone,
             keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(labelText: 'Telefon'),
+            decoration: InputDecoration(labelText: l10n.homePharmacyPhone),
           ),
           TextField(
             controller: notes,
             maxLines: 2,
-            decoration: const InputDecoration(labelText: 'Notizen'),
+            decoration: InputDecoration(labelText: l10n.commonNotes),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Abbrechen'),
+          child: Text(l10n.commonCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Speichern'),
+          child: Text(l10n.commonSave),
         ),
       ],
     ),

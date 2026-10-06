@@ -1,16 +1,47 @@
 import 'package:flutter/material.dart';
 
+import '../data/suggestion_catalog.dart';
+
 /// Icon mappings for medical specialties, body regions, and other clinical domains.
 /// Uses Material 3 outlined icons for consistency with app theme.
 abstract final class IconMappings {
-  /// Maps doctor specialty names (German) to appropriate Material icons.
+  /// Maps doctor specialty names (German or English catalog terms) to
+  /// appropriate Material icons.
   static IconData specialtyIcon(String specialty) {
-    return _specialtyMap[specialty] ?? Icons.medical_services_outlined;
+    return _specialtyIcons[specialty] ?? Icons.medical_services_outlined;
   }
 
-  /// Maps body region names (German) to appropriate Material icons.
+  /// Maps body region names (German or English catalog terms) to
+  /// appropriate Material icons.
   static IconData bodyRegionIcon(String region) {
-    return _bodyRegionMap[region] ?? Icons.accessibility;
+    return _bodyRegionIcons[region] ?? Icons.accessibility;
+  }
+
+  // English names are derived from the paired catalog lists (entry i in the
+  // German list ↔ entry i in the English list), so they cannot drift.
+  static final Map<String, IconData> _specialtyIcons = _withEnglish(
+    _specialtyMap,
+    specialtyCatalog,
+    specialtyCatalogEn,
+  );
+
+  static final Map<String, IconData> _bodyRegionIcons = _withEnglish(
+    _bodyRegionMap,
+    bodyRegionCatalog,
+    bodyRegionCatalogEn,
+  );
+
+  static Map<String, IconData> _withEnglish(
+    Map<String, IconData> german,
+    List<String> germanNames,
+    List<String> englishNames,
+  ) {
+    assert(germanNames.length == englishNames.length);
+    return {
+      ...german,
+      for (var i = 0; i < germanNames.length; i++)
+        englishNames[i]: ?german[germanNames[i]],
+    };
   }
 
   static const Map<String, IconData> _specialtyMap = {

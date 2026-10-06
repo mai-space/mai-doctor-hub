@@ -4,7 +4,32 @@
 /// sie. Fachrichtungen orientieren sich an den Facharztbezeichnungen der
 /// (Muster-)Weiterbildungsordnung plus gängigen Alltagsbegriffen; Symptome
 /// sind bewusst laienverständlich formuliert.
+///
+/// Zu jeder deutschen Liste gibt es eine englische mit gleicher Länge und
+/// Reihenfolge (Eintrag i ↔ Eintrag i), damit z. B. die Icon-Zuordnung für
+/// beide Sprachen gilt. Die UI greift über [SuggestionCatalog] zu, das die
+/// Liste der aktuellen App-Sprache liefert.
 library;
+
+import '../l10n/l10n.dart';
+
+/// Vorschlagslisten in der aktuellen App-Sprache ([AppLocale.current]):
+/// Deutsch bei `de`, sonst Englisch.
+abstract final class SuggestionCatalog {
+  static bool get _german => AppLocale.current.languageCode == 'de';
+
+  static List<String> get bodyRegions =>
+      _german ? bodyRegionCatalog : bodyRegionCatalogEn;
+
+  static List<String> get specialties =>
+      _german ? specialtyCatalog : specialtyCatalogEn;
+
+  static List<String> get symptoms =>
+      _german ? symptomCatalog : symptomCatalogEn;
+
+  static List<String> get vaccines =>
+      _german ? vaccineCatalog : vaccineCatalogEn;
+}
 
 const bodyRegionCatalog = <String>[
   'Kopf',
@@ -296,6 +321,304 @@ const vaccineCatalog = <String>[
   'Typhus',
   'Gelbfieber',
   'Japanische Enzephalitis',
+  'Cholera',
+  'Dengue',
+  'Mpox',
+];
+
+// ---------------------------------------------------------------------------
+// Englische Gegenstücke — gleiche Länge und Reihenfolge wie oben.
+// ---------------------------------------------------------------------------
+
+const bodyRegionCatalogEn = <String>[
+  'Head',
+  'Forehead',
+  'Temple',
+  'Back of the head',
+  'Face',
+  'Eye',
+  'Ear',
+  'Nose',
+  'Mouth',
+  'Jaw',
+  'Teeth',
+  'Throat',
+  'Neck',
+  'Cervical spine (neck)',
+  'Shoulder',
+  'Upper arm',
+  'Elbow',
+  'Forearm',
+  'Wrist',
+  'Hand',
+  'Fingers',
+  'Chest',
+  'Rib cage',
+  'Thoracic spine (mid back)',
+  'Back',
+  'Lumbar spine (lower back)',
+  'Abdomen',
+  'Upper abdomen',
+  'Lower abdomen',
+  'Groin',
+  'Pelvis',
+  'Hip',
+  'Buttocks',
+  'Thigh',
+  'Knee',
+  'Lower leg',
+  'Calf',
+  'Ankle',
+  'Foot',
+  'Heel',
+  'Sole of the foot',
+  'Toes',
+  'Skin',
+  'Whole body',
+];
+
+const specialtyCatalogEn = <String>[
+  // Hausärztliche Versorgung
+  'General practice (Primary care)',
+  'Internal medicine (Primary care)',
+  'Pediatrics',
+  // Innere Medizin
+  'Internal medicine',
+  'Cardiology',
+  'Gastroenterology',
+  'Pulmonology (Lung medicine)',
+  'Nephrology (Kidney medicine)',
+  'Endocrinology and Diabetology',
+  'Diabetology',
+  'Hematology and Oncology',
+  'Rheumatology',
+  'Angiology (Vascular medicine)',
+  'Infectious diseases',
+  'Geriatrics',
+  // Operative Fächer
+  'General surgery',
+  'Visceral surgery',
+  'Vascular surgery',
+  'Cardiac surgery',
+  'Thoracic surgery',
+  'Pediatric surgery',
+  'Plastic and Aesthetic surgery',
+  'Hand surgery',
+  'Neurosurgery',
+  'Orthopedics and Trauma surgery',
+  'Orthopedics',
+  'Trauma surgery',
+  'Oral and Maxillofacial surgery',
+  'Urology',
+  'Obstetrics and Gynecology (OB/GYN)',
+  // Sinnesorgane & Haut
+  'Ophthalmology (Eye doctor)',
+  'Ear, Nose and Throat (ENT)',
+  'Phoniatrics and Pediatric audiology',
+  'Dermatology (Skin)',
+  'Allergy medicine',
+  // Nerven & Psyche
+  'Neurology',
+  'Psychiatry and Psychotherapy',
+  'Child and Adolescent psychiatry',
+  'Psychosomatic medicine',
+  'Psychotherapy',
+  'Clinical psychology',
+  // Diagnostik
+  'Radiology',
+  'Nuclear medicine',
+  'Laboratory medicine',
+  'Pathology',
+  'Medical genetics',
+  // Weitere
+  'Anesthesiology',
+  'Pain medicine',
+  'Physical medicine and Rehabilitation',
+  'Sports medicine',
+  'Occupational medicine',
+  'Palliative care',
+  'Sleep medicine',
+  'Radiation oncology',
+  'Transfusion medicine',
+  'Emergency medicine',
+  'Naturopathy',
+  'Homeopathy',
+  // Zahnmedizin
+  'Dentistry',
+  'Orthodontics',
+  'Oral surgery',
+  'Periodontics',
+  // Gesundheitsfachberufe
+  'Physical therapy',
+  'Occupational therapy',
+  'Speech therapy',
+  'Osteopathy',
+  'Naturopathic practitioner',
+  'Midwife',
+  'Nutrition counseling',
+  'Podiatry',
+];
+
+const symptomCatalogEn = <String>[
+  // Allgemein
+  'Fever',
+  'Elevated temperature',
+  'Chills',
+  'Tiredness',
+  'Exhaustion',
+  'Weakness',
+  'Night sweats',
+  'Weight loss',
+  'Weight gain',
+  'Loss of appetite',
+  'Excessive thirst',
+  'Dizziness',
+  'Lightheadedness',
+  'Fainting',
+  'Circulation problems',
+  'Trouble sleeping',
+  'Swollen lymph nodes',
+  // Schmerzen
+  'Headache',
+  'Migraine',
+  'Neck pain',
+  'Back pain',
+  'Lower back pain',
+  'Chest pain',
+  'Abdominal pain',
+  'Pelvic pain',
+  'Joint pain',
+  'Knee pain',
+  'Hip pain',
+  'Shoulder pain',
+  'Muscle pain',
+  'Body aches',
+  'Nerve pain',
+  'Toothache',
+  'Jaw pain',
+  'Earache',
+  'Sore throat',
+  'Eye pain',
+  'Menstrual cramps',
+  'Painful urination',
+  // Atemwege & HNO
+  'Cough',
+  'Dry cough',
+  'Cough with phlegm',
+  'Difficulty breathing',
+  'Shortness of breath',
+  'Wheezing',
+  'Runny nose',
+  'Stuffy nose',
+  'Sneezing',
+  'Nosebleed',
+  'Hoarseness',
+  'Difficulty swallowing',
+  'Sinus pressure',
+  'Ringing in the ears (tinnitus)',
+  'Hearing loss',
+  'Loss of smell or taste',
+  // Herz & Kreislauf
+  'Racing heart',
+  'Skipped heartbeats',
+  'High blood pressure',
+  'Low blood pressure',
+  'Swollen legs',
+  'Water retention',
+  'Cold hands or feet',
+  // Verdauung
+  'Nausea',
+  'Vomiting',
+  'Diarrhea',
+  'Constipation',
+  'Gas',
+  'Bloating',
+  'Heartburn',
+  'Burping',
+  'Blood in stool',
+  'Stomach cramps',
+  // Haut
+  'Rash',
+  'Itching',
+  'Redness',
+  'Swelling',
+  'Hives',
+  'Dry skin',
+  'Eczema',
+  'Pimples',
+  'Hair loss',
+  'Bruises',
+  'Slow-healing wound',
+  // Augen
+  'Vision problems',
+  'Blurred vision',
+  'Double vision',
+  'Red eyes',
+  'Watery eyes',
+  'Dry eyes',
+  'Sensitivity to light',
+  // Nerven & Bewegung
+  'Tingling',
+  'Numbness',
+  'Tremor',
+  'Muscle cramps',
+  'Muscle twitching',
+  'Balance problems',
+  'Unsteady walking',
+  'Limited mobility',
+  'Stiffness',
+  'Morning stiffness',
+  'Trouble concentrating',
+  'Memory problems',
+  'Speech problems',
+  // Harnwege & Geschlechtsorgane
+  'Frequent urge to urinate',
+  'Burning when urinating',
+  'Blood in urine',
+  'Incontinence',
+  'Irregular periods',
+  'Heavy periods',
+  'Spotting between periods',
+  'Discharge',
+  'Hot flashes',
+  // Psyche
+  'Low mood',
+  'Lack of motivation',
+  'Restlessness',
+  'Anxiety',
+  'Panic attacks',
+  'Irritability',
+  'Mood swings',
+  'Overthinking',
+  'Stress',
+];
+
+const vaccineCatalogEn = <String>[
+  'Tetanus/Diphtheria/Pertussis (Tdap)',
+  'Tetanus/Diphtheria (Td)',
+  'Tetanus',
+  'Polio',
+  'Measles/Mumps/Rubella (MMR)',
+  'Varicella (Chickenpox)',
+  'Influenza (Flu)',
+  'COVID-19',
+  'Pneumococcal',
+  'Shingles (Herpes zoster)',
+  'RSV',
+  'TBE (Tick-borne encephalitis)',
+  'Hepatitis A',
+  'Hepatitis B',
+  'Hepatitis A + B',
+  'HPV',
+  'Meningococcal C',
+  'Meningococcal ACWY',
+  'Meningococcal B',
+  'Haemophilus influenzae type b (Hib)',
+  'Rotavirus',
+  'Rabies',
+  'Typhoid',
+  'Yellow fever',
+  'Japanese encephalitis',
   'Cholera',
   'Dengue',
   'Mpox',

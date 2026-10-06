@@ -1,6 +1,7 @@
 import '../../data/app_database.dart';
 import '../../data/repositories/medication_repository.dart';
 import '../../data/repositories/reminder_repository.dart' show Weekdays;
+import '../../l10n/l10n.dart';
 import 'notification_plan.dart';
 import 'plan_sync.dart';
 
@@ -43,19 +44,20 @@ abstract final class MedicationReminderPlanner {
     final plans = <PlannedNotification>[];
     final once = <PlannedNotification>[];
     final today = DateTime(now.year, now.month, now.day);
+    final l10n = AppLocale.strings;
 
     for (final details in medications) {
       final m = details.medication;
       if (!m.remindersEnabled || details.schedules.isEmpty) continue;
       if (m.endedAt != null && m.endedAt!.isBefore(today)) continue;
-      final title = 'Einnahme: ${m.name}';
+      final title = l10n.svcReminderMedicationTitle(m.name);
       final repeating =
           m.endedAt == null &&
           (m.startedAt == null || !m.startedAt!.isAfter(now));
 
       for (final s in details.schedules) {
         final body = [
-          details.doseFor(s) ?? 'Einnehmen',
+          details.doseFor(s) ?? l10n.svcReminderTakeNow,
           if (m.instructions?.isNotEmpty == true) m.instructions!,
         ].join(' · ');
         if (repeating) {

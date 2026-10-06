@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
+import '../../l10n/l10n.dart';
 import '../archive/archive_page.dart';
 import 'appointment_reminders_tile.dart';
 import 'backup_section.dart';
@@ -18,6 +19,7 @@ class SettingsPage extends StatelessWidget {
     final db = DatabaseScope.of(context);
     final repo = SettingsRepository(db);
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return SafeArea(
       child: StreamBuilder<AppSetting>(
@@ -27,10 +29,10 @@ class SettingsPage extends StatelessWidget {
           if (settings == null) {
             return ListView(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-              children: const [
-                Text('Einstellungen', style: TextStyle(fontSize: 24)),
-                SizedBox(height: 16),
-                Text('Einstellungen werden geladen…'),
+              children: [
+                Text(l10n.settingsTitle, style: const TextStyle(fontSize: 24)),
+                const SizedBox(height: 16),
+                Text(l10n.settingsLoading),
               ],
             );
           }
@@ -39,7 +41,7 @@ class SettingsPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
             children: [
               Text(
-                'Einstellungen',
+                l10n.settingsTitle,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -50,12 +52,10 @@ class SettingsPage extends StatelessWidget {
                 color: theme.colorScheme.primaryContainer.withValues(
                   alpha: 0.45,
                 ),
-                child: const ListTile(
-                  leading: Icon(Icons.lock_outline),
-                  title: Text('Alles lokal auf diesem Gerät'),
-                  subtitle: Text(
-                    'Keine Accounts, keine Patientendaten auf Servern.',
-                  ),
+                child: ListTile(
+                  leading: const Icon(Icons.lock_outline),
+                  title: Text(l10n.settingsLocalOnlyTitle),
+                  subtitle: Text(l10n.settingsLocalOnlySubtitle),
                 ),
               ),
               const SizedBox(height: 24),
@@ -71,10 +71,8 @@ class SettingsPage extends StatelessWidget {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.inventory_2_outlined),
-                title: const Text('Archiv'),
-                subtitle: const Text(
-                  'Gelöschte Einträge wiederherstellen oder endgültig löschen',
-                ),
+                title: Text(l10n.settingsArchiveTitle),
+                subtitle: Text(l10n.settingsArchiveSubtitle),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(builder: (_) => const ArchivePage()),
@@ -82,20 +80,20 @@ class SettingsPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                'App',
+                l10n.settingsAppSection,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const ListTile(
+              ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text('Sprache'),
-                subtitle: Text('Deutsch'),
+                title: Text(l10n.settingsLanguage),
+                subtitle: Text(l10n.settingsLanguageValue),
               ),
-              const ListTile(
+              ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text('Version'),
-                subtitle: Text('1.0.0+1'),
+                title: Text(l10n.settingsVersion),
+                subtitle: const Text('1.0.0+1'),
               ),
             ],
           );

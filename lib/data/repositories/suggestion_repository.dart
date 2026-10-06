@@ -38,12 +38,14 @@ class SuggestionRepository {
     SuggestionField.vaccine: ('vaccinations', 'vaccine', 'updated_at'),
   };
 
-  /// Statische Vorschläge — nach den eigenen Werten angehängt.
-  static const _defaults = <SuggestionField, List<String>>{
-    SuggestionField.bodyRegion: bodyRegionCatalog,
-    SuggestionField.specialty: specialtyCatalog,
-    SuggestionField.symptomLabel: symptomCatalog,
-    SuggestionField.vaccine: vaccineCatalog,
+  /// Statische Vorschläge in der App-Sprache — nach den eigenen Werten
+  /// angehängt.
+  static List<String> _defaults(SuggestionField field) => switch (field) {
+    SuggestionField.bodyRegion => SuggestionCatalog.bodyRegions,
+    SuggestionField.specialty => SuggestionCatalog.specialties,
+    SuggestionField.symptomLabel => SuggestionCatalog.symptoms,
+    SuggestionField.vaccine => SuggestionCatalog.vaccines,
+    _ => const <String>[],
   };
 
   Future<List<String>> valuesFor(SuggestionField field) async {
@@ -74,7 +76,7 @@ class SuggestionRepository {
     });
 
     final values = [for (final key in keys) spelling[key]!];
-    for (final value in _defaults[field] ?? const <String>[]) {
+    for (final value in _defaults(field)) {
       if (!uses.containsKey(normalize(value))) values.add(value);
     }
     return values;

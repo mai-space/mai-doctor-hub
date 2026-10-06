@@ -8,6 +8,7 @@ import '../../data/repositories/doctor_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/suggestion_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/suggestion_text_field.dart';
 
@@ -126,7 +127,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
         if (name.isEmpty) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Arztname fehlt')),
+            SnackBar(content: Text(context.l10n.homeDoctorNameMissing)),
           );
           return;
         }
@@ -140,7 +141,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
       if (doctorId == null) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bitte einen Arzt wählen')),
+          SnackBar(content: Text(context.l10n.homePleaseChooseDoctor)),
         );
         return;
       }
@@ -186,7 +187,8 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
-    final dateLabel = DateFormat('EEE, d. MMM yyyy · HH:mm', 'de').format(
+    final l10n = context.l10n;
+    final dateLabel = DateFormat(l10n.homeSheetDateTimePattern).format(
       _scheduledAt,
     );
 
@@ -197,7 +199,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              _editing ? 'Termin bearbeiten' : 'Termin hinzufügen',
+              _editing ? l10n.homeEditAppointment : l10n.homeAddAppointment,
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -206,19 +208,22 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.schedule),
-              title: const Text('Datum & Uhrzeit'),
+              title: Text(l10n.homeDateAndTime),
               subtitle: Text(dateLabel),
               trailing: const Icon(Icons.edit_outlined),
               onTap: _pickDateTime,
             ),
             DropdownMenu<int?>(
               initialSelection: _durationMin,
-              label: const Text('Dauer'),
+              label: Text(l10n.homeDuration),
               expandedInsets: EdgeInsets.zero,
               dropdownMenuEntries: [
-                const DropdownMenuEntry(value: null, label: 'Keine Angabe'),
+                DropdownMenuEntry(value: null, label: l10n.commonNone),
                 for (final minutes in _durationOptions)
-                  DropdownMenuEntry(value: minutes, label: '$minutes Min.'),
+                  DropdownMenuEntry(
+                    value: minutes,
+                    label: l10n.homeDurationMinutes(minutes),
+                  ),
               ],
               onSelected: (value) => setState(() => _durationMin = value),
             ),
@@ -226,23 +231,23 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
             SuggestionTextField(
               controller: _titleController,
               field: SuggestionField.appointmentTitle,
-              decoration: const InputDecoration(
-                labelText: 'Titel (optional)',
+              decoration: InputDecoration(
+                labelText: l10n.homeTitleOptional,
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              'Arzt',
+              l10n.entityDoctor,
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(value: false, label: Text('Vorhanden')),
-                ButtonSegment(value: true, label: Text('Neu anlegen')),
+              segments: [
+                ButtonSegment(value: false, label: Text(l10n.homeDoctorExisting)),
+                ButtonSegment(value: true, label: Text(l10n.homeDoctorCreateNew)),
               ],
               selected: {_creatingDoctor},
               onSelectionChanged: (value) {
@@ -256,8 +261,8 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
             if (_creatingDoctor) ...[
               TextField(
                 controller: _newDoctorController,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
+                decoration: InputDecoration(
+                  labelText: l10n.homeDoctorName,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -265,8 +270,8 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
               SuggestionTextField(
                 controller: _newDoctorSpecialty,
                 field: SuggestionField.specialty,
-                decoration: const InputDecoration(
-                  labelText: 'Fachrichtung (optional)',
+                decoration: InputDecoration(
+                  labelText: l10n.homeSpecialtyOptional,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -277,7 +282,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
                   final doctors = snapshot.data ?? const [];
                   if (doctors.isEmpty) {
                     return Text(
-                      'Noch keine Ärzte — wechsle zu „Neu anlegen“.',
+                      l10n.homeNoDoctorsYet,
                       style: Theme.of(
                         context,
                       ).textTheme.bodyMedium?.copyWith(color: AppColors.muted),
@@ -285,7 +290,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
                   }
                   return DropdownMenu<String>(
                     initialSelection: _doctorId,
-                    label: const Text('Arzt wählen'),
+                    label: Text(l10n.homeChooseDoctor),
                     expandedInsets: EdgeInsets.zero,
                     dropdownMenuEntries: [
                       for (final doctor in doctors)
@@ -300,7 +305,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
               ),
             const SizedBox(height: 16),
             Text(
-              'Diagnosen (optional)',
+              l10n.homeDiagnosesOptional,
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -313,7 +318,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Text(
-                      'Keine Diagnosen — in der Akte anlegbar.',
+                      l10n.homeNoDiagnoses,
                       style: Theme.of(
                         context,
                       ).textTheme.bodySmall?.copyWith(color: AppColors.muted),
@@ -343,7 +348,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Symptome (optional)',
+              l10n.homeSymptomsOptional,
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -361,7 +366,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Text(
-                      'Keine offenen Symptome — in der Akte anlegbar.',
+                      l10n.homeNoOpenSymptoms,
                       style: Theme.of(
                         context,
                       ).textTheme.bodySmall?.copyWith(color: AppColors.muted),
@@ -393,8 +398,8 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
             TextField(
               controller: _notesController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Notizen',
+              decoration: InputDecoration(
+                labelText: l10n.commonNotes,
                 border: OutlineInputBorder(),
               ),
             ),
@@ -403,10 +408,10 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
               onPressed: _saving ? null : _save,
               child: Text(
                 _saving
-                    ? 'Speichern…'
+                    ? l10n.homeSaving
                     : _editing
-                    ? 'Änderungen speichern'
-                    : 'Termin speichern',
+                    ? l10n.homeSaveChanges
+                    : l10n.homeSaveAppointment,
               ),
             ),
           ],

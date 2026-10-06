@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import '../data/app_database.dart';
+import '../l10n/l10n.dart';
 
 /// Ergebnis eines Dokument-Exports.
 class DocumentExport {
@@ -30,7 +31,9 @@ class DocumentExportService {
   final Future<Directory> Function() _tempDir;
 
   static String suggestedFileName(DateTime now) =>
-      'Mai-Doctor-Hub-Dokumente-${DateFormat('yyyy-MM-dd').format(now)}.zip';
+      AppLocale.strings.svcExportFileName(
+        DateFormat('yyyy-MM-dd').format(now),
+      );
 
   Future<DocumentExport?> export() async {
     final reports = await _db.selectActive(_db.reports).get();
@@ -69,9 +72,8 @@ class DocumentExportService {
     final encoder = ZipFileEncoder()..create(out.path);
     try {
       final used = <String>{};
-      final csv = StringBuffer(
-        'Datum;Titel;Arzt;Termin;Quelle;Seiten;Datei\r\n',
-      );
+      final l10n = AppLocale.strings;
+      final csv = StringBuffer('${l10n.svcExportCsvHeader}\r\n');
       final day = DateFormat('yyyy-MM-dd');
       for (final row in rows) {
         final name = _unique(_fileNameFor(row), used);
@@ -95,7 +97,9 @@ class DocumentExportService {
         csv.write('\r\n');
       }
       // BOM, damit Excel die Umlaute erkennt.
-      encoder.addArchiveFile(ArchiveFile.string('Übersicht.csv', '﻿$csv'));
+      encoder.addArchiveFile(
+        ArchiveFile.string(l10n.svcExportOverviewFile, '﻿$csv'),
+      );
     } finally {
       await encoder.close();
     }
@@ -143,7 +147,7 @@ class DocumentExportService {
 
   static String _sourceLabel(ReportSource source) => switch (source) {
     ReportSource.pdf => 'PDF',
-    ReportSource.image => 'Bild',
+    ReportSource.image => AppLocale.strings.svcExportSourceImage,
     ReportSource.scan => 'Scan',
   };
 }

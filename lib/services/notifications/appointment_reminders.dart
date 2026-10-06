@@ -5,18 +5,22 @@ import 'package:drift/drift.dart';
 import '../../data/app_database.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/settings_repository.dart';
+import '../../l10n/l10n.dart';
 import 'notification_plan.dart';
 import 'plan_sync.dart';
 
-/// Wählbare Vorlaufzeiten (Minuten) mit Beschriftung.
-const appointmentLeadOptions = <int, String>{
-  15: '15 Min.',
-  60: '1 Std.',
-  120: '2 Std.',
-  1440: '1 Tag',
-  2880: '2 Tage',
-  10080: '1 Woche',
-};
+/// Wählbare Vorlaufzeiten (Minuten) mit Beschriftung in der App-Sprache.
+Map<int, String> get appointmentLeadOptions {
+  final l10n = AppLocale.strings;
+  return {
+    15: l10n.svcReminderLead15Min,
+    60: l10n.svcReminderLead1Hour,
+    120: l10n.svcReminderLead2Hours,
+    1440: l10n.svcReminderLead1Day,
+    2880: l10n.svcReminderLead2Days,
+    10080: l10n.svcReminderLead1Week,
+  };
+}
 
 abstract final class AppointmentPayload {
   static const prefix = 'appointment:';
@@ -62,7 +66,7 @@ abstract final class AppointmentReminderPlanner {
             if (s.doctor?.practiceName?.isNotEmpty == true)
               s.doctor!.practiceName!,
             if (s.doctor?.address?.isNotEmpty == true) s.doctor!.address!,
-          ].join(' · ').ifEmpty('Arzttermin'),
+          ].join(' · ').ifEmpty(AppLocale.strings.svcReminderAppointmentFallback),
           payload: AppointmentPayload.encode(a.id),
           channel: NotificationChannel.appointment,
           at: at,
@@ -74,14 +78,12 @@ abstract final class AppointmentReminderPlanner {
 
   /// „Morgen 09:00“, „In 1 Stunde (14:30)“, „Mi., 12.11. 09:00“.
   static String _when(DateTime start, int lead) {
-    final time = DateFormat('HH:mm', 'de').format(start);
-    if (lead < 60) return 'In $lead Minuten ($time)';
-    if (lead < 1440) {
-      final hours = lead ~/ 60;
-      return 'In $hours ${hours == 1 ? 'Stunde' : 'Stunden'} ($time)';
-    }
-    if (lead == 1440) return 'Morgen $time';
-    return '${DateFormat('EEE, d.M.', 'de').format(start)} $time';
+    final l10n = AppLocale.strings;
+    final time = DateFormat(l10n.svcReminderTimePattern).format(start);
+    if (lead < 60) return l10n.svcReminderInMinutes(lead, time);
+    if (lead < 1440) return l10n.svcReminderInHours(lead ~/ 60, time);
+    if (lead == 1440) return l10n.svcReminderTomorrow(time);
+    return '${DateFormat(l10n.svcReminderDayPattern).format(start)} $time';
   }
 }
 

@@ -5,6 +5,7 @@ import '../../data/database_provider.dart';
 import '../../data/repositories/doctor_repository.dart';
 import '../../data/repositories/suggestion_repository.dart';
 import '../../data/repositories/vaccination_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../widgets/suggestion_text_field.dart';
 import '../records/entity_forms.dart';
 
@@ -15,6 +16,7 @@ Future<String?> showVaccinationForm(
   final db = DatabaseScope.of(context);
   final doctors = await DoctorRepository(db).watchAll().first;
   if (!context.mounted) return null;
+  final l10n = context.l10n;
   final vaccine = TextEditingController(text: vaccination?.vaccine);
   final product = TextEditingController(text: vaccination?.product);
   final dose = TextEditingController(text: vaccination?.doseNumber?.toString());
@@ -28,7 +30,9 @@ Future<String?> showVaccinationForm(
     context: context,
     builder: (context) => StatefulBuilder(
       builder: (context, setState) => AlertDialog(
-        title: Text(vaccination == null ? 'Impfung eintragen' : 'Impfung bearbeiten'),
+        title: Text(
+          vaccination == null ? l10n.homeVaccinationAdd : l10n.homeVaccinationEdit,
+        ),
         scrollable: true,
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -38,14 +42,14 @@ Future<String?> showVaccinationForm(
               controller: vaccine,
               field: SuggestionField.vaccine,
               autofocus: vaccination == null,
-              decoration: const InputDecoration(labelText: 'Impfung gegen'),
+              decoration: InputDecoration(labelText: l10n.homeVaccinationAgainst),
             ),
             TextField(
               controller: product,
-              decoration: const InputDecoration(labelText: 'Impfstoff (Handelsname)'),
+              decoration: InputDecoration(labelText: l10n.homeVaccinationProduct),
             ),
             DateField(
-              label: 'Geimpft am',
+              label: l10n.homeVaccinationDate,
               value: date,
               onChanged: (v) => setState(() => date = v ?? date),
             ),
@@ -55,14 +59,14 @@ Future<String?> showVaccinationForm(
                   child: TextField(
                     controller: dose,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Dosis-Nr.'),
+                    decoration: InputDecoration(labelText: l10n.homeVaccinationDoseNumber),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: TextField(
                     controller: batch,
-                    decoration: const InputDecoration(labelText: 'Charge'),
+                    decoration: InputDecoration(labelText: l10n.homeVaccinationBatch),
                   ),
                 ),
               ],
@@ -72,7 +76,7 @@ Future<String?> showVaccinationForm(
                 padding: const EdgeInsets.only(top: 12),
                 child: DropdownMenu<String?>(
                   initialSelection: doctorId,
-                  label: const Text('Geimpft von'),
+                  label: Text(l10n.homeVaccinationBy),
                   expandedInsets: EdgeInsets.zero,
                   dropdownMenuEntries: [
                     const DropdownMenuEntry(value: null, label: '—'),
@@ -83,16 +87,16 @@ Future<String?> showVaccinationForm(
                 ),
               ),
             DateField(
-              label: 'Nächste Impfung fällig',
+              label: l10n.homeVaccinationNextDue,
               value: nextDue,
               onChanged: (v) => setState(() => nextDue = v),
             ),
             Wrap(
               spacing: 6,
               children: [
-                for (final (label, years) in [('+1 J.', 1), ('+5 J.', 5), ('+10 J.', 10)])
+                for (final years in const [1, 5, 10])
                   ActionChip(
-                    label: Text(label),
+                    label: Text(l10n.homeVaccinationPlusYears(years)),
                     onPressed: () => setState(
                       () => nextDue = DateTime(date.year + years, date.month, date.day),
                     ),
@@ -102,18 +106,18 @@ Future<String?> showVaccinationForm(
             TextField(
               controller: notes,
               maxLines: 2,
-              decoration: const InputDecoration(labelText: 'Notizen'),
+              decoration: InputDecoration(labelText: l10n.commonNotes),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Abbrechen'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Speichern'),
+            child: Text(l10n.commonSave),
           ),
         ],
       ),

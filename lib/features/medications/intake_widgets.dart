@@ -4,6 +4,7 @@ import 'package:intl/intl.dart' show DateFormat;
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/medication_repository.dart';
+import '../../l10n/l10n.dart';
 
 /// „Medikamente heute“: geplante Einnahmen abhaken oder auslassen.
 Future<void> showTodayMedicationsSheet(BuildContext context) =>
@@ -35,6 +36,7 @@ class _TodaySheetState extends State<_TodaySheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final repo = MedicationRepository(DatabaseScope.of(context));
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
@@ -48,17 +50,17 @@ class _TodaySheetState extends State<_TodaySheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Medikamente heute',
+                l10n.homeMedsTodayTitle,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
               Text(
                 doses.isEmpty
-                    ? 'Heute ist keine Einnahme geplant.'
+                    ? l10n.homeMedsTodayNone
                     : open == 0
-                    ? 'Alles erledigt.'
-                    : '$open von ${doses.length} offen',
+                    ? l10n.homeMedsTodayAllDone
+                    : l10n.homeMedsTodayOpen(open, doses.length),
                 style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(height: 8),
@@ -111,7 +113,8 @@ class DoseTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final m = dose.details.medication;
-    final time = DateFormat('HH:mm', 'de').format(dose.at);
+    final l10n = context.l10n;
+    final time = DateFormat(l10n.homeTimePattern).format(dose.at);
     final intake = dose.intake;
     final subtitle = [
       ?dose.details.doseFor(dose.schedule),
@@ -127,12 +130,12 @@ class DoseTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  tooltip: 'Ausgelassen',
+                  tooltip: l10n.homeIntakeSkipped,
                   icon: const Icon(Icons.close),
                   onPressed: onSkipped,
                 ),
                 IconButton.filledTonal(
-                  tooltip: 'Eingenommen',
+                  tooltip: l10n.homeIntakeTaken,
                   icon: const Icon(Icons.check),
                   onPressed: onTaken,
                 ),
@@ -146,7 +149,9 @@ class DoseTile extends StatelessWidget {
                     : Icons.remove_circle_outline,
               ),
               label: Text(
-                intake.status == IntakeStatus.taken ? 'Genommen' : 'Ausgelassen',
+                intake.status == IntakeStatus.taken
+                    ? l10n.homeIntakeTakenShort
+                    : l10n.homeIntakeSkipped,
               ),
             ),
     );
@@ -177,7 +182,9 @@ Future<void> showIntakeConfirmDialog(
       title: Text(details.medication.name),
       content: Text(
         [
-          'Geplant ${DateFormat('HH:mm', 'de').format(at)}',
+          context.l10n.homeIntakePlannedAt(
+            DateFormat(context.l10n.homeTimePattern).format(at),
+          ),
           ?details.doseFor(schedule),
           if (details.medication.instructions?.isNotEmpty == true)
             details.medication.instructions!,
@@ -186,11 +193,11 @@ Future<void> showIntakeConfirmDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, IntakeStatus.skipped),
-          child: const Text('Ausgelassen'),
+          child: Text(context.l10n.homeIntakeSkipped),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, IntakeStatus.taken),
-          child: const Text('Eingenommen'),
+          child: Text(context.l10n.homeIntakeTaken),
         ),
       ],
     ),

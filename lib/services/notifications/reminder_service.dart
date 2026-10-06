@@ -1,5 +1,6 @@
 import '../../data/app_database.dart';
 import '../../data/repositories/reminder_repository.dart';
+import '../../l10n/l10n.dart';
 import 'notification_plan.dart';
 import 'plan_sync.dart';
 
@@ -32,8 +33,8 @@ abstract final class ReminderPlanner {
           r.body?.isNotEmpty == true
               ? r.body!
               : labels.isEmpty
-              ? 'Symptome kurz protokollieren.'
-              : 'Check-in: ${labels.join(', ')}';
+              ? AppLocale.strings.svcReminderCheckInDefault
+              : AppLocale.strings.svcReminderCheckInSymptoms(labels.join(', '));
       final payload = CheckInPayload.encode([
         for (final s in item.symptoms) s.id,
       ]);

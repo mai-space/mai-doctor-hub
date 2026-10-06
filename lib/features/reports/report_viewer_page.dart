@@ -8,6 +8,7 @@ import 'package:pdfrx/pdfrx.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/records_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../services/report_import_service.dart';
 import '../archive/archive_page.dart';
 import '../records/entity_forms.dart';
@@ -41,6 +42,7 @@ class _ReportViewerPageState extends State<ReportViewerPage> {
     final db = DatabaseScope.of(context);
     final records = RecordsRepository(db);
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     switch (action) {
       case _ReportAction.rename:
         await showReportRenameForm(context, report);
@@ -55,8 +57,8 @@ class _ReportViewerPageState extends State<ReportViewerPage> {
           SnackBar(
             content: Text(
               found
-                  ? 'Text erkannt und durchsuchbar'
-                  : 'Kein Text erkannt',
+                  ? l10n.homeReportTextRecognized
+                  : l10n.homeReportNoText,
             ),
           ),
         );
@@ -81,14 +83,14 @@ class _ReportViewerPageState extends State<ReportViewerPage> {
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
           children: [
             Text(
-              'Erkannter Text',
+              context.l10n.homeReportRecognizedText,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 12),
             SelectableText(
               report.extractedText?.isNotEmpty == true
                   ? report.extractedText!
-                  : 'Kein Text erkannt.',
+                  : context.l10n.homeReportNoTextDot,
             ),
           ],
         ),
@@ -104,11 +106,11 @@ class _ReportViewerPageState extends State<ReportViewerPage> {
         final report = snapshot.data;
         if (report == null) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Bericht')),
+            appBar: AppBar(title: Text(context.l10n.entityReport)),
             body: Center(
               child: snapshot.connectionState == ConnectionState.waiting
                   ? const CircularProgressIndicator()
-                  : const Text('Bericht nicht gefunden'),
+                  : Text(context.l10n.homeReportNotFound),
             ),
           );
         }
@@ -125,21 +127,21 @@ class _ReportViewerPageState extends State<ReportViewerPage> {
               PopupMenuButton<_ReportAction>(
                 onSelected: (a) => _onAction(a, report),
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _ReportAction.rename,
-                    child: Text('Umbenennen'),
+                    child: Text(context.l10n.homeReportRename),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _ReportAction.text,
-                    child: Text('Erkannten Text zeigen'),
+                    child: Text(context.l10n.homeReportShowText),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _ReportAction.reindex,
-                    child: Text('Text neu erkennen'),
+                    child: Text(context.l10n.homeReportReindex),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _ReportAction.delete,
-                    child: Text('Löschen'),
+                    child: Text(context.l10n.commonDelete),
                   ),
                 ],
               ),
@@ -180,7 +182,10 @@ class _Unavailable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final created = DateFormat('d. MMM yyyy', 'de').format(report.createdAt);
+    final l10n = context.l10n;
+    final created = DateFormat(
+      l10n.homeReportDatePattern,
+    ).format(report.createdAt);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -190,13 +195,12 @@ class _Unavailable extends StatelessWidget {
             const Icon(Icons.insert_drive_file_outlined, size: 48),
             const SizedBox(height: 12),
             Text(
-              'Datei nicht verfügbar',
+              l10n.homeReportFileUnavailable,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              'Abgelegt am $created. Im Web werden Dateien nicht gespeichert; '
-              'auf dem Gerät wurde die Datei evtl. entfernt.',
+              l10n.homeReportFileUnavailableHint(created),
               textAlign: TextAlign.center,
             ),
           ],

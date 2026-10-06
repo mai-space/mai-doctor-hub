@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../data/database_provider.dart';
 import '../../data/repositories/records_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../services/backup_service.dart';
 import '../../services/document_export_service.dart';
 import '../../services/report_import_service.dart';
@@ -33,7 +34,7 @@ class _BackupSectionState extends State<BackupSection> {
       _snack(e.message);
     } catch (e) {
       debugPrint('$label fehlgeschlagen: $e');
-      _snack('$label fehlgeschlagen.');
+      if (mounted) _snack(context.l10n.settingsBackupFailed(label));
     } finally {
       if (mounted) setState(() => _busy = null);
     }
@@ -48,7 +49,8 @@ class _BackupSectionState extends State<BackupSection> {
     final passphrase = await showPassphraseDialog(context, confirm: true);
     if (passphrase == null || !mounted) return;
     final service = BackupService(DatabaseScope.of(context));
-    await _run('Sicherung', () async {
+    final l10n = context.l10n;
+    await _run(l10n.settingsBackupTaskBackup, () async {
       final file = await service.createBackupFile(passphrase);
       try {
         // Teilen-Dialog liest die Datei selbst (z. B. „In Dateien
@@ -59,11 +61,11 @@ class _BackupSectionState extends State<BackupSection> {
             fileNameOverrides: [
               BackupService.suggestedFileName(DateTime.now()),
             ],
-            subject: 'Mai Doctor Hub — Sicherung',
+            subject: l10n.settingsBackupShareSubject,
           ),
         );
         if (result.status != ShareResultStatus.dismissed) {
-          _snack('Sicherung erstellt — Passwort gut aufbewahren!');
+          _snack(l10n.settingsBackupCreated);
         }
       } finally {
         try {
@@ -74,12 +76,15 @@ class _BackupSectionState extends State<BackupSection> {
   }
 
   Future<void> _import() async {
-    final files = await FilePicker.pickFiles(dialogTitle: 'Sicherung wählen');
+    final l10n = context.l10n;
+    final files = await FilePicker.pickFiles(
+      dialogTitle: l10n.settingsBackupPickTitle,
+    );
     if (files.isEmpty || !mounted) return;
     final (path, staged) = await _localPath(files.first);
     try {
       if (await BackupStream.versionOf(path) == 0) {
-        _snack('Keine Mai-Doctor-Hub-Sicherung (.maibackup).');
+        _snack(l10n.settingsBackupNotABackup);
         return;
       }
       await _confirmAndRestore(path);
@@ -118,34 +123,34 @@ class _BackupSectionState extends State<BackupSection> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sicherung wiederherstellen?'),
-        content: const Text(
-          'Alle aktuellen Daten und Berichte auf diesem Gerät werden durch '
-          'die Sicherung ersetzt. Der Kalender-Export muss danach neu '
-          'eingerichtet werden.',
-        ),
+        title: Text(context.l10n.settingsBackupRestoreConfirmTitle),
+        content: Text(context.l10n.settingsBackupRestoreConfirmText),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Abbrechen'),
+            child: Text(context.l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Ersetzen'),
+            child: Text(context.l10n.settingsBackupReplace),
           ),
         ],
       ),
     );
     if (confirmed != true || !mounted) return;
     final passphrase = await showPassphraseDialog(context);
-    if (passphrase == null) return;
-    await _run('Wiederherstellung', () async {
+    if (passphrase == null || !mounted) return;
+    final l10n = context.l10n;
+    await _run(l10n.settingsBackupTaskRestore, () async {
       // Erinnerungen planen sich über den DB-Stream selbst neu.
       final result = await BackupService(db).restoreFile(path, passphrase);
-      final date = DateFormat('d. MMM yyyy', 'de').format(result.createdAt);
+      final date = DateFormat(
+        l10n.settingsBackupDatePattern,
+      ).format(result.createdAt);
       _snack(
-        'Sicherung vom $date wiederhergestellt'
-        '${result.missingFiles > 0 ? ' (${result.missingFiles} Dateien fehlten)' : ''}.',
+        result.missingFiles > 0
+            ? l10n.settingsBackupRestoredMissing(date, result.missingFiles)
+            : l10n.settingsBackupRestored(date),
       );
     });
   }
@@ -155,29 +160,26 @@ class _BackupSectionState extends State<BackupSection> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Dokumente exportieren?'),
-        content: const Text(
-          'Alle Berichte und Scans werden als ZIP mit lesbaren Dateinamen '
-          'und einer Übersicht (CSV) geteilt. Das Archiv ist nicht '
-          'verschlüsselt — nur an vertrauenswürdige Ziele senden.',
-        ),
+        title: Text(context.l10n.settingsDocumentsExportConfirmTitle),
+        content: Text(context.l10n.settingsDocumentsExportConfirmText),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Abbrechen'),
+            child: Text(context.l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Exportieren'),
+            child: Text(context.l10n.settingsDocumentsExportAction),
           ),
         ],
       ),
     );
     if (ok != true || !mounted) return;
-    await _run('Export', () async {
+    final l10n = context.l10n;
+    await _run(l10n.settingsBackupTaskExport, () async {
       final export = await DocumentExportService(db).export();
       if (export == null) {
-        _snack('Keine Dokumente zum Exportieren.');
+        _snack(l10n.settingsDocumentsExportNone);
         return;
       }
       try {
@@ -187,7 +189,7 @@ class _BackupSectionState extends State<BackupSection> {
             fileNameOverrides: [
               DocumentExportService.suggestedFileName(DateTime.now()),
             ],
-            subject: 'Mai Doctor Hub — ${export.count} Dokumente',
+            subject: l10n.settingsDocumentsShareSubject(export.count),
           ),
         );
       } finally {
@@ -200,12 +202,13 @@ class _BackupSectionState extends State<BackupSection> {
 
   Future<void> _reindex() async {
     final records = RecordsRepository(DatabaseScope.of(context));
-    await _run('Indexierung', () async {
+    final l10n = context.l10n;
+    await _run(l10n.settingsBackupTaskReindex, () async {
       final count = await ReportImportService(records).reindexMissing();
       _snack(
         count == 0
-            ? 'Alle Berichte sind bereits durchsuchbar.'
-            : '$count Bericht(e) jetzt durchsuchbar.',
+            ? l10n.settingsReindexAllDone
+            : l10n.settingsReindexCount(count),
       );
     });
   }
@@ -214,19 +217,19 @@ class _BackupSectionState extends State<BackupSection> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final busy = _busy != null;
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Datensicherung',
+          l10n.settingsBackupSection,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 4),
         Text(
-          'Verschlüsselte Datei mit allen Daten und Berichten — z. B. für '
-          'einen Gerätewechsel. Ohne Passwort nicht lesbar.',
+          l10n.settingsBackupDescription,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -235,52 +238,55 @@ class _BackupSectionState extends State<BackupSection> {
           const SizedBox(height: 8),
           const LinearProgressIndicator(),
           const SizedBox(height: 4),
-          Text('$_busy läuft…', style: theme.textTheme.bodySmall),
+          Text(
+            l10n.settingsBackupRunning(_busy!),
+            style: theme.textTheme.bodySmall,
+          ),
         ],
         if (backupSupported) ...[
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.backup_outlined),
-            title: const Text('Sicherung erstellen'),
+            title: Text(l10n.settingsBackupCreate),
             enabled: !busy,
             onTap: _export,
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.settings_backup_restore),
-            title: const Text('Sicherung wiederherstellen'),
+            title: Text(l10n.settingsBackupRestore),
             enabled: !busy,
             onTap: _import,
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.folder_zip_outlined),
-            title: const Text('Dokumente exportieren'),
-            subtitle: const Text('Alle Berichte & Scans als ZIP mit Übersicht'),
+            title: Text(l10n.settingsDocumentsExport),
+            subtitle: Text(l10n.settingsDocumentsExportSubtitle),
             enabled: !busy,
             onTap: _exportDocuments,
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.drive_folder_upload_outlined),
-            title: const Text('Dokumente importieren'),
-            subtitle: const Text('Mehrere PDFs oder Bilder auf einmal'),
+            title: Text(l10n.settingsDocumentsImport),
+            subtitle: Text(l10n.settingsDocumentsImportSubtitle),
             enabled: !busy,
-            onTap: () => _run('Import', () async {
+            onTap: () => _run(l10n.settingsBackupTaskImport, () async {
               await pickReportFile(context);
             }),
           ),
         ] else
-          const ListTile(
+          ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.backup_outlined),
-            title: Text('Im Web nicht verfügbar'),
+            leading: const Icon(Icons.backup_outlined),
+            title: Text(l10n.settingsBackupWebUnavailable),
           ),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.manage_search),
-          title: const Text('Berichte durchsuchbar machen'),
-          subtitle: const Text('Text aus älteren PDF-Berichten erkennen'),
+          title: Text(l10n.settingsReindexTitle),
+          subtitle: Text(l10n.settingsReindexSubtitle),
           enabled: !busy,
           onTap: _reindex,
         ),
@@ -326,13 +332,14 @@ class _PassphraseDialogState extends State<_PassphraseDialog> {
     final value = _first.text;
     if (widget.confirm && value.length < BackupCrypto.minPassphraseLength) {
       setState(
-        () =>
-            _error = 'Mindestens ${BackupCrypto.minPassphraseLength} Zeichen.',
+        () => _error = context.l10n.settingsPassphraseMinLength(
+          BackupCrypto.minPassphraseLength,
+        ),
       );
       return;
     }
     if (widget.confirm && value != _second.text) {
-      setState(() => _error = 'Passwörter stimmen nicht überein.');
+      setState(() => _error = context.l10n.settingsPassphraseMismatch);
       return;
     }
     if (value.isEmpty) return;
@@ -341,8 +348,13 @@ class _PassphraseDialogState extends State<_PassphraseDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return AlertDialog(
-      title: Text(widget.confirm ? 'Passwort festlegen' : 'Passwort eingeben'),
+      title: Text(
+        widget.confirm
+            ? l10n.settingsPassphraseSetTitle
+            : l10n.settingsPassphraseEnterTitle,
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -351,9 +363,11 @@ class _PassphraseDialogState extends State<_PassphraseDialog> {
             obscureText: _obscure,
             autofocus: true,
             decoration: InputDecoration(
-              labelText: 'Passwort',
+              labelText: l10n.settingsPassphraseLabel,
               suffixIcon: IconButton(
-                tooltip: _obscure ? 'Anzeigen' : 'Verbergen',
+                tooltip: _obscure
+                    ? l10n.settingsPassphraseShow
+                    : l10n.settingsPassphraseHide,
                 icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
                 onPressed: () => setState(() => _obscure = !_obscure),
               ),
@@ -364,15 +378,14 @@ class _PassphraseDialogState extends State<_PassphraseDialog> {
             TextField(
               controller: _second,
               obscureText: _obscure,
-              decoration: const InputDecoration(labelText: 'Wiederholen'),
+              decoration: InputDecoration(
+                labelText: l10n.settingsPassphraseRepeat,
+              ),
               onSubmitted: (_) => _submit(),
             ),
           if (widget.confirm) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Ohne dieses Passwort lässt sich die Sicherung nicht öffnen — '
-              'es gibt keine Wiederherstellung.',
-            ),
+            Text(l10n.settingsPassphraseWarning),
           ],
           if (_error != null) ...[
             const SizedBox(height: 8),
@@ -386,9 +399,9 @@ class _PassphraseDialogState extends State<_PassphraseDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Abbrechen'),
+          child: Text(l10n.commonCancel),
         ),
-        FilledButton(onPressed: _submit, child: const Text('OK')),
+        FilledButton(onPressed: _submit, child: Text(l10n.commonOk)),
       ],
     );
   }

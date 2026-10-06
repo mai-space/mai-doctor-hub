@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_gemma/flutter_gemma.dart';
 
+import '../../l10n/l10n.dart';
 import 'assistant_engine.dart' show AssistantCancelled;
 import 'gemma_runtime.dart';
 
@@ -49,7 +50,7 @@ class GemmaRecordEmbedder implements RecordEmbedder {
   String get modelName => 'EmbeddingGemma';
 
   @override
-  String get downloadSize => 'ca. 180 MB';
+  String get downloadSize => AppLocale.strings.svcEmbedderModelSize;
 
   EmbeddingInstallationBuilder _builder({String? token}) =>
       FlutterGemma.installEmbedder()

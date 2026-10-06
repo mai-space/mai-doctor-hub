@@ -12,6 +12,7 @@ import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
+import '../../l10n/l10n.dart';
 import '../../services/calendar/calendar_sync_service.dart';
 import '../../services/calendar/ics.dart';
 import '../../theme/icon_mappings.dart';
@@ -133,6 +134,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   Future<void> _exportIcs(String id) async {
     final db = DatabaseScope.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = context.l10n;
     final summary = await AppointmentRepository(db).summaryFor(id);
     if (summary == null) return;
     final settings = await SettingsRepository(db).get();
@@ -147,13 +149,11 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
       fileName: 'termin-${DateFormat('yyyy-MM-dd').format(summary.appointment.scheduledAt)}.ics',
       bytes: Uint8List.fromList(utf8.encode(ics)),
       mimeType: 'text/calendar',
-      dialogTitle: 'Kalenderdatei speichern',
+      dialogTitle: l10n.homeIcsSaveDialogTitle,
     );
     if (saved != null) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Kalenderdatei gespeichert — mit Kalender-App öffnen.'),
-        ),
+        SnackBar(content: Text(l10n.homeIcsSaved)),
       );
     }
   }
@@ -166,11 +166,11 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
         final data = snapshot.data;
         if (data == null) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Termin')),
+            appBar: AppBar(title: Text(context.l10n.entityAppointment)),
             body: Center(
               child: snapshot.connectionState == ConnectionState.waiting
                   ? const CircularProgressIndicator()
-                  : const Text('Termin nicht gefunden'),
+                  : Text(context.l10n.homeAppointmentNotFound),
             ),
           );
         }
@@ -178,10 +178,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
         final a = summary.appointment;
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Termin'),
+            title: Text(context.l10n.entityAppointment),
             actions: [
               IconButton(
-                tooltip: 'Bearbeiten',
+                tooltip: context.l10n.commonEdit,
                 icon: const Icon(Icons.edit_outlined),
                 onPressed: () =>
                     showAddAppointmentSheet(context, initial: summary),
@@ -190,31 +190,31 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                 onSelected: (action) => _onAction(action, a),
                 itemBuilder: (context) => [
                   if (a.status != AppointmentStatus.done)
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: _Action.done,
-                      child: Text('Als erledigt markieren'),
+                      child: Text(context.l10n.homeMarkDone),
                     ),
                   if (a.status != AppointmentStatus.cancelled)
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: _Action.cancel,
-                      child: Text('Absagen'),
+                      child: Text(context.l10n.homeCancelAppointment),
                     ),
                   if (a.status != AppointmentStatus.planned)
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: _Action.reopen,
-                      child: Text('Wieder planen'),
+                      child: Text(context.l10n.homeReopen),
                     ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _Action.summary,
-                    child: Text('Zusammenfassung für Arzt (PDF)'),
+                    child: Text(context.l10n.homeDoctorSummaryPdf),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _Action.ics,
-                    child: Text('Als Kalenderdatei (.ics)'),
+                    child: Text(context.l10n.homeExportIcs),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _Action.delete,
-                    child: Text('Löschen'),
+                    child: Text(context.l10n.commonDelete),
                   ),
                 ],
               ),
@@ -237,19 +237,19 @@ class _AppointmentBody extends StatelessWidget {
     final theme = Theme.of(context);
     final summary = data.summary;
     final a = summary.appointment;
+    final l10n = context.l10n;
     final when = DateFormat(
-      'EEEE, d. MMMM yyyy · HH:mm',
-      'de',
+      l10n.homeDetailDateTimePattern,
     ).format(a.scheduledAt);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
       children: [
         DetailHeader(
-          title: a.title?.isNotEmpty == true ? a.title! : 'Termin',
+          title: a.title?.isNotEmpty == true ? a.title! : l10n.entityAppointment,
           subtitle: [
             when,
-            if (a.durationMin != null) '${a.durationMin} Min.',
+            if (a.durationMin != null) l10n.homeDurationMinutes(a.durationMin!),
           ].join(' · '),
         ),
         Wrap(
@@ -285,7 +285,7 @@ class _AppointmentBody extends StatelessWidget {
         ],
         if (summary.diagnosisTitles.isNotEmpty)
           DetailSection(
-            title: 'Diagnosen',
+            title: l10n.entityDiagnoses,
             children: [
               Wrap(
                 spacing: 8,
@@ -305,7 +305,7 @@ class _AppointmentBody extends StatelessWidget {
           ),
         if (data.symptoms.isNotEmpty)
           DetailSection(
-            title: 'Symptome & gemeldete Check-ins',
+            title: l10n.homeSymptomsAndCheckIns,
             children: [
               for (final (symptom, observations) in data.symptoms)
                 SymptomReportCard(
@@ -318,8 +318,8 @@ class _AppointmentBody extends StatelessWidget {
             ],
           ),
         DetailSection(
-          title: 'Berichte',
-          empty: 'Noch kein Bericht — nach dem Termin ablegen.',
+          title: l10n.entityReports,
+          empty: l10n.homeNoReportYet,
           children: [
             for (final report in data.reports)
               ListTile(
@@ -334,10 +334,10 @@ class _AppointmentBody extends StatelessWidget {
                 title: Text(report.title),
                 subtitle: Text(
                   [
-                    if (report.source == ReportSource.scan) 'Scan',
+                    if (report.source == ReportSource.scan) l10n.homeReportScan,
                     report.extractedText?.isNotEmpty == true
-                        ? 'Text durchsuchbar'
-                        : 'Kein Text erkannt',
+                        ? l10n.homeReportTextSearchable
+                        : l10n.homeReportNoText,
                   ].join(' · '),
                 ),
                 trailing: const Icon(Icons.chevron_right),
@@ -349,14 +349,14 @@ class _AppointmentBody extends StatelessWidget {
         FilledButton.icon(
           onPressed: () => importReport(context, appointmentId: a.id),
           icon: const Icon(Icons.attach_file),
-          label: const Text('Bericht hinzufügen'),
+          label: Text(l10n.homeAddReport),
         ),
         DetailSection(
-          title: 'Notizen',
+          title: l10n.commonNotes,
           trailing: TextButton.icon(
             onPressed: () => showNoteForm(context, relatedAppointmentId: a.id),
             icon: const Icon(Icons.add),
-            label: const Text('Notiz'),
+            label: Text(l10n.commonNote),
           ),
           children: [
             for (final n in data.notes)
@@ -374,7 +374,7 @@ class _AppointmentBody extends StatelessWidget {
         ),
         if (data.notes.isEmpty)
           Text(
-            'Tipp: Fragen für den Termin vorab als Notiz festhalten.',
+            l10n.homeNotesTip,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),

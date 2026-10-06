@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import '../services/app_lock.dart';
 import 'app_logo.dart';
 
@@ -45,6 +46,7 @@ class _LockScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final lock = AppLockScope.of(context);
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Material(
       color: theme.colorScheme.surface,
       child: SafeArea(
@@ -57,13 +59,13 @@ class _LockScreen extends StatelessWidget {
                 const AppLogo(size: 72),
                 const SizedBox(height: 16),
                 Text(
-                  'Mai Doctor Hub ist gesperrt',
+                  l10n.settingsLockLockedTitle,
                   style: theme.textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Mit Fingerabdruck, Gesicht oder Geräte-PIN entsperren.',
+                  l10n.settingsLockLockedText,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -73,7 +75,7 @@ class _LockScreen extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: lock.authenticating ? null : lock.unlock,
                   icon: const Icon(Icons.fingerprint),
-                  label: const Text('Entsperren'),
+                  label: Text(l10n.settingsLockUnlock),
                 ),
               ],
             ),

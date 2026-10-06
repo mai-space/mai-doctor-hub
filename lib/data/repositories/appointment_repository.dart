@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../l10n/l10n.dart';
 import '../app_database.dart';
 import 'records_repository.dart';
 
@@ -39,11 +40,14 @@ class AppointmentSummary {
       appointment.scheduledAt.isBefore(DateTime.now());
 }
 
-String appointmentStatusLabel(AppointmentStatus status) => switch (status) {
-  AppointmentStatus.planned => 'Geplant',
-  AppointmentStatus.done => 'Erledigt',
-  AppointmentStatus.cancelled => 'Abgesagt',
-};
+String appointmentStatusLabel(AppointmentStatus status) {
+  final t = AppLocale.strings;
+  return switch (status) {
+    AppointmentStatus.planned => t.homeStatusPlanned,
+    AppointmentStatus.done => t.homeStatusDone,
+    AppointmentStatus.cancelled => t.homeStatusCancelled,
+  };
+}
 
 class AppointmentRepository {
   AppointmentRepository(this._db);
@@ -256,7 +260,8 @@ class AppointmentRepository {
         AppointmentSummary(
           appointment: a,
           doctor: doctors[a.doctorId],
-          doctorName: doctors[a.doctorId]?.name ?? 'Unbekannter Arzt',
+          doctorName:
+              doctors[a.doctorId]?.name ?? AppLocale.strings.homeUnknownDoctor,
           diagnosisTitles: [for (final d in diagnoses[a.id] ?? []) d.title],
           diagnosisIds: [for (final d in diagnoses[a.id] ?? []) d.id],
           symptomLabels: [for (final s in symptoms[a.id] ?? []) s.label],
@@ -364,7 +369,9 @@ class AppointmentRepository {
     return _db.upsertFts(
       entityType: 'appointment',
       entityId: id,
-      title: title?.isNotEmpty == true ? title! : 'Termin',
+      title: title?.isNotEmpty == true
+          ? title!
+          : AppLocale.strings.entityAppointment,
       body: notes ?? '',
     );
   }

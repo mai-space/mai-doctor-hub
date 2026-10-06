@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:local_auth/local_auth.dart';
 
+import '../l10n/l10n.dart';
+
 /// Entsperren per Biometrie oder Geräte-PIN — austauschbar für Tests.
 abstract interface class LockAuthenticator {
   /// Hat das Gerät eine Displaysperre/Biometrie, die wir nutzen können?
@@ -101,14 +103,16 @@ class AppLockController extends ChangeNotifier with WidgetsBindingObserver {
   /// niemand aus, dessen Gerät keine Sperre hat.
   Future<bool> enableWithConfirmation() async {
     if (!await authenticator.isAvailable()) return false;
-    final ok = await _authenticate('App-Sperre einrichten');
+    final ok = await _authenticate(AppLocale.strings.settingsLockReasonSetup);
     if (ok) setEnabled(true);
     return ok;
   }
 
   Future<bool> unlock() async {
     if (!locked) return true;
-    final ok = await _authenticate('Mai Doctor Hub entsperren');
+    final ok = await _authenticate(
+      AppLocale.strings.settingsLockReasonUnlock,
+    );
     if (ok) {
       _locked = false;
       notifyListeners();
