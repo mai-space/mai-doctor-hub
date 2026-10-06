@@ -171,8 +171,24 @@ void main() {
     await tester.tap(find.text('Kopfschmerz'));
     await settle(tester);
 
-    expect(find.text('Stärke 2/10'), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('zuletzt 2 von 10')), findsOneWidget);
+    // Check-ins stehen unter Belegen und Kalender.
+    // Senkrechte Liste der Detailseite (nicht die verdeckte Akte dahinter).
+    final scrollable = find
+        .byWidgetPredicate(
+          (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+        )
+        .hitTestable()
+        .first;
+    await tester.scrollUntilVisible(
+      find.text('Stärke 2/10'),
+      300,
+      scrollable: scrollable,
+    );
+    expect(find.text('Stärke 2/10'), findsOneWidget);
+    // Zurück nach oben (sonst liegt der Knopf ggf. unter der App-Leiste).
+    await tester.drag(scrollable, const Offset(0, 5000));
+    await settle(tester);
 
     await tester.tap(find.text('Als geheilt markieren'));
     await settle(tester);

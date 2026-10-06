@@ -111,7 +111,7 @@ void main() {
       'brennend',
     );
     final version = await db.customSelect('PRAGMA user_version').getSingle();
-    expect(version.read<int>('user_version'), 12);
+    expect(version.read<int>('user_version'), db.schemaVersion);
     await db.close();
   });
 

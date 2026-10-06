@@ -23,5 +23,6 @@
   "mediaMicDenied": "A voice note needs microphone permission. You can allow it in the app's Android settings.",
   "mediaUnavailable": "File not available.",
   "mediaCount": "{count, plural, =1{1 item} other{{count} items}}",
-  "mediaDatePattern": "MMM d, yyyy, h:mm a"
+  "mediaDatePattern": "MMM d, yyyy, h:mm a",
+  "svcSummaryPdfEvidence": "Evidence: {photos} photos, {videos} videos, {audio} voice notes (in the app)"
 }

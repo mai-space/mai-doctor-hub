@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 
 import '../app_database.dart';
 import 'suggestion_repository.dart';
+import 'symptom_media_repository.dart';
 
 const _uuid = Uuid();
 
@@ -124,7 +125,12 @@ class SymptomRepository {
 
   /// Löscht Symptom inkl. aller Check-in-Werte und Terminverknüpfungen.
   Future<void> delete(String id) async {
+    // Belege: Dateien erst nach erfolgreichem Löschen der Zeilen entfernen.
+    final media = await SymptomMediaRepository(_db).forSymptom(id);
     await _db.transaction(() async {
+      await (_db.delete(
+        _db.symptomMedia,
+      )..where((t) => t.symptomId.equals(id))).go();
       await (_db.delete(
         _db.doctorSymptoms,
       )..where((t) => t.symptomId.equals(id))).go();
@@ -140,6 +146,9 @@ class SymptomRepository {
       await (_db.delete(_db.symptoms)..where((t) => t.id.equals(id))).go();
       await _db.deleteFts('symptom', id);
     });
+    for (final item in media) {
+      await deleteMediaFile(item.localPath);
+    }
   }
 
   /// Check-in-Verlauf eines Symptoms, älteste zuerst.
@@ -199,6 +208,10 @@ class SymptomRepository {
           .getSingleOrNull();
 
   Future<void> deleteObservation(String id) async {
+    // Belege bleiben beim Symptom, nur die Zuordnung zum Check-in fällt weg.
+    await (_db.update(_db.symptomMedia)
+          ..where((t) => t.observationId.equals(id)))
+        .write(const SymptomMediaCompanion(observationId: Value(null)));
     await (_db.delete(
       _db.symptomObservations,
     )..where((t) => t.id.equals(id))).go();

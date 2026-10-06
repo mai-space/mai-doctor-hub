@@ -64,6 +64,11 @@ dependencies:
   flutter_gemma_embeddings: ^2.2.2
   # Direkt: Download-Verlauf (mit Token) nach dem Laden bereinigen.
   background_downloader: ^9.6.3
+  # Belege zu Symptomen: Foto/Video aufnehmen, Sprachnotiz, Wiedergabe.
+  image_picker: ^1.2.4
+  record: ^7.1.1
+  video_player: ^2.14.1
+  audioplayers: ^6.8.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

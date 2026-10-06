@@ -13,6 +13,7 @@ import '../data/app_database.dart';
 import '../data/repositories/records_repository.dart'
     show ownedReportFile, reportsDirectory;
 import '../l10n/l10n.dart';
+import '../data/repositories/symptom_media_repository.dart' show mediaDirectory;
 import 'file_vault.dart';
 
 export 'package:mai_backup_format/mai_backup_format.dart'
@@ -90,6 +91,18 @@ class BackupService {
         files[entry] = plain;
         entries[report.id] = entry;
       }
+      // Belege zu Symptomen (Fotos, Videos, Sprachnotizen).
+      final mediaDir = await mediaDirectory(_baseDir);
+      final mediaEntries = <String, String>{};
+      for (final item in await _db.select(_db.symptomMedia).get()) {
+        final file = await ownedReportFile(item.localPath, mediaDir);
+        if (file == null) continue;
+        final entry = 'media/${item.id}${p.extension(item.localPath)}';
+        final plain = p.join(work.path, 'm_${mediaEntries.length}');
+        await FileVault.current.decryptTo(file.path, plain);
+        files[entry] = plain;
+        mediaEntries[item.id] = entry;
+      }
       final zip = p.join(work.path, 'backup.zip');
       await BackupStream.writeZip(
         zip,
@@ -100,6 +113,7 @@ class BackupService {
           'schemaVersion': _db.schemaVersion,
           'createdAt': DateTime.now().toUtc().toIso8601String(),
           'reports': entries,
+          'media': mediaEntries,
         },
       );
       final out = File(
@@ -153,11 +167,28 @@ class BackupService {
         newPaths[reportId] = target;
       }
 
-      await _replaceData(restorePath, newPaths);
+      final mediaDir = await mediaDirectory(_baseDir);
+      final oldMedia = await _listFiles(mediaDir);
+      await mediaDir.create(recursive: true);
+      final newMedia = <String, String>{};
+      for (final MapEntry(key: id, value: entry)
+          in contents.mediaEntries.entries) {
+        final extracted = contents.files[entry];
+        if (extracted == null) continue;
+        final target = p.join(
+          mediaDir.path,
+          'restored_${stamp}_${p.basename(entry)}',
+        );
+        await _move(File(extracted), target);
+        await FileVault.current.encryptInPlace(target);
+        newMedia[id] = target;
+      }
 
-      // Alte Berichtsdateien entfernen, die nicht mehr referenziert sind.
-      final keep = newPaths.values.toSet();
-      for (final file in oldFiles) {
+      await _replaceData(restorePath, newPaths, newMedia);
+
+      // Alte Berichts-/Beleg-Dateien entfernen, die nicht mehr referenziert sind.
+      final keep = {...newPaths.values, ...newMedia.values};
+      for (final file in [...oldFiles, ...oldMedia]) {
         if (!keep.contains(file.path)) {
           try {
             await file.delete();
@@ -217,6 +248,7 @@ class BackupService {
   Future<void> _replaceData(
     String restorePath,
     Map<String, String> newPaths,
+    Map<String, String> newMedia,
   ) async {
     final tables = _db.allTables.toList();
     // KEY '': Sicherungs-DB ist unverschlüsselt (sonst gälte der Geräteschlüssel).
@@ -264,6 +296,16 @@ class BackupService {
         for (final MapEntry(key: id, value: path) in newPaths.entries) {
           await (_db.update(_db.reports)..where((t) => t.id.equals(id))).write(
             ReportsCompanion(localPath: Value(path)),
+          );
+        }
+        await _db
+            .update(_db.symptomMedia)
+            .write(const SymptomMediaCompanion(localPath: Value('')));
+        for (final MapEntry(key: id, value: path) in newMedia.entries) {
+          await (_db.update(
+            _db.symptomMedia,
+          )..where((t) => t.id.equals(id))).write(
+            SymptomMediaCompanion(localPath: Value(path)),
           );
         }
       });

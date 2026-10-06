@@ -140,6 +140,30 @@ class SymptomObservations extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+/// v13: Art eines Symptom-Belegs.
+enum MediaKind { photo, video, audio }
+
+/// v13: Foto/Video/Sprachnotiz als Beleg zu einem Symptom (verschlüsselte
+/// Datei unter `<appDocs>/media`, siehe FileVault).
+@DataClassName('SymptomMediaItem')
+class SymptomMedia extends Table {
+  TextColumn get id => text()();
+  TextColumn get symptomId => text().references(Symptoms, #id)();
+
+  /// Optional: Beleg gehört zu diesem Check-in.
+  TextColumn get observationId =>
+      text().nullable().references(SymptomObservations, #id)();
+  IntColumn get kind => intEnum<MediaKind>()();
+  TextColumn get mimeType => text()();
+  TextColumn get localPath => text()();
+  IntColumn get durationMs => integer().nullable()();
+  TextColumn get note => text().nullable()();
+  DateTimeColumn get recordedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 class Appointments extends Table with Archivable {
   TextColumn get id => text()();
   TextColumn get doctorId => text().references(Doctors, #id)();
@@ -414,6 +438,7 @@ class CalendarLinks extends Table {
     MedicationSchedules,
     MedicationIntakes,
     Vaccinations,
+    SymptomMedia,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -421,7 +446,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? openAppDatabase());
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -543,6 +568,9 @@ class AppDatabase extends _$AppDatabase {
         ]) {
           await migrator.addColumn(symptomObservations, column);
         }
+      }
+      if (from < 13) {
+        await migrator.createTable(symptomMedia);
       }
     },
     beforeOpen: (details) async {

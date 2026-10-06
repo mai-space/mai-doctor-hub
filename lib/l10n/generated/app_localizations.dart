@@ -1328,6 +1328,162 @@ abstract class AppLocalizations {
   /// **'{number}. Dosis'**
   String homeVaccinationDoseLabel(int number);
 
+  /// No description provided for @mediaSectionTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Belege'**
+  String get mediaSectionTitle;
+
+  /// No description provided for @mediaSectionHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Fotos, Videos oder Sprachnotizen zeigen der Ärztin oder dem Arzt, was du beschreibst – z. B. einen Ausschlag, eine Schwellung, ein Geräusch beim Atmen oder einen Anfall. Alles bleibt verschlüsselt auf diesem Gerät.'**
+  String get mediaSectionHint;
+
+  /// No description provided for @mediaTakePhoto.
+  ///
+  /// In de, this message translates to:
+  /// **'Foto'**
+  String get mediaTakePhoto;
+
+  /// No description provided for @mediaRecordVideo.
+  ///
+  /// In de, this message translates to:
+  /// **'Video'**
+  String get mediaRecordVideo;
+
+  /// No description provided for @mediaRecordAudio.
+  ///
+  /// In de, this message translates to:
+  /// **'Sprachnotiz'**
+  String get mediaRecordAudio;
+
+  /// No description provided for @mediaFromGallery.
+  ///
+  /// In de, this message translates to:
+  /// **'Aus Galerie'**
+  String get mediaFromGallery;
+
+  /// No description provided for @mediaGalleryPhoto.
+  ///
+  /// In de, this message translates to:
+  /// **'Foto aus Galerie'**
+  String get mediaGalleryPhoto;
+
+  /// No description provided for @mediaGalleryVideo.
+  ///
+  /// In de, this message translates to:
+  /// **'Video aus Galerie'**
+  String get mediaGalleryVideo;
+
+  /// No description provided for @mediaPhoto.
+  ///
+  /// In de, this message translates to:
+  /// **'Foto'**
+  String get mediaPhoto;
+
+  /// No description provided for @mediaVideo.
+  ///
+  /// In de, this message translates to:
+  /// **'Video'**
+  String get mediaVideo;
+
+  /// No description provided for @mediaAudio.
+  ///
+  /// In de, this message translates to:
+  /// **'Sprachnotiz'**
+  String get mediaAudio;
+
+  /// No description provided for @mediaEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Belege.'**
+  String get mediaEmpty;
+
+  /// No description provided for @mediaSaving.
+  ///
+  /// In de, this message translates to:
+  /// **'Beleg wird verschlüsselt gespeichert…'**
+  String get mediaSaving;
+
+  /// No description provided for @mediaSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Beleg gespeichert.'**
+  String get mediaSaved;
+
+  /// No description provided for @mediaFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Beleg konnte nicht gespeichert werden: {error}'**
+  String mediaFailed(String error);
+
+  /// No description provided for @mediaDeleteTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Beleg löschen?'**
+  String get mediaDeleteTitle;
+
+  /// No description provided for @mediaDeleteText.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Datei wird endgültig von diesem Gerät entfernt.'**
+  String get mediaDeleteText;
+
+  /// No description provided for @mediaNoteLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Notiz zum Beleg (optional)'**
+  String get mediaNoteLabel;
+
+  /// No description provided for @mediaRecordingTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Sprachnotiz aufnehmen'**
+  String get mediaRecordingTitle;
+
+  /// No description provided for @mediaRecordingHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Beschreibe in Ruhe, was du spürst – oder nimm ein Geräusch auf (Husten, Atmen, Herzklopfen).'**
+  String get mediaRecordingHint;
+
+  /// No description provided for @mediaRecordingStop.
+  ///
+  /// In de, this message translates to:
+  /// **'Stopp & speichern'**
+  String get mediaRecordingStop;
+
+  /// No description provided for @mediaMicDenied.
+  ///
+  /// In de, this message translates to:
+  /// **'Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den Android-Einstellungen der App erlauben.'**
+  String get mediaMicDenied;
+
+  /// No description provided for @mediaUnavailable.
+  ///
+  /// In de, this message translates to:
+  /// **'Datei nicht verfügbar.'**
+  String get mediaUnavailable;
+
+  /// No description provided for @mediaCount.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{1 Beleg} other{{count} Belege}}'**
+  String mediaCount(int count);
+
+  /// No description provided for @mediaDatePattern.
+  ///
+  /// In de, this message translates to:
+  /// **'d. MMM yyyy, HH:mm'**
+  String get mediaDatePattern;
+
+  /// No description provided for @svcSummaryPdfEvidence.
+  ///
+  /// In de, this message translates to:
+  /// **'Belege: {photos} Fotos, {videos} Videos, {audio} Sprachnotizen (in der App)'**
+  String svcSummaryPdfEvidence(int photos, int videos, int audio);
+
   /// No description provided for @recordsTitle.
   ///
   /// In de, this message translates to:

@@ -8,6 +8,7 @@ import 'data/app_database.dart';
 import 'data/database_provider.dart';
 import 'data/repositories/records_repository.dart' show reportsDirectory;
 import 'data/repositories/settings_repository.dart';
+import 'data/repositories/symptom_media_repository.dart' show mediaDirectory;
 import 'features/check_in/check_in_sheet.dart';
 import 'features/home/appointment_detail_page.dart';
 import 'features/medications/intake_widgets.dart';
@@ -58,8 +59,14 @@ Future<void> _start() async {
   }
   // Berichte/Medien verschlüsselt; Altdateien im Hintergrund nachziehen.
   FileVault.current = await FileVault.open();
-  reportsDirectory()
-      .then(FileVault.current.migrate)
+  Future.wait([reportsDirectory(), mediaDirectory()])
+      .then((dirs) async {
+        var n = 0;
+        for (final dir in dirs) {
+          n += await FileVault.current.migrate(dir);
+        }
+        return n;
+      })
       .then((n) {
         if (n > 0) debugPrint('$n Dateien verschlüsselt');
       })

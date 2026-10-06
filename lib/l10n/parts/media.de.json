@@ -37,5 +37,19 @@
       }
     }
   },
-  "mediaDatePattern": "d. MMM yyyy, HH:mm"
+  "mediaDatePattern": "d. MMM yyyy, HH:mm",
+  "svcSummaryPdfEvidence": "Belege: {photos} Fotos, {videos} Videos, {audio} Sprachnotizen (in der App)",
+  "@svcSummaryPdfEvidence": {
+    "placeholders": {
+      "photos": {
+        "type": "int"
+      },
+      "videos": {
+        "type": "int"
+      },
+      "audio": {
+        "type": "int"
+      }
+    }
+  }
 }

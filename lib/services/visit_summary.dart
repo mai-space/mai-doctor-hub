@@ -1,4 +1,8 @@
+import 'dart:io';
+import 'dart:isolate';
+
 import 'package:drift/drift.dart';
+import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -6,10 +10,12 @@ import 'package:pdf/widgets.dart' as pw;
 import '../data/app_database.dart';
 import '../data/repositories/appointment_repository.dart';
 import '../data/repositories/medication_repository.dart';
+import '../data/repositories/symptom_media_repository.dart';
 import '../data/repositories/symptom_repository.dart';
 import '../data/repositories/vaccination_repository.dart';
 import '../data/symptom_description.dart';
 import '../l10n/l10n.dart';
+import 'file_vault.dart';
 import '../widgets/symptom_report_card.dart' show observationLabel;
 
 /// Was in die Zusammenfassung soll.
@@ -36,11 +42,33 @@ class VisitSummaryOptions {
   final String? patientName;
 }
 
+/// Foto-Beleg für das PDF (verkleinert).
+class SummaryPhoto {
+  const SummaryPhoto(this.recordedAt, this.jpeg, this.note);
+
+  final DateTime recordedAt;
+  final Uint8List jpeg;
+  final String? note;
+}
+
 class SymptomTrend {
-  const SymptomTrend(this.symptom, this.observations);
+  const SymptomTrend(
+    this.symptom,
+    this.observations, {
+    this.photos = const [],
+    this.videoCount = 0,
+    this.audioCount = 0,
+  });
 
   final Symptom symptom;
   final List<SymptomObservation> observations;
+
+  /// Fotos aus dem Zeitraum (neueste zuerst, höchstens [maxPhotos]).
+  final List<SummaryPhoto> photos;
+  final int videoCount;
+  final int audioCount;
+
+  static const maxPhotos = 6;
 
   List<double> get scale => [
     for (final o in observations)
@@ -126,10 +154,29 @@ class VisitSummaryBuilder {
     final chosenSymptoms = options.symptomIds == null
         ? allSymptoms.where((s) => s.healedAt == null)
         : allSymptoms.where((s) => options.symptomIds!.contains(s.id));
-    final symptoms = [
-      for (final s in chosenSymptoms)
-        SymptomTrend(s, await symptomRepo.observationsBetween(s.id, from, to)),
-    ];
+    final mediaRepo = SymptomMediaRepository(_db);
+    final symptoms = <SymptomTrend>[];
+    for (final s in chosenSymptoms) {
+      final media = [
+        for (final m in await mediaRepo.forSymptom(s.id))
+          if (!m.recordedAt.isBefore(from) && !m.recordedAt.isAfter(to)) m,
+      ];
+      final photos = <SummaryPhoto>[];
+      for (final m in media.where((m) => m.kind == MediaKind.photo)) {
+        if (photos.length >= SymptomTrend.maxPhotos) break;
+        final jpeg = await _thumbnail(m.localPath);
+        if (jpeg != null) photos.add(SummaryPhoto(m.recordedAt, jpeg, m.note));
+      }
+      symptoms.add(
+        SymptomTrend(
+          s,
+          await symptomRepo.observationsBetween(s.id, from, to),
+          photos: photos,
+          videoCount: media.where((m) => m.kind == MediaKind.video).length,
+          audioCount: media.where((m) => m.kind == MediaKind.audio).length,
+        ),
+      );
+    }
 
     final medications = (await MedicationRepository(_db).all()).where(
       (m) => options.medicationIds == null
@@ -166,6 +213,25 @@ class VisitSummaryBuilder {
 }
 
 /// Rendert die Zusammenfassung als A4-PDF.
+/// Entschlüsselt ein Foto und verkleinert es (lange Kante 900 px) fürs PDF.
+Future<Uint8List?> _thumbnail(String path) async {
+  try {
+    if (!File(path).existsSync()) return null;
+    final bytes = await FileVault.current.readBytes(path);
+    return await Isolate.run(() {
+      final decoded = img.decodeImage(bytes);
+      if (decoded == null) return null;
+      final oriented = img.bakeOrientation(decoded);
+      final resized = oriented.width >= oriented.height
+          ? img.copyResize(oriented, width: oriented.width.clamp(1, 900))
+          : img.copyResize(oriented, height: oriented.height.clamp(1, 900));
+      return Uint8List.fromList(img.encodeJpg(resized, quality: 80));
+    });
+  } catch (_) {
+    return null;
+  }
+}
+
 abstract final class VisitSummaryPdf {
   static String fileName(VisitSummaryData data) =>
       AppLocale.strings.svcSummaryPdfFileName(
@@ -284,6 +350,47 @@ abstract final class VisitSummaryPdf {
                         ].join(' · '),
                   style: muted,
                 ),
+                if (t.photos.isNotEmpty || t.videoCount + t.audioCount > 0)
+                  pw.Text(
+                    l10n.svcSummaryPdfEvidence(
+                      t.photos.length,
+                      t.videoCount,
+                      t.audioCount,
+                    ),
+                    style: muted,
+                  ),
+                if (t.photos.isNotEmpty)
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                    child: pw.Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        for (final photo in t.photos)
+                          pw.SizedBox(
+                            width: 120,
+                            child: pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Image(
+                                  pw.MemoryImage(photo.jpeg),
+                                  height: 90,
+                                  fit: pw.BoxFit.contain,
+                                ),
+                                pw.Text(
+                                  [
+                                    date.format(photo.recordedAt),
+                                    if (photo.note?.isNotEmpty == true)
+                                      photo.note!,
+                                  ].join(' · '),
+                                  style: const pw.TextStyle(fontSize: 7),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 if (t.observations.isNotEmpty)
                   pw.TableHelper.fromTextArray(
                     headers: [

@@ -10651,6 +10651,590 @@ class VaccinationsCompanion extends UpdateCompanion<Vaccination> {
   }
 }
 
+class $SymptomMediaTable extends SymptomMedia
+    with TableInfo<$SymptomMediaTable, SymptomMediaItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SymptomMediaTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _symptomIdMeta = const VerificationMeta(
+    'symptomId',
+  );
+  @override
+  late final GeneratedColumn<String> symptomId = GeneratedColumn<String>(
+    'symptom_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES symptoms (id)',
+    ),
+  );
+  static const VerificationMeta _observationIdMeta = const VerificationMeta(
+    'observationId',
+  );
+  @override
+  late final GeneratedColumn<String> observationId = GeneratedColumn<String>(
+    'observation_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES symptom_observations (id)',
+    ),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<MediaKind, int> kind =
+      GeneratedColumn<int>(
+        'kind',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<MediaKind>($SymptomMediaTable.$converterkind);
+  static const VerificationMeta _mimeTypeMeta = const VerificationMeta(
+    'mimeType',
+  );
+  @override
+  late final GeneratedColumn<String> mimeType = GeneratedColumn<String>(
+    'mime_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localPathMeta = const VerificationMeta(
+    'localPath',
+  );
+  @override
+  late final GeneratedColumn<String> localPath = GeneratedColumn<String>(
+    'local_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _durationMsMeta = const VerificationMeta(
+    'durationMs',
+  );
+  @override
+  late final GeneratedColumn<int> durationMs = GeneratedColumn<int>(
+    'duration_ms',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recordedAtMeta = const VerificationMeta(
+    'recordedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> recordedAt = GeneratedColumn<DateTime>(
+    'recorded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    symptomId,
+    observationId,
+    kind,
+    mimeType,
+    localPath,
+    durationMs,
+    note,
+    recordedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'symptom_media';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SymptomMediaItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('symptom_id')) {
+      context.handle(
+        _symptomIdMeta,
+        symptomId.isAcceptableOrUnknown(data['symptom_id']!, _symptomIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_symptomIdMeta);
+    }
+    if (data.containsKey('observation_id')) {
+      context.handle(
+        _observationIdMeta,
+        observationId.isAcceptableOrUnknown(
+          data['observation_id']!,
+          _observationIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('mime_type')) {
+      context.handle(
+        _mimeTypeMeta,
+        mimeType.isAcceptableOrUnknown(data['mime_type']!, _mimeTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_mimeTypeMeta);
+    }
+    if (data.containsKey('local_path')) {
+      context.handle(
+        _localPathMeta,
+        localPath.isAcceptableOrUnknown(data['local_path']!, _localPathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localPathMeta);
+    }
+    if (data.containsKey('duration_ms')) {
+      context.handle(
+        _durationMsMeta,
+        durationMs.isAcceptableOrUnknown(data['duration_ms']!, _durationMsMeta),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('recorded_at')) {
+      context.handle(
+        _recordedAtMeta,
+        recordedAt.isAcceptableOrUnknown(data['recorded_at']!, _recordedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SymptomMediaItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SymptomMediaItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      symptomId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}symptom_id'],
+      )!,
+      observationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}observation_id'],
+      ),
+      kind: $SymptomMediaTable.$converterkind.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}kind'],
+        )!,
+      ),
+      mimeType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mime_type'],
+      )!,
+      localPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_path'],
+      )!,
+      durationMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_ms'],
+      ),
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      recordedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}recorded_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SymptomMediaTable createAlias(String alias) {
+    return $SymptomMediaTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<MediaKind, int, int> $converterkind =
+      const EnumIndexConverter<MediaKind>(MediaKind.values);
+}
+
+class SymptomMediaItem extends DataClass
+    implements Insertable<SymptomMediaItem> {
+  final String id;
+  final String symptomId;
+
+  /// Optional: Beleg gehört zu diesem Check-in.
+  final String? observationId;
+  final MediaKind kind;
+  final String mimeType;
+  final String localPath;
+  final int? durationMs;
+  final String? note;
+  final DateTime recordedAt;
+  const SymptomMediaItem({
+    required this.id,
+    required this.symptomId,
+    this.observationId,
+    required this.kind,
+    required this.mimeType,
+    required this.localPath,
+    this.durationMs,
+    this.note,
+    required this.recordedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['symptom_id'] = Variable<String>(symptomId);
+    if (!nullToAbsent || observationId != null) {
+      map['observation_id'] = Variable<String>(observationId);
+    }
+    {
+      map['kind'] = Variable<int>(
+        $SymptomMediaTable.$converterkind.toSql(kind),
+      );
+    }
+    map['mime_type'] = Variable<String>(mimeType);
+    map['local_path'] = Variable<String>(localPath);
+    if (!nullToAbsent || durationMs != null) {
+      map['duration_ms'] = Variable<int>(durationMs);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['recorded_at'] = Variable<DateTime>(recordedAt);
+    return map;
+  }
+
+  SymptomMediaCompanion toCompanion(bool nullToAbsent) {
+    return SymptomMediaCompanion(
+      id: Value(id),
+      symptomId: Value(symptomId),
+      observationId: observationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(observationId),
+      kind: Value(kind),
+      mimeType: Value(mimeType),
+      localPath: Value(localPath),
+      durationMs: durationMs == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationMs),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      recordedAt: Value(recordedAt),
+    );
+  }
+
+  factory SymptomMediaItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SymptomMediaItem(
+      id: serializer.fromJson<String>(json['id']),
+      symptomId: serializer.fromJson<String>(json['symptomId']),
+      observationId: serializer.fromJson<String?>(json['observationId']),
+      kind: $SymptomMediaTable.$converterkind.fromJson(
+        serializer.fromJson<int>(json['kind']),
+      ),
+      mimeType: serializer.fromJson<String>(json['mimeType']),
+      localPath: serializer.fromJson<String>(json['localPath']),
+      durationMs: serializer.fromJson<int?>(json['durationMs']),
+      note: serializer.fromJson<String?>(json['note']),
+      recordedAt: serializer.fromJson<DateTime>(json['recordedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'symptomId': serializer.toJson<String>(symptomId),
+      'observationId': serializer.toJson<String?>(observationId),
+      'kind': serializer.toJson<int>(
+        $SymptomMediaTable.$converterkind.toJson(kind),
+      ),
+      'mimeType': serializer.toJson<String>(mimeType),
+      'localPath': serializer.toJson<String>(localPath),
+      'durationMs': serializer.toJson<int?>(durationMs),
+      'note': serializer.toJson<String?>(note),
+      'recordedAt': serializer.toJson<DateTime>(recordedAt),
+    };
+  }
+
+  SymptomMediaItem copyWith({
+    String? id,
+    String? symptomId,
+    Value<String?> observationId = const Value.absent(),
+    MediaKind? kind,
+    String? mimeType,
+    String? localPath,
+    Value<int?> durationMs = const Value.absent(),
+    Value<String?> note = const Value.absent(),
+    DateTime? recordedAt,
+  }) => SymptomMediaItem(
+    id: id ?? this.id,
+    symptomId: symptomId ?? this.symptomId,
+    observationId: observationId.present
+        ? observationId.value
+        : this.observationId,
+    kind: kind ?? this.kind,
+    mimeType: mimeType ?? this.mimeType,
+    localPath: localPath ?? this.localPath,
+    durationMs: durationMs.present ? durationMs.value : this.durationMs,
+    note: note.present ? note.value : this.note,
+    recordedAt: recordedAt ?? this.recordedAt,
+  );
+  SymptomMediaItem copyWithCompanion(SymptomMediaCompanion data) {
+    return SymptomMediaItem(
+      id: data.id.present ? data.id.value : this.id,
+      symptomId: data.symptomId.present ? data.symptomId.value : this.symptomId,
+      observationId: data.observationId.present
+          ? data.observationId.value
+          : this.observationId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      mimeType: data.mimeType.present ? data.mimeType.value : this.mimeType,
+      localPath: data.localPath.present ? data.localPath.value : this.localPath,
+      durationMs: data.durationMs.present
+          ? data.durationMs.value
+          : this.durationMs,
+      note: data.note.present ? data.note.value : this.note,
+      recordedAt: data.recordedAt.present
+          ? data.recordedAt.value
+          : this.recordedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SymptomMediaItem(')
+          ..write('id: $id, ')
+          ..write('symptomId: $symptomId, ')
+          ..write('observationId: $observationId, ')
+          ..write('kind: $kind, ')
+          ..write('mimeType: $mimeType, ')
+          ..write('localPath: $localPath, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('note: $note, ')
+          ..write('recordedAt: $recordedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    symptomId,
+    observationId,
+    kind,
+    mimeType,
+    localPath,
+    durationMs,
+    note,
+    recordedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SymptomMediaItem &&
+          other.id == this.id &&
+          other.symptomId == this.symptomId &&
+          other.observationId == this.observationId &&
+          other.kind == this.kind &&
+          other.mimeType == this.mimeType &&
+          other.localPath == this.localPath &&
+          other.durationMs == this.durationMs &&
+          other.note == this.note &&
+          other.recordedAt == this.recordedAt);
+}
+
+class SymptomMediaCompanion extends UpdateCompanion<SymptomMediaItem> {
+  final Value<String> id;
+  final Value<String> symptomId;
+  final Value<String?> observationId;
+  final Value<MediaKind> kind;
+  final Value<String> mimeType;
+  final Value<String> localPath;
+  final Value<int?> durationMs;
+  final Value<String?> note;
+  final Value<DateTime> recordedAt;
+  final Value<int> rowid;
+  const SymptomMediaCompanion({
+    this.id = const Value.absent(),
+    this.symptomId = const Value.absent(),
+    this.observationId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.mimeType = const Value.absent(),
+    this.localPath = const Value.absent(),
+    this.durationMs = const Value.absent(),
+    this.note = const Value.absent(),
+    this.recordedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SymptomMediaCompanion.insert({
+    required String id,
+    required String symptomId,
+    this.observationId = const Value.absent(),
+    required MediaKind kind,
+    required String mimeType,
+    required String localPath,
+    this.durationMs = const Value.absent(),
+    this.note = const Value.absent(),
+    required DateTime recordedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       symptomId = Value(symptomId),
+       kind = Value(kind),
+       mimeType = Value(mimeType),
+       localPath = Value(localPath),
+       recordedAt = Value(recordedAt);
+  static Insertable<SymptomMediaItem> custom({
+    Expression<String>? id,
+    Expression<String>? symptomId,
+    Expression<String>? observationId,
+    Expression<int>? kind,
+    Expression<String>? mimeType,
+    Expression<String>? localPath,
+    Expression<int>? durationMs,
+    Expression<String>? note,
+    Expression<DateTime>? recordedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (symptomId != null) 'symptom_id': symptomId,
+      if (observationId != null) 'observation_id': observationId,
+      if (kind != null) 'kind': kind,
+      if (mimeType != null) 'mime_type': mimeType,
+      if (localPath != null) 'local_path': localPath,
+      if (durationMs != null) 'duration_ms': durationMs,
+      if (note != null) 'note': note,
+      if (recordedAt != null) 'recorded_at': recordedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SymptomMediaCompanion copyWith({
+    Value<String>? id,
+    Value<String>? symptomId,
+    Value<String?>? observationId,
+    Value<MediaKind>? kind,
+    Value<String>? mimeType,
+    Value<String>? localPath,
+    Value<int?>? durationMs,
+    Value<String?>? note,
+    Value<DateTime>? recordedAt,
+    Value<int>? rowid,
+  }) {
+    return SymptomMediaCompanion(
+      id: id ?? this.id,
+      symptomId: symptomId ?? this.symptomId,
+      observationId: observationId ?? this.observationId,
+      kind: kind ?? this.kind,
+      mimeType: mimeType ?? this.mimeType,
+      localPath: localPath ?? this.localPath,
+      durationMs: durationMs ?? this.durationMs,
+      note: note ?? this.note,
+      recordedAt: recordedAt ?? this.recordedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (symptomId.present) {
+      map['symptom_id'] = Variable<String>(symptomId.value);
+    }
+    if (observationId.present) {
+      map['observation_id'] = Variable<String>(observationId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<int>(
+        $SymptomMediaTable.$converterkind.toSql(kind.value),
+      );
+    }
+    if (mimeType.present) {
+      map['mime_type'] = Variable<String>(mimeType.value);
+    }
+    if (localPath.present) {
+      map['local_path'] = Variable<String>(localPath.value);
+    }
+    if (durationMs.present) {
+      map['duration_ms'] = Variable<int>(durationMs.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (recordedAt.present) {
+      map['recorded_at'] = Variable<DateTime>(recordedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SymptomMediaCompanion(')
+          ..write('id: $id, ')
+          ..write('symptomId: $symptomId, ')
+          ..write('observationId: $observationId, ')
+          ..write('kind: $kind, ')
+          ..write('mimeType: $mimeType, ')
+          ..write('localPath: $localPath, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('note: $note, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -10680,6 +11264,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MedicationIntakesTable medicationIntakes =
       $MedicationIntakesTable(this);
   late final $VaccinationsTable vaccinations = $VaccinationsTable(this);
+  late final $SymptomMediaTable symptomMedia = $SymptomMediaTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -10704,6 +11289,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     medicationSchedules,
     medicationIntakes,
     vaccinations,
+    symptomMedia,
   ];
 }
 
@@ -12211,6 +12797,24 @@ final class $$SymptomsTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$SymptomMediaTable, List<SymptomMediaItem>>
+  _symptomMediaRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.symptomMedia,
+    aliasName: 'symptoms__id__symptom_media__symptom_id',
+  );
+
+  $$SymptomMediaTableProcessedTableManager get symptomMediaRefs {
+    final manager = $$SymptomMediaTableTableManager(
+      $_db,
+      $_db.symptomMedia,
+    ).filter((f) => f.symptomId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_symptomMediaRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$SymptomsTableFilterComposer
@@ -12397,6 +13001,31 @@ class $$SymptomsTableFilterComposer
           }) => $$DoctorSymptomsTableFilterComposer(
             $db: $db,
             $table: $db.doctorSymptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> symptomMediaRefs(
+    Expression<bool> Function($$SymptomMediaTableFilterComposer f) f,
+  ) {
+    final $$SymptomMediaTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.symptomMedia,
+      getReferencedColumn: (t) => t.symptomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomMediaTableFilterComposer(
+            $db: $db,
+            $table: $db.symptomMedia,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -12678,6 +13307,31 @@ class $$SymptomsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> symptomMediaRefs<T extends Object>(
+    Expression<T> Function($$SymptomMediaTableAnnotationComposer a) f,
+  ) {
+    final $$SymptomMediaTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.symptomMedia,
+      getReferencedColumn: (t) => t.symptomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomMediaTableAnnotationComposer(
+            $db: $db,
+            $table: $db.symptomMedia,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$SymptomsTableTableManager
@@ -12699,6 +13353,7 @@ class $$SymptomsTableTableManager
             bool appointmentSymptomsRefs,
             bool reminderSymptomsRefs,
             bool doctorSymptomsRefs,
+            bool symptomMediaRefs,
           })
         > {
   $$SymptomsTableTableManager(_$AppDatabase db, $SymptomsTable table)
@@ -12791,6 +13446,7 @@ class $$SymptomsTableTableManager
                 appointmentSymptomsRefs = false,
                 reminderSymptomsRefs = false,
                 doctorSymptomsRefs = false,
+                symptomMediaRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -12799,6 +13455,7 @@ class $$SymptomsTableTableManager
                     if (appointmentSymptomsRefs) db.appointmentSymptoms,
                     if (reminderSymptomsRefs) db.reminderSymptoms,
                     if (doctorSymptomsRefs) db.doctorSymptoms,
+                    if (symptomMediaRefs) db.symptomMedia,
                   ],
                   addJoins:
                       <
@@ -12916,6 +13573,27 @@ class $$SymptomsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (symptomMediaRefs)
+                        await $_getPrefetchedData<
+                          Symptom,
+                          $SymptomsTable,
+                          SymptomMediaItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SymptomsTableReferences
+                              ._symptomMediaRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SymptomsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).symptomMediaRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.symptomId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -12942,6 +13620,7 @@ typedef $$SymptomsTableProcessedTableManager =
         bool appointmentSymptomsRefs,
         bool reminderSymptomsRefs,
         bool doctorSymptomsRefs,
+        bool symptomMediaRefs,
       })
     >;
 typedef $$SymptomObservationsTableCreateCompanionBuilder =
@@ -13008,6 +13687,24 @@ final class $$SymptomObservationsTableReferences
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$SymptomMediaTable, List<SymptomMediaItem>>
+  _symptomMediaRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.symptomMedia,
+    aliasName: 'symptom_observations__id__symptom_media__observation_id',
+  );
+
+  $$SymptomMediaTableProcessedTableManager get symptomMediaRefs {
+    final manager = $$SymptomMediaTableTableManager(
+      $_db,
+      $_db.symptomMedia,
+    ).filter((f) => f.observationId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_symptomMediaRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
     );
   }
 }
@@ -13108,6 +13805,31 @@ class $$SymptomObservationsTableFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> symptomMediaRefs(
+    Expression<bool> Function($$SymptomMediaTableFilterComposer f) f,
+  ) {
+    final $$SymptomMediaTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.symptomMedia,
+      getReferencedColumn: (t) => t.observationId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomMediaTableFilterComposer(
+            $db: $db,
+            $table: $db.symptomMedia,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 }
 
@@ -13285,6 +14007,31 @@ class $$SymptomObservationsTableAnnotationComposer
     );
     return composer;
   }
+
+  Expression<T> symptomMediaRefs<T extends Object>(
+    Expression<T> Function($$SymptomMediaTableAnnotationComposer a) f,
+  ) {
+    final $$SymptomMediaTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.symptomMedia,
+      getReferencedColumn: (t) => t.observationId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomMediaTableAnnotationComposer(
+            $db: $db,
+            $table: $db.symptomMedia,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$SymptomObservationsTableTableManager
@@ -13300,7 +14047,7 @@ class $$SymptomObservationsTableTableManager
           $$SymptomObservationsTableUpdateCompanionBuilder,
           (SymptomObservation, $$SymptomObservationsTableReferences),
           SymptomObservation,
-          PrefetchHooks Function({bool symptomId})
+          PrefetchHooks Function({bool symptomId, bool symptomMediaRefs})
         > {
   $$SymptomObservationsTableTableManager(
     _$AppDatabase db,
@@ -13399,45 +14146,72 @@ class $$SymptomObservationsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({symptomId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (symptomId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.symptomId,
-                        referencedTable: $$SymptomObservationsTableReferences
-                            ._symptomIdTable(db),
-                        referencedColumn: $$SymptomObservationsTableReferences
-                            ._symptomIdTable(db)
-                            .id,
-                      ) as T;
-                    }
+          prefetchHooksCallback:
+              ({symptomId = false, symptomMediaRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (symptomMediaRefs) db.symptomMedia,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (symptomId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.symptomId,
+                            referencedTable:
+                                $$SymptomObservationsTableReferences
+                                    ._symptomIdTable(db),
+                            referencedColumn:
+                                $$SymptomObservationsTableReferences
+                                    ._symptomIdTable(db)
+                                    .id,
+                          ) as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (symptomMediaRefs)
+                        await $_getPrefetchedData<
+                          SymptomObservation,
+                          $SymptomObservationsTable,
+                          SymptomMediaItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SymptomObservationsTableReferences
+                              ._symptomMediaRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SymptomObservationsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).symptomMediaRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.observationId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -13454,7 +14228,7 @@ typedef $$SymptomObservationsTableProcessedTableManager =
       $$SymptomObservationsTableUpdateCompanionBuilder,
       (SymptomObservation, $$SymptomObservationsTableReferences),
       SymptomObservation,
-      PrefetchHooks Function({bool symptomId})
+      PrefetchHooks Function({bool symptomId, bool symptomMediaRefs})
     >;
 typedef $$AppointmentsTableCreateCompanionBuilder =
     AppointmentsCompanion Function({
@@ -20106,6 +20880,490 @@ typedef $$VaccinationsTableProcessedTableManager =
       Vaccination,
       PrefetchHooks Function({bool doctorId})
     >;
+typedef $$SymptomMediaTableCreateCompanionBuilder =
+    SymptomMediaCompanion Function({
+      required String id,
+      required String symptomId,
+      Value<String?> observationId,
+      required MediaKind kind,
+      required String mimeType,
+      required String localPath,
+      Value<int?> durationMs,
+      Value<String?> note,
+      required DateTime recordedAt,
+      Value<int> rowid,
+    });
+typedef $$SymptomMediaTableUpdateCompanionBuilder =
+    SymptomMediaCompanion Function({
+      Value<String> id,
+      Value<String> symptomId,
+      Value<String?> observationId,
+      Value<MediaKind> kind,
+      Value<String> mimeType,
+      Value<String> localPath,
+      Value<int?> durationMs,
+      Value<String?> note,
+      Value<DateTime> recordedAt,
+      Value<int> rowid,
+    });
+
+final class $$SymptomMediaTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $SymptomMediaTable, SymptomMediaItem> {
+  $$SymptomMediaTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $SymptomsTable _symptomIdTable(_$AppDatabase db) =>
+      db.symptoms.createAlias('symptom_media__symptom_id__symptoms__id');
+
+  $$SymptomsTableProcessedTableManager get symptomId {
+    final $_column = $_itemColumn<String>('symptom_id')!;
+
+    final manager = $$SymptomsTableTableManager(
+      $_db,
+      $_db.symptoms,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_symptomIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $SymptomObservationsTable _observationIdTable(_$AppDatabase db) => db
+      .symptomObservations
+      .createAlias('symptom_media__observation_id__symptom_observations__id');
+
+  $$SymptomObservationsTableProcessedTableManager? get observationId {
+    final $_column = $_itemColumn<String>('observation_id');
+    if ($_column == null) return null;
+    final manager = $$SymptomObservationsTableTableManager(
+      $_db,
+      $_db.symptomObservations,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_observationIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$SymptomMediaTableFilterComposer
+    extends Composer<_$AppDatabase, $SymptomMediaTable> {
+  $$SymptomMediaTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<MediaKind, MediaKind, int> get kind =>
+      $composableBuilder(
+        column: $table.kind,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get mimeType => $composableBuilder(
+    column: $table.mimeType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localPath => $composableBuilder(
+    column: $table.localPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$SymptomsTableFilterComposer get symptomId {
+    final $$SymptomsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.symptomId,
+      referencedTable: $db.symptoms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomsTableFilterComposer(
+            $db: $db,
+            $table: $db.symptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SymptomObservationsTableFilterComposer get observationId {
+    final $$SymptomObservationsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.observationId,
+      referencedTable: $db.symptomObservations,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomObservationsTableFilterComposer(
+            $db: $db,
+            $table: $db.symptomObservations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SymptomMediaTableOrderingComposer
+    extends Composer<_$AppDatabase, $SymptomMediaTable> {
+  $$SymptomMediaTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mimeType => $composableBuilder(
+    column: $table.mimeType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localPath => $composableBuilder(
+    column: $table.localPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$SymptomsTableOrderingComposer get symptomId {
+    final $$SymptomsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.symptomId,
+      referencedTable: $db.symptoms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomsTableOrderingComposer(
+            $db: $db,
+            $table: $db.symptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SymptomObservationsTableOrderingComposer get observationId {
+    final $$SymptomObservationsTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.observationId,
+          referencedTable: $db.symptomObservations,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SymptomObservationsTableOrderingComposer(
+                $db: $db,
+                $table: $db.symptomObservations,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$SymptomMediaTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SymptomMediaTable> {
+  $$SymptomMediaTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<MediaKind, int> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get mimeType =>
+      $composableBuilder(column: $table.mimeType, builder: (column) => column);
+
+  GeneratedColumn<String> get localPath =>
+      $composableBuilder(column: $table.localPath, builder: (column) => column);
+
+  GeneratedColumn<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => column,
+  );
+
+  $$SymptomsTableAnnotationComposer get symptomId {
+    final $$SymptomsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.symptomId,
+      referencedTable: $db.symptoms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SymptomsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.symptoms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SymptomObservationsTableAnnotationComposer get observationId {
+    final $$SymptomObservationsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.observationId,
+          referencedTable: $db.symptomObservations,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SymptomObservationsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.symptomObservations,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$SymptomMediaTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SymptomMediaTable,
+          SymptomMediaItem,
+          $$SymptomMediaTableFilterComposer,
+          $$SymptomMediaTableOrderingComposer,
+          $$SymptomMediaTableAnnotationComposer,
+          $$SymptomMediaTableCreateCompanionBuilder,
+          $$SymptomMediaTableUpdateCompanionBuilder,
+          (SymptomMediaItem, $$SymptomMediaTableReferences),
+          SymptomMediaItem,
+          PrefetchHooks Function({bool symptomId, bool observationId})
+        > {
+  $$SymptomMediaTableTableManager(_$AppDatabase db, $SymptomMediaTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SymptomMediaTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SymptomMediaTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SymptomMediaTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> symptomId = const Value.absent(),
+                Value<String?> observationId = const Value.absent(),
+                Value<MediaKind> kind = const Value.absent(),
+                Value<String> mimeType = const Value.absent(),
+                Value<String> localPath = const Value.absent(),
+                Value<int?> durationMs = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<DateTime> recordedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SymptomMediaCompanion(
+                id: id,
+                symptomId: symptomId,
+                observationId: observationId,
+                kind: kind,
+                mimeType: mimeType,
+                localPath: localPath,
+                durationMs: durationMs,
+                note: note,
+                recordedAt: recordedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String symptomId,
+                Value<String?> observationId = const Value.absent(),
+                required MediaKind kind,
+                required String mimeType,
+                required String localPath,
+                Value<int?> durationMs = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                required DateTime recordedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SymptomMediaCompanion.insert(
+                id: id,
+                symptomId: symptomId,
+                observationId: observationId,
+                kind: kind,
+                mimeType: mimeType,
+                localPath: localPath,
+                durationMs: durationMs,
+                note: note,
+                recordedAt: recordedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SymptomMediaTable, SymptomMediaItem>(table),
+                  $$SymptomMediaTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({symptomId = false, observationId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (symptomId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.symptomId,
+                        referencedTable: $$SymptomMediaTableReferences
+                            ._symptomIdTable(db),
+                        referencedColumn: $$SymptomMediaTableReferences
+                            ._symptomIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+                    if (observationId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.observationId,
+                        referencedTable: $$SymptomMediaTableReferences
+                            ._observationIdTable(db),
+                        referencedColumn: $$SymptomMediaTableReferences
+                            ._observationIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$SymptomMediaTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SymptomMediaTable,
+      SymptomMediaItem,
+      $$SymptomMediaTableFilterComposer,
+      $$SymptomMediaTableOrderingComposer,
+      $$SymptomMediaTableAnnotationComposer,
+      $$SymptomMediaTableCreateCompanionBuilder,
+      $$SymptomMediaTableUpdateCompanionBuilder,
+      (SymptomMediaItem, $$SymptomMediaTableReferences),
+      SymptomMediaItem,
+      PrefetchHooks Function({bool symptomId, bool observationId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -20148,4 +21406,6 @@ class $AppDatabaseManager {
       $$MedicationIntakesTableTableManager(_db, _db.medicationIntakes);
   $$VaccinationsTableTableManager get vaccinations =>
       $$VaccinationsTableTableManager(_db, _db.vaccinations);
+  $$SymptomMediaTableTableManager get symptomMedia =>
+      $$SymptomMediaTableTableManager(_db, _db.symptomMedia);
 }

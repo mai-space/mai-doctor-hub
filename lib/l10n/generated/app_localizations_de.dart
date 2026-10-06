@@ -652,6 +652,100 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get mediaSectionTitle => 'Belege';
+
+  @override
+  String get mediaSectionHint =>
+      'Fotos, Videos oder Sprachnotizen zeigen der Ärztin oder dem Arzt, was du beschreibst – z. B. einen Ausschlag, eine Schwellung, ein Geräusch beim Atmen oder einen Anfall. Alles bleibt verschlüsselt auf diesem Gerät.';
+
+  @override
+  String get mediaTakePhoto => 'Foto';
+
+  @override
+  String get mediaRecordVideo => 'Video';
+
+  @override
+  String get mediaRecordAudio => 'Sprachnotiz';
+
+  @override
+  String get mediaFromGallery => 'Aus Galerie';
+
+  @override
+  String get mediaGalleryPhoto => 'Foto aus Galerie';
+
+  @override
+  String get mediaGalleryVideo => 'Video aus Galerie';
+
+  @override
+  String get mediaPhoto => 'Foto';
+
+  @override
+  String get mediaVideo => 'Video';
+
+  @override
+  String get mediaAudio => 'Sprachnotiz';
+
+  @override
+  String get mediaEmpty => 'Noch keine Belege.';
+
+  @override
+  String get mediaSaving => 'Beleg wird verschlüsselt gespeichert…';
+
+  @override
+  String get mediaSaved => 'Beleg gespeichert.';
+
+  @override
+  String mediaFailed(String error) {
+    return 'Beleg konnte nicht gespeichert werden: $error';
+  }
+
+  @override
+  String get mediaDeleteTitle => 'Beleg löschen?';
+
+  @override
+  String get mediaDeleteText =>
+      'Die Datei wird endgültig von diesem Gerät entfernt.';
+
+  @override
+  String get mediaNoteLabel => 'Notiz zum Beleg (optional)';
+
+  @override
+  String get mediaRecordingTitle => 'Sprachnotiz aufnehmen';
+
+  @override
+  String get mediaRecordingHint =>
+      'Beschreibe in Ruhe, was du spürst – oder nimm ein Geräusch auf (Husten, Atmen, Herzklopfen).';
+
+  @override
+  String get mediaRecordingStop => 'Stopp & speichern';
+
+  @override
+  String get mediaMicDenied =>
+      'Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den Android-Einstellungen der App erlauben.';
+
+  @override
+  String get mediaUnavailable => 'Datei nicht verfügbar.';
+
+  @override
+  String mediaCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Belege',
+      one: '1 Beleg',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mediaDatePattern => 'd. MMM yyyy, HH:mm';
+
+  @override
+  String svcSummaryPdfEvidence(int photos, int videos, int audio) {
+    return 'Belege: $photos Fotos, $videos Videos, $audio Sprachnotizen (in der App)';
+  }
+
+  @override
   String get recordsTitle => 'Meine Akte';
 
   @override

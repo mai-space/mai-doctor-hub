@@ -20,7 +20,8 @@ abstract final class TempFiles {
 
   /// Eigene Temp-Dateien/-Ordner (siehe Backup, Export, OCR, Scanner).
   static final _names = RegExp(
-    r'^(scan|photo|ocr_|backup_|import_|export_|dokumente_|mlkit)',
+    r'^(scan|photo|ocr_|backup_|import_|export_|dokumente_|mlkit|audio_|'
+    r'image_picker|scaled_|REC)',
   );
 
   static Future<int> purge({Directory? cache}) async {

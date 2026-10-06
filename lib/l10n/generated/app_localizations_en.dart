@@ -659,6 +659,100 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get mediaSectionTitle => 'Evidence';
+
+  @override
+  String get mediaSectionHint =>
+      'Photos, videos or voice notes show your doctor what you describe — e.g. a rash, swelling, a sound when breathing or a seizure. Everything stays encrypted on this device.';
+
+  @override
+  String get mediaTakePhoto => 'Photo';
+
+  @override
+  String get mediaRecordVideo => 'Video';
+
+  @override
+  String get mediaRecordAudio => 'Voice note';
+
+  @override
+  String get mediaFromGallery => 'From gallery';
+
+  @override
+  String get mediaGalleryPhoto => 'Photo from gallery';
+
+  @override
+  String get mediaGalleryVideo => 'Video from gallery';
+
+  @override
+  String get mediaPhoto => 'Photo';
+
+  @override
+  String get mediaVideo => 'Video';
+
+  @override
+  String get mediaAudio => 'Voice note';
+
+  @override
+  String get mediaEmpty => 'No evidence yet.';
+
+  @override
+  String get mediaSaving => 'Saving evidence encrypted…';
+
+  @override
+  String get mediaSaved => 'Evidence saved.';
+
+  @override
+  String mediaFailed(String error) {
+    return 'Couldn\'t save evidence: $error';
+  }
+
+  @override
+  String get mediaDeleteTitle => 'Delete evidence?';
+
+  @override
+  String get mediaDeleteText =>
+      'The file will be permanently removed from this device.';
+
+  @override
+  String get mediaNoteLabel => 'Note on this evidence (optional)';
+
+  @override
+  String get mediaRecordingTitle => 'Record voice note';
+
+  @override
+  String get mediaRecordingHint =>
+      'Take your time to describe what you feel — or record a sound (cough, breathing, palpitations).';
+
+  @override
+  String get mediaRecordingStop => 'Stop & save';
+
+  @override
+  String get mediaMicDenied =>
+      'A voice note needs microphone permission. You can allow it in the app\'s Android settings.';
+
+  @override
+  String get mediaUnavailable => 'File not available.';
+
+  @override
+  String mediaCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mediaDatePattern => 'MMM d, yyyy, h:mm a';
+
+  @override
+  String svcSummaryPdfEvidence(int photos, int videos, int audio) {
+    return 'Evidence: $photos photos, $videos videos, $audio voice notes (in the app)';
+  }
+
+  @override
   String get recordsTitle => 'My records';
 
   @override

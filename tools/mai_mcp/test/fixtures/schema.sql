@@ -1,4 +1,4 @@
--- schemaVersion 12
+-- schemaVersion 13
 ---
 CREATE TABLE "app_settings" ("id" INTEGER NOT NULL DEFAULT 1, "morning_reminder_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("morning_reminder_enabled" IN (0, 1)), "evening_reminder_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("evening_reminder_enabled" IN (0, 1)), "morning_hour" INTEGER NOT NULL DEFAULT 8, "morning_minute" INTEGER NOT NULL DEFAULT 0, "evening_hour" INTEGER NOT NULL DEFAULT 20, "evening_minute" INTEGER NOT NULL DEFAULT 0, "calendar_sync_enabled" INTEGER NOT NULL DEFAULT 0 CHECK ("calendar_sync_enabled" IN (0, 1)), "calendar_id" TEXT NULL, "calendar_include_title" INTEGER NOT NULL DEFAULT 0 CHECK ("calendar_include_title" IN (0, 1)), "app_lock_enabled" INTEGER NOT NULL DEFAULT 0 CHECK ("app_lock_enabled" IN (0, 1)), "onboarding_completed" INTEGER NOT NULL DEFAULT 0 CHECK ("onboarding_completed" IN (0, 1)), "appointment_reminders_enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("appointment_reminders_enabled" IN (0, 1)), "appointment_reminder_leads" TEXT NOT NULL DEFAULT '1440,60', "notification_topics" TEXT NOT NULL DEFAULT '', PRIMARY KEY ("id"));
 ---
@@ -50,6 +50,8 @@ CREATE TABLE "reminder_symptoms" ("reminder_id" TEXT NOT NULL REFERENCES reminde
 CREATE TABLE "reminders" ("id" TEXT NOT NULL, "slot" INTEGER NOT NULL UNIQUE, "title" TEXT NOT NULL, "body" TEXT NULL, "hour" INTEGER NOT NULL, "minute" INTEGER NOT NULL, "weekdays" INTEGER NOT NULL DEFAULT 127, "enabled" INTEGER NOT NULL DEFAULT 1 CHECK ("enabled" IN (0, 1)), "created_at" INTEGER NOT NULL, "updated_at" INTEGER NOT NULL, PRIMARY KEY ("id"));
 ---
 CREATE TABLE "reports" ("archived_at" INTEGER NULL, "id" TEXT NOT NULL, "appointment_id" TEXT NULL REFERENCES appointments (id), "title" TEXT NOT NULL, "mime_type" TEXT NOT NULL, "local_path" TEXT NOT NULL, "extracted_text" TEXT NULL, "page_count" INTEGER NULL, "source" INTEGER NOT NULL, "created_at" INTEGER NOT NULL, PRIMARY KEY ("id"));
+---
+CREATE TABLE "symptom_media" ("id" TEXT NOT NULL, "symptom_id" TEXT NOT NULL REFERENCES symptoms (id), "observation_id" TEXT NULL REFERENCES symptom_observations (id), "kind" INTEGER NOT NULL, "mime_type" TEXT NOT NULL, "local_path" TEXT NOT NULL, "duration_ms" INTEGER NULL, "note" TEXT NULL, "recorded_at" INTEGER NOT NULL, PRIMARY KEY ("id"));
 ---
 CREATE TABLE "symptom_observations" ("id" TEXT NOT NULL, "symptom_id" TEXT NOT NULL REFERENCES symptoms (id), "recorded_at" INTEGER NOT NULL, "kind" INTEGER NOT NULL, "value_number" REAL NULL, "value_text" TEXT NULL, "value_color" TEXT NULL, "unit" TEXT NULL, "note" TEXT NULL, "sensation" TEXT NULL, "quality" TEXT NULL, "location" TEXT NULL, "side" TEXT NULL, "pattern" TEXT NULL, PRIMARY KEY ("id"));
 ---

@@ -18,6 +18,7 @@ import '../../l10n/l10n.dart';
 import '../../theme/icon_mappings.dart';
 import '../../widgets/observation_chart.dart';
 import '../../widgets/symptom_heatmap.dart';
+import '../../widgets/symptom_media_section.dart';
 import '../../widgets/symptom_report_card.dart';
 import '../archive/archive_page.dart';
 import '../home/appointment_detail_page.dart';
@@ -732,6 +733,10 @@ class SymptomDetailPage extends StatelessWidget {
             children: [
               ObservationChart(points: scalePoints(data.observations)),
             ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: SymptomMediaSection(symptomId: symptomId),
           ),
           if (data.observations.isNotEmpty)
             DetailSection(

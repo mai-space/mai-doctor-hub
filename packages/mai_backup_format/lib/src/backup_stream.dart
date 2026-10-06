@@ -302,7 +302,11 @@ abstract final class BackupStream {
 
       final files = <String, String>{};
       if (!databaseOnly) {
-        final wanted = _reportEntriesOf(manifest).values;
+        // Berichte und (ab Schema 13) Belege zu Symptomen.
+        final wanted = [
+          ..._entriesOf(manifest, 'reports').values,
+          ..._entriesOf(manifest, 'media').values,
+        ];
         for (final name in wanted.toSet()) {
           final entry = entries[name];
           if (entry == null) continue;
@@ -417,15 +421,20 @@ class ExtractedBackup {
     _ => null,
   };
 
-  Map<String, String> get reportEntries => _reportEntriesOf(manifest);
+  Map<String, String> get reportEntries => _entriesOf(manifest, 'reports');
+
+  /// Beleg-ID → Pfad im Archiv (Fotos/Videos/Audio zu Symptomen).
+  Map<String, String> get mediaEntries => _entriesOf(manifest, 'media');
 }
 
-/// Bericht-ID → Pfad im Archiv; Einträge mit falschem Typ entfallen.
-Map<String, String> _reportEntriesOf(Map<String, dynamic> manifest) => {
-  if (manifest['reports'] case final Map<String, dynamic> reports)
-    for (final MapEntry(:key, :value) in reports.entries)
-      if (value is String) key: value,
-};
+/// ID → Pfad im Archiv für [section] (`reports`, `media`); Einträge mit
+/// falschem Typ entfallen.
+Map<String, String> _entriesOf(Map<String, dynamic> manifest, String section) =>
+    {
+      if (manifest[section] case final Map<String, dynamic> entries)
+        for (final MapEntry(:key, :value) in entries.entries)
+          if (value is String) key: value,
+    };
 
 /// [OutputFileStream], der nach [limit] Byte mit [BackupException] abbricht.
 class _LimitedOutputFileStream extends OutputFileStream {
