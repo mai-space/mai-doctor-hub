@@ -29,7 +29,8 @@ flutter pub get
 - **Eingaben:** Autovervollständigung aus allem, was schon einmal eingegeben wurde
 - **Einstellungen:** Erinnerungen, Kalender-Export, App-Sperre, verschlüsselte Datensicherung
 - **Kalender-Export (opt-in):** Termine einseitig in einen Gerätekalender (z. B. Google) — nur „Arzttermin“, Arzt, Ort; `.ics` pro Termin
-- **Assistent (optional):** [`tools/mai_mcp`](tools/mai_mcp/README.md) macht eine Sicherung read-only per MCP für Gemini oder lokales Gemma abfragbar
+- **Assistent auf dem Handy (optional):** „Frag deine Akte“ (✨ in Meine Akte) — Gemma 4 E2B läuft per LiteRT-LM komplett auf dem Gerät; Modell (~2,6 GB) wird auf Wunsch geladen und lässt sich wieder löschen. Android 11+, arm64, empfohlen ≥ 6 GB RAM
+- **Assistent am Rechner (optional):** [`tools/mai_mcp`](tools/mai_mcp/README.md) macht eine Sicherung read-only per MCP für Gemini oder lokales Gemma abfragbar
 
 Review, Roadmap und Konzepte: [`docs/ROADMAP.md`](docs/ROADMAP.md)
 
@@ -79,6 +80,7 @@ Workflow: `.github/workflows/ci.yml` (Trigger: `push` auf alle Branches, `pull_r
 - Patientendaten nur in der lokalen SQLite-Datei der App-Sandbox — **verschlüsselt** (SQLite3 Multiple Ciphers); der Schlüssel ist mit einem Android-Keystore-Schlüssel verpackt und verlässt das Gerät nie
 - Kein Android-/Google-Backup und kein Gerätetransfer der App-Daten (`allowBackup=false`, `data_extraction_rules.xml`); Umzug nur per verschlüsselter `.maibackup`-Sicherung
 - Daten verlassen das Gerät nur durch bewusste Aktionen: verschlüsselte Sicherung, Kalender-Export (minimal, opt-in), MCP-Server auf eigenem Rechner
+- Internet-Berechtigung nur für den Download des KI-Modells (Hugging Face); Fragen und Akte-Daten verarbeitet das Modell lokal, der Chatverlauf wird nicht gespeichert
 - App-Sperre (Biometrie/Geräte-PIN) blendet Inhalte in Screenshots und „Zuletzt verwendet“ aus
 - Berichte (PDF/Scan) unter `Documents/reports/`; extrahierter Text lokal indexiert
 - Erinnerungen sind **lokal** (kein FCM/Server-Push)
