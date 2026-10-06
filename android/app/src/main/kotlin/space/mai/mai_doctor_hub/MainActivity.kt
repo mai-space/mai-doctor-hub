@@ -1,5 +1,7 @@
 package space.mai.mai_doctor_hub
 
+import android.app.ActivityManager
+import android.os.Build
 import android.view.WindowManager
 import java.util.TimeZone
 import io.flutter.embedding.android.FlutterFragmentActivity
@@ -21,6 +23,18 @@ class MainActivity : FlutterFragmentActivity() {
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "timeZone" -> result.success(TimeZone.getDefault().id)
+                    // Lokale KI (LiteRT-LM): nur Android 11+ auf arm64.
+                    "localAi" -> {
+                        val memory = ActivityManager.MemoryInfo()
+                        (getSystemService(ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memory)
+                        result.success(
+                            mapOf(
+                                "sdk" to Build.VERSION.SDK_INT,
+                                "arm64" to Build.SUPPORTED_ABIS.contains("arm64-v8a"),
+                                "totalRam" to memory.totalMem,
+                            ),
+                        )
+                    }
                     else -> result.notImplemented()
                 }
             }

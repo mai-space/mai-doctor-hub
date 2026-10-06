@@ -50,7 +50,26 @@ class RecordsRepository {
           return cleaned.endsWith('*') ? cleaned : '$cleaned*';
         })
         .join(' ');
-    final rows = await _db.searchFts(tokens, entityType: entityType, limit: 200);
+    return _withoutArchived(
+      await _db.searchFts(tokens, entityType: entityType, limit: 200),
+    );
+  }
+
+  /// Treffer für *irgendeinen* der Begriffe (für Fragen in Alltagssprache),
+  /// nach Relevanz sortiert.
+  Future<List<QueryRow>> searchAny(Iterable<String> terms, {int limit = 8}) async {
+    final query = [
+      for (final term in terms)
+        if (term.isNotEmpty) '"${term.replaceAll('"', '')}"*',
+    ].join(' OR ');
+    if (query.isEmpty) return const [];
+    final rows = await _withoutArchived(
+      await _db.searchFts(query, limit: 200),
+    );
+    return rows.take(limit).toList();
+  }
+
+  Future<List<QueryRow>> _withoutArchived(List<QueryRow> rows) async {
     // Archivierte Einträge bleiben im Index (für die Wiederherstellung),
     // werden aber nicht gefunden.
     final archived = <String>{};
