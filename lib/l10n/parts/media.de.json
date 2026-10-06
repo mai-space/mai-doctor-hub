@@ -1,0 +1,41 @@
+{
+  "mediaSectionTitle": "Belege",
+  "mediaSectionHint": "Fotos, Videos oder Sprachnotizen zeigen der Ärztin oder dem Arzt, was du beschreibst – z. B. einen Ausschlag, eine Schwellung, ein Geräusch beim Atmen oder einen Anfall. Alles bleibt verschlüsselt auf diesem Gerät.",
+  "mediaTakePhoto": "Foto",
+  "mediaRecordVideo": "Video",
+  "mediaRecordAudio": "Sprachnotiz",
+  "mediaFromGallery": "Aus Galerie",
+  "mediaGalleryPhoto": "Foto aus Galerie",
+  "mediaGalleryVideo": "Video aus Galerie",
+  "mediaPhoto": "Foto",
+  "mediaVideo": "Video",
+  "mediaAudio": "Sprachnotiz",
+  "mediaEmpty": "Noch keine Belege.",
+  "mediaSaving": "Beleg wird verschlüsselt gespeichert…",
+  "mediaSaved": "Beleg gespeichert.",
+  "mediaFailed": "Beleg konnte nicht gespeichert werden: {error}",
+  "@mediaFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaDeleteTitle": "Beleg löschen?",
+  "mediaDeleteText": "Die Datei wird endgültig von diesem Gerät entfernt.",
+  "mediaNoteLabel": "Notiz zum Beleg (optional)",
+  "mediaRecordingTitle": "Sprachnotiz aufnehmen",
+  "mediaRecordingHint": "Beschreibe in Ruhe, was du spürst – oder nimm ein Geräusch auf (Husten, Atmen, Herzklopfen).",
+  "mediaRecordingStop": "Stopp & speichern",
+  "mediaMicDenied": "Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den Android-Einstellungen der App erlauben.",
+  "mediaUnavailable": "Datei nicht verfügbar.",
+  "mediaCount": "{count, plural, =1{1 Beleg} other{{count} Belege}}",
+  "@mediaCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaDatePattern": "d. MMM yyyy, HH:mm"
+}

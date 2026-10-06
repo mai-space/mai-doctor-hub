@@ -1351,5 +1351,106 @@
       }
     }
   },
-  "svcReminderVaccinationBody": "Termin für die Auffrischung vereinbaren"
+  "svcReminderVaccinationBody": "Termin für die Auffrischung vereinbaren",
+  "symptomCheckInHint": "Beschreibe, was du spürst: Art, Charakter, Ort und Stärke (0–10). Tippe auf einen Baustein, um ihn zu ändern.",
+  "symptomSensation": "Empfindung",
+  "symptomQuality": "Charakter",
+  "symptomLocation": "Ort",
+  "symptomSide": "Seite",
+  "symptomPattern": "Verlauf",
+  "symptomIntensity": "Stärke",
+  "symptomSideLeft": "links",
+  "symptomSideRight": "rechts",
+  "symptomSideBoth": "beidseits",
+  "symptomSideCenter": "mittig",
+  "symptomSideNone": "keine Angabe",
+  "symptomLocationSide": "{location} ({side})",
+  "@symptomLocationSide": {
+    "placeholders": {
+      "location": {
+        "type": "String"
+      },
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomIntensityValue": "{value}/10 {band}",
+  "@symptomIntensityValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "band": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomBandNone": "keine",
+  "symptomBandMild": "leicht",
+  "symptomBandModerate": "mittel",
+  "symptomBandSevere": "stark",
+  "symptomBandUnbearable": "unerträglich",
+  "symptomAnchor0": "Nicht vorhanden",
+  "symptomAnchor1": "Kaum bemerkbar",
+  "symptomAnchor2": "Bemerkbar, stört nicht",
+  "symptomAnchor3": "Stört gelegentlich, leicht zu ignorieren",
+  "symptomAnchor4": "Lenkt ab, Alltag aber normal möglich",
+  "symptomAnchor5": "Deutlich störend, schwer zu ignorieren",
+  "symptomAnchor6": "Konzentration fällt schwer",
+  "symptomAnchor7": "Schränkt den Alltag ein (Arbeit, Schlaf)",
+  "symptomAnchor8": "Kaum etwas anderes möglich",
+  "symptomAnchor9": "Kaum auszuhalten",
+  "symptomAnchor10": "Schlimmste vorstellbare Stärke",
+  "symptomPickerSearchHint": "Suchen oder eigenen Begriff eingeben",
+  "symptomPickerUseCustom": "„{value}“ übernehmen",
+  "@symptomPickerUseCustom": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomPickerReflect": "Zum Reflektieren: Was trifft es am besten?",
+  "symptomPickerMultiHint": "Mehrere möglich",
+  "symptomPickerApply": "Übernehmen",
+  "symptomPickerClear": "Entfernen",
+  "symptomDefaultsTitle": "Typische Beschreibung",
+  "symptomDefaultsHint": "Wird bei jedem Check-in vorbelegt und kann dort angepasst werden.",
+  "symptomLatestDescription": "Zuletzt beschrieben",
+  "symptomHeatmapTitle": "Kalender",
+  "symptomHeatmapHint": "Farbe = höchste Stärke des Tages. Tippe auf einen Tag für Details.",
+  "symptomHeatmapCell": "{date}: {value}/10",
+  "@symptomHeatmapCell": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomHeatmapCellEmpty": "{date}: kein Check-in",
+  "@symptomHeatmapCellEmpty": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomHeatmapLegendEmpty": "kein Eintrag",
+  "symptomHeatmapNoDay": "Kein Check-in an diesem Tag.",
+  "symptomHeatmapDayPattern": "EEEE, d. MMMM y",
+  "symptomHeatmapCellPattern": "d. MMM y",
+  "symptomHeatmapMonthPattern": "MMM",
+  "symptomHeatmapSemantics": "Kalender der Stärke: {days} Tage mit Check-in",
+  "@symptomHeatmapSemantics": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "symptomPickerRecent": "Zuletzt verwendet"
 }

@@ -3996,6 +3996,306 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Termin für die Auffrischung vereinbaren'**
   String get svcReminderVaccinationBody;
+
+  /// No description provided for @symptomCheckInHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Beschreibe, was du spürst: Art, Charakter, Ort und Stärke (0–10). Tippe auf einen Baustein, um ihn zu ändern.'**
+  String get symptomCheckInHint;
+
+  /// No description provided for @symptomSensation.
+  ///
+  /// In de, this message translates to:
+  /// **'Empfindung'**
+  String get symptomSensation;
+
+  /// No description provided for @symptomQuality.
+  ///
+  /// In de, this message translates to:
+  /// **'Charakter'**
+  String get symptomQuality;
+
+  /// No description provided for @symptomLocation.
+  ///
+  /// In de, this message translates to:
+  /// **'Ort'**
+  String get symptomLocation;
+
+  /// No description provided for @symptomSide.
+  ///
+  /// In de, this message translates to:
+  /// **'Seite'**
+  String get symptomSide;
+
+  /// No description provided for @symptomPattern.
+  ///
+  /// In de, this message translates to:
+  /// **'Verlauf'**
+  String get symptomPattern;
+
+  /// No description provided for @symptomIntensity.
+  ///
+  /// In de, this message translates to:
+  /// **'Stärke'**
+  String get symptomIntensity;
+
+  /// No description provided for @symptomSideLeft.
+  ///
+  /// In de, this message translates to:
+  /// **'links'**
+  String get symptomSideLeft;
+
+  /// No description provided for @symptomSideRight.
+  ///
+  /// In de, this message translates to:
+  /// **'rechts'**
+  String get symptomSideRight;
+
+  /// No description provided for @symptomSideBoth.
+  ///
+  /// In de, this message translates to:
+  /// **'beidseits'**
+  String get symptomSideBoth;
+
+  /// No description provided for @symptomSideCenter.
+  ///
+  /// In de, this message translates to:
+  /// **'mittig'**
+  String get symptomSideCenter;
+
+  /// No description provided for @symptomSideNone.
+  ///
+  /// In de, this message translates to:
+  /// **'keine Angabe'**
+  String get symptomSideNone;
+
+  /// No description provided for @symptomLocationSide.
+  ///
+  /// In de, this message translates to:
+  /// **'{location} ({side})'**
+  String symptomLocationSide(String location, String side);
+
+  /// No description provided for @symptomIntensityValue.
+  ///
+  /// In de, this message translates to:
+  /// **'{value}/10 {band}'**
+  String symptomIntensityValue(String value, String band);
+
+  /// No description provided for @symptomBandNone.
+  ///
+  /// In de, this message translates to:
+  /// **'keine'**
+  String get symptomBandNone;
+
+  /// No description provided for @symptomBandMild.
+  ///
+  /// In de, this message translates to:
+  /// **'leicht'**
+  String get symptomBandMild;
+
+  /// No description provided for @symptomBandModerate.
+  ///
+  /// In de, this message translates to:
+  /// **'mittel'**
+  String get symptomBandModerate;
+
+  /// No description provided for @symptomBandSevere.
+  ///
+  /// In de, this message translates to:
+  /// **'stark'**
+  String get symptomBandSevere;
+
+  /// No description provided for @symptomBandUnbearable.
+  ///
+  /// In de, this message translates to:
+  /// **'unerträglich'**
+  String get symptomBandUnbearable;
+
+  /// No description provided for @symptomAnchor0.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht vorhanden'**
+  String get symptomAnchor0;
+
+  /// No description provided for @symptomAnchor1.
+  ///
+  /// In de, this message translates to:
+  /// **'Kaum bemerkbar'**
+  String get symptomAnchor1;
+
+  /// No description provided for @symptomAnchor2.
+  ///
+  /// In de, this message translates to:
+  /// **'Bemerkbar, stört nicht'**
+  String get symptomAnchor2;
+
+  /// No description provided for @symptomAnchor3.
+  ///
+  /// In de, this message translates to:
+  /// **'Stört gelegentlich, leicht zu ignorieren'**
+  String get symptomAnchor3;
+
+  /// No description provided for @symptomAnchor4.
+  ///
+  /// In de, this message translates to:
+  /// **'Lenkt ab, Alltag aber normal möglich'**
+  String get symptomAnchor4;
+
+  /// No description provided for @symptomAnchor5.
+  ///
+  /// In de, this message translates to:
+  /// **'Deutlich störend, schwer zu ignorieren'**
+  String get symptomAnchor5;
+
+  /// No description provided for @symptomAnchor6.
+  ///
+  /// In de, this message translates to:
+  /// **'Konzentration fällt schwer'**
+  String get symptomAnchor6;
+
+  /// No description provided for @symptomAnchor7.
+  ///
+  /// In de, this message translates to:
+  /// **'Schränkt den Alltag ein (Arbeit, Schlaf)'**
+  String get symptomAnchor7;
+
+  /// No description provided for @symptomAnchor8.
+  ///
+  /// In de, this message translates to:
+  /// **'Kaum etwas anderes möglich'**
+  String get symptomAnchor8;
+
+  /// No description provided for @symptomAnchor9.
+  ///
+  /// In de, this message translates to:
+  /// **'Kaum auszuhalten'**
+  String get symptomAnchor9;
+
+  /// No description provided for @symptomAnchor10.
+  ///
+  /// In de, this message translates to:
+  /// **'Schlimmste vorstellbare Stärke'**
+  String get symptomAnchor10;
+
+  /// No description provided for @symptomPickerSearchHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Suchen oder eigenen Begriff eingeben'**
+  String get symptomPickerSearchHint;
+
+  /// No description provided for @symptomPickerUseCustom.
+  ///
+  /// In de, this message translates to:
+  /// **'„{value}“ übernehmen'**
+  String symptomPickerUseCustom(String value);
+
+  /// No description provided for @symptomPickerReflect.
+  ///
+  /// In de, this message translates to:
+  /// **'Zum Reflektieren: Was trifft es am besten?'**
+  String get symptomPickerReflect;
+
+  /// No description provided for @symptomPickerMultiHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Mehrere möglich'**
+  String get symptomPickerMultiHint;
+
+  /// No description provided for @symptomPickerApply.
+  ///
+  /// In de, this message translates to:
+  /// **'Übernehmen'**
+  String get symptomPickerApply;
+
+  /// No description provided for @symptomPickerClear.
+  ///
+  /// In de, this message translates to:
+  /// **'Entfernen'**
+  String get symptomPickerClear;
+
+  /// No description provided for @symptomDefaultsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Typische Beschreibung'**
+  String get symptomDefaultsTitle;
+
+  /// No description provided for @symptomDefaultsHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Wird bei jedem Check-in vorbelegt und kann dort angepasst werden.'**
+  String get symptomDefaultsHint;
+
+  /// No description provided for @symptomLatestDescription.
+  ///
+  /// In de, this message translates to:
+  /// **'Zuletzt beschrieben'**
+  String get symptomLatestDescription;
+
+  /// No description provided for @symptomHeatmapTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Kalender'**
+  String get symptomHeatmapTitle;
+
+  /// No description provided for @symptomHeatmapHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe = höchste Stärke des Tages. Tippe auf einen Tag für Details.'**
+  String get symptomHeatmapHint;
+
+  /// No description provided for @symptomHeatmapCell.
+  ///
+  /// In de, this message translates to:
+  /// **'{date}: {value}/10'**
+  String symptomHeatmapCell(String date, String value);
+
+  /// No description provided for @symptomHeatmapCellEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'{date}: kein Check-in'**
+  String symptomHeatmapCellEmpty(String date);
+
+  /// No description provided for @symptomHeatmapLegendEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'kein Eintrag'**
+  String get symptomHeatmapLegendEmpty;
+
+  /// No description provided for @symptomHeatmapNoDay.
+  ///
+  /// In de, this message translates to:
+  /// **'Kein Check-in an diesem Tag.'**
+  String get symptomHeatmapNoDay;
+
+  /// No description provided for @symptomHeatmapDayPattern.
+  ///
+  /// In de, this message translates to:
+  /// **'EEEE, d. MMMM y'**
+  String get symptomHeatmapDayPattern;
+
+  /// No description provided for @symptomHeatmapCellPattern.
+  ///
+  /// In de, this message translates to:
+  /// **'d. MMM y'**
+  String get symptomHeatmapCellPattern;
+
+  /// No description provided for @symptomHeatmapMonthPattern.
+  ///
+  /// In de, this message translates to:
+  /// **'MMM'**
+  String get symptomHeatmapMonthPattern;
+
+  /// No description provided for @symptomHeatmapSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'Kalender der Stärke: {days} Tage mit Check-in'**
+  String symptomHeatmapSemantics(int days);
+
+  /// No description provided for @symptomPickerRecent.
+  ///
+  /// In de, this message translates to:
+  /// **'Zuletzt verwendet'**
+  String get symptomPickerRecent;
 }
 
 class _AppLocalizationsDelegate

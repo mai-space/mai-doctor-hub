@@ -75,6 +75,21 @@ void main() {
       'last': 3.0,
     });
     expect(t['observations'], hasLength(3));
+    expect(t['default_description'], {
+      'sensation': 'Schmerz',
+      'quality': 'drückend',
+      'location': 'Stirn',
+      'side': 'both',
+    });
+    final observations = t['observations'] as List;
+    expect((observations.first as Map)['description'], isNull);
+    expect((observations.last as Map)['description'], {
+      'sensation': 'Schmerz',
+      'quality': 'pochend, stechend',
+      'location': 'Schläfe',
+      'side': 'left',
+      'pattern': 'anfallsartig',
+    });
     expect(records.symptomTimeline('Bauch'), isNull);
   });
 

@@ -2238,4 +2238,170 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get svcReminderVaccinationBody =>
       'Termin für die Auffrischung vereinbaren';
+
+  @override
+  String get symptomCheckInHint =>
+      'Beschreibe, was du spürst: Art, Charakter, Ort und Stärke (0–10). Tippe auf einen Baustein, um ihn zu ändern.';
+
+  @override
+  String get symptomSensation => 'Empfindung';
+
+  @override
+  String get symptomQuality => 'Charakter';
+
+  @override
+  String get symptomLocation => 'Ort';
+
+  @override
+  String get symptomSide => 'Seite';
+
+  @override
+  String get symptomPattern => 'Verlauf';
+
+  @override
+  String get symptomIntensity => 'Stärke';
+
+  @override
+  String get symptomSideLeft => 'links';
+
+  @override
+  String get symptomSideRight => 'rechts';
+
+  @override
+  String get symptomSideBoth => 'beidseits';
+
+  @override
+  String get symptomSideCenter => 'mittig';
+
+  @override
+  String get symptomSideNone => 'keine Angabe';
+
+  @override
+  String symptomLocationSide(String location, String side) {
+    return '$location ($side)';
+  }
+
+  @override
+  String symptomIntensityValue(String value, String band) {
+    return '$value/10 $band';
+  }
+
+  @override
+  String get symptomBandNone => 'keine';
+
+  @override
+  String get symptomBandMild => 'leicht';
+
+  @override
+  String get symptomBandModerate => 'mittel';
+
+  @override
+  String get symptomBandSevere => 'stark';
+
+  @override
+  String get symptomBandUnbearable => 'unerträglich';
+
+  @override
+  String get symptomAnchor0 => 'Nicht vorhanden';
+
+  @override
+  String get symptomAnchor1 => 'Kaum bemerkbar';
+
+  @override
+  String get symptomAnchor2 => 'Bemerkbar, stört nicht';
+
+  @override
+  String get symptomAnchor3 => 'Stört gelegentlich, leicht zu ignorieren';
+
+  @override
+  String get symptomAnchor4 => 'Lenkt ab, Alltag aber normal möglich';
+
+  @override
+  String get symptomAnchor5 => 'Deutlich störend, schwer zu ignorieren';
+
+  @override
+  String get symptomAnchor6 => 'Konzentration fällt schwer';
+
+  @override
+  String get symptomAnchor7 => 'Schränkt den Alltag ein (Arbeit, Schlaf)';
+
+  @override
+  String get symptomAnchor8 => 'Kaum etwas anderes möglich';
+
+  @override
+  String get symptomAnchor9 => 'Kaum auszuhalten';
+
+  @override
+  String get symptomAnchor10 => 'Schlimmste vorstellbare Stärke';
+
+  @override
+  String get symptomPickerSearchHint => 'Suchen oder eigenen Begriff eingeben';
+
+  @override
+  String symptomPickerUseCustom(String value) {
+    return '„$value“ übernehmen';
+  }
+
+  @override
+  String get symptomPickerReflect =>
+      'Zum Reflektieren: Was trifft es am besten?';
+
+  @override
+  String get symptomPickerMultiHint => 'Mehrere möglich';
+
+  @override
+  String get symptomPickerApply => 'Übernehmen';
+
+  @override
+  String get symptomPickerClear => 'Entfernen';
+
+  @override
+  String get symptomDefaultsTitle => 'Typische Beschreibung';
+
+  @override
+  String get symptomDefaultsHint =>
+      'Wird bei jedem Check-in vorbelegt und kann dort angepasst werden.';
+
+  @override
+  String get symptomLatestDescription => 'Zuletzt beschrieben';
+
+  @override
+  String get symptomHeatmapTitle => 'Kalender';
+
+  @override
+  String get symptomHeatmapHint =>
+      'Farbe = höchste Stärke des Tages. Tippe auf einen Tag für Details.';
+
+  @override
+  String symptomHeatmapCell(String date, String value) {
+    return '$date: $value/10';
+  }
+
+  @override
+  String symptomHeatmapCellEmpty(String date) {
+    return '$date: kein Check-in';
+  }
+
+  @override
+  String get symptomHeatmapLegendEmpty => 'kein Eintrag';
+
+  @override
+  String get symptomHeatmapNoDay => 'Kein Check-in an diesem Tag.';
+
+  @override
+  String get symptomHeatmapDayPattern => 'EEEE, d. MMMM y';
+
+  @override
+  String get symptomHeatmapCellPattern => 'd. MMM y';
+
+  @override
+  String get symptomHeatmapMonthPattern => 'MMM';
+
+  @override
+  String symptomHeatmapSemantics(int days) {
+    return 'Kalender der Stärke: $days Tage mit Check-in';
+  }
+
+  @override
+  String get symptomPickerRecent => 'Zuletzt verwendet';
 }

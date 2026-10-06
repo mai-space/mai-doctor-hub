@@ -257,9 +257,12 @@ class MaiRecords {
     DateTime? from,
     DateTime? to,
   }) {
+    // App-Schema ≥ 12: strukturierte Beschreibung (ältere Snapshots ohne).
+    final described = _hasColumn('symptom_observations', 'sensation');
+    final defaults = described ? ', sensation, quality, side' : '';
     final matches = _db.select(
       '''
-      SELECT id, label, body_region, healed_at FROM symptoms
+      SELECT id, label, body_region, healed_at$defaults FROM symptoms
       WHERE id = ? OR label LIKE ? ORDER BY (id = ?) DESC, updated_at DESC
       LIMIT 1
       ''',
@@ -277,9 +280,12 @@ class MaiRecords {
       range += ' AND recorded_at < ?';
       args.add(_seconds(to));
     }
+    final details = described
+        ? ', sensation, quality, location, side, pattern'
+        : '';
     final observations = _db.select('''
       SELECT recorded_at, kind, value_number, value_text, value_color, unit,
-             note
+             note$details
       FROM symptom_observations WHERE symptom_id = ?$range
       ORDER BY recorded_at
       ''', args);
@@ -293,6 +299,8 @@ class MaiRecords {
       'label': s['label'],
       'body_region': s['body_region'],
       'healed_at': _iso(s['healed_at']),
+      if (described)
+        'default_description': _description(s, location: s['body_region']),
       'stats': scale.isEmpty
           ? null
           : {
@@ -314,9 +322,28 @@ class MaiRecords {
             'value': o['value_number'] ?? o['value_text'] ?? o['value_color'],
             'unit': o['unit'],
             'note': o['note'],
+            if (described) 'description': _description(o),
           },
       ],
     };
+  }
+
+  bool _hasColumn(String table, String column) => _db
+      .select('SELECT name FROM pragma_table_info(?)', [table])
+      .any((r) => r['name'] == column);
+
+  /// Strukturierte Beschreibung (Empfindung, Qualität, Ort, Seite, Verlauf);
+  /// `null`, wenn nichts angegeben ist. Seite als Code: left/right/both/center.
+  static Map<String, Object?>? _description(Row r, {Object? location}) {
+    final values = {
+      'sensation': r['sensation'],
+      'quality': r['quality'],
+      'location':
+          location ?? (r.containsKey('location') ? r['location'] : null),
+      'side': r['side'],
+      if (r.containsKey('pattern')) 'pattern': r['pattern'],
+    }..removeWhere((_, v) => v == null || (v is String && v.trim().isEmpty));
+    return values.isEmpty ? null : values;
   }
 
   static const _forms = [

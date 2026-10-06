@@ -2,8 +2,12 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import '../app_database.dart';
+import 'suggestion_repository.dart';
 
 const _uuid = Uuid();
+
+/// v12: Felder der strukturierten Symptom-Beschreibung (für Vorschläge).
+enum DescriptorField { sensation, quality, location, pattern }
 
 class SymptomRepository {
   SymptomRepository(this._db);
@@ -28,6 +32,9 @@ class SymptomRepository {
     String? diagnosisId,
     String? bodyRegion,
     CheckInCadence cadence = CheckInCadence.daily,
+    String? sensation,
+    String? quality,
+    BodySide? side,
   }) async {
     final id = _uuid.v4();
     final now = DateTime.now();
@@ -42,16 +49,26 @@ class SymptomRepository {
             checkInCadence: cadence,
             createdAt: now,
             updatedAt: now,
+            sensation: Value(sensation),
+            quality: Value(quality),
+            side: Value(side?.name),
           ),
         );
     await _db.upsertFts(
       entityType: 'symptom',
       entityId: id,
       title: label,
-      body: bodyRegion ?? '',
+      body: _ftsBody(bodyRegion, sensation, quality),
     );
     return id;
   }
+
+  /// Suchtext: Ort plus Standard-Beschreibung (Empfindung, Qualität).
+  static String _ftsBody(
+    String? bodyRegion,
+    String? sensation,
+    String? quality,
+  ) => [?bodyRegion, ?sensation, ?quality].join(' ');
 
   Future<void> markHealed(String id) async {
     final now = DateTime.now();
@@ -79,6 +96,9 @@ class SymptomRepository {
     String? bodyRegion,
     String? diagnosisId,
     CheckInCadence? cadence,
+    String? sensation,
+    String? quality,
+    BodySide? side,
   }) async {
     await (_db.update(_db.symptoms)..where((t) => t.id.equals(id))).write(
       SymptomsCompanion(
@@ -89,13 +109,16 @@ class SymptomRepository {
             ? const Value.absent()
             : Value(cadence),
         updatedAt: Value(DateTime.now()),
+        sensation: Value(sensation),
+        quality: Value(quality),
+        side: Value(side?.name),
       ),
     );
     await _db.upsertFts(
       entityType: 'symptom',
       entityId: id,
       title: label,
-      body: bodyRegion ?? '',
+      body: _ftsBody(bodyRegion, sensation, quality),
     );
   }
 
@@ -127,6 +150,54 @@ class SymptomRepository {
         .watch();
   }
 
+  /// Früher verwendete Werte eines Beschreibungs-Felds (Check-ins und
+  /// Symptom-Vorgaben), neueste zuerst; Mehrfachwerte einzeln, ohne Doppelte.
+  Future<List<String>> usedDescriptors(
+    DescriptorField field, {
+    int limit = 12,
+  }) async {
+    final (observationColumn, symptomColumn) = switch (field) {
+      DescriptorField.sensation => ('sensation', 'sensation'),
+      DescriptorField.quality => ('quality', 'quality'),
+      DescriptorField.location => ('location', 'body_region'),
+      DescriptorField.pattern => ('pattern', null),
+    };
+    final symptomPart = symptomColumn == null
+        ? ''
+        : 'UNION ALL SELECT $symptomColumn, updated_at FROM symptoms '
+              'WHERE archived_at IS NULL';
+    final rows = await _db.customSelect('''
+      SELECT v FROM (
+        SELECT $observationColumn AS v, recorded_at AS t
+        FROM symptom_observations
+        $symptomPart
+      )
+      WHERE v IS NOT NULL AND TRIM(v) <> ''
+      ORDER BY t DESC
+      LIMIT 300
+      ''', readsFrom: {}).get();
+    final seen = <String>{};
+    final result = <String>[];
+    for (final row in rows) {
+      for (final part in row.read<String>('v').split(',')) {
+        final value = part.trim();
+        if (value.isEmpty) continue;
+        if (!seen.add(SuggestionRepository.normalize(value))) continue;
+        result.add(value);
+        if (result.length >= limit) return result;
+      }
+    }
+    return result;
+  }
+
+  /// Letzter Check-in eines Symptoms (Vorbelegung des nächsten).
+  Future<SymptomObservation?> latestObservation(String symptomId) =>
+      (_db.select(_db.symptomObservations)
+            ..where((t) => t.symptomId.equals(symptomId))
+            ..orderBy([(t) => OrderingTerm.desc(t.recordedAt)])
+            ..limit(1))
+          .getSingleOrNull();
+
   Future<void> deleteObservation(String id) async {
     await (_db.delete(
       _db.symptomObservations,
@@ -142,6 +213,11 @@ class SymptomRepository {
     String? unit,
     String? note,
     DateTime? recordedAt,
+    String? sensation,
+    String? quality,
+    String? location,
+    BodySide? side,
+    String? pattern,
   }) async {
     final id = _uuid.v4();
     await _db
@@ -157,6 +233,11 @@ class SymptomRepository {
             valueColor: Value(valueColor),
             unit: Value(unit),
             note: Value(note),
+            sensation: Value(sensation),
+            quality: Value(quality),
+            location: Value(location),
+            side: Value(side?.name),
+            pattern: Value(pattern),
           ),
         );
     return id;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../data/app_database.dart';
+import '../data/symptom_description.dart';
 import '../l10n/l10n.dart';
 import 'observation_chart.dart';
 
@@ -100,8 +101,18 @@ class SymptomReportCard extends StatelessWidget {
           .toStringAsFixed(1);
 }
 
-/// Lesbarer Wert eines Check-ins (auch außerhalb von Widgets genutzt).
-String observationLabel(SymptomObservation o) => switch (o.kind) {
+/// Lesbarer Wert eines Check-ins (auch außerhalb von Widgets genutzt),
+/// mit strukturierter Beschreibung davor, falls vorhanden:
+/// „Schmerz (brennend) · Hinterkopf (links) · Stärke 7/10“.
+String observationLabel(SymptomObservation o) {
+  final description = SymptomDescription.fromObservation(o);
+  final value = _observationValue(o);
+  if (description.isEmpty) return value;
+  return '${description.describe(AppLocale.strings, withIntensity: false)}'
+      ' · $value';
+}
+
+String _observationValue(SymptomObservation o) => switch (o.kind) {
   ObservationKind.scale_1_10 => AppLocale.strings.settingsObservationScale(
     o.valueNumber?.toStringAsFixed(0) ?? '–',
   ),

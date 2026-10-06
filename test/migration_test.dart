@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:drift/drift.dart' show OrderingTerm;
+import 'package:drift/drift.dart' show OrderingTerm, Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mai_doctor_hub/data/app_database.dart';
@@ -65,6 +65,53 @@ void main() {
       (7, 0, true),
       (20, 0, true),
     ]);
+    await db.close();
+  });
+
+  test('migrates v11 → v12: symptom descriptions start empty', () async {
+    // Echtes v11-Schema (Stand des MCP-Fixtures vor v12).
+    final raw = sqlite3.openInMemory();
+    final sql = File('test/migrations/v11.sql').readAsStringSync();
+    for (final statement in sql.split('---')) {
+      final body = statement
+          .split('\n')
+          .where((l) => !l.startsWith('--'))
+          .join('\n')
+          .trim();
+      if (body.isNotEmpty) raw.execute(body);
+    }
+    raw
+      ..execute('INSERT INTO app_settings (id) VALUES (1)')
+      ..execute(
+        "INSERT INTO symptoms (id, label, body_region, check_in_cadence, "
+        "created_at, updated_at) VALUES ('s1', 'Kopfschmerz', 'Stirn', 0, 0, 0)",
+      )
+      ..execute(
+        'INSERT INTO symptom_observations (id, symptom_id, recorded_at, kind, '
+        "value_number) VALUES ('o1', 's1', 1700000000, 0, 6)",
+      )
+      ..execute('PRAGMA user_version = 11');
+    final db = AppDatabase(NativeDatabase.opened(raw));
+
+    final symptom = await db.select(db.symptoms).getSingle();
+    expect(symptom.bodyRegion, 'Stirn');
+    expect(symptom.sensation, isNull);
+    expect(symptom.quality, isNull);
+    expect(symptom.side, isNull);
+    final observation = await db.select(db.symptomObservations).getSingle();
+    expect(observation.valueNumber, 6);
+    expect(observation.sensation, isNull);
+    expect(observation.pattern, isNull);
+
+    // Neue Spalten sind beschreibbar.
+    await (db.update(db.symptomObservations)..where((t) => t.id.equals('o1')))
+        .write(const SymptomObservationsCompanion(quality: Value('brennend')));
+    expect(
+      (await db.select(db.symptomObservations).getSingle()).quality,
+      'brennend',
+    );
+    final version = await db.customSelect('PRAGMA user_version').getSingle();
+    expect(version.read<int>('user_version'), 12);
     await db.close();
   });
 

@@ -5,6 +5,7 @@ import '../../data/app_database.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/medication_repository.dart';
 import '../../data/repositories/records_repository.dart';
+import '../../data/symptom_description.dart';
 import '../../l10n/l10n.dart';
 import '../../widgets/symptom_report_card.dart' show observationLabel;
 import '../visit_summary.dart';
@@ -372,6 +373,7 @@ class AssistantContextBuilder {
 
   static String _symptom(SymptomTrend t) {
     final s = t.symptom;
+    final description = SymptomDescription.fromSymptom(s);
     final latest = t.observations.isEmpty
         ? null
         : t.observations.reduce(
@@ -379,7 +381,7 @@ class AssistantContextBuilder {
           );
     return [
       s.label,
-      if (s.bodyRegion?.isNotEmpty == true) s.bodyRegion!,
+      if (!description.isEmpty) description.describe(_l10n),
       _l10n.svcCheckInCount(t.observations.length),
       if (t.average != null) 'Ø ${t.average!.toStringAsFixed(1)}/10',
       if (latest != null)

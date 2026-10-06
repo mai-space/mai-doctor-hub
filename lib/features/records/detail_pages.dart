@@ -13,9 +13,11 @@ import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/reminder_repository.dart' show Weekdays;
 import '../../data/repositories/symptom_repository.dart';
 import '../../data/repositories/vaccination_repository.dart';
+import '../../data/symptom_description.dart';
 import '../../l10n/l10n.dart';
 import '../../theme/icon_mappings.dart';
 import '../../widgets/observation_chart.dart';
+import '../../widgets/symptom_heatmap.dart';
 import '../../widgets/symptom_report_card.dart';
 import '../archive/archive_page.dart';
 import '../home/appointment_detail_page.dart';
@@ -645,6 +647,13 @@ class SymptomDetailPage extends StatelessWidget {
         final s = data.symptom;
         final repo = SymptomRepository(DatabaseScope.of(context));
         final l10n = context.l10n;
+        // Ort steht schon im Untertitel; hier Empfindung, Charakter, Seite.
+        final defaults = SymptomDescription.fromSymptom(
+          s,
+        ).copyWith(location: () => null);
+        final latest = data.observations
+            .where((o) => !SymptomDescription.fromObservation(o).isEmpty)
+            .firstOrNull;
         return [
           DetailHeader(
             title: s.label,
@@ -672,6 +681,19 @@ class SymptomDetailPage extends StatelessWidget {
                     label: Text(l10n.recordsReopen),
                   ),
           ),
+          if (!defaults.isEmpty)
+            _infoTile(
+              Icons.tune,
+              l10n.symptomDefaultsTitle,
+              defaults.describe(l10n),
+            ),
+          if (latest != null)
+            _infoTile(
+              Icons.short_text,
+              '${l10n.symptomLatestDescription} · '
+                  '${_dateTime(context).format(latest.recordedAt)}',
+              SymptomDescription.fromObservation(latest).describe(l10n),
+            ),
           if (data.diagnosis != null)
             _linkTile(
               context,
@@ -711,6 +733,11 @@ class SymptomDetailPage extends StatelessWidget {
               ObservationChart(points: scalePoints(data.observations)),
             ],
           ),
+          if (data.observations.isNotEmpty)
+            DetailSection(
+              title: l10n.symptomHeatmapTitle,
+              children: [SymptomHeatmap(observations: data.observations)],
+            ),
           DetailSection(
             title: l10n.recordsCheckIns,
             empty: l10n.recordsNoCheckIns,

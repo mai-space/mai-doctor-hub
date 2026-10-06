@@ -8,6 +8,7 @@ import '../data/repositories/appointment_repository.dart';
 import '../data/repositories/medication_repository.dart';
 import '../data/repositories/symptom_repository.dart';
 import '../data/repositories/vaccination_repository.dart';
+import '../data/symptom_description.dart';
 import '../l10n/l10n.dart';
 import '../widgets/symptom_report_card.dart' show observationLabel;
 
@@ -252,7 +253,10 @@ abstract final class VisitSummaryPdf {
                 pw.Text(
                   [
                     t.symptom.label,
-                    ?t.symptom.bodyRegion,
+                    // Standard-Beschreibung inkl. Ort, z. B. „Schmerz
+                    // (brennend) · Hinterkopf (links)“.
+                    if (!SymptomDescription.fromSymptom(t.symptom).isEmpty)
+                      SymptomDescription.fromSymptom(t.symptom).describe(l10n),
                     t.symptom.healedAt == null
                         ? l10n.svcSummaryPdfActive
                         : l10n.svcSummaryPdfResolved,

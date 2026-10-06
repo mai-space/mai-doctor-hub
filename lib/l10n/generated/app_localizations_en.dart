@@ -2315,4 +2315,169 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get svcReminderVaccinationBody =>
       'Book an appointment for the booster';
+
+  @override
+  String get symptomCheckInHint =>
+      'Describe what you feel: type, character, location and intensity (0–10). Tap a part to change it.';
+
+  @override
+  String get symptomSensation => 'Sensation';
+
+  @override
+  String get symptomQuality => 'Character';
+
+  @override
+  String get symptomLocation => 'Location';
+
+  @override
+  String get symptomSide => 'Side';
+
+  @override
+  String get symptomPattern => 'Pattern';
+
+  @override
+  String get symptomIntensity => 'Intensity';
+
+  @override
+  String get symptomSideLeft => 'left';
+
+  @override
+  String get symptomSideRight => 'right';
+
+  @override
+  String get symptomSideBoth => 'both sides';
+
+  @override
+  String get symptomSideCenter => 'central';
+
+  @override
+  String get symptomSideNone => 'not specified';
+
+  @override
+  String symptomLocationSide(String location, String side) {
+    return '$location ($side)';
+  }
+
+  @override
+  String symptomIntensityValue(String value, String band) {
+    return '$value/10 $band';
+  }
+
+  @override
+  String get symptomBandNone => 'none';
+
+  @override
+  String get symptomBandMild => 'mild';
+
+  @override
+  String get symptomBandModerate => 'moderate';
+
+  @override
+  String get symptomBandSevere => 'severe';
+
+  @override
+  String get symptomBandUnbearable => 'unbearable';
+
+  @override
+  String get symptomAnchor0 => 'Not present';
+
+  @override
+  String get symptomAnchor1 => 'Barely noticeable';
+
+  @override
+  String get symptomAnchor2 => 'Noticeable, not bothersome';
+
+  @override
+  String get symptomAnchor3 => 'Bothers occasionally, easy to ignore';
+
+  @override
+  String get symptomAnchor4 => 'Distracting, but daily life is normal';
+
+  @override
+  String get symptomAnchor5 => 'Clearly bothersome, hard to ignore';
+
+  @override
+  String get symptomAnchor6 => 'Hard to concentrate';
+
+  @override
+  String get symptomAnchor7 => 'Limits daily life (work, sleep)';
+
+  @override
+  String get symptomAnchor8 => 'Hardly able to do anything else';
+
+  @override
+  String get symptomAnchor9 => 'Barely bearable';
+
+  @override
+  String get symptomAnchor10 => 'Worst imaginable';
+
+  @override
+  String get symptomPickerSearchHint => 'Search or type your own';
+
+  @override
+  String symptomPickerUseCustom(String value) {
+    return 'Use “$value”';
+  }
+
+  @override
+  String get symptomPickerReflect => 'To reflect: what fits best?';
+
+  @override
+  String get symptomPickerMultiHint => 'Select several';
+
+  @override
+  String get symptomPickerApply => 'Apply';
+
+  @override
+  String get symptomPickerClear => 'Clear';
+
+  @override
+  String get symptomDefaultsTitle => 'Typical description';
+
+  @override
+  String get symptomDefaultsHint =>
+      'Prefilled at every check-in and can be adjusted there.';
+
+  @override
+  String get symptomLatestDescription => 'Latest description';
+
+  @override
+  String get symptomHeatmapTitle => 'Calendar';
+
+  @override
+  String get symptomHeatmapHint =>
+      'Color = highest intensity of the day. Tap a day for details.';
+
+  @override
+  String symptomHeatmapCell(String date, String value) {
+    return '$date: $value/10';
+  }
+
+  @override
+  String symptomHeatmapCellEmpty(String date) {
+    return '$date: no check-in';
+  }
+
+  @override
+  String get symptomHeatmapLegendEmpty => 'no entry';
+
+  @override
+  String get symptomHeatmapNoDay => 'No check-in on this day.';
+
+  @override
+  String get symptomHeatmapDayPattern => 'EEEE, MMMM d, y';
+
+  @override
+  String get symptomHeatmapCellPattern => 'MMM d, y';
+
+  @override
+  String get symptomHeatmapMonthPattern => 'MMM';
+
+  @override
+  String symptomHeatmapSemantics(int days) {
+    return 'Intensity calendar: $days days with check-ins';
+  }
+
+  @override
+  String get symptomPickerRecent => 'Recently used';
 }

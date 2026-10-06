@@ -81,6 +81,17 @@ String buildFixtureDb(Directory dir, {int userVersion = supportedSchemaVersion})
       '${s(past.add(Duration(days: i)))}, 0, $v)',
     );
   }
+  // v12: strukturierte Beschreibung am Symptom und am letzten Check-in.
+  db
+    ..execute(
+      "UPDATE symptoms SET sensation = 'Schmerz', quality = 'drückend', "
+      "side = 'both' WHERE id = 'sym1'",
+    )
+    ..execute(
+      "UPDATE symptom_observations SET sensation = 'Schmerz', "
+      "quality = 'pochend, stechend', location = 'Schläfe', side = 'left', "
+      "pattern = 'anfallsartig' WHERE id = 'obs2'",
+    );
   for (final (type, id, title, body) in [
     ('doctor', 'doc1', 'Dr. Weiß', 'HNO Praxis am See'),
     ('diagnosis', 'dia1', 'Sinusitis', 'chronisch'),

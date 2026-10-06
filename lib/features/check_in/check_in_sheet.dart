@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/symptom_repository.dart';
+import '../../data/symptom_description.dart';
 import '../../l10n/l10n.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/empty_state.dart';
+import 'symptom_description_composer.dart';
 
 /// Bottom-Sheet für schnelle Symptom-Observations (Check-in).
 ///
@@ -33,8 +35,15 @@ class CheckInSheet extends StatefulWidget {
 }
 
 class _CheckInSheetState extends State<CheckInSheet> {
-  final Map<String, double> _scales = {};
+  /// Beschreibung je Symptom, vorbelegt aus dessen Standard-Beschreibung —
+  /// ein schneller Check-in bleibt so ein Zug am Schieberegler.
+  final Map<String, SymptomDescription> _descriptions = {};
   final Set<String> _healed = {};
+
+  SymptomDescription _descriptionFor(Symptom symptom) =>
+      _descriptions[symptom.id] ??= SymptomDescription.fromSymptom(
+        symptom,
+      ).copyWith(intensity: () => 5);
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +87,7 @@ class _CheckInSheetState extends State<CheckInSheet> {
               ),
               const SizedBox(height: 4),
               Text(
-                context.l10n.homeCheckInHint,
+                context.l10n.symptomCheckInHint,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: AppColors.muted),
@@ -91,7 +100,7 @@ class _CheckInSheetState extends State<CheckInSheet> {
                   separatorBuilder: (_, _) => const Divider(height: 24),
                   itemBuilder: (context, index) {
                     final symptom = symptoms[index];
-                    final value = _scales[symptom.id] ?? 5;
+                    final description = _descriptionFor(symptom);
                     final healed = _healed.contains(symptom.id);
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,29 +110,12 @@ class _CheckInSheetState extends State<CheckInSheet> {
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
-                        if (symptom.bodyRegion != null)
-                          Text(
-                            symptom.bodyRegion!,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(color: AppColors.muted),
-                          ),
                         const SizedBox(height: 8),
                         if (!healed) ...[
-                          Row(
-                            children: [
-                              Text('${value.round()}', style: Theme.of(context).textTheme.titleMedium),
-                              Expanded(
-                                child: Slider(
-                                  value: value,
-                                  min: 1,
-                                  max: 10,
-                                  divisions: 9,
-                                  label: value.round().toString(),
-                                  onChanged: (v) =>
-                                      setState(() => _scales[symptom.id] = v),
-                                ),
-                              ),
-                            ],
+                          SymptomDescriptionComposer(
+                            value: description,
+                            onChanged: (v) =>
+                                setState(() => _descriptions[symptom.id] = v),
                           ),
                           TextButton.icon(
                             onPressed: () =>
@@ -149,11 +141,16 @@ class _CheckInSheetState extends State<CheckInSheet> {
                       await repo.markHealed(symptom.id);
                       continue;
                     }
-                    final value = _scales[symptom.id] ?? 5;
+                    final d = _descriptionFor(symptom);
                     await repo.addObservation(
                       symptomId: symptom.id,
                       kind: ObservationKind.scale_1_10,
-                      valueNumber: value,
+                      valueNumber: d.intensity,
+                      sensation: d.sensation,
+                      quality: d.qualityText,
+                      location: d.location,
+                      side: d.side,
+                      pattern: d.patternText,
                     );
                   }
                   if (!context.mounted) return;

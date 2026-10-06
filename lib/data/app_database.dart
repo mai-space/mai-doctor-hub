@@ -14,6 +14,22 @@ enum CheckInCadence { daily, hourly, weekly, custom }
 /// Art einer Symptom-Beobachtung.
 enum ObservationKind { scale_1_10, color, quantity, note }
 
+/// v12: Körperseite einer Symptom-Beschreibung (in der DB als [name]).
+enum BodySide {
+  left,
+  right,
+  both,
+  center;
+
+  /// `null` bei unbekanntem oder leerem Code.
+  static BodySide? fromCode(String? code) {
+    for (final side in values) {
+      if (side.name == code) return side;
+    }
+    return null;
+  }
+}
+
 /// Status eines Termins.
 enum AppointmentStatus { planned, done, cancelled }
 
@@ -85,6 +101,16 @@ class Symptoms extends Table with Archivable {
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 
+  // v12: Standard-Beschreibung für Check-ins (Ort = [bodyRegion]).
+  /// Empfindungsart, z. B. „Schmerz“, „Juckreiz“ (Freitext).
+  TextColumn get sensation => text().nullable()();
+
+  /// Qualität(en), kommagetrennt, z. B. „brennend, pochend“ (Freitext).
+  TextColumn get quality => text().nullable()();
+
+  /// Seite als Code: `left`, `right`, `both`, `center` (siehe [BodySide]).
+  TextColumn get side => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -99,6 +125,16 @@ class SymptomObservations extends Table {
   TextColumn get valueColor => text().nullable()();
   TextColumn get unit => text().nullable()();
   TextColumn get note => text().nullable()();
+
+  // v12: strukturierte Beschreibung zum Zeitpunkt des Check-ins
+  // (vorbelegt aus dem Symptom, im Check-in änderbar).
+  TextColumn get sensation => text().nullable()();
+  TextColumn get quality => text().nullable()();
+  TextColumn get location => text().nullable()();
+  TextColumn get side => text().nullable()();
+
+  /// Verlauf/Muster, z. B. „anfallsartig“, „nachts“ (kommagetrennt).
+  TextColumn get pattern => text().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -385,7 +421,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? openAppDatabase());
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -493,6 +529,20 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 11) {
         await migrator.addColumn(appSettings, appSettings.notificationTopics);
+      }
+      if (from < 12) {
+        await migrator.addColumn(symptoms, symptoms.sensation);
+        await migrator.addColumn(symptoms, symptoms.quality);
+        await migrator.addColumn(symptoms, symptoms.side);
+        for (final column in [
+          symptomObservations.sensation,
+          symptomObservations.quality,
+          symptomObservations.location,
+          symptomObservations.side,
+          symptomObservations.pattern,
+        ]) {
+          await migrator.addColumn(symptomObservations, column);
+        }
       }
     },
     beforeOpen: (details) async {

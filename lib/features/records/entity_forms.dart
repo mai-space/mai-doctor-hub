@@ -11,11 +11,13 @@ import '../../data/repositories/doctor_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/suggestion_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
+import '../../data/symptom_description.dart';
 import '../../l10n/l10n.dart';
 import '../../services/ocr/document_scanner.dart';
 import '../../services/report_import_service.dart';
 import '../../services/temp_files.dart';
 import '../../widgets/suggestion_text_field.dart';
+import '../check_in/symptom_description_composer.dart';
 import '../medications/medication_form_page.dart';
 
 String? _trimOrNull(TextEditingController c) {
@@ -306,6 +308,10 @@ Future<String?> showSymptomForm(
   final label = TextEditingController(text: symptom?.label);
   final region = TextEditingController(text: symptom?.bodyRegion);
   var diagnosisId = symptom?.diagnosisId;
+  // Standard-Beschreibung für Check-ins (Ort = Körperregion oben).
+  var description = symptom == null
+      ? const SymptomDescription()
+      : SymptomDescription.fromSymptom(symptom);
   final db = DatabaseScope.of(context);
   final repo = SymptomRepository(db);
   final doctors = await DoctorRepository(db).watchAll().first;
@@ -332,6 +338,21 @@ Future<String?> showSymptomForm(
         controller: region,
         field: SuggestionField.bodyRegion,
         decoration: InputDecoration(labelText: l10n.recordsFieldBodyRegion),
+      ),
+      const SizedBox(height: 12),
+      Text(l10n.symptomDefaultsTitle),
+      Text(
+        l10n.symptomDefaultsHint,
+        style: Theme.of(context).textTheme.bodySmall,
+      ),
+      const SizedBox(height: 4),
+      SymptomDescriptionComposer(
+        value: description,
+        onChanged: (v) => setState(() => description = v),
+        showLocation: false,
+        showPattern: false,
+        showIntensity: false,
+        showPreview: false,
       ),
       DiagnosisPicker(
         value: diagnosisId,
@@ -364,6 +385,9 @@ Future<String?> showSymptomForm(
       label: label.text.trim(),
       bodyRegion: _trimOrNull(region),
       diagnosisId: diagnosisId,
+      sensation: description.sensation,
+      quality: description.qualityText,
+      side: description.side,
     );
   } else {
     id = symptom.id;
@@ -372,6 +396,9 @@ Future<String?> showSymptomForm(
       label: label.text.trim(),
       bodyRegion: _trimOrNull(region),
       diagnosisId: diagnosisId,
+      sensation: description.sensation,
+      quality: description.qualityText,
+      side: description.side,
     );
   }
   await repo.setDoctors(id, doctorIds.toList());
