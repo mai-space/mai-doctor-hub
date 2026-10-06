@@ -47,6 +47,10 @@ abstract interface class AssistantEngine {
 
   Future<void> uninstall();
 
+  /// Höchstlänge des Akte-Auszugs in Zeichen, so dass Systemanweisung,
+  /// Auszug, Frage und Antwort ins Kontextfenster passen.
+  int get contextChars;
+
   /// Streamt die Antwort Token für Token.
   Stream<String> answer({required String system, required String prompt});
 }
@@ -62,11 +66,20 @@ class GemmaAssistantEngine implements AssistantEngine {
   static const _modelId = 'gemma-4-E2B-it.litertlm';
   static const _device = MethodChannel('mai/device');
 
-  /// Kontextfenster: Akte-Auszug + Frage + Antwort.
-  static const contextTokens = 4096;
+  /// Antwortlänge in Tokens.
+  static const answerTokens = 768;
 
   bool _initialized = false;
   int _totalRam = 0;
+
+  /// Kontextfenster: Systemanweisung + Akte-Auszug + Frage + Antwort. Mehr
+  /// Kontext braucht mehr Arbeitsspeicher (KV-Cache).
+  int get contextTokens => _totalRam >= 7.5 * 1024 * 1024 * 1024 ? 8192 : 4096;
+
+  // Deutsch mit Daten/Zahlen: grob 2–3 Zeichen pro Token — vorsichtig
+  // rechnen, sonst läuft das Fenster über und die Antwort bleibt leer.
+  @override
+  int get contextChars => ((contextTokens - answerTokens - 600) * 2.2).floor();
   CancelToken? _cancel;
   InferenceModel? _model;
 
@@ -181,7 +194,7 @@ class GemmaAssistantEngine implements AssistantEngine {
       systemInstruction: system,
       temperature: 0.3,
       topK: 40,
-      maxOutputTokens: 768,
+      maxOutputTokens: answerTokens,
     );
     try {
       await session.addQueryChunk(Message(text: prompt, isUser: true));

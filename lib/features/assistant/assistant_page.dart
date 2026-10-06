@@ -67,16 +67,24 @@ class _AssistantPageState extends State<AssistantPage> {
       _turns.add(turn);
       _input.clear();
     });
-    final db = DatabaseScope.of(this.context);
-    final context = await AssistantContextBuilder(
+    await _answer(turn, _model.engine.contextChars);
+  }
+
+  /// Antwortet mit einem Akte-Auszug von höchstens [maxChars] Zeichen.
+  /// Bleibt die Antwort leer (Auszug passt nicht ins Kontextfenster), wird
+  /// einmal mit halbem Auszug neu gefragt.
+  Future<void> _answer(_Turn turn, int maxChars, {bool retried = false}) async {
+    final db = DatabaseScope.of(context);
+    final extract = await AssistantContextBuilder(
       db,
+      maxChars: maxChars,
       semantic: await _model.ensureIndexed(db),
     ).build(turn.question);
     if (!mounted) return;
     _answering = _model.engine
         .answer(
           system: assistantSystemPrompt,
-          prompt: assistantPrompt(context, turn.question),
+          prompt: assistantPrompt(extract, turn.question),
         )
         .listen(
           (token) {
@@ -86,14 +94,24 @@ class _AssistantPageState extends State<AssistantPage> {
           },
           onError: (Object e) {
             if (!mounted) return;
+            if (!retried && turn.answer.isEmpty) {
+              _answer(turn, maxChars ~/ 2, retried: true);
+              return;
+            }
             setState(() {
               turn.error = '$e';
               turn.done = true;
             });
           },
           onDone: () {
-            if (mounted) setState(() => turn.done = true);
+            if (!mounted) return;
+            if (!retried && turn.answer.toString().trim().isEmpty) {
+              _answer(turn, maxChars ~/ 2, retried: true);
+              return;
+            }
+            setState(() => turn.done = true);
           },
+          cancelOnError: true,
         );
   }
 
@@ -303,6 +321,11 @@ class _TurnView extends StatelessWidget {
                       const SizedBox(width: 12),
                       Text(context.l10n.svcAssistantReading),
                     ],
+                  )
+                : answer.isEmpty
+                ? Text(
+                    context.l10n.svcAssistantEmptyAnswer,
+                    style: TextStyle(color: theme.colorScheme.error),
                   )
                 : SelectableText(answer),
           ),

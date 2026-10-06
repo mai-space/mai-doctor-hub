@@ -604,5 +604,6 @@
   "svcExportOverviewFile": "Overview.csv",
   "svcExportCsvHeader": "Date;Title;Doctor;Appointment;Source;Pages;File",
   "svcExportSourceImage": "Image",
-  "svcBackupTooNew": "This backup is from a newer app version — please update the app."
+  "svcBackupTooNew": "This backup is from a newer app version — please update the app.",
+  "svcAssistantEmptyAnswer": "No answer received. Please ask a shorter or more specific question."
 }

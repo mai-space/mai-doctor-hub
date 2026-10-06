@@ -35,12 +35,19 @@ class FakeEngine implements AssistantEngine {
   StreamController<int>? downloadController;
   String? lastPrompt;
   String? lastSystem;
+  final prompts = <String>[];
+
+  /// Antworten der Reihe nach; leer = Standardantwort.
+  final replies = <List<String>>[];
 
   @override
   String get modelName => 'Testmodell';
 
   @override
   String get downloadSize => '1 GB';
+
+  @override
+  int get contextChars => 6000;
 
   @override
   Future<AssistantSupport> support() async => supportResult;
@@ -67,6 +74,8 @@ class FakeEngine implements AssistantEngine {
   Stream<String> answer({required String system, required String prompt}) {
     lastSystem = system;
     lastPrompt = prompt;
+    prompts.add(prompt);
+    if (replies.isNotEmpty) return Stream.fromIterable(replies.removeAt(0));
     return Stream.fromIterable(['Dein nächster ', 'Termin ist am 20.10.']);
   }
 }
@@ -191,5 +200,39 @@ void main() {
     await settle(tester);
     // Nur per Bedeutung auffindbar: „Schilddrüse“ steht nicht im Bericht.
     expect(engine.lastPrompt, contains('TSH 3,1'));
+  });
+
+  testWidgets('empty answer is retried once with a shorter extract', (
+    tester,
+  ) async {
+    engine.installed = true;
+    await tester.runAsync(() async {
+      for (var i = 0; i < 40; i++) {
+        await RecordsRepository(
+          db,
+        ).createNote(body: 'Termin Notiz $i ${'x' * 300}');
+      }
+    });
+    engine.replies
+      ..add(const [])
+      ..add(const ['Am 20.10.']);
+    await pump(tester);
+    await tester.tap(find.text('Wann ist mein nächster Termin?'));
+    await settle(tester);
+    expect(find.text('Am 20.10.'), findsOneWidget);
+    expect(engine.prompts, hasLength(2));
+    expect(engine.prompts[1].length, lessThan(engine.prompts[0].length));
+    expect(engine.prompts[0].length, lessThanOrEqualTo(6000 + 200));
+  });
+
+  testWidgets('still empty after retry: user sees a hint', (tester) async {
+    engine.installed = true;
+    engine.replies
+      ..add(const [])
+      ..add(const []);
+    await pump(tester);
+    await tester.tap(find.text('Wann ist mein nächster Termin?'));
+    await settle(tester);
+    expect(find.textContaining('Keine Antwort erhalten'), findsOneWidget);
   });
 }

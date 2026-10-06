@@ -2157,4 +2157,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get svcBackupTooNew =>
       'This backup is from a newer app version — please update the app.';
+
+  @override
+  String get svcAssistantEmptyAnswer =>
+      'No answer received. Please ask a shorter or more specific question.';
 }

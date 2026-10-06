@@ -3732,6 +3732,12 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Sicherung stammt aus einer neueren App-Version — bitte App aktualisieren.'**
   String get svcBackupTooNew;
+
+  /// No description provided for @svcAssistantEmptyAnswer.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Antwort erhalten. Bitte die Frage kürzer oder genauer stellen.'**
+  String get svcAssistantEmptyAnswer;
 }
 
 class _AppLocalizationsDelegate

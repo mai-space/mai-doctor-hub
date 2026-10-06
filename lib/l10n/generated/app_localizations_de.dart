@@ -2080,4 +2080,8 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get svcBackupTooNew =>
       'Sicherung stammt aus einer neueren App-Version — bitte App aktualisieren.';
+
+  @override
+  String get svcAssistantEmptyAnswer =>
+      'Keine Antwort erhalten. Bitte die Frage kürzer oder genauer stellen.';
 }

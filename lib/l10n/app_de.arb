@@ -1279,5 +1279,6 @@
   "svcExportOverviewFile": "Übersicht.csv",
   "svcExportCsvHeader": "Datum;Titel;Arzt;Termin;Quelle;Seiten;Datei",
   "svcExportSourceImage": "Bild",
-  "svcBackupTooNew": "Sicherung stammt aus einer neueren App-Version — bitte App aktualisieren."
+  "svcBackupTooNew": "Sicherung stammt aus einer neueren App-Version — bitte App aktualisieren.",
+  "svcAssistantEmptyAnswer": "Keine Antwort erhalten. Bitte die Frage kürzer oder genauer stellen."
 }
