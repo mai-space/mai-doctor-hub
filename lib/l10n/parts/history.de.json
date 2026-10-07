@@ -1,0 +1,40 @@
+{
+  "measureHistoryEarlier": "Früher erfasst: {measure}",
+  "@measureHistoryEarlier": {
+    "placeholders": {
+      "measure": {
+        "type": "String"
+      }
+    }
+  },
+  "measureHistoryRange": "{from} – {to} · {count, plural, =1{1 Check-in} other{{count} Check-ins}}",
+  "@measureHistoryRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "heatmapMixedNote": "Tage mit früher erfassten Werten sind nach deren eigener Messgröße eingefärbt.",
+  "measureChangeTitle": "Messgröße ändern?",
+  "measureChangeBody": "Bisherige Check-ins ({measures}) bleiben unverändert erhalten und werden im Verlauf getrennt angezeigt. Neue Check-ins werden als „{next}“ erfasst.",
+  "@measureChangeBody": {
+    "placeholders": {
+      "measures": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
+    }
+  },
+  "measureChangeKeep": "Ändern",
+  "measureChangeConvert": "Ändern und umrechnen",
+  "searchJournalEntry": "Tagebuch-Eintrag"
+}

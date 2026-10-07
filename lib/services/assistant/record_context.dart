@@ -407,6 +407,9 @@ class AssistantContextBuilder {
       if (t.measure != SymptomMeasure.intensity && stats != null)
         '${measureLabel(t.measure, _l10n)}: '
             '${stats.describe(t.measure, _l10n)}',
+      // v16: Werte früherer Messgrößen (vor einem Wechsel).
+      for (final section in t.earlierSections)
+        t.earlierLine(section, _l10n, _day),
       if (latest != null)
         _l10n.svcContextLatest(
           _day.format(latest.recordedAt),
@@ -436,6 +439,8 @@ class AssistantContextBuilder {
     'note' => _l10n.entityNote,
     'pharmacy' => _l10n.entityPharmacy,
     'vaccination' => _l10n.entityVaccination,
+    // v16: Tagebuch-Eintrag eines Check-ins (Titel „Symptom · Datum“).
+    'journal' => _l10n.searchJournalEntry,
     _ => type,
   };
 }

@@ -41,7 +41,7 @@ DateFormat _dateTime(BuildContext context) =>
 
 /// Öffnet die passende Detailseite für einen Akten-Eintrag.
 void openRecord(BuildContext context, String entityType, String id) {
-  final Widget page = switch (entityType) {
+  final Widget? page = switch (entityType) {
     'appointment' => AppointmentDetailPage(appointmentId: id),
     'report' => ReportViewerPage(reportId: id),
     'doctor' => DoctorDetailPage(doctorId: id),
@@ -51,9 +51,38 @@ void openRecord(BuildContext context, String entityType, String id) {
     'pharmacy' => PharmacyDetailPage(pharmacyId: id),
     'vaccination' => VaccinationDetailPage(vaccinationId: id),
     'note' => NoteDetailPage(noteId: id),
+    // v16: Tagebuch-Treffer (id = Check-in) → Symptom, Eintrag obenauf.
+    'journal' => null,
     _ => throw ArgumentError('Unbekannter Typ $entityType'),
   };
+  if (page == null) {
+    _openJournalEntry(context, id);
+    return;
+  }
   Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
+}
+
+/// Öffnet das Symptom eines Tagebuch-Eintrags und zeigt den Eintrag darüber
+/// (in der Tagebuch-Liste markiert).
+Future<void> _openJournalEntry(
+  BuildContext context,
+  String observationId,
+) async {
+  final db = DatabaseScope.of(context);
+  final o = await (db.select(
+    db.symptomObservations,
+  )..where((t) => t.id.equals(observationId))).getSingleOrNull();
+  if (o == null || !context.mounted) return;
+  Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      builder: (_) => SymptomDetailPage(
+        symptomId: o.symptomId,
+        highlightObservationId: o.id,
+      ),
+    ),
+  );
+  // Gleicher Navigator → Dialog liegt über der Symptom-Seite.
+  await _showJournalEntry(context, o);
 }
 
 /// Gerüst: lädt reaktiv, zeigt Bearbeiten/Löschen in der AppBar.
@@ -599,9 +628,16 @@ class _SymptomData {
 }
 
 class SymptomDetailPage extends StatelessWidget {
-  const SymptomDetailPage({super.key, required this.symptomId});
+  const SymptomDetailPage({
+    super.key,
+    required this.symptomId,
+    this.highlightObservationId,
+  });
 
   final String symptomId;
+
+  /// v16: aus der Suche geöffneter Tagebuch-Eintrag (markiert).
+  final String? highlightObservationId;
 
   @override
   Widget build(BuildContext context) {
@@ -663,6 +699,7 @@ class SymptomDetailPage extends StatelessWidget {
         final l10n = context.l10n;
         // v15: Beschreibung steckt im Titel (Bausteine); hier die Messgröße.
         final measures = symptomMeasures(s);
+        final sections = measureSections(measures, data.observations);
         final latest = data.observations
             .where((o) => !SymptomDescription.fromObservation(o).isEmpty)
             .firstOrNull;
@@ -766,21 +803,40 @@ class SymptomDetailPage extends StatelessWidget {
           DetailSection(
             title: l10n.recordsHistory,
             children: [
-              for (final m in [measures.primary, ?measures.secondary]) ...[
-                if (measures.secondary != null)
+              // v16: ein Diagramm je Messgröße im Verlauf — aktuelle zuerst,
+              // dann früher erfasste (nach einem Wechsel der Messgröße).
+              for (final section in sections) ...[
+                if (sections.length > 1)
                   Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 4),
                     child: Text(
-                      measureLabel(m, l10n),
+                      section.current
+                          ? measureLabel(section.measure, l10n)
+                          : l10n.measureHistoryEarlier(
+                              measureLabel(section.measure, l10n),
+                            ),
                       style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ),
+                if (!section.current)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      l10n.measureHistoryRange(
+                        _date(context).format(section.from!),
+                        _date(context).format(section.to!),
+                        section.count,
+                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 // Tagebuch-Marker nur am ersten Diagramm.
                 MeasureChart(
+                  key: ValueKey('measure-chart-${section.measure.code}'),
                   data: MeasureChartData.from(
                     data.observations,
-                    m,
-                  ).withoutMarkers(m != measures.primary),
+                    section.measure,
+                  ).withoutMarkers(section != sections.first),
                   onMarkerTap: (o) => _showJournalEntry(context, o),
                 ),
               ],
@@ -815,7 +871,9 @@ class SymptomDetailPage extends StatelessWidget {
               children: [
                 for (final o in journal.take(30))
                   ListTile(
+                    key: ValueKey('journal-entry-${o.id}'),
                     contentPadding: EdgeInsets.zero,
+                    selected: o.id == highlightObservationId,
                     leading: const Icon(Icons.edit_note),
                     title: Text(
                       o.journal!.trim(),

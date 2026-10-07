@@ -1042,6 +1042,43 @@ class AppLocalizationsEn extends AppLocalizations {
       'Self-recorded in Mai Doctor Hub. Estimates and pointers are not a diagnosis.';
 
   @override
+  String measureHistoryEarlier(String measure) {
+    return 'Previously recorded: $measure';
+  }
+
+  @override
+  String measureHistoryRange(String from, String to, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count check-ins',
+      one: '1 check-in',
+    );
+    return '$from – $to · $_temp0';
+  }
+
+  @override
+  String get heatmapMixedNote =>
+      'Days with values recorded under an earlier measure are colored by that measure.';
+
+  @override
+  String get measureChangeTitle => 'Change measure?';
+
+  @override
+  String measureChangeBody(String measures, String next) {
+    return 'Existing check-ins ($measures) stay unchanged and are shown separately in the history. New check-ins will be recorded as “$next”.';
+  }
+
+  @override
+  String get measureChangeKeep => 'Change';
+
+  @override
+  String get measureChangeConvert => 'Change and convert';
+
+  @override
+  String get searchJournalEntry => 'Journal entry';
+
+  @override
   String get homeAppointmentSaved => 'Appointment saved';
 
   @override

@@ -115,6 +115,18 @@ class RecordsRepository {
           .get();
       archived.addAll(ids.map((r) => '$type:${r.read<String>('id')}'));
     }
+    // v16: Tagebuch-Einträge (Check-ins) gelten mit ihrem Symptom als
+    // archiviert.
+    if (types == null || types.contains('journal')) {
+      final ids = await _db
+          .customSelect(
+            'SELECT o.id FROM symptom_observations o '
+            'JOIN symptoms s ON s.id = o.symptom_id '
+            'WHERE s.archived_at IS NOT NULL',
+          )
+          .get();
+      archived.addAll(ids.map((r) => 'journal:${r.read<String>('id')}'));
+    }
     return archived;
   }
 

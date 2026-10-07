@@ -1784,6 +1784,54 @@ abstract class AppLocalizations {
   /// **'Selbst erfasst in Mai Doctor Hub. Schätzungen und Hinweise sind keine Diagnose.'**
   String get cycleReportFooter;
 
+  /// No description provided for @measureHistoryEarlier.
+  ///
+  /// In de, this message translates to:
+  /// **'Früher erfasst: {measure}'**
+  String measureHistoryEarlier(String measure);
+
+  /// No description provided for @measureHistoryRange.
+  ///
+  /// In de, this message translates to:
+  /// **'{from} – {to} · {count, plural, =1{1 Check-in} other{{count} Check-ins}}'**
+  String measureHistoryRange(String from, String to, int count);
+
+  /// No description provided for @heatmapMixedNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Tage mit früher erfassten Werten sind nach deren eigener Messgröße eingefärbt.'**
+  String get heatmapMixedNote;
+
+  /// No description provided for @measureChangeTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Messgröße ändern?'**
+  String get measureChangeTitle;
+
+  /// No description provided for @measureChangeBody.
+  ///
+  /// In de, this message translates to:
+  /// **'Bisherige Check-ins ({measures}) bleiben unverändert erhalten und werden im Verlauf getrennt angezeigt. Neue Check-ins werden als „{next}“ erfasst.'**
+  String measureChangeBody(String measures, String next);
+
+  /// No description provided for @measureChangeKeep.
+  ///
+  /// In de, this message translates to:
+  /// **'Ändern'**
+  String get measureChangeKeep;
+
+  /// No description provided for @measureChangeConvert.
+  ///
+  /// In de, this message translates to:
+  /// **'Ändern und umrechnen'**
+  String get measureChangeConvert;
+
+  /// No description provided for @searchJournalEntry.
+  ///
+  /// In de, this message translates to:
+  /// **'Tagebuch-Eintrag'**
+  String get searchJournalEntry;
+
   /// No description provided for @homeAppointmentSaved.
   ///
   /// In de, this message translates to:

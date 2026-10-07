@@ -104,6 +104,36 @@ Map<DateTime, DayMeasure> dailySeverity(
   return result;
 }
 
+/// v16: Tageswert mit der Messgröße, aus der er stammt.
+typedef MixedDayMeasure = ({SymptomMeasure measure, DayMeasure day});
+
+/// Wie [dailySeverity] für [current], aber Tage mit Check-ins einer früheren
+/// Messgröße (vor einem Wechsel) werden nach deren eigenem Schweregrad
+/// eingefärbt. Mischt ein Tag Messgrößen, zählt der höchste Schweregrad.
+Map<DateTime, MixedDayMeasure> dailySeverityMixed(
+  List<SymptomObservation> observations,
+  SymptomMeasure current,
+) {
+  final result = <DateTime, MixedDayMeasure>{
+    for (final e in dailySeverity(observations, current).entries)
+      e.key: (measure: current, day: e.value),
+  };
+  final earlier = {
+    for (final o in observations)
+      if (observationMeasure(o) case final m? when m != current) m,
+  };
+  for (final m in earlier) {
+    final own = observations.where((o) => observationMeasure(o) == m);
+    for (final e in dailySeverity(own, m).entries) {
+      final existing = result[e.key];
+      if (existing == null || e.value.severity > existing.day.severity) {
+        result[e.key] = (measure: m, day: e.value);
+      }
+    }
+  }
+  return result;
+}
+
 /// Raster des Kalenders: Spalten = Wochen, Zeilen = Wochentage.
 class HeatmapGrid {
   HeatmapGrid._(this.start, this.weeks);
@@ -189,8 +219,16 @@ class _SymptomHeatmapState extends State<SymptomHeatmap> {
     final today = localDay(widget.today ?? DateTime.now());
     final measure = widget.measure;
     final intensity = measure == SymptomMeasure.intensity;
-    final byDay = dailySeverity(widget.observations, measure);
-    final maxByDay = {for (final e in byDay.entries) e.key: e.value.severity};
+    // v16: Tage früherer Messgrößen nach deren eigenem Schweregrad.
+    final mixed = dailySeverityMixed(widget.observations, measure);
+    final byDay = {
+      for (final e in mixed.entries)
+        if (e.value.measure == measure) e.key: e.value.day,
+    };
+    final hasEarlier = mixed.values.any((d) => d.measure != measure);
+    final maxByDay = {
+      for (final e in mixed.entries) e.key: e.value.day.severity,
+    };
     final earliest = widget.observations.isEmpty
         ? null
         : widget.observations
@@ -213,10 +251,10 @@ class _SymptomHeatmapState extends State<SymptomHeatmap> {
       }
       final value = maxByDay[day];
       final selected = day == _selected;
-      final dayValue = byDay[day];
+      final dayValue = mixed[day];
       final label = value == null
           ? l10n.symptomHeatmapCellEmpty(cellFormat.format(day))
-          : intensity
+          : intensity && dayValue!.measure == measure
           ? l10n.symptomHeatmapCell(
               cellFormat.format(day),
               value.round().toString(),
@@ -224,9 +262,9 @@ class _SymptomHeatmapState extends State<SymptomHeatmap> {
           : l10n.heatmapCellMeasure(
               cellFormat.format(day),
               formatMeasureValue(
-                measure,
-                dayValue!.value,
-                value2: dayValue.value2,
+                dayValue!.measure,
+                dayValue.day.value,
+                value2: dayValue.day.value2,
                 l10n: l10n,
               ),
             );
@@ -381,6 +419,10 @@ class _SymptomHeatmapState extends State<SymptomHeatmap> {
         if (!intensity) ...[
           const SizedBox(height: 4),
           Text(heatmapMappingText(measure, byDay, l10n), style: small),
+        ],
+        if (hasEarlier) ...[
+          const SizedBox(height: 4),
+          Text(l10n.heatmapMixedNote, style: small),
         ],
         const SizedBox(height: 4),
         if (selected == null)

@@ -124,6 +124,118 @@ SymptomMeasure? observationMeasure(SymptomObservation o) => switch (o.kind) {
   _ => null,
 };
 
+// --- Verlauf über Messgrößen-Wechsel -----------------------------------------
+
+/// v16: Werte einer Messgröße im Verlauf eines Symptoms. Jeder Check-in
+/// speichert seine eigene Messgröße; wechselt das Symptom die Messgröße,
+/// bleiben die alten Werte als eigener Abschnitt sichtbar.
+class MeasureSection {
+  const MeasureSection({
+    required this.measure,
+    required this.current,
+    this.count = 0,
+    this.from,
+    this.to,
+  });
+
+  final SymptomMeasure measure;
+
+  /// Aktuelle Messgröße des Symptoms (erste oder zweite).
+  final bool current;
+
+  /// Check-ins mit einem Wert dieser Größe; [from]/[to] = erster/letzter.
+  final int count;
+  final DateTime? from;
+  final DateTime? to;
+}
+
+/// Messgrößen mit Werten in [observations] (Haupt- und Zusatzwerte), mit
+/// Anzahl und Zeitraum. Alte Check-ins ohne Messgröße zählen als Stärke.
+Map<SymptomMeasure, ({int count, DateTime from, DateTime to})> recordedMeasures(
+  Iterable<SymptomObservation> observations,
+) {
+  final result = <SymptomMeasure, ({int count, DateTime from, DateTime to})>{};
+  void add(SymptomMeasure m, DateTime at) {
+    final r = result[m];
+    result[m] = r == null
+        ? (count: 1, from: at, to: at)
+        : (
+            count: r.count + 1,
+            from: at.isBefore(r.from) ? at : r.from,
+            to: at.isAfter(r.to) ? at : r.to,
+          );
+  }
+
+  for (final o in observations) {
+    final primary = observationMeasure(o);
+    if (primary != null && o.valueNumber != null) add(primary, o.recordedAt);
+    final secondary = SymptomMeasure.fromCode(o.measure2);
+    if (secondary != null && secondary != primary && o.secondaryValue != null) {
+      add(secondary, o.recordedAt);
+    }
+  }
+  return result;
+}
+
+/// Abschnitte für Verlauf, PDF und Assistent: aktuelle Messgröße(n) zuerst
+/// (auch ohne Werte), dann früher erfasste, zuletzt benutzte zuerst.
+List<MeasureSection> measureSections(
+  MeasurePair current,
+  Iterable<SymptomObservation> observations,
+) {
+  final recorded = recordedMeasures(observations);
+  MeasureSection section(SymptomMeasure m, bool isCurrent) {
+    final r = recorded[m];
+    return MeasureSection(
+      measure: m,
+      current: isCurrent,
+      count: r?.count ?? 0,
+      from: r?.from,
+      to: r?.to,
+    );
+  }
+
+  final now = [current.primary, ?current.secondary];
+  final earlier = [
+    for (final m in recorded.keys)
+      if (!now.contains(m)) section(m, false),
+  ]..sort((a, b) => b.to!.compareTo(a.to!));
+  return [for (final m in now) section(m, true), ...earlier];
+}
+
+/// Check-ins je Messgröße, die nach einem Wechsel auf [next] nicht mehr zur
+/// Messgröße des Symptoms passen (leer = kein Hinweis nötig).
+Map<SymptomMeasure, int> measuresLeftBehind(
+  Iterable<SymptomObservation> observations,
+  MeasurePair next,
+) => {
+  for (final e in recordedMeasures(observations).entries)
+    if (e.key != next.primary && e.key != next.secondary) e.key: e.value.count,
+};
+
+/// Umrechnung eines gespeicherten (kanonischen) Werts in eine andere
+/// Messgröße.
+typedef MeasureConverter = double Function(double canonical);
+
+/// Umrechnungen zwischen Messgrößen — **nur** wo physikalisch identisch.
+/// Einheiten (°C/°F, mg/dL/mmol/L, kg/lb) sind reine Anzeige, gespeichert
+/// wird kanonisch; deshalb gibt es derzeit keine Einträge. Eine Stärke
+/// 0–10 lässt sich z. B. nicht in Anzahl oder Temperatur übersetzen.
+/// Neue Paare hier ergänzen, z. B. `(von, nach): (v) => v`.
+final Map<(SymptomMeasure, SymptomMeasure), MeasureConverter>
+measureConverters = {};
+
+/// Umrechnung [from] → [to]; gleiche Größe = unverändert, sonst nur aus
+/// [measureConverters] (Blutdruck hat zwei Werte, nie umrechenbar).
+MeasureConverter? measureConverter(SymptomMeasure from, SymptomMeasure to) {
+  if (from == to) return (v) => v;
+  if (from == SymptomMeasure.bloodPressure ||
+      to == SymptomMeasure.bloodPressure) {
+    return null;
+  }
+  return measureConverters[(from, to)];
+}
+
 // --- Vorschlag aus Titel/Bausteinen ----------------------------------------
 
 /// Wortanfänge (klein) → Messgröße(n). Reihenfolge = Vorrang. Wortanfänge

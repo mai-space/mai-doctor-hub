@@ -276,7 +276,60 @@ void main() {
     expect(await db.select(db.psychAssessments).get(), hasLength(1));
     final version = await db.customSelect('PRAGMA user_version').getSingle();
     expect(version.read<int>('user_version'), db.schemaVersion);
-    expect(db.schemaVersion, 15);
+    expect(db.schemaVersion, 16);
+    await db.close();
+  });
+
+  test('migrates v15 → v16: journal entries backfilled into search', () async {
+    // Echtes v15-Schema (Stand des MCP-Fixtures vor v16).
+    final raw = sqlite3.openInMemory();
+    final sql = File('test/migrations/v15.sql').readAsStringSync();
+    for (final statement in sql.split('---')) {
+      final body = statement
+          .split('\n')
+          .where((l) => !l.startsWith('--'))
+          .join('\n')
+          .trim();
+      if (body.isNotEmpty) raw.execute(body);
+    }
+    final at = DateTime(2026, 9, 14, 21).millisecondsSinceEpoch ~/ 1000;
+    raw
+      ..execute(
+        'INSERT INTO app_settings (id, onboarding_completed) VALUES (1, 1)',
+      )
+      ..execute(
+        'INSERT INTO symptoms (id, label, check_in_cadence, created_at, '
+        "updated_at, archived_at) VALUES ('s1', 'Stimmung', 0, 0, 0, NULL), "
+        "('s2', 'Alt', 0, 0, 0, 5)",
+      )
+      ..execute(
+        'INSERT INTO symptom_observations (id, symptom_id, recorded_at, kind, '
+        'value_number, measure, journal) VALUES '
+        "('o1', 's1', $at, 4, -2, 'mood', 'Spaziergang am Fluss'), "
+        "('o2', 's1', $at, 4, 1, 'mood', '   '), "
+        "('o3', 's1', $at, 4, 0, 'mood', NULL), "
+        "('o4', 's2', $at, 0, 5, NULL, 'Fluss archiviert')",
+      )
+      ..execute(
+        "INSERT INTO records_fts VALUES ('symptom', 's1', 'Stimmung', '')",
+      )
+      ..execute('PRAGMA user_version = 15');
+    final db = AppDatabase(NativeDatabase.opened(raw));
+
+    final rows = await db
+        .customSelect(
+          "SELECT entity_id, title, body FROM records_fts "
+          "WHERE entity_type = 'journal' ORDER BY entity_id",
+        )
+        .get();
+    expect([for (final r in rows) r.read<String>('entity_id')], ['o1', 'o4']);
+    expect(rows.first.read<String>('body'), 'Spaziergang am Fluss');
+    expect(rows.first.read<String>('title'), startsWith('Stimmung · '));
+    // Gefunden wird nur der Eintrag des nicht archivierten Symptoms.
+    final hits = await RecordsRepository(db).search('Fluss');
+    expect([for (final h in hits) h.read<String>('entity_id')], ['o1']);
+    final version = await db.customSelect('PRAGMA user_version').getSingle();
+    expect(version.read<int>('user_version'), 16);
     await db.close();
   });
 

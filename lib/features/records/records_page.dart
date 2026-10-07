@@ -80,6 +80,7 @@ class _RecordsPageState extends State<RecordsPage> {
         db.notes,
         db.pharmacies,
         db.vaccinations,
+        db.symptomObservations, // v16: Tagebuch-Einträge
       },
       () async {
         final rows = await repo.search(query, entityType: type);
@@ -386,6 +387,7 @@ IconData _iconFor(String type) => switch (type) {
   'pharmacy' => Icons.local_pharmacy_outlined,
   'vaccination' => Icons.vaccines_outlined,
   'note' => Icons.sticky_note_2_outlined,
+  'journal' => Icons.edit_note,
   _ => Icons.folder_outlined,
 };
 
@@ -401,6 +403,7 @@ String _typeLabel(BuildContext context, String type) {
     'pharmacy' => l10n.entityPharmacy,
     'vaccination' => l10n.entityVaccination,
     'note' => l10n.entityNote,
+    'journal' => l10n.searchJournalEntry,
     _ => type,
   };
 }

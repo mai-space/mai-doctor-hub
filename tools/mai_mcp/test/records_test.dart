@@ -114,6 +114,11 @@ void main() {
         "'pulse', 96, 'Sehr privat'), "
         "('f2', 'sym2', ${sec(at.add(const Duration(hours: 6)))}, 4, 37.6, "
         "'°C', 'temperature', NULL, NULL, NULL)",
+      )
+      // v16: Tagebuch steht im Suchindex der App, nicht in der MCP-Suche.
+      ..execute(
+        "INSERT INTO records_fts VALUES ('journal', 'f1', 'Fieber · x', "
+        "'Sehr privat')",
       );
     db.close();
     var opened = MaiSnapshot.openSqlite(path);
@@ -128,6 +133,11 @@ void main() {
     expect((first['secondary'] as Map)['display'], '96/min');
     expect(first.toString(), isNot(contains('Sehr privat')));
     expect(first.containsKey('journal'), isFalse);
+    expect(MaiRecords(opened.db).searchRecords('privat'), isEmpty);
+    expect(
+      MaiRecords(opened.db).searchRecords('privat', types: ['journal']),
+      isEmpty,
+    );
 
     // Einheiten der App-Einstellungen gelten auch hier.
     await opened.close();

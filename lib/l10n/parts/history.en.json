@@ -1,0 +1,40 @@
+{
+  "measureHistoryEarlier": "Previously recorded: {measure}",
+  "@measureHistoryEarlier": {
+    "placeholders": {
+      "measure": {
+        "type": "String"
+      }
+    }
+  },
+  "measureHistoryRange": "{from} – {to} · {count, plural, =1{1 check-in} other{{count} check-ins}}",
+  "@measureHistoryRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "heatmapMixedNote": "Days with values recorded under an earlier measure are colored by that measure.",
+  "measureChangeTitle": "Change measure?",
+  "measureChangeBody": "Existing check-ins ({measures}) stay unchanged and are shown separately in the history. New check-ins will be recorded as “{next}”.",
+  "@measureChangeBody": {
+    "placeholders": {
+      "measures": {
+        "type": "String"
+      },
+      "next": {
+        "type": "String"
+      }
+    }
+  },
+  "measureChangeKeep": "Change",
+  "measureChangeConvert": "Change and convert",
+  "searchJournalEntry": "Journal entry"
+}

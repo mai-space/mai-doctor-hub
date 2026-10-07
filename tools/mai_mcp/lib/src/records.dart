@@ -84,6 +84,8 @@ class MaiRecords {
              snippet(records_fts, 3, '[', ']', ' … ', 16) AS snippet
       FROM records_fts
       WHERE records_fts MATCH ? $typeFilter
+        -- Tagebuch-Einträge (App v16) bleiben privat, wie im übrigen Export.
+        AND entity_type <> 'journal'
       ORDER BY bm25(records_fts)
       LIMIT ?
       ''',

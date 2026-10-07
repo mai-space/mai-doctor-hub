@@ -96,6 +96,30 @@ class SymptomTrend {
   /// v15: Messgröße des Symptoms und Kennzahlen dazu (kanonische Einheit).
   SymptomMeasure get measure => symptomMeasures(symptom).primary;
   MeasureStats? get stats => MeasureStats.of(observations, measure);
+
+  /// v16: Werte früherer Messgrößen (vor einem Wechsel) im Zeitraum — eigene
+  /// Zeile je Größe, damit alte Check-ins nicht verschwinden.
+  List<MeasureSection> get earlierSections => [
+    for (final section in measureSections(
+      symptomMeasures(symptom),
+      observations,
+    ))
+      if (!section.current && section.count > 0) section,
+  ];
+
+  /// „Früher erfasst: Stärke 0–10 (1. Sep. – 3. Okt.): Ø 5,2/10 · …“.
+  String earlierLine(
+    MeasureSection section,
+    AppLocalizations l10n,
+    DateFormat date,
+  ) {
+    final stats = MeasureStats.of(observations, section.measure);
+    return [
+      '${l10n.measureHistoryEarlier(measureLabel(section.measure, l10n))} '
+          '(${date.format(section.from!)} – ${date.format(section.to!)})',
+      if (stats != null) stats.describe(section.measure, l10n),
+    ].join(': ');
+  }
 }
 
 class VisitSummaryData {
@@ -388,6 +412,11 @@ abstract final class VisitSummaryPdf {
                         ].join(' · '),
                   style: muted,
                 ),
+                for (final section in t.earlierSections)
+                  pw.Text(
+                    _latin(t.earlierLine(section, l10n, date)),
+                    style: muted,
+                  ),
                 if (t.photos.isNotEmpty || t.videoCount + t.audioCount > 0)
                   pw.Text(
                     l10n.svcSummaryPdfEvidence(

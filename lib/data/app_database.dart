@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 import '../l10n/l10n.dart';
 import 'connection/connection.dart';
@@ -595,7 +596,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? openAppDatabase());
 
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 16;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -759,6 +760,10 @@ class AppDatabase extends _$AppDatabase {
         }
         await migrator.createTable(psychAssessments);
       }
+      if (from < 16) {
+        // Tagebuch-Einträge in den Suchindex (bisher nicht durchsuchbar).
+        await reindexJournals();
+      }
     },
     beforeOpen: (details) async {
       // Bestandsnutzer kennen die App schon → kein Onboarding nach Update;
@@ -917,6 +922,50 @@ class AppDatabase extends _$AppDatabase {
       ],
       readsFrom: {},
     ).get();
+  }
+
+  /// v16: Suchindex-Titel eines Tagebuch-Eintrags: „Symptom · Datum“.
+  static String journalFtsTitle(String label, DateTime recordedAt) =>
+      '$label · '
+      '${DateFormat(AppLocale.strings.recordsDatePattern).format(recordedAt)}';
+
+  /// v16: Tagebuch-Einträge (`journal`, entity_id = Check-in) neu in den
+  /// Suchindex schreiben — alle, die eines Symptoms oder ein Check-in. Leere
+  /// Einträge fliegen raus. Archiviert wird über das Symptom (siehe
+  /// `RecordsRepository.archivedKeys`).
+  Future<void> reindexJournals({
+    String? symptomId,
+    String? observationId,
+  }) async {
+    final rows = await customSelect(
+      '''
+      SELECT o.id, o.journal, o.recorded_at, s.label
+      FROM symptom_observations o JOIN symptoms s ON s.id = o.symptom_id
+      WHERE (?1 IS NULL OR o.symptom_id = ?1)
+        AND (?2 IS NULL OR o.id = ?2)
+      ''',
+      variables: [Variable(symptomId), Variable(observationId)],
+      readsFrom: {},
+    ).get();
+    for (final r in rows) {
+      final id = r.read<String>('id');
+      final text = r.read<String?>('journal')?.trim() ?? '';
+      if (text.isEmpty) {
+        await deleteFts('journal', id);
+        continue;
+      }
+      await upsertFts(
+        entityType: 'journal',
+        entityId: id,
+        title: journalFtsTitle(
+          r.read<String>('label'),
+          DateTime.fromMillisecondsSinceEpoch(
+            r.read<int>('recorded_at') * 1000,
+          ),
+        ),
+        body: text,
+      );
+    }
   }
 
   Future<void> deleteFts(String entityType, String entityId) {

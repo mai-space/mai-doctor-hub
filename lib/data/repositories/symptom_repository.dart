@@ -133,6 +133,8 @@ class SymptomRepository {
       title: label,
       body: _ftsBody(bodyRegion, sensation, quality),
     );
+    // v16: Titel der Tagebuch-Treffer enthält den Symptomnamen.
+    await _db.reindexJournals(symptomId: id);
   }
 
   /// Löscht Symptom inkl. aller Check-in-Werte und Terminverknüpfungen.
@@ -149,6 +151,12 @@ class SymptomRepository {
       await (_db.delete(
         _db.reminderSymptoms,
       )..where((t) => t.symptomId.equals(id))).go();
+      // v16: Tagebuch-Einträge aus dem Suchindex.
+      await _db.customStatement(
+        "DELETE FROM records_fts WHERE entity_type = 'journal' AND entity_id "
+        'IN (SELECT id FROM symptom_observations WHERE symptom_id = ?)',
+        [id],
+      );
       await (_db.delete(
         _db.symptomObservations,
       )..where((t) => t.symptomId.equals(id))).go();
@@ -227,6 +235,7 @@ class SymptomRepository {
     await (_db.delete(
       _db.symptomObservations,
     )..where((t) => t.id.equals(id))).go();
+    await _db.deleteFts('journal', id);
   }
 
   Future<String> addObservation({
@@ -283,6 +292,10 @@ class SymptomRepository {
             ),
           ),
         );
+    // v16: Tagebuch-Eintrag durchsuchbar machen.
+    if (journal?.trim().isNotEmpty ?? false) {
+      await _db.reindexJournals(observationId: id);
+    }
     return id;
   }
 
@@ -411,6 +424,43 @@ class SymptomRepository {
     side: side,
     pattern: pattern,
   );
+
+  /// v16: Hauptwerte früherer Messgrößen nach [to] umrechnen — nur, wo
+  /// [measureConverter] eine physikalisch identische Umrechnung kennt; alle
+  /// anderen Check-ins bleiben unverändert. Gibt die Zahl umgerechneter
+  /// Check-ins zurück.
+  Future<int> convertObservations(String symptomId, SymptomMeasure to) async {
+    final rows = await (_db.select(
+      _db.symptomObservations,
+    )..where((t) => t.symptomId.equals(symptomId))).get();
+    var converted = 0;
+    await _db.transaction(() async {
+      for (final o in rows) {
+        final from = observationMeasure(o);
+        final value = o.valueNumber;
+        if (from == null || from == to || value == null) continue;
+        final convert = measureConverter(from, to);
+        if (convert == null) continue;
+        await (_db.update(
+          _db.symptomObservations,
+        )..where((t) => t.id.equals(o.id))).write(
+          SymptomObservationsCompanion(
+            kind: Value(
+              to.isScale
+                  ? ObservationKind.scale_1_10
+                  : ObservationKind.measurement,
+            ),
+            valueNumber: Value(convert(value)),
+            valueNumber2: const Value(null),
+            unit: Value(to.isScale ? null : to.canonicalUnit),
+            measure: Value(to.code),
+          ),
+        );
+        converted++;
+      }
+    });
+    return converted;
+  }
 
   /// Letzter Wert einer Messgröße (Haupt- oder Zusatzwert) — Startwert des
   /// nächsten Check-ins, z. B. das Gewicht.

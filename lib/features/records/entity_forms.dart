@@ -21,6 +21,7 @@ import '../../services/temp_files.dart';
 import '../../widgets/suggestion_text_field.dart';
 import '../check_in/symptom_description_composer.dart';
 import '../medications/medication_form_page.dart';
+import 'measure_change_dialog.dart';
 
 String? _trimOrNull(TextEditingController c) {
   final value = c.text.trim();
@@ -323,6 +324,12 @@ Future<String?> showSymptomForm(
   var measureChosen = symptom != null;
   final db = DatabaseScope.of(context);
   final repo = SymptomRepository(db);
+  // v16: bisherige Check-ins — Hinweis, wenn ein Wechsel der Messgröße
+  // Werte zurücklässt; ggf. umrechnen beim Speichern.
+  final history = symptom == null
+      ? const <SymptomObservation>[]
+      : await repo.watchObservations(symptom.id).first;
+  var convertOld = false;
   final doctors = await DoctorRepository(db).watchAll().first;
   final doctorIds = {
     if (symptom != null)
@@ -426,10 +433,22 @@ Future<String?> showSymptomForm(
           trailing: const Icon(Icons.chevron_right),
           onTap: () async {
             final picked = await showMeasurePicker(context, measures);
-            if (picked == null) return;
+            if (picked == null || !context.mounted) return;
+            // Nur Werte, die durch diesen Wechsel neu „zurückbleiben“.
+            final before = measuresLeftBehind(history, measures);
+            final choice = await confirmMeasureChange(
+              context,
+              leftBehind: {
+                for (final e in measuresLeftBehind(history, picked).entries)
+                  if (!before.containsKey(e.key)) e.key: e.value,
+              },
+              next: picked,
+            );
+            if (choice == null) return;
             setState(() {
               measures = picked;
               measureChosen = true;
+              convertOld = choice == MeasureChange.convert;
             });
           },
         ),
@@ -484,6 +503,7 @@ Future<String?> showSymptomForm(
       side: description.side,
       measures: measures,
     );
+    if (convertOld) await repo.convertObservations(id, measures.primary);
   }
   await repo.setDoctors(id, doctorIds.toList());
   return id;

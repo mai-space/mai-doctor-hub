@@ -1056,6 +1056,43 @@ class AppLocalizationsDe extends AppLocalizations {
       'Selbst erfasst in Mai Doctor Hub. Schätzungen und Hinweise sind keine Diagnose.';
 
   @override
+  String measureHistoryEarlier(String measure) {
+    return 'Früher erfasst: $measure';
+  }
+
+  @override
+  String measureHistoryRange(String from, String to, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Check-ins',
+      one: '1 Check-in',
+    );
+    return '$from – $to · $_temp0';
+  }
+
+  @override
+  String get heatmapMixedNote =>
+      'Tage mit früher erfassten Werten sind nach deren eigener Messgröße eingefärbt.';
+
+  @override
+  String get measureChangeTitle => 'Messgröße ändern?';
+
+  @override
+  String measureChangeBody(String measures, String next) {
+    return 'Bisherige Check-ins ($measures) bleiben unverändert erhalten und werden im Verlauf getrennt angezeigt. Neue Check-ins werden als „$next“ erfasst.';
+  }
+
+  @override
+  String get measureChangeKeep => 'Ändern';
+
+  @override
+  String get measureChangeConvert => 'Ändern und umrechnen';
+
+  @override
+  String get searchJournalEntry => 'Tagebuch-Eintrag';
+
+  @override
   String get homeAppointmentSaved => 'Termin gespeichert';
 
   @override
