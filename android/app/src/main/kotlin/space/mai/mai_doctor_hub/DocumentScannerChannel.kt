@@ -59,7 +59,7 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
         } catch (e: Throwable) {
             pending = null
             pendingPhoto = null
-            result.error("unavailable", describe(e), null)
+            result.error("unavailable", describe(e, "Aufruf ${call.method}"), null)
         }
     }
 
@@ -84,10 +84,10 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
                 try {
                     launcher.launch(IntentSenderRequest.Builder(sender).build())
                 } catch (e: Throwable) {
-                    fail(e)
+                    fail(e, "Start (launch)")
                 }
             }
-            .addOnFailureListener { fail(it) }
+            .addOnFailureListener { fail(it, "Start (getStartScanIntent)") }
     }
 
     private fun onResult(activityResult: ActivityResult) {
@@ -117,14 +117,14 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
                 ),
             )
         } catch (e: Throwable) {
-            result.error("failed", describe(e), null)
+            result.error("failed", describe(e, "Ergebnis"), null)
         }
     }
 
-    private fun fail(e: Throwable) {
+    private fun fail(e: Throwable, stage: String) {
         val result = pending ?: return
         pending = null
-        result.error("unavailable", describe(e), null)
+        result.error("unavailable", describe(e, stage), null)
     }
 
     private fun takePhoto(result: MethodChannel.Result) {
@@ -159,15 +159,24 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
      * Meldung fehlt (z. B. NullPointerException), damit Fehlerberichte die
      * Stelle zeigen. Der volle Stacktrace landet zusätzlich im Logcat.
      */
-    private fun describe(e: Throwable): String {
-        Log.e("DocumentScanner", "Scanner-Fehler", e)
+    private fun describe(e: Throwable, stage: String = ""): String {
+        Log.e("DocumentScanner", "Scanner-Fehler ($stage)", e)
         val text = listOfNotNull(e.javaClass.simpleName, e.message).joinToString(": ")
-        val where = e.stackTrace.firstOrNull()?.let {
-            "${it.className.substringAfterLast('.')}.${it.methodName}:${it.lineNumber}"
-        }
+        // Erste Aufrufe außerhalb von java.*/kotlin.* — dort liegt die Ursache,
+        // nicht in Hilfsfunktionen wie Objects.requireNonNull.
+        val frames = e.stackTrace
+            .filterNot { f ->
+                f.className.startsWith("java.") || f.className.startsWith("kotlin.") ||
+                    f.className.startsWith("libcore.") || f.className.startsWith("dalvik.")
+            }
+            .take(4)
+            .joinToString(" < ") {
+                "${it.className.substringAfterLast('.')}.${it.methodName}:${it.lineNumber}"
+            }
         val cause = e.cause
         val parts = listOfNotNull(
-            where?.let { "bei $it" },
+            stage.ifEmpty { null },
+            frames.ifEmpty { null }?.let { "bei $it" },
             cause?.let { "Ursache: ${it.javaClass.simpleName}: ${it.message}" },
         )
         return if (parts.isEmpty()) text else "$text (${parts.joinToString("; ")})"
