@@ -7,7 +7,8 @@ enum NotificationGroup {
   reminders(100000),
   appointments(200000),
   medications(300000),
-  vaccinations(400000);
+  vaccinations(400000),
+  cycle(500000);
 
   const NotificationGroup(this.base);
 
@@ -35,12 +36,21 @@ enum NotificationTopic {
   appointmentSoon('appointment_soon', NotificationLevel.important),
   appointmentAhead('appointment_ahead', NotificationLevel.normal),
   vaccination('vaccination', NotificationLevel.normal),
-  checkIn('check_in', NotificationLevel.normal);
+  checkIn('check_in', NotificationLevel.normal),
 
-  const NotificationTopic(this.id, this.defaultLevel);
+  /// v14: Zyklus, Wechseljahre (MRS), Schwangerschaft — standardmäßig
+  /// diskret, damit auf dem Sperrbildschirm nichts über die Periode steht.
+  cycle('cycle', NotificationLevel.normal, defaultDiscreet: true);
+
+  const NotificationTopic(
+    this.id,
+    this.defaultLevel, {
+    this.defaultDiscreet = false,
+  });
 
   final String id;
   final NotificationLevel defaultLevel;
+  final bool defaultDiscreet;
 
   /// Android legt die Wichtigkeit beim Anlegen eines Kanals fest und lässt
   /// sie danach nur Nutzer ändern — deshalb ein Kanal je Stufe.
@@ -58,6 +68,7 @@ enum NotificationTopic {
       appointmentAhead => l10n.svcTopicAppointmentAhead,
       vaccination => l10n.svcTopicVaccination,
       checkIn => l10n.svcChannelCheckIn,
+      cycle => l10n.cycleTopic,
     };
   }
 
@@ -69,6 +80,7 @@ enum NotificationTopic {
       appointmentAhead => l10n.svcTopicAppointmentAheadDescription,
       vaccination => l10n.svcTopicVaccinationDescription,
       checkIn => l10n.svcChannelCheckInDescription,
+      cycle => l10n.cycleTopicDescription,
     };
   }
 
@@ -81,6 +93,7 @@ enum NotificationTopic {
       appointmentAhead => (l10n.svcDiscreetAppointmentTitle, l10n.svcDiscreetBody),
       vaccination => (l10n.svcDiscreetVaccinationTitle, l10n.svcDiscreetBody),
       checkIn => (l10n.svcDiscreetCheckInTitle, l10n.svcDiscreetBody),
+      cycle => (l10n.cycleDiscreetTitle, l10n.svcDiscreetBody),
     };
   }
 }
@@ -127,7 +140,11 @@ class NotificationPreferences {
   final Map<NotificationTopic, TopicPreference> _topics;
 
   TopicPreference of(NotificationTopic topic) =>
-      _topics[topic] ?? TopicPreference(level: topic.defaultLevel);
+      _topics[topic] ??
+      TopicPreference(
+        level: topic.defaultLevel,
+        discreet: topic.defaultDiscreet,
+      );
 
   NotificationPreferences withTopic(
     NotificationTopic topic,
@@ -150,7 +167,10 @@ class NotificationPreferences {
         topics[topic] = TopicPreference(
           enabled: entry['enabled'] != false,
           level: level ?? topic.defaultLevel,
-          discreet: entry['discreet'] == true,
+          discreet: switch (entry['discreet']) {
+            final bool value => value,
+            _ => topic.defaultDiscreet,
+          },
         );
       }
       return NotificationPreferences(topics);

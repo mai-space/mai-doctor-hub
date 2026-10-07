@@ -115,6 +115,75 @@ void main() {
     await db.close();
   });
 
+  test('migrates v13 → v14: cycle tables, modes off, no new onboarding', () async {
+    // Echtes v13-Schema (Stand des MCP-Fixtures vor v14).
+    final raw = sqlite3.openInMemory();
+    final sql = File('test/migrations/v13.sql').readAsStringSync();
+    for (final statement in sql.split('---')) {
+      final body = statement
+          .split('\n')
+          .where((l) => !l.startsWith('--'))
+          .join('\n')
+          .trim();
+      if (body.isNotEmpty) raw.execute(body);
+    }
+    raw
+      ..execute(
+        'INSERT INTO app_settings (id, onboarding_completed, '
+        "notification_topics) VALUES (1, 1, '{\"medication\":{}}')",
+      )
+      ..execute(
+        "INSERT INTO doctors (id, name, specialty, created_at, updated_at) "
+        "VALUES ('d1', 'Dr. Alt', 'Gynäkologie', 0, 0)",
+      )
+      ..execute('PRAGMA user_version = 13');
+    final db = AppDatabase(NativeDatabase.opened(raw));
+
+    final settings = await db.select(db.appSettings).getSingle();
+    expect(settings.onboardingCompleted, isTrue, reason: 'Bestandsnutzerin');
+    expect(settings.cycleTracking, isFalse);
+    expect(settings.menopauseTracking, isFalse);
+    expect(settings.pregnancyTracking, isFalse);
+    expect(settings.showFertileWindow, isFalse);
+    expect(settings.notificationTopics, '{"medication":{}}');
+    expect(await db.select(db.cycleDays).get(), isEmpty);
+
+    // Neue Tabellen sind beschreibbar.
+    await db
+        .into(db.cycleDays)
+        .insert(
+          CycleDaysCompanion.insert(
+            day: '2026-10-07',
+            updatedAt: DateTime(2026, 10, 7),
+            flow: const Value(CycleFlow.light),
+          ),
+        );
+    await db
+        .into(db.mrsAssessments)
+        .insert(
+          MrsAssessmentsCompanion.insert(
+            id: 'm1',
+            recordedAt: DateTime(2026, 10, 7),
+            scores: '0,1,2,3,4,0,1,2,3,4,0',
+          ),
+        );
+    await db
+        .into(db.pregnancies)
+        .insert(
+          PregnanciesCompanion.insert(
+            id: 'p1',
+            createdAt: DateTime(2026, 10, 7),
+            lmp: const Value('2026-09-01'),
+          ),
+        );
+    expect((await db.select(db.cycleDays).getSingle()).flow, CycleFlow.light);
+    expect(await db.select(db.mrsAssessments).get(), hasLength(1));
+    expect((await db.select(db.pregnancies).getSingle()).lmp, '2026-09-01');
+    final version = await db.customSelect('PRAGMA user_version').getSingle();
+    expect(version.read<int>('user_version'), db.schemaVersion);
+    await db.close();
+  });
+
   test('fresh database has settings row and two default reminders', () async {
     final db = AppDatabase(NativeDatabase.memory());
     final settings = await db.select(db.appSettings).getSingle();

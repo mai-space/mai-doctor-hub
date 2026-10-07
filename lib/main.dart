@@ -10,6 +10,8 @@ import 'data/repositories/records_repository.dart' show reportsDirectory;
 import 'data/repositories/settings_repository.dart';
 import 'data/repositories/symptom_media_repository.dart' show mediaDirectory;
 import 'features/check_in/check_in_sheet.dart';
+import 'features/cycle/cycle_home_card.dart' show openCyclePage;
+import 'features/cycle/mrs_page.dart';
 import 'features/home/appointment_detail_page.dart';
 import 'features/medications/intake_widgets.dart';
 import 'features/onboarding/onboarding_page.dart';
@@ -19,6 +21,7 @@ import 'services/calendar/calendar_gateway.dart';
 import 'services/calendar/calendar_sync_service.dart';
 import 'services/notification_service.dart';
 import 'services/notifications/appointment_reminders.dart';
+import 'services/notifications/cycle_reminders.dart';
 import 'services/notifications/medication_reminders.dart';
 import 'services/notifications/notification_plan.dart';
 import 'services/notifications/reminder_service.dart';
@@ -89,6 +92,8 @@ Future<void> _start() async {
     database,
     notifications,
   )..start();
+  final cycleReminders = CycleReminderService(database, notifications)
+    ..start();
 
   // Ein Android-Kanal je Thema in der gewählten Wichtigkeit.
   final topicSettings = SettingsRepository(
@@ -130,6 +135,7 @@ Future<void> _start() async {
     await appointmentReminders.sync();
     await medicationReminders.sync();
     await vaccinationReminders.sync();
+    await cycleReminders.sync();
     calendarSync?.trigger();
   }).attach();
 
@@ -144,6 +150,7 @@ Future<void> _start() async {
     await appointmentReminders.sync();
     await medicationReminders.sync();
     await vaccinationReminders.sync();
+    await cycleReminders.sync();
     calendarSync?.trigger();
   });
 
@@ -252,6 +259,14 @@ void _openFromNotification(String? payload) {
         builder: (_) => VaccinationDetailPage(vaccinationId: vaccinationId),
       ),
     );
+  }
+  switch (CyclePayload.decode(payload)) {
+    case CyclePayload.mrs:
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute<void>(builder: (_) => const MrsPage()));
+    case final String _:
+      openCyclePage(context);
   }
   final appointmentId = AppointmentPayload.decode(payload);
   if (appointmentId != null) {

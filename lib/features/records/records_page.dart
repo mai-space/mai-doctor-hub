@@ -7,6 +7,7 @@ import '../../data/database_provider.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../l10n/l10n.dart';
 import '../../theme/app_theme.dart';
+import '../cycle/cycle_home_card.dart' show CycleRecordsTile;
 import '../home/add_appointment_sheet.dart';
 import 'detail_pages.dart';
 import '../medications/pharmacy_form.dart';
@@ -268,6 +269,7 @@ class _RecordsPageState extends State<RecordsPage> {
             ),
           ),
           const SizedBox(height: 12),
+          const CycleRecordsTile(),
           SizedBox(
             height: 40,
             child: ListView(

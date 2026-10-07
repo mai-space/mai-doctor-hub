@@ -156,6 +156,892 @@ class AppLocalizationsEn extends AppLocalizations {
   String get entityEntry => 'Entry';
 
   @override
+  String get cycleTitle => 'Cycle';
+
+  @override
+  String get cycleSettingsTitle => 'Cycle & reproductive health';
+
+  @override
+  String get cycleSettingsIntro =>
+      'All optional. Only turn on what fits you — you can change it any time.';
+
+  @override
+  String get cycleTabToday => 'Today';
+
+  @override
+  String get cycleTabCalendar => 'Calendar';
+
+  @override
+  String get cycleTabInsights => 'Insights';
+
+  @override
+  String get cycleOnboardingTitle => 'Cycle & reproductive health';
+
+  @override
+  String get cycleOnboardingText =>
+      'Would you like to track your cycle, menopause or a pregnancy? Choose what fits — or skip this step.';
+
+  @override
+  String get cycleModeCycle => 'Track period/cycle';
+
+  @override
+  String get cycleModeCycleSubtitle =>
+      'Bleeding, pain, symptoms; estimated next period';
+
+  @override
+  String get cycleModeMenopause => 'Menopause';
+
+  @override
+  String get cycleModeMenopauseSubtitle =>
+      'Hot flushes, sleep, monthly questionnaire (MRS)';
+
+  @override
+  String get cycleModePregnancy => 'Pregnancy';
+
+  @override
+  String get cycleModePregnancySubtitle =>
+      'Weeks, prenatal check-up plan, weight and blood pressure; pauses period estimates';
+
+  @override
+  String get cycleModeNone => 'Not for me';
+
+  @override
+  String get cycleModeNoneSubtitle => 'Skip — available later in Settings';
+
+  @override
+  String get cycleCreateGynecologist => 'Add a gynecologist to your doctors';
+
+  @override
+  String get cycleCreateGynecologistSubtitle =>
+      'Placeholder you can edit later — e.g. for appointments and the doctor PDF';
+
+  @override
+  String get cycleGynecologistPlaceholder => 'My gynecologist';
+
+  @override
+  String get cyclePrivacyNote =>
+      'Cycle and pregnancy data are especially sensitive. They stay encrypted on this device. Tip: turn on the app lock under Settings → Security.';
+
+  @override
+  String get cycleShowFertile => 'Show fertile window';
+
+  @override
+  String get cycleShowFertileSubtitle =>
+      'Only a rough estimate — not a method of contraception';
+
+  @override
+  String get cycleOpen => 'Open cycle';
+
+  @override
+  String get cycleDeleteAllTitle => 'Delete all cycle data';
+
+  @override
+  String get cycleDeleteAllSubtitle => 'Diary, questionnaires and pregnancy';
+
+  @override
+  String get cycleDeleteAllText =>
+      'All cycle, menopause and pregnancy entries will be permanently deleted and the sections turned off. Your doctors are kept.';
+
+  @override
+  String get cycleDeleteAllDone => 'Cycle data deleted';
+
+  @override
+  String get cycleRecordsSubtitle => 'Calendar, history and insights';
+
+  @override
+  String get cycleToday => 'today';
+
+  @override
+  String get cycleFlowTitle => 'Bleeding';
+
+  @override
+  String get cycleFlowNone => 'None';
+
+  @override
+  String get cycleFlowSpotting => 'Spotting';
+
+  @override
+  String get cycleFlowLight => 'Light';
+
+  @override
+  String get cycleFlowMedium => 'Medium';
+
+  @override
+  String get cycleFlowHeavy => 'Heavy';
+
+  @override
+  String get cycleFlowVeryHeavy => 'Very heavy';
+
+  @override
+  String get cyclePainTitle => 'Pain';
+
+  @override
+  String get cyclePainNotLogged => 'Not logged — move the slider';
+
+  @override
+  String get cyclePainClear => 'Remove';
+
+  @override
+  String cyclePainValue(int value) {
+    return 'Pain $value/10';
+  }
+
+  @override
+  String get cyclePainLocations => 'Where?';
+
+  @override
+  String get cyclePainkiller => 'Took a painkiller';
+
+  @override
+  String get cyclePainkillerName => 'Which one? (optional)';
+
+  @override
+  String get cyclePainkillerHelped => 'Did it help?';
+
+  @override
+  String get cycleNoAnswer => 'No answer';
+
+  @override
+  String get cycleOtherSymptoms => 'Other';
+
+  @override
+  String get cycleOtherHint => 'Add your own symptom';
+
+  @override
+  String get cycleOtherAdd => 'Add';
+
+  @override
+  String get cycleDischargeTitle => 'Discharge';
+
+  @override
+  String get cycleMenopauseTitle => 'Menopause';
+
+  @override
+  String get cycleHotFlashes => 'Hot flushes today';
+
+  @override
+  String get cycleHotFlashIntensity => 'How strong?';
+
+  @override
+  String get cycleNightSweats => 'Night sweats';
+
+  @override
+  String cycleHotFlashesToday(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hot flushes today',
+      one: '1 hot flush today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cyclePregnancyTitle => 'Pregnancy';
+
+  @override
+  String get cycleFetalMovement => 'Baby\'s movements';
+
+  @override
+  String get cycleFetalNotYet => 'Not felt yet';
+
+  @override
+  String get cycleFetalNormal => 'As usual';
+
+  @override
+  String get cycleFetalLess => 'Less than usual';
+
+  @override
+  String get cycleWeight => 'Weight';
+
+  @override
+  String get cycleBpSystolic => 'Blood pressure (systolic)';
+
+  @override
+  String get cycleBpDiastolic => 'diastolic';
+
+  @override
+  String get cycleNoteHint => 'Anything that matters today';
+
+  @override
+  String get cycleDayTitlePattern => 'EEE, MMM d, yyyy';
+
+  @override
+  String get cycleDayPattern => 'EEEE, MMMM d';
+
+  @override
+  String get cycleDatePattern => 'MMM d, yyyy';
+
+  @override
+  String get cycleShortDatePattern => 'M/d';
+
+  @override
+  String get cycleMonthPattern => 'MMMM yyyy';
+
+  @override
+  String get cycleDayDeleteTitle => 'Delete entry?';
+
+  @override
+  String get cycleDayDeleteText => 'All details for this day will be deleted.';
+
+  @override
+  String get cyclePbacTitle => 'Count blood loss (PBAC, optional)';
+
+  @override
+  String get cyclePbacSubtitle => 'For a clearer picture if periods are heavy';
+
+  @override
+  String get cyclePbacExplain =>
+      'PBAC (Higham 1990): count pads/tampons by how soaked they are, clots and flooding. More than 100 points per cycle suggest heavy menstrual bleeding — worth having checked.';
+
+  @override
+  String cyclePbacScore(int score) {
+    return '$score PBAC points today';
+  }
+
+  @override
+  String cyclePbacPoints(int points) {
+    return '$points points each';
+  }
+
+  @override
+  String get cyclePbacPadsLight => 'Pad, lightly soaked';
+
+  @override
+  String get cyclePbacPadsMedium => 'Pad, moderately soaked';
+
+  @override
+  String get cyclePbacPadsFull => 'Pad, fully soaked';
+
+  @override
+  String get cyclePbacTamponsLight => 'Tampon, lightly soaked';
+
+  @override
+  String get cyclePbacTamponsMedium => 'Tampon, moderately soaked';
+
+  @override
+  String get cyclePbacTamponsFull => 'Tampon, fully soaked';
+
+  @override
+  String get cyclePbacClotsSmall => 'Clot, small (about a 1p/1-cent coin)';
+
+  @override
+  String get cyclePbacClotsLarge =>
+      'Clot, large (about a 50p/2-euro coin or larger)';
+
+  @override
+  String get cyclePbacFlooding => 'Flooding episode';
+
+  @override
+  String get cycleLess => 'Less';
+
+  @override
+  String get cycleMore => 'More';
+
+  @override
+  String get cyclePhaseMenstruation => 'Period';
+
+  @override
+  String get cyclePhaseFollicular => 'Follicular';
+
+  @override
+  String get cyclePhaseOvulation => 'Ovulation (approx.)';
+
+  @override
+  String get cyclePhaseLuteal => 'Luteal';
+
+  @override
+  String get cycleStatusNoData => 'No period logged yet — log the first day.';
+
+  @override
+  String cycleStatusCycleDay(int day) {
+    return 'Cycle day $day';
+  }
+
+  @override
+  String cycleStatusPeriodDay(int day) {
+    return 'Period, day $day';
+  }
+
+  @override
+  String cycleStatusNextIn(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'next period in ~$days days (estimated)',
+      one: 'next period in ~1 day (estimated)',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cycleStatusExpectedNow => 'Period expected about now (estimated)';
+
+  @override
+  String get cycleStatusLate => 'Period later than estimated';
+
+  @override
+  String get cycleEstimateDisclaimer =>
+      'Estimate based on your past cycles — not a method of contraception or a pregnancy test.';
+
+  @override
+  String cyclePredictionRange(String from, String to) {
+    return 'Next period around $from – $to (estimated)';
+  }
+
+  @override
+  String cycleFertileRange(String from, String to) {
+    return 'Fertile window, rough estimate: $from – $to';
+  }
+
+  @override
+  String get cycleQuickLogTitle => 'Log today';
+
+  @override
+  String get cycleQuickLogMore => 'Log more (symptoms, discharge, note …)';
+
+  @override
+  String cycleQuickLogSymptoms(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count symptoms logged',
+      one: '1 symptom logged',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cyclePrevMonth => 'Previous month';
+
+  @override
+  String get cycleNextMonth => 'Next month';
+
+  @override
+  String get cycleCalendarHint => 'Tap a day to log or change it.';
+
+  @override
+  String get cycleLegendPeriod => 'Bleeding';
+
+  @override
+  String get cycleLegendPredicted => 'expected (estimated)';
+
+  @override
+  String get cycleLegendFertile => 'fertile (rough)';
+
+  @override
+  String get cycleLegendLogged => 'logged';
+
+  @override
+  String get cycleInsightsOverview => 'Overview';
+
+  @override
+  String get cycleInsightsNotEnough =>
+      'Averages and estimates need at least two logged periods.';
+
+  @override
+  String cycleInsightsAverage(String average, int median, int min, int max) {
+    return 'Cycle length avg. $average days (median $median, $min–$max)';
+  }
+
+  @override
+  String cycleInsightsPeriod(String average, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Period avg. $average days · $count cycles analysed',
+      one: 'Period avg. $average days · 1 cycle analysed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cycleInsightsEmpty =>
+      'Nothing to show yet — log a few days and charts will appear here.';
+
+  @override
+  String get cycleChartLengthTitle => 'Cycle lengths';
+
+  @override
+  String get cycleChartLengthHelp =>
+      'Bars = cycle length, darker part = period. Shaded: 21–35 days; dashed: your average.';
+
+  @override
+  String cycleChartLengthSemantics(int count, String values) {
+    return 'Lengths of the last $count cycles: $values days';
+  }
+
+  @override
+  String get cycleChartPainTitle => 'Pain by cycle day';
+
+  @override
+  String get cycleChartPainHelp =>
+      'Each row is a cycle, each column a cycle day. This shows patterns such as pain just before or at the start of a period.';
+
+  @override
+  String cycleChartPainSemantics(int count, String days) {
+    return 'Pain across $count cycles; strong pain on cycle day $days';
+  }
+
+  @override
+  String get cyclePainStripLegend => 'Colour = pain 0–10 · red line = period';
+
+  @override
+  String get cycleChartPhaseTitle => 'Symptoms by cycle phase';
+
+  @override
+  String get cycleChartPhaseHelp =>
+      'Share of logged days in each phase with the symptom. Phases are estimated from your cycles.';
+
+  @override
+  String get cycleChartPbacTitle => 'PBAC per cycle';
+
+  @override
+  String cycleChartPbacSemantics(String values) {
+    return 'PBAC points per cycle: $values; threshold 100';
+  }
+
+  @override
+  String get cycleChartHotFlashTitle => 'Hot flushes per week';
+
+  @override
+  String cycleChartHotFlashSemantics(String values) {
+    return 'Hot flushes per week, last 12 weeks: $values';
+  }
+
+  @override
+  String get cycleChartMrsTitle => 'Menopause Rating Scale trend';
+
+  @override
+  String cycleChartMrsSemantics(String values) {
+    return 'MRS totals: $values (out of 44)';
+  }
+
+  @override
+  String get cycleChartWeightTitle => 'Weight';
+
+  @override
+  String cycleChartWeightSemantics(int count, String latest) {
+    return 'Weight, $count readings, latest $latest kg';
+  }
+
+  @override
+  String get cycleChartBpTitle => 'Blood pressure';
+
+  @override
+  String get cycleChartBpHelp =>
+      'In pregnancy, please discuss readings of 140/90 mmHg or higher with your doctor promptly.';
+
+  @override
+  String cycleChartBpSemantics(int count) {
+    return 'Blood pressure, $count readings';
+  }
+
+  @override
+  String get cycleHintsTitle => 'Worth discussing with your gynecologist';
+
+  @override
+  String get cycleHintsUrgentTitle => 'Please get this checked soon';
+
+  @override
+  String get cycleHintsFooter =>
+      'This is not a diagnosis — just a pointer from your entries.';
+
+  @override
+  String cycleHintShortCycles(int days) {
+    return 'Your cycles were repeatedly shorter than 21 days (median $days days).';
+  }
+
+  @override
+  String cycleHintLongCycles(int days) {
+    return 'Your cycles were repeatedly longer than 35 days (median $days days).';
+  }
+
+  @override
+  String cycleHintIrregular(int days) {
+    return 'Your cycle lengths vary by $days days (shortest to longest).';
+  }
+
+  @override
+  String cycleHintLongPeriod(int days) {
+    return 'A period lasted $days days (longer than 7 days).';
+  }
+
+  @override
+  String cycleHintHeavyBleeding(int score) {
+    return 'PBAC of $score points in one cycle (over 100 suggests heavy bleeding).';
+  }
+
+  @override
+  String cycleHintStrongPain(int days) {
+    return 'Strong pain (7/10 or more) on $days days in one cycle.';
+  }
+
+  @override
+  String get cycleHintPainkiller => 'Painkillers didn\'t help enough.';
+
+  @override
+  String cycleHintIntermenstrual(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'Spotting on $days days between periods (last 90 days).',
+      one: 'Spotting on 1 day between periods (last 90 days).',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cycleHintPostmenopausal =>
+      'Bleeding after more than 12 months without a period — please get it checked.';
+
+  @override
+  String get cycleHintPregnancyBleeding =>
+      'Please get bleeding in pregnancy checked soon — often harmless, but important to know.';
+
+  @override
+  String get cycleHintFetalMovement =>
+      'If you feel your baby moving less than usual, please contact your practice or maternity unit soon.';
+
+  @override
+  String get cycleMrsTitle => 'Menopause Rating Scale (MRS)';
+
+  @override
+  String get cycleMrsIntro =>
+      'Which of the following complaints do you currently have — and how strongly? Please answer each one. Once a month is enough.';
+
+  @override
+  String get cycleMrsExplain =>
+      'A short, validated questionnaire (11 questions) — once a month it shows how your symptoms change.';
+
+  @override
+  String get cycleMrsFill => 'Fill in questionnaire';
+
+  @override
+  String cycleMrsSave(int answered, int total) {
+    return 'Save ($answered/$total)';
+  }
+
+  @override
+  String cycleMrsSaved(String summary) {
+    return 'Saved: $summary';
+  }
+
+  @override
+  String get cycleMrsSource =>
+      'Menopause Rating Scale after Heinemann et al. (Health Qual Life Outcomes 2003; 2004). Total 0–44: 0–4 none/little, 5–8 mild, 9–16 moderate, 17+ severe.';
+
+  @override
+  String get cycleMrsBands =>
+      'Total 0–44: 0–4 none/little, 5–8 mild, 9–16 moderate, 17+ severe.';
+
+  @override
+  String get cycleMrsLevel0 => 'none';
+
+  @override
+  String get cycleMrsLevel1 => 'mild';
+
+  @override
+  String get cycleMrsLevel2 => 'moderate';
+
+  @override
+  String get cycleMrsLevel3 => 'severe';
+
+  @override
+  String get cycleMrsLevel4 => 'very severe';
+
+  @override
+  String get cycleMrsItem1 => 'Hot flushes, sweating (episodes of sweating)';
+
+  @override
+  String get cycleMrsItem2 =>
+      'Heart discomfort (unusual awareness of heartbeat, heart skipping, racing, tightness)';
+
+  @override
+  String get cycleMrsItem3 =>
+      'Sleep problems (difficulty falling asleep, sleeping through, waking up early)';
+
+  @override
+  String get cycleMrsItem4 =>
+      'Depressive mood (feeling down, sad, on the verge of tears, lack of drive, mood swings)';
+
+  @override
+  String get cycleMrsItem5 =>
+      'Irritability (feeling nervous, inner tension, feeling aggressive)';
+
+  @override
+  String get cycleMrsItem6 => 'Anxiety (inner restlessness, feeling panicky)';
+
+  @override
+  String get cycleMrsItem7 =>
+      'Physical and mental exhaustion (decrease in performance, impaired memory, poor concentration, forgetfulness)';
+
+  @override
+  String get cycleMrsItem8 =>
+      'Sexual problems (change in sexual desire, activity and satisfaction)';
+
+  @override
+  String get cycleMrsItem9 =>
+      'Bladder problems (difficulty urinating, increased need to urinate, bladder incontinence)';
+
+  @override
+  String get cycleMrsItem10 =>
+      'Dryness of vagina (sensation of dryness or burning, difficulty with sexual intercourse)';
+
+  @override
+  String get cycleMrsItem11 =>
+      'Joint and muscular discomfort (pain in the joints, rheumatoid complaints)';
+
+  @override
+  String get cycleMrsSomatic => 'somatic';
+
+  @override
+  String get cycleMrsPsychological => 'psychological';
+
+  @override
+  String get cycleMrsUrogenital => 'urogenital';
+
+  @override
+  String get cycleMrsTotalLabel => 'Total';
+
+  @override
+  String cycleMrsTotal(int total, String severity) {
+    return 'MRS $total ($severity)';
+  }
+
+  @override
+  String get cycleMrsSeverityNone => 'none/little';
+
+  @override
+  String get cycleMrsSeverityMild => 'mild';
+
+  @override
+  String get cycleMrsSeverityModerate => 'moderate';
+
+  @override
+  String get cycleMrsSeveritySevere => 'severe';
+
+  @override
+  String get cycleMrsNotYet => 'Menopause: MRS questionnaire not filled in yet';
+
+  @override
+  String cycleMrsLatest(int total, String severity, String date) {
+    return 'Menopause: MRS $total ($severity) on $date';
+  }
+
+  @override
+  String get cyclePregnancyNoDates =>
+      'Pregnancy: enter your last period or the due date.';
+
+  @override
+  String cyclePregnancyWeek(String week) {
+    return 'Week $week';
+  }
+
+  @override
+  String cyclePregnancyTrimester(int trimester) {
+    return 'Trimester $trimester';
+  }
+
+  @override
+  String cyclePregnancyDaysToDue(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days to due date',
+      one: '1 day to due date',
+      zero: 'due today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String cyclePregnancyDue(String date) {
+    return 'Due date $date';
+  }
+
+  @override
+  String get cyclePregnancyDueNote =>
+      'The due date is a guide — few babies arrive exactly on that day.';
+
+  @override
+  String get cyclePregnancyEditDates => 'Due date & last period';
+
+  @override
+  String get cyclePregnancyLmp => 'First day of last period';
+
+  @override
+  String cyclePregnancyNaegele(String date) {
+    return 'Calculated (Naegele, + 280 days): $date';
+  }
+
+  @override
+  String get cyclePregnancyDueOverride =>
+      'Due date from doctor/ultrasound (takes priority)';
+
+  @override
+  String get cyclePregnancyTimeline => 'Prenatal check-up plan (suggestions)';
+
+  @override
+  String get cyclePregnancyTimelineSource =>
+      'Based on the German maternity guidelines: check-ups every 4 weeks, every 2 weeks from week 32; three routine ultrasounds. Your practice plans individually.';
+
+  @override
+  String cyclePregnancyShowAll(int count) {
+    return 'Show all $count';
+  }
+
+  @override
+  String get cyclePregnancyShowLess => 'Show less';
+
+  @override
+  String cycleMilestoneCheckup(String weeks) {
+    return 'Check-up (week $weeks)';
+  }
+
+  @override
+  String cycleMilestoneUltrasound(String weeks) {
+    return 'Routine ultrasound (weeks $weeks)';
+  }
+
+  @override
+  String cycleMilestoneAround(String date) {
+    return 'from $date';
+  }
+
+  @override
+  String get cycleMilestoneCreate => 'Add as appointment';
+
+  @override
+  String get cycleMilestoneCreated => 'Appointment added';
+
+  @override
+  String get cyclePregnancyEnd => 'End pregnancy';
+
+  @override
+  String get cyclePregnancyEndText =>
+      'The pregnancy will be closed and the section hidden. Your entries are kept. You can optionally say how it ended.';
+
+  @override
+  String get cyclePregnancyOutcomeBirth => 'Birth';
+
+  @override
+  String get cyclePregnancyOutcomeLoss => 'Miscarriage or loss';
+
+  @override
+  String get cyclePregnancyOutcomeNone => 'Prefer not to say';
+
+  @override
+  String get cyclePregnancyEndConfirm => 'End';
+
+  @override
+  String get cyclePregnancyEnded => 'Saved';
+
+  @override
+  String get cycleTopic => 'Cycle & reproductive health';
+
+  @override
+  String get cycleTopicDescription =>
+      'Expected period, monthly questionnaire, check-up suggestions — discreet by default';
+
+  @override
+  String get cycleDiscreetTitle => 'Reminder';
+
+  @override
+  String get cycleReminderSoonTitle =>
+      'Period expected in about 2 days (estimated)';
+
+  @override
+  String get cycleReminderTodayTitle =>
+      'Period expected about today (estimated)';
+
+  @override
+  String get cycleReminderBody => 'Log it in your cycle diary when it starts.';
+
+  @override
+  String get cycleReminderMrsTitle =>
+      'Time for your monthly menopause questionnaire';
+
+  @override
+  String cycleReminderMrsBody(int total) {
+    return 'Last score: MRS $total';
+  }
+
+  @override
+  String get cycleReminderMilestoneBody =>
+      'Suggestion from your check-up plan — booked yet?';
+
+  @override
+  String get cycleSummarySubtitle =>
+      'Recent cycles, averages, PBAC, pain days, symptoms, pointers; pregnancy and MRS if active';
+
+  @override
+  String cycleReportWeight(String kg, String date) {
+    return 'Latest weight $kg kg ($date)';
+  }
+
+  @override
+  String cycleReportBp(int sys, int dia, String date) {
+    return 'Latest blood pressure $sys/$dia mmHg ($date)';
+  }
+
+  @override
+  String cycleReportStats(
+    String average,
+    int median,
+    int min,
+    int max,
+    int count,
+  ) {
+    return 'Cycle length avg. $average days, median $median ($min–$max), $count cycles';
+  }
+
+  @override
+  String cycleReportPeriodLength(String average) {
+    return 'Period length avg. $average days';
+  }
+
+  @override
+  String cycleReportPainDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days with pain (last 6 months)',
+      one: '1 day with pain (last 6 months)',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String cycleReportTopSymptoms(String symptoms) {
+    return 'Most frequent symptoms (days): $symptoms';
+  }
+
+  @override
+  String cycleReportRecentStarts(String dates) {
+    return 'Recent period starts: $dates';
+  }
+
+  @override
+  String get cycleReportStart => 'Start';
+
+  @override
+  String get cycleReportLength => 'Cycle (days)';
+
+  @override
+  String get cycleReportPeriod => 'Period (days)';
+
+  @override
+  String get cycleReportStrongPain => 'Days pain ≥ 7';
+
+  @override
+  String get cycleReportRunning => 'ongoing';
+
+  @override
+  String get cycleReportFooter =>
+      'Self-recorded in Mai Doctor Hub. Estimates and pointers are not a diagnosis.';
+
+  @override
   String get homeAppointmentSaved => 'Appointment saved';
 
   @override

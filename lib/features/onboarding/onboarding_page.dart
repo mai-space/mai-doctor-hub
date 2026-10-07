@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../data/database_provider.dart';
+import '../../data/repositories/cycle_repository.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../l10n/l10n.dart';
 import '../../services/notification_service.dart';
 import '../../widgets/app_logo.dart';
+import '../cycle/cycle_onboarding_step.dart';
 
 /// Kurzes Onboarding beim ersten Start. Die Benachrichtigungs-Berechtigung
 /// wird erst hier — mit Erklärung — angefragt, nicht beim App-Start.
@@ -20,7 +22,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
   int _index = 0;
   bool? _notificationsGranted;
 
-  static const _count = 3;
+  /// Auswahl „Zyklus & Frauengesundheit“ (optional).
+  CycleSetup _cycle = const CycleSetup();
+
+  static const _count = 4;
 
   @override
   void dispose() {
@@ -28,8 +33,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
     super.dispose();
   }
 
-  Future<void> _finish() =>
-      SettingsRepository(DatabaseScope.of(context)).completeOnboarding();
+  Future<void> _finish() async {
+    final db = DatabaseScope.of(context);
+    // Vor dem Abschluss übernehmen — danach baut sich die App neu auf.
+    if (_cycle.any) await CycleRepository(db).apply(_cycle);
+    await SettingsRepository(db).completeOnboarding();
+  }
 
   void _next() {
     if (_index == _count - 1) {
@@ -76,6 +85,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     visual: const _StepIcon(Icons.medical_services_outlined),
                     title: l10n.settingsOnboardingAllInOneTitle,
                     text: l10n.settingsOnboardingAllInOneText,
+                  ),
+                  CycleOnboardingStep(
+                    setup: _cycle,
+                    onChanged: (s) => setState(() => _cycle = s),
                   ),
                   _Step(
                     visual: const _StepIcon(

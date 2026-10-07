@@ -371,6 +371,100 @@ class AppSettings extends Table {
   TextColumn get notificationTopics =>
       text().withDefault(const Constant(''))();
 
+  // v14: Zyklus & Frauengesundheit (alles optional, standardmäßig aus).
+  BoolColumn get cycleTracking =>
+      boolean().withDefault(const Constant(false))();
+  BoolColumn get menopauseTracking =>
+      boolean().withDefault(const Constant(false))();
+  BoolColumn get pregnancyTracking =>
+      boolean().withDefault(const Constant(false))();
+
+  /// Grob geschätztes fruchtbares Fenster im Kalender zeigen.
+  BoolColumn get showFertileWindow =>
+      boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// v14: Stärke der Blutung an einem Tag.
+enum CycleFlow { none, spotting, light, medium, heavy, veryHeavy }
+
+/// v14: Kindsbewegungen (Schwangerschaft).
+enum FetalMovement { notYet, normal, less }
+
+/// v14: Zyklus-Tagebuch — eine Zeile je Kalendertag. [day] ist der lokale
+/// Tag als `yyyy-MM-dd` (zeitzonenunabhängig, siehe `cycle_dates.dart`).
+/// Listen (Symptome, Schmerzorte) kommagetrennt als stabile Schlüssel;
+/// eigene Begriffe stehen als Freitext dazwischen.
+class CycleDays extends Table {
+  TextColumn get day => text()();
+  IntColumn get flow => intEnum<CycleFlow>().nullable()();
+
+  /// PBAC-Zählungen als JSON (siehe `PbacCounts`).
+  TextColumn get pbacJson => text().nullable()();
+
+  /// Schmerz 0–10 (gleiche Anker wie bei Symptomen).
+  IntColumn get pain => integer().nullable()();
+  TextColumn get painLocations => text().nullable()();
+  TextColumn get symptoms => text().nullable()();
+  TextColumn get discharge => text().nullable()();
+  BoolColumn get painkiller => boolean().nullable()();
+  TextColumn get painkillerName => text().nullable()();
+
+  /// Hat das Schmerzmittel geholfen? `null` = keine Angabe.
+  BoolColumn get painkillerHelped => boolean().nullable()();
+
+  // Wechseljahre.
+  IntColumn get hotFlashes => integer().nullable()();
+
+  /// Stärke der Hitzewallungen 1–3 (leicht/mittel/stark).
+  IntColumn get hotFlashIntensity => integer().nullable()();
+
+  /// Nachtschweiß 0–3.
+  IntColumn get nightSweats => integer().nullable()();
+
+  // Schwangerschaft.
+  IntColumn get fetalMovement => intEnum<FetalMovement>().nullable()();
+  RealColumn get weightKg => real().nullable()();
+  IntColumn get bpSystolic => integer().nullable()();
+  IntColumn get bpDiastolic => integer().nullable()();
+
+  TextColumn get note => text().nullable()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {day};
+}
+
+/// v14: Menopause Rating Scale (11 Items, je 0–4, kommagetrennt).
+class MrsAssessments extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get recordedAt => dateTime()();
+  TextColumn get scores => text()();
+  TextColumn get note => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// v14: Schwangerschaft. Aktiv = [endedAt] leer. Termine als lokaler Tag
+/// (`yyyy-MM-dd`); [dueDate] überschreibt die Berechnung aus [lmp].
+class Pregnancies extends Table {
+  TextColumn get id => text()();
+
+  /// Erster Tag der letzten Periode.
+  TextColumn get lmp => text().nullable()();
+
+  /// Errechneter Termin (z. B. aus dem Ultraschall), sonst aus [lmp].
+  TextColumn get dueDate => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get endedAt => dateTime().nullable()();
+
+  /// `birth`, `loss` oder `other` — nur, wenn angegeben.
+  TextColumn get outcome => text().nullable()();
+  TextColumn get note => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -439,6 +533,9 @@ class CalendarLinks extends Table {
     MedicationIntakes,
     Vaccinations,
     SymptomMedia,
+    CycleDays,
+    MrsAssessments,
+    Pregnancies,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -446,7 +543,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? openAppDatabase());
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -571,6 +668,19 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 13) {
         await migrator.createTable(symptomMedia);
+      }
+      if (from < 14) {
+        for (final column in [
+          appSettings.cycleTracking,
+          appSettings.menopauseTracking,
+          appSettings.pregnancyTracking,
+          appSettings.showFertileWindow,
+        ]) {
+          await migrator.addColumn(appSettings, column);
+        }
+        await migrator.createTable(cycleDays);
+        await migrator.createTable(mrsAssessments);
+        await migrator.createTable(pregnancies);
       }
     },
     beforeOpen: (details) async {

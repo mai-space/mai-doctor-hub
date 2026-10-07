@@ -1,0 +1,623 @@
+{
+  "cycleTitle": "Zyklus",
+  "cycleSettingsTitle": "Zyklus & Frauengesundheit",
+  "cycleSettingsIntro": "Alles optional. Schalte nur ein, was für dich passt — du kannst es jederzeit ändern.",
+  "cycleTabToday": "Heute",
+  "cycleTabCalendar": "Kalender",
+  "cycleTabInsights": "Auswertung",
+  "cycleOnboardingTitle": "Zyklus & Frauengesundheit",
+  "cycleOnboardingText": "Möchtest du deinen Zyklus, die Wechseljahre oder eine Schwangerschaft festhalten? Wähle, was passt — oder überspring den Schritt.",
+  "cycleModeCycle": "Periode/Zyklus tracken",
+  "cycleModeCycleSubtitle": "Blutung, Schmerzen, Symptome; geschätzte nächste Periode",
+  "cycleModeMenopause": "Wechseljahre",
+  "cycleModeMenopauseSubtitle": "Hitzewallungen, Schlaf, monatlicher Fragebogen (MRS)",
+  "cycleModePregnancy": "Schwangerschaft",
+  "cycleModePregnancySubtitle": "SSW, Vorsorge-Zeitplan, Gewicht und Blutdruck; pausiert die Perioden-Schätzung",
+  "cycleModeNone": "Nicht für mich",
+  "cycleModeNoneSubtitle": "Überspringen — später in den Einstellungen möglich",
+  "cycleCreateGynecologist": "Gynäkologie als Ärztin/Arzt anlegen",
+  "cycleCreateGynecologistSubtitle": "Platzhalter, später änderbar — z. B. für Termine und das Arzt-PDF",
+  "cycleGynecologistPlaceholder": "Meine Gynäkologin/mein Gynäkologe",
+  "cyclePrivacyNote": "Zyklus- und Schwangerschaftsdaten sind besonders sensibel. Sie bleiben verschlüsselt auf diesem Gerät. Tipp: Schalte unter Einstellungen → Sicherheit die App-Sperre ein.",
+  "cycleShowFertile": "Fruchtbares Fenster anzeigen",
+  "cycleShowFertileSubtitle": "Nur eine grobe Schätzung — keine Verhütungsmethode",
+  "cycleOpen": "Zyklus öffnen",
+  "cycleDeleteAllTitle": "Alle Zyklusdaten löschen",
+  "cycleDeleteAllSubtitle": "Tagebuch, Fragebögen und Schwangerschaft",
+  "cycleDeleteAllText": "Alle Einträge zu Zyklus, Wechseljahren und Schwangerschaft werden endgültig gelöscht und die Bereiche ausgeschaltet. Deine Ärztinnen und Ärzte bleiben erhalten.",
+  "cycleDeleteAllDone": "Zyklusdaten gelöscht",
+  "cycleRecordsSubtitle": "Kalender, Verlauf und Auswertung",
+  "cycleToday": "heute",
+  "cycleFlowTitle": "Blutung",
+  "cycleFlowNone": "Keine",
+  "cycleFlowSpotting": "Schmierblutung",
+  "cycleFlowLight": "Leicht",
+  "cycleFlowMedium": "Mittel",
+  "cycleFlowHeavy": "Stark",
+  "cycleFlowVeryHeavy": "Sehr stark",
+  "cyclePainTitle": "Schmerz",
+  "cyclePainNotLogged": "Nicht erfasst — Regler bewegen",
+  "cyclePainClear": "Entfernen",
+  "cyclePainValue": "Schmerz {value}/10",
+  "@cyclePainValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "cyclePainLocations": "Wo?",
+  "cyclePainkiller": "Schmerzmittel genommen",
+  "cyclePainkillerName": "Welches? (optional)",
+  "cyclePainkillerHelped": "Hat es geholfen?",
+  "cycleNoAnswer": "Keine Angabe",
+  "cycleOtherSymptoms": "Andere",
+  "cycleOtherHint": "Eigenes Symptom hinzufügen",
+  "cycleOtherAdd": "Hinzufügen",
+  "cycleDischargeTitle": "Ausfluss",
+  "cycleMenopauseTitle": "Wechseljahre",
+  "cycleHotFlashes": "Hitzewallungen heute",
+  "cycleHotFlashIntensity": "Wie stark?",
+  "cycleNightSweats": "Nachtschweiß",
+  "cycleHotFlashesToday": "{count, plural, =1{1 Hitzewallung heute} other{{count} Hitzewallungen heute}}",
+  "@cycleHotFlashesToday": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cyclePregnancyTitle": "Schwangerschaft",
+  "cycleFetalMovement": "Kindsbewegungen",
+  "cycleFetalNotYet": "Noch nicht spürbar",
+  "cycleFetalNormal": "Wie gewohnt",
+  "cycleFetalLess": "Weniger als sonst",
+  "cycleWeight": "Gewicht",
+  "cycleBpSystolic": "Blutdruck oben",
+  "cycleBpDiastolic": "unten",
+  "cycleNoteHint": "Was dir heute wichtig ist",
+  "cycleDayTitlePattern": "EEE, d. MMM yyyy",
+  "cycleDayPattern": "EEEE, d. MMMM",
+  "cycleDatePattern": "dd.MM.yyyy",
+  "cycleShortDatePattern": "d.M.",
+  "cycleMonthPattern": "MMMM yyyy",
+  "cycleDayDeleteTitle": "Eintrag löschen?",
+  "cycleDayDeleteText": "Alle Angaben zu diesem Tag werden gelöscht.",
+  "cyclePbacTitle": "Blutverlust zählen (PBAC, optional)",
+  "cyclePbacSubtitle": "Für ein genaueres Bild bei starker Periode",
+  "cyclePbacExplain": "PBAC (Higham 1990): Zähle Binden/Tampons nach Füllung, Blutklumpen und Durchbluten. Punkte je Zyklus über 100 sprechen für eine verstärkte Regelblutung — das lohnt sich ärztlich anzuschauen.",
+  "cyclePbacScore": "{score} PBAC-Punkte heute",
+  "@cyclePbacScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "cyclePbacPoints": "{points} Punkte je Stück",
+  "@cyclePbacPoints": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "cyclePbacPadsLight": "Binde, leicht gefüllt",
+  "cyclePbacPadsMedium": "Binde, mittel gefüllt",
+  "cyclePbacPadsFull": "Binde, voll",
+  "cyclePbacTamponsLight": "Tampon, leicht gefüllt",
+  "cyclePbacTamponsMedium": "Tampon, mittel gefüllt",
+  "cyclePbacTamponsFull": "Tampon, voll",
+  "cyclePbacClotsSmall": "Blutklumpen, klein (etwa 1-Cent-Münze)",
+  "cyclePbacClotsLarge": "Blutklumpen, groß (etwa 2-Euro-Münze oder größer)",
+  "cyclePbacFlooding": "Durchgeblutet (Flooding)",
+  "cycleLess": "Weniger",
+  "cycleMore": "Mehr",
+  "cyclePhaseMenstruation": "Periode",
+  "cyclePhaseFollicular": "Follikelphase",
+  "cyclePhaseOvulation": "Eisprung (ca.)",
+  "cyclePhaseLuteal": "Lutealphase",
+  "cycleStatusNoData": "Noch keine Periode erfasst — trag den ersten Tag ein.",
+  "cycleStatusCycleDay": "Zyklustag {day}",
+  "@cycleStatusCycleDay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleStatusPeriodDay": "Periode, Tag {day}",
+  "@cycleStatusPeriodDay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleStatusNextIn": "{days, plural, =1{nächste Periode in ~1 Tag (geschätzt)} other{nächste Periode in ~{days} Tagen (geschätzt)}}",
+  "@cycleStatusNextIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleStatusExpectedNow": "Periode etwa jetzt erwartet (geschätzt)",
+  "cycleStatusLate": "Periode später als geschätzt",
+  "cycleEstimateDisclaimer": "Schätzung aus deinen bisherigen Zyklen — keine Verhütungsmethode und kein Schwangerschaftstest.",
+  "cyclePredictionRange": "Nächste Periode etwa {from} – {to} (geschätzt)",
+  "@cyclePredictionRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleFertileRange": "Fruchtbares Fenster grob geschätzt: {from} – {to}",
+  "@cycleFertileRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleQuickLogTitle": "Heute erfassen",
+  "cycleQuickLogMore": "Mehr erfassen (Symptome, Ausfluss, Notiz …)",
+  "cycleQuickLogSymptoms": "{count, plural, =1{1 Symptom erfasst} other{{count} Symptome erfasst}}",
+  "@cycleQuickLogSymptoms": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cyclePrevMonth": "Vorheriger Monat",
+  "cycleNextMonth": "Nächster Monat",
+  "cycleCalendarHint": "Tippe auf einen Tag, um ihn zu erfassen oder zu ändern.",
+  "cycleLegendPeriod": "Blutung",
+  "cycleLegendPredicted": "erwartet (geschätzt)",
+  "cycleLegendFertile": "fruchtbar (grob)",
+  "cycleLegendLogged": "erfasst",
+  "cycleInsightsOverview": "Überblick",
+  "cycleInsightsNotEnough": "Für Durchschnitt und Schätzung braucht es mindestens zwei erfasste Perioden.",
+  "cycleInsightsAverage": "Zykluslänge Ø {average} Tage (Median {median}, {min}–{max})",
+  "@cycleInsightsAverage": {
+    "placeholders": {
+      "average": {
+        "type": "String"
+      },
+      "median": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleInsightsPeriod": "{count, plural, =1{Periode Ø {average} Tage · 1 Zyklus ausgewertet} other{Periode Ø {average} Tage · {count} Zyklen ausgewertet}}",
+  "@cycleInsightsPeriod": {
+    "placeholders": {
+      "average": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleInsightsEmpty": "Noch keine Auswertung — erfasse ein paar Tage, dann erscheinen hier Diagramme.",
+  "cycleChartLengthTitle": "Zykluslängen",
+  "cycleChartLengthHelp": "Balken = Zykluslänge, dunkler Anteil = Periode. Grün hinterlegt: 21–35 Tage; gestrichelt: dein Durchschnitt.",
+  "cycleChartLengthSemantics": "Zykluslängen der letzten {count} Zyklen: {values} Tage",
+  "@cycleChartLengthSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "values": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleChartPainTitle": "Schmerz nach Zyklustag",
+  "cycleChartPainHelp": "Jede Zeile ein Zyklus, jede Spalte ein Zyklustag. So werden Muster sichtbar, etwa Schmerz kurz vor oder zu Beginn der Periode.",
+  "cycleChartPainSemantics": "Schmerz in {count} Zyklen; starke Schmerzen an Zyklustag {days}",
+  "@cycleChartPainSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "cyclePainStripLegend": "Farbe = Schmerz 0–10 · roter Strich = Periode",
+  "cycleChartPhaseTitle": "Symptome nach Zyklusphase",
+  "cycleChartPhaseHelp": "Anteil der erfassten Tage je Phase, an denen das Symptom auftrat. Phasen sind aus deinen Zyklen geschätzt.",
+  "cycleChartPbacTitle": "PBAC je Zyklus",
+  "cycleChartPbacSemantics": "PBAC-Punkte je Zyklus: {values}; Grenze 100",
+  "@cycleChartPbacSemantics": {
+    "placeholders": {
+      "values": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleChartHotFlashTitle": "Hitzewallungen je Woche",
+  "cycleChartHotFlashSemantics": "Hitzewallungen je Woche, letzte 12 Wochen: {values}",
+  "@cycleChartHotFlashSemantics": {
+    "placeholders": {
+      "values": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleChartMrsTitle": "Verlauf Menopause Rating Scale",
+  "cycleChartMrsSemantics": "MRS-Gesamtwerte: {values} (von 44)",
+  "@cycleChartMrsSemantics": {
+    "placeholders": {
+      "values": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleChartWeightTitle": "Gewicht",
+  "cycleChartWeightSemantics": "Gewicht, {count} Messungen, zuletzt {latest} kg",
+  "@cycleChartWeightSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "latest": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleChartBpTitle": "Blutdruck",
+  "cycleChartBpHelp": "Werte ab 140/90 mmHg in der Schwangerschaft bitte zeitnah ärztlich besprechen.",
+  "cycleChartBpSemantics": "Blutdruck, {count} Messungen",
+  "@cycleChartBpSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleHintsTitle": "Lohnt sich, mit deiner Gynäkologin/deinem Gynäkologen zu besprechen",
+  "cycleHintsUrgentTitle": "Bitte zeitnah ärztlich abklären lassen",
+  "cycleHintsFooter": "Das ist keine Diagnose — nur ein Hinweis aus deinen Einträgen.",
+  "cycleHintShortCycles": "Deine Zyklen waren wiederholt kürzer als 21 Tage (Median {days} Tage).",
+  "@cycleHintShortCycles": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleHintLongCycles": "Deine Zyklen waren wiederholt länger als 35 Tage (Median {days} Tage).",
+  "@cycleHintLongCycles": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleHintIrregular": "Deine Zykluslängen schwanken um {days} Tage (kürzester bis längster).",
+  "@cycleHintIrregular": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleHintLongPeriod": "Eine Periode dauerte {days} Tage (länger als 7 Tage).",
+  "@cycleHintLongPeriod": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleHintHeavyBleeding": "PBAC von {score} Punkten in einem Zyklus (über 100 spricht für eine verstärkte Blutung).",
+  "@cycleHintHeavyBleeding": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleHintStrongPain": "Starke Schmerzen (7/10 oder mehr) an {days} Tagen eines Zyklus.",
+  "@cycleHintStrongPain": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleHintPainkiller": "Schmerzmittel haben nicht ausreichend geholfen.",
+  "cycleHintIntermenstrual": "{days, plural, =1{Schmierblutung an 1 Tag zwischen den Perioden (letzte 90 Tage).} other{Schmierblutung an {days} Tagen zwischen den Perioden (letzte 90 Tage).}}",
+  "@cycleHintIntermenstrual": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleHintPostmenopausal": "Blutung nach mehr als 12 Monaten ohne Periode — bitte ärztlich abklären lassen.",
+  "cycleHintPregnancyBleeding": "Blutungen in der Schwangerschaft bitte zeitnah ärztlich abklären lassen — oft harmlos, aber wichtig zu wissen.",
+  "cycleHintFetalMovement": "Spürst du dein Kind weniger als sonst, melde dich bitte zeitnah in deiner Praxis oder im Kreißsaal.",
+  "cycleMrsTitle": "Menopause Rating Scale (MRS)",
+  "cycleMrsIntro": "Welche der folgenden Beschwerden hast du derzeit — und wie stark? Kreuze bitte zu jeder Beschwerde an. Einmal im Monat genügt.",
+  "cycleMrsExplain": "Ein kurzer, wissenschaftlich geprüfter Fragebogen (11 Fragen) — einmal im Monat zeigt er den Verlauf deiner Beschwerden.",
+  "cycleMrsFill": "Fragebogen ausfüllen",
+  "cycleMrsSave": "Speichern ({answered}/{total})",
+  "@cycleMrsSave": {
+    "placeholders": {
+      "answered": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleMrsSaved": "Gespeichert: {summary}",
+  "@cycleMrsSaved": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleMrsSource": "Menopause Rating Scale nach Heinemann et al. (Health Qual Life Outcomes 2003; 2004). Summe 0–44: 0–4 keine/kaum, 5–8 leicht, 9–16 mittel, ab 17 stark.",
+  "cycleMrsBands": "Summe 0–44: 0–4 keine/kaum, 5–8 leicht, 9–16 mittel, ab 17 stark.",
+  "cycleMrsLevel0": "keine",
+  "cycleMrsLevel1": "leicht",
+  "cycleMrsLevel2": "mittel",
+  "cycleMrsLevel3": "stark",
+  "cycleMrsLevel4": "sehr stark",
+  "cycleMrsItem1": "Wallungen, Schwitzen (aufsteigende Hitze, Schweißausbrüche)",
+  "cycleMrsItem2": "Herzbeschwerden (Herzklopfen, Herzrasen, Herzstolpern, Herzbeklemmungen)",
+  "cycleMrsItem3": "Schlafstörungen (Einschlafstörungen, Durchschlafstörungen, zu frühes Aufwachen)",
+  "cycleMrsItem4": "Depressive Verstimmung (Mutlosigkeit, Traurigkeit, Weinerlichkeit, Antriebslosigkeit, Stimmungsschwankungen)",
+  "cycleMrsItem5": "Reizbarkeit (Nervosität, innere Anspannung, Aggressivität)",
+  "cycleMrsItem6": "Ängstlichkeit (innere Unruhe, Panik)",
+  "cycleMrsItem7": "Körperliche und geistige Erschöpfung (Leistungsminderung, Gedächtnisminderung, Konzentrationsschwäche, Vergesslichkeit)",
+  "cycleMrsItem8": "Sexualprobleme (Veränderung des sexuellen Verlangens, der sexuellen Betätigung und Befriedigung)",
+  "cycleMrsItem9": "Harnwegsbeschwerden (Beschwerden beim Wasserlassen, häufiger Harndrang, unwillkürlicher Harnabgang)",
+  "cycleMrsItem10": "Trockenheit der Scheide (Trockenheitsgefühl oder Brennen der Scheide, Beschwerden beim Geschlechtsverkehr)",
+  "cycleMrsItem11": "Gelenk- und Muskelbeschwerden (Schmerzen im Bereich der Gelenke, rheumaähnliche Beschwerden)",
+  "cycleMrsSomatic": "körperlich",
+  "cycleMrsPsychological": "psychisch",
+  "cycleMrsUrogenital": "urogenital",
+  "cycleMrsTotalLabel": "Gesamt",
+  "cycleMrsTotal": "MRS {total} ({severity})",
+  "@cycleMrsTotal": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "severity": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleMrsSeverityNone": "keine/kaum",
+  "cycleMrsSeverityMild": "leicht",
+  "cycleMrsSeverityModerate": "mittel",
+  "cycleMrsSeveritySevere": "stark",
+  "cycleMrsNotYet": "Wechseljahre: MRS-Fragebogen noch nicht ausgefüllt",
+  "cycleMrsLatest": "Wechseljahre: MRS {total} ({severity}) am {date}",
+  "@cycleMrsLatest": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "severity": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cyclePregnancyNoDates": "Schwangerschaft: trag die letzte Periode oder den errechneten Termin ein.",
+  "cyclePregnancyWeek": "SSW {week}",
+  "@cyclePregnancyWeek": {
+    "placeholders": {
+      "week": {
+        "type": "String"
+      }
+    }
+  },
+  "cyclePregnancyTrimester": "{trimester}. Trimester",
+  "@cyclePregnancyTrimester": {
+    "placeholders": {
+      "trimester": {
+        "type": "int"
+      }
+    }
+  },
+  "cyclePregnancyDaysToDue": "{days, plural, =0{Termin heute} =1{noch 1 Tag bis zum Termin} other{noch {days} Tage bis zum Termin}}",
+  "@cyclePregnancyDaysToDue": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cyclePregnancyDue": "Errechneter Termin {date}",
+  "@cyclePregnancyDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cyclePregnancyDueNote": "Der errechnete Termin ist ein Richtwert — nur wenige Kinder kommen genau an diesem Tag.",
+  "cyclePregnancyEditDates": "Termin & letzte Periode",
+  "cyclePregnancyLmp": "Erster Tag der letzten Periode",
+  "cyclePregnancyNaegele": "Errechnet (Naegele, + 280 Tage): {date}",
+  "@cyclePregnancyNaegele": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cyclePregnancyDueOverride": "Termin laut Ärztin/Arzt/Ultraschall (hat Vorrang)",
+  "cyclePregnancyTimeline": "Vorsorge-Zeitplan (Vorschläge)",
+  "cyclePregnancyTimelineSource": "Nach den Mutterschafts-Richtlinien: Vorsorge alle 4 Wochen, ab SSW 32 alle 2 Wochen; drei Basis-Ultraschalle. Deine Praxis plant individuell.",
+  "cyclePregnancyShowAll": "Alle {count} anzeigen",
+  "@cyclePregnancyShowAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cyclePregnancyShowLess": "Weniger anzeigen",
+  "cycleMilestoneCheckup": "Vorsorge (SSW {weeks})",
+  "@cycleMilestoneCheckup": {
+    "placeholders": {
+      "weeks": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleMilestoneUltrasound": "Basis-Ultraschall (SSW {weeks})",
+  "@cycleMilestoneUltrasound": {
+    "placeholders": {
+      "weeks": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleMilestoneAround": "ab {date}",
+  "@cycleMilestoneAround": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleMilestoneCreate": "Als Termin anlegen",
+  "cycleMilestoneCreated": "Termin angelegt",
+  "cyclePregnancyEnd": "Schwangerschaft beenden",
+  "cyclePregnancyEndText": "Die Schwangerschaft wird abgeschlossen und der Bereich ausgeblendet. Deine Einträge bleiben erhalten. Du kannst optional angeben, wie sie geendet hat.",
+  "cyclePregnancyOutcomeBirth": "Geburt",
+  "cyclePregnancyOutcomeLoss": "Fehlgeburt oder Verlust",
+  "cyclePregnancyOutcomeNone": "Möchte ich nicht angeben",
+  "cyclePregnancyEndConfirm": "Beenden",
+  "cyclePregnancyEnded": "Gespeichert",
+  "cycleTopic": "Zyklus & Frauengesundheit",
+  "cycleTopicDescription": "Erwartete Periode, monatlicher Fragebogen, Vorsorge-Vorschläge — standardmäßig diskret",
+  "cycleDiscreetTitle": "Erinnerung",
+  "cycleReminderSoonTitle": "Periode in etwa 2 Tagen erwartet (geschätzt)",
+  "cycleReminderTodayTitle": "Periode etwa heute erwartet (geschätzt)",
+  "cycleReminderBody": "Trag sie im Zyklus-Tagebuch ein, wenn sie beginnt.",
+  "cycleReminderMrsTitle": "Zeit für deinen monatlichen Wechseljahre-Fragebogen",
+  "cycleReminderMrsBody": "Letzter Wert: MRS {total}",
+  "@cycleReminderMrsBody": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleReminderMilestoneBody": "Vorschlag aus dem Vorsorge-Zeitplan — schon einen Termin?",
+  "cycleSummarySubtitle": "Letzte Zyklen, Durchschnitte, PBAC, Schmerztage, Symptome, Hinweise; ggf. Schwangerschaft und MRS",
+  "cycleReportWeight": "Gewicht zuletzt {kg} kg ({date})",
+  "@cycleReportWeight": {
+    "placeholders": {
+      "kg": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleReportBp": "Blutdruck zuletzt {sys}/{dia} mmHg ({date})",
+  "@cycleReportBp": {
+    "placeholders": {
+      "sys": {
+        "type": "int"
+      },
+      "dia": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleReportStats": "Zykluslänge Ø {average} Tage, Median {median} ({min}–{max}), {count} Zyklen",
+  "@cycleReportStats": {
+    "placeholders": {
+      "average": {
+        "type": "String"
+      },
+      "median": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleReportPeriodLength": "Periodendauer Ø {average} Tage",
+  "@cycleReportPeriodLength": {
+    "placeholders": {
+      "average": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleReportPainDays": "{days, plural, =1{1 Tag mit Schmerzen (letzte 6 Monate)} other{{days} Tage mit Schmerzen (letzte 6 Monate)}}",
+  "@cycleReportPainDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleReportTopSymptoms": "Häufigste Symptome (Tage): {symptoms}",
+  "@cycleReportTopSymptoms": {
+    "placeholders": {
+      "symptoms": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleReportRecentStarts": "Letzte Periodenbeginne: {dates}",
+  "@cycleReportRecentStarts": {
+    "placeholders": {
+      "dates": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleReportStart": "Beginn",
+  "cycleReportLength": "Zyklus (Tage)",
+  "cycleReportPeriod": "Periode (Tage)",
+  "cycleReportStrongPain": "Tage Schmerz ≥ 7",
+  "cycleReportRunning": "läuft",
+  "cycleReportFooter": "Selbst erfasst in Mai Doctor Hub. Schätzungen und Hinweise sind keine Diagnose."
+}

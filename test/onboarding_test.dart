@@ -41,6 +41,10 @@ void main() {
     await settle(tester);
     await tester.tap(find.text('Weiter'));
     await settle(tester);
+    // v14: Schritt „Zyklus & Frauengesundheit“ (optional) überspringen.
+    expect(find.text('Zyklus & Frauengesundheit'), findsOneWidget);
+    await tester.tap(find.text('Weiter'));
+    await settle(tester);
     await tester.tap(find.text('Benachrichtigungen erlauben'));
     await settle(tester);
     expect(permissions.requests, 1);

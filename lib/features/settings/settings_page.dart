@@ -5,6 +5,7 @@ import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../l10n/l10n.dart';
 import '../archive/archive_page.dart';
+import '../cycle/cycle_settings_section.dart';
 import 'appointment_reminders_tile.dart';
 import 'backup_section.dart';
 import '../../services/notifications/notification_plan.dart';
@@ -102,6 +103,8 @@ class SettingsPage extends StatelessWidget {
                   MaterialPageRoute<void>(builder: (_) => const ArchivePage()),
                 ),
               ),
+              const SizedBox(height: 24),
+              CycleSettingsSection(settings: settings),
               const SizedBox(height: 24),
               Text(
                 l10n.settingsAppSection,

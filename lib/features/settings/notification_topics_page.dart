@@ -16,6 +16,7 @@ class NotificationTopicsPage extends StatelessWidget {
     NotificationTopic.appointmentAhead => Icons.event_note_outlined,
     NotificationTopic.vaccination => Icons.vaccines_outlined,
     NotificationTopic.checkIn => Icons.edit_note,
+    NotificationTopic.cycle => Icons.water_drop_outlined,
   };
 
   @override

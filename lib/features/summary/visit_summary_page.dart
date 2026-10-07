@@ -5,7 +5,9 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
+import '../../data/cycle_catalog.dart';
 import '../../data/repositories/appointment_repository.dart';
+import '../../data/repositories/cycle_repository.dart';
 import '../../data/repositories/medication_repository.dart';
 import '../../l10n/l10n.dart';
 import '../../services/visit_summary.dart';
@@ -32,6 +34,11 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
   bool _vaccinations = true;
   bool _busy = false;
 
+  /// Zyklus-Abschnitt: nur anbietbar, wenn ein Bereich aktiv ist; Standard
+  /// an, wenn der Termin bei der Gynäkologie ist (bis man umschaltet).
+  bool _cycleEnabled = false;
+  bool? _cycleChoice;
+
   List<Symptom> _symptoms = const [];
   List<MedicationDetails> _medications = const [];
   List<AppointmentSummary> _appointments = const [];
@@ -43,11 +50,12 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
   }
 
   Future<void> _load() async {
-    final (symptoms, medications, appointments) = await loadSummaryChoices(
-      DatabaseScope.of(context),
-    );
+    final db = DatabaseScope.of(context);
+    final (symptoms, medications, appointments) = await loadSummaryChoices(db);
+    final cycle = await CycleRepository(db).overview();
     if (!mounted) return;
     setState(() {
+      _cycleEnabled = cycle.enabled;
       _symptoms = symptoms;
       _medications = medications;
       _appointments = appointments;
@@ -63,7 +71,19 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
     super.dispose();
   }
 
+  bool get _includeCycle {
+    if (!_cycleEnabled) return false;
+    final choice = _cycleChoice;
+    if (choice != null) return choice;
+    final doctor = _appointments
+        .where((a) => a.appointment.id == _appointmentId)
+        .firstOrNull
+        ?.doctor;
+    return isGynecologySpecialty(doctor?.specialty);
+  }
+
   VisitSummaryOptions get _options => VisitSummaryOptions(
+    includeCycle: _includeCycle,
     appointmentId: _appointmentId,
     symptomIds: _allSymptoms ? null : _symptomIds,
     medicationIds: _allMedications ? null : _medicationIds,
@@ -246,6 +266,15 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
             value: _vaccinations,
             onChanged: (v) => setState(() => _vaccinations = v),
           ),
+          if (_cycleEnabled)
+            SwitchListTile(
+              key: const ValueKey('summary-cycle'),
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.cycleSettingsTitle),
+              subtitle: Text(l10n.cycleSummarySubtitle),
+              value: _includeCycle,
+              onChanged: (v) => setState(() => _cycleChoice = v),
+            ),
         ],
       ),
     );

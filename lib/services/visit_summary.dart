@@ -9,12 +9,15 @@ import 'package:pdf/widgets.dart' as pw;
 
 import '../data/app_database.dart';
 import '../data/repositories/appointment_repository.dart';
+import '../data/repositories/cycle_repository.dart';
 import '../data/repositories/medication_repository.dart';
 import '../data/repositories/symptom_media_repository.dart';
 import '../data/repositories/symptom_repository.dart';
 import '../data/repositories/vaccination_repository.dart';
 import '../data/symptom_description.dart';
 import '../l10n/l10n.dart';
+import 'cycle/cycle_report.dart';
+import 'cycle/cycle_text.dart' show hintText;
 import 'file_vault.dart';
 import '../widgets/symptom_report_card.dart' show observationLabel;
 
@@ -28,6 +31,7 @@ class VisitSummaryOptions {
     this.includeVaccinations = true,
     this.questions = '',
     this.patientName,
+    this.includeCycle = false,
   });
 
   /// Bezugstermin: bestimmt Arzt und Zeitraum der Symptom-Verläufe.
@@ -40,6 +44,9 @@ class VisitSummaryOptions {
   final bool includeVaccinations;
   final String questions;
   final String? patientName;
+
+  /// v14: Abschnitt „Zyklus & Frauengesundheit“ (nur auf Wunsch).
+  final bool includeCycle;
 }
 
 /// Foto-Beleg für das PDF (verkleinert).
@@ -93,6 +100,7 @@ class VisitSummaryData {
     required this.dueVaccinations,
     this.appointment,
     this.patientName,
+    this.cycle,
   });
 
   final DateTime generatedAt;
@@ -106,6 +114,9 @@ class VisitSummaryData {
   final List<MedicationDetails> medications;
   final List<Vaccination> vaccinations;
   final List<Vaccination> dueVaccinations;
+
+  /// Nur, wenn gewünscht und ein Bereich aktiv ist.
+  final CycleReport? cycle;
 }
 
 /// Stellt die Daten für den Arztbesuch zusammen.
@@ -185,7 +196,13 @@ class VisitSummaryBuilder {
     );
 
     final vaccinationRepo = VaccinationRepository(_db);
+    CycleReport? cycle;
+    if (options.includeCycle) {
+      final overview = await CycleRepository(_db).overview(now: current);
+      if (overview.enabled) cycle = CycleReport.from(overview);
+    }
     return VisitSummaryData(
+      cycle: cycle,
       generatedAt: current,
       from: from,
       to: to,
@@ -489,12 +506,57 @@ abstract final class VisitSummaryPdf {
                 ),
               ],
             ]),
+          if (data.cycle case final cycle? when !cycle.isEmpty)
+            section(l10n.cycleSettingsTitle, [
+              for (final line in cycle.summaryLines(l10n))
+                pw.Bullet(text: _latin(line)),
+              if (cycle.cycles.isNotEmpty) ...[
+                pw.SizedBox(height: 4),
+                pw.TableHelper.fromTextArray(
+                  headers: [
+                    l10n.cycleReportStart,
+                    l10n.cycleReportLength,
+                    l10n.cycleReportPeriod,
+                    'PBAC',
+                    _latin(l10n.cycleReportStrongPain),
+                  ],
+                  cellStyle: const pw.TextStyle(fontSize: 9),
+                  headerStyle: pw.TextStyle(
+                    fontSize: 9,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                  data: [
+                    for (final row in cycle.cycleTable(l10n))
+                      [for (final cell in row) _latin(cell)],
+                  ],
+                ),
+              ],
+              if (cycle.hints.isNotEmpty) ...[
+                pw.SizedBox(height: 6),
+                pw.Text(
+                  l10n.cycleHintsTitle,
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                ),
+                for (final h in cycle.hints)
+                  pw.Bullet(text: _latin(hintText(h, l10n))),
+              ],
+              pw.SizedBox(height: 4),
+              pw.Text(_latin(l10n.cycleReportFooter), style: muted),
+            ]),
         ],
       ),
     );
     return doc.save();
   }
 }
+
+/// Die Standardschrift des PDFs (Helvetica) kennt nur Latin-1: Striche und
+/// „≥“ für den Zyklus-Abschnitt ersetzen, statt sie wegfallen zu lassen.
+String _latin(String text) => text
+    .replaceAll('≥', '>=')
+    .replaceAll('–', '-')
+    .replaceAll('—', '-')
+    .replaceAll('…', '...');
 
 /// Für die Auswahl im Formular: alle Symptome/Medikamente.
 Future<(List<Symptom>, List<MedicationDetails>, List<AppointmentSummary>)>

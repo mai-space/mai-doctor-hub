@@ -3,11 +3,13 @@ import 'package:intl/intl.dart';
 
 import '../../data/app_database.dart';
 import '../../data/repositories/appointment_repository.dart';
+import '../../data/repositories/cycle_repository.dart';
 import '../../data/repositories/medication_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../data/symptom_description.dart';
 import '../../l10n/l10n.dart';
 import '../../widgets/symptom_report_card.dart' show observationLabel;
+import '../cycle/cycle_report.dart';
 import '../visit_summary.dart';
 import 'assistant_engine.dart';
 import 'semantic_index.dart';
@@ -258,6 +260,7 @@ class AssistantContextBuilder {
               l10n.svcContextNextDue(_day.format(v.nextDueAt!)),
           ].join(', '),
       ]),
+      await _cycle(current),
     ];
 
     final base = sections.where((s) => s.isNotEmpty).join('\n\n');
@@ -307,6 +310,16 @@ class AssistantContextBuilder {
             exclude: await RecordsRepository(_db).archivedKeys(),
           );
     return mergeHits(keyword, semantic);
+  }
+
+  /// Kompakte Zyklus-Zusammenfassung, nur wenn ein Bereich aktiv ist.
+  Future<String> _cycle(DateTime now) async {
+    final overview = await CycleRepository(_db).overview(now: now);
+    if (!overview.enabled) return '';
+    return _section(
+      _l10n.cycleSettingsTitle,
+      CycleReport.from(overview).contextLines(_l10n),
+    );
   }
 
   Future<List<String>> _appointments(DateTime now) async {

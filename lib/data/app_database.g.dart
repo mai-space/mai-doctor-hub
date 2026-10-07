@@ -6736,6 +6736,66 @@ class $AppSettingsTable extends AppSettings
         requiredDuringInsert: false,
         defaultValue: const Constant(''),
       );
+  static const VerificationMeta _cycleTrackingMeta = const VerificationMeta(
+    'cycleTracking',
+  );
+  @override
+  late final GeneratedColumn<bool> cycleTracking = GeneratedColumn<bool>(
+    'cycle_tracking',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("cycle_tracking" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _menopauseTrackingMeta = const VerificationMeta(
+    'menopauseTracking',
+  );
+  @override
+  late final GeneratedColumn<bool> menopauseTracking = GeneratedColumn<bool>(
+    'menopause_tracking',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("menopause_tracking" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _pregnancyTrackingMeta = const VerificationMeta(
+    'pregnancyTracking',
+  );
+  @override
+  late final GeneratedColumn<bool> pregnancyTracking = GeneratedColumn<bool>(
+    'pregnancy_tracking',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("pregnancy_tracking" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _showFertileWindowMeta = const VerificationMeta(
+    'showFertileWindow',
+  );
+  @override
+  late final GeneratedColumn<bool> showFertileWindow = GeneratedColumn<bool>(
+    'show_fertile_window',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("show_fertile_window" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -6753,6 +6813,10 @@ class $AppSettingsTable extends AppSettings
     appointmentRemindersEnabled,
     appointmentReminderLeads,
     notificationTopics,
+    cycleTracking,
+    menopauseTracking,
+    pregnancyTracking,
+    showFertileWindow,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6892,6 +6956,42 @@ class $AppSettingsTable extends AppSettings
         ),
       );
     }
+    if (data.containsKey('cycle_tracking')) {
+      context.handle(
+        _cycleTrackingMeta,
+        cycleTracking.isAcceptableOrUnknown(
+          data['cycle_tracking']!,
+          _cycleTrackingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('menopause_tracking')) {
+      context.handle(
+        _menopauseTrackingMeta,
+        menopauseTracking.isAcceptableOrUnknown(
+          data['menopause_tracking']!,
+          _menopauseTrackingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('pregnancy_tracking')) {
+      context.handle(
+        _pregnancyTrackingMeta,
+        pregnancyTracking.isAcceptableOrUnknown(
+          data['pregnancy_tracking']!,
+          _pregnancyTrackingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('show_fertile_window')) {
+      context.handle(
+        _showFertileWindowMeta,
+        showFertileWindow.isAcceptableOrUnknown(
+          data['show_fertile_window']!,
+          _showFertileWindowMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -6961,6 +7061,22 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.string,
         data['${effectivePrefix}notification_topics'],
       )!,
+      cycleTracking: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}cycle_tracking'],
+      )!,
+      menopauseTracking: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}menopause_tracking'],
+      )!,
+      pregnancyTracking: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}pregnancy_tracking'],
+      )!,
+      showFertileWindow: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}show_fertile_window'],
+      )!,
     );
   }
 
@@ -6986,6 +7102,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final bool appointmentRemindersEnabled;
   final String appointmentReminderLeads;
   final String notificationTopics;
+  final bool cycleTracking;
+  final bool menopauseTracking;
+  final bool pregnancyTracking;
+
+  /// Grob geschätztes fruchtbares Fenster im Kalender zeigen.
+  final bool showFertileWindow;
   const AppSetting({
     required this.id,
     required this.morningReminderEnabled,
@@ -7002,6 +7124,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.appointmentRemindersEnabled,
     required this.appointmentReminderLeads,
     required this.notificationTopics,
+    required this.cycleTracking,
+    required this.menopauseTracking,
+    required this.pregnancyTracking,
+    required this.showFertileWindow,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7027,6 +7153,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       appointmentReminderLeads,
     );
     map['notification_topics'] = Variable<String>(notificationTopics);
+    map['cycle_tracking'] = Variable<bool>(cycleTracking);
+    map['menopause_tracking'] = Variable<bool>(menopauseTracking);
+    map['pregnancy_tracking'] = Variable<bool>(pregnancyTracking);
+    map['show_fertile_window'] = Variable<bool>(showFertileWindow);
     return map;
   }
 
@@ -7049,6 +7179,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       appointmentRemindersEnabled: Value(appointmentRemindersEnabled),
       appointmentReminderLeads: Value(appointmentReminderLeads),
       notificationTopics: Value(notificationTopics),
+      cycleTracking: Value(cycleTracking),
+      menopauseTracking: Value(menopauseTracking),
+      pregnancyTracking: Value(pregnancyTracking),
+      showFertileWindow: Value(showFertileWindow),
     );
   }
 
@@ -7089,6 +7223,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       notificationTopics: serializer.fromJson<String>(
         json['notificationTopics'],
       ),
+      cycleTracking: serializer.fromJson<bool>(json['cycleTracking']),
+      menopauseTracking: serializer.fromJson<bool>(json['menopauseTracking']),
+      pregnancyTracking: serializer.fromJson<bool>(json['pregnancyTracking']),
+      showFertileWindow: serializer.fromJson<bool>(json['showFertileWindow']),
     );
   }
   @override
@@ -7114,6 +7252,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
         appointmentReminderLeads,
       ),
       'notificationTopics': serializer.toJson<String>(notificationTopics),
+      'cycleTracking': serializer.toJson<bool>(cycleTracking),
+      'menopauseTracking': serializer.toJson<bool>(menopauseTracking),
+      'pregnancyTracking': serializer.toJson<bool>(pregnancyTracking),
+      'showFertileWindow': serializer.toJson<bool>(showFertileWindow),
     };
   }
 
@@ -7133,6 +7275,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     bool? appointmentRemindersEnabled,
     String? appointmentReminderLeads,
     String? notificationTopics,
+    bool? cycleTracking,
+    bool? menopauseTracking,
+    bool? pregnancyTracking,
+    bool? showFertileWindow,
   }) => AppSetting(
     id: id ?? this.id,
     morningReminderEnabled:
@@ -7153,6 +7299,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     appointmentReminderLeads:
         appointmentReminderLeads ?? this.appointmentReminderLeads,
     notificationTopics: notificationTopics ?? this.notificationTopics,
+    cycleTracking: cycleTracking ?? this.cycleTracking,
+    menopauseTracking: menopauseTracking ?? this.menopauseTracking,
+    pregnancyTracking: pregnancyTracking ?? this.pregnancyTracking,
+    showFertileWindow: showFertileWindow ?? this.showFertileWindow,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -7199,6 +7349,18 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       notificationTopics: data.notificationTopics.present
           ? data.notificationTopics.value
           : this.notificationTopics,
+      cycleTracking: data.cycleTracking.present
+          ? data.cycleTracking.value
+          : this.cycleTracking,
+      menopauseTracking: data.menopauseTracking.present
+          ? data.menopauseTracking.value
+          : this.menopauseTracking,
+      pregnancyTracking: data.pregnancyTracking.present
+          ? data.pregnancyTracking.value
+          : this.pregnancyTracking,
+      showFertileWindow: data.showFertileWindow.present
+          ? data.showFertileWindow.value
+          : this.showFertileWindow,
     );
   }
 
@@ -7219,7 +7381,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('onboardingCompleted: $onboardingCompleted, ')
           ..write('appointmentRemindersEnabled: $appointmentRemindersEnabled, ')
           ..write('appointmentReminderLeads: $appointmentReminderLeads, ')
-          ..write('notificationTopics: $notificationTopics')
+          ..write('notificationTopics: $notificationTopics, ')
+          ..write('cycleTracking: $cycleTracking, ')
+          ..write('menopauseTracking: $menopauseTracking, ')
+          ..write('pregnancyTracking: $pregnancyTracking, ')
+          ..write('showFertileWindow: $showFertileWindow')
           ..write(')'))
         .toString();
   }
@@ -7241,6 +7407,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     appointmentRemindersEnabled,
     appointmentReminderLeads,
     notificationTopics,
+    cycleTracking,
+    menopauseTracking,
+    pregnancyTracking,
+    showFertileWindow,
   );
   @override
   bool operator ==(Object other) =>
@@ -7261,7 +7431,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.appointmentRemindersEnabled ==
               this.appointmentRemindersEnabled &&
           other.appointmentReminderLeads == this.appointmentReminderLeads &&
-          other.notificationTopics == this.notificationTopics);
+          other.notificationTopics == this.notificationTopics &&
+          other.cycleTracking == this.cycleTracking &&
+          other.menopauseTracking == this.menopauseTracking &&
+          other.pregnancyTracking == this.pregnancyTracking &&
+          other.showFertileWindow == this.showFertileWindow);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -7280,6 +7454,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<bool> appointmentRemindersEnabled;
   final Value<String> appointmentReminderLeads;
   final Value<String> notificationTopics;
+  final Value<bool> cycleTracking;
+  final Value<bool> menopauseTracking;
+  final Value<bool> pregnancyTracking;
+  final Value<bool> showFertileWindow;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.morningReminderEnabled = const Value.absent(),
@@ -7296,6 +7474,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.appointmentRemindersEnabled = const Value.absent(),
     this.appointmentReminderLeads = const Value.absent(),
     this.notificationTopics = const Value.absent(),
+    this.cycleTracking = const Value.absent(),
+    this.menopauseTracking = const Value.absent(),
+    this.pregnancyTracking = const Value.absent(),
+    this.showFertileWindow = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -7313,6 +7495,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.appointmentRemindersEnabled = const Value.absent(),
     this.appointmentReminderLeads = const Value.absent(),
     this.notificationTopics = const Value.absent(),
+    this.cycleTracking = const Value.absent(),
+    this.menopauseTracking = const Value.absent(),
+    this.pregnancyTracking = const Value.absent(),
+    this.showFertileWindow = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -7330,6 +7516,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<bool>? appointmentRemindersEnabled,
     Expression<String>? appointmentReminderLeads,
     Expression<String>? notificationTopics,
+    Expression<bool>? cycleTracking,
+    Expression<bool>? menopauseTracking,
+    Expression<bool>? pregnancyTracking,
+    Expression<bool>? showFertileWindow,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -7354,6 +7544,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (appointmentReminderLeads != null)
         'appointment_reminder_leads': appointmentReminderLeads,
       if (notificationTopics != null) 'notification_topics': notificationTopics,
+      if (cycleTracking != null) 'cycle_tracking': cycleTracking,
+      if (menopauseTracking != null) 'menopause_tracking': menopauseTracking,
+      if (pregnancyTracking != null) 'pregnancy_tracking': pregnancyTracking,
+      if (showFertileWindow != null) 'show_fertile_window': showFertileWindow,
     });
   }
 
@@ -7373,6 +7567,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<bool>? appointmentRemindersEnabled,
     Value<String>? appointmentReminderLeads,
     Value<String>? notificationTopics,
+    Value<bool>? cycleTracking,
+    Value<bool>? menopauseTracking,
+    Value<bool>? pregnancyTracking,
+    Value<bool>? showFertileWindow,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -7394,6 +7592,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       appointmentReminderLeads:
           appointmentReminderLeads ?? this.appointmentReminderLeads,
       notificationTopics: notificationTopics ?? this.notificationTopics,
+      cycleTracking: cycleTracking ?? this.cycleTracking,
+      menopauseTracking: menopauseTracking ?? this.menopauseTracking,
+      pregnancyTracking: pregnancyTracking ?? this.pregnancyTracking,
+      showFertileWindow: showFertileWindow ?? this.showFertileWindow,
     );
   }
 
@@ -7455,6 +7657,18 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (notificationTopics.present) {
       map['notification_topics'] = Variable<String>(notificationTopics.value);
     }
+    if (cycleTracking.present) {
+      map['cycle_tracking'] = Variable<bool>(cycleTracking.value);
+    }
+    if (menopauseTracking.present) {
+      map['menopause_tracking'] = Variable<bool>(menopauseTracking.value);
+    }
+    if (pregnancyTracking.present) {
+      map['pregnancy_tracking'] = Variable<bool>(pregnancyTracking.value);
+    }
+    if (showFertileWindow.present) {
+      map['show_fertile_window'] = Variable<bool>(showFertileWindow.value);
+    }
     return map;
   }
 
@@ -7475,7 +7689,11 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('onboardingCompleted: $onboardingCompleted, ')
           ..write('appointmentRemindersEnabled: $appointmentRemindersEnabled, ')
           ..write('appointmentReminderLeads: $appointmentReminderLeads, ')
-          ..write('notificationTopics: $notificationTopics')
+          ..write('notificationTopics: $notificationTopics, ')
+          ..write('cycleTracking: $cycleTracking, ')
+          ..write('menopauseTracking: $menopauseTracking, ')
+          ..write('pregnancyTracking: $pregnancyTracking, ')
+          ..write('showFertileWindow: $showFertileWindow')
           ..write(')'))
         .toString();
   }
@@ -11235,6 +11453,1900 @@ class SymptomMediaCompanion extends UpdateCompanion<SymptomMediaItem> {
   }
 }
 
+class $CycleDaysTable extends CycleDays
+    with TableInfo<$CycleDaysTable, CycleDay> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CycleDaysTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _dayMeta = const VerificationMeta('day');
+  @override
+  late final GeneratedColumn<String> day = GeneratedColumn<String>(
+    'day',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<CycleFlow?, int> flow =
+      GeneratedColumn<int>(
+        'flow',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+      ).withConverter<CycleFlow?>($CycleDaysTable.$converterflown);
+  static const VerificationMeta _pbacJsonMeta = const VerificationMeta(
+    'pbacJson',
+  );
+  @override
+  late final GeneratedColumn<String> pbacJson = GeneratedColumn<String>(
+    'pbac_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _painMeta = const VerificationMeta('pain');
+  @override
+  late final GeneratedColumn<int> pain = GeneratedColumn<int>(
+    'pain',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _painLocationsMeta = const VerificationMeta(
+    'painLocations',
+  );
+  @override
+  late final GeneratedColumn<String> painLocations = GeneratedColumn<String>(
+    'pain_locations',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _symptomsMeta = const VerificationMeta(
+    'symptoms',
+  );
+  @override
+  late final GeneratedColumn<String> symptoms = GeneratedColumn<String>(
+    'symptoms',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dischargeMeta = const VerificationMeta(
+    'discharge',
+  );
+  @override
+  late final GeneratedColumn<String> discharge = GeneratedColumn<String>(
+    'discharge',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _painkillerMeta = const VerificationMeta(
+    'painkiller',
+  );
+  @override
+  late final GeneratedColumn<bool> painkiller = GeneratedColumn<bool>(
+    'painkiller',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("painkiller" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _painkillerNameMeta = const VerificationMeta(
+    'painkillerName',
+  );
+  @override
+  late final GeneratedColumn<String> painkillerName = GeneratedColumn<String>(
+    'painkiller_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _painkillerHelpedMeta = const VerificationMeta(
+    'painkillerHelped',
+  );
+  @override
+  late final GeneratedColumn<bool> painkillerHelped = GeneratedColumn<bool>(
+    'painkiller_helped',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("painkiller_helped" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _hotFlashesMeta = const VerificationMeta(
+    'hotFlashes',
+  );
+  @override
+  late final GeneratedColumn<int> hotFlashes = GeneratedColumn<int>(
+    'hot_flashes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _hotFlashIntensityMeta = const VerificationMeta(
+    'hotFlashIntensity',
+  );
+  @override
+  late final GeneratedColumn<int> hotFlashIntensity = GeneratedColumn<int>(
+    'hot_flash_intensity',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nightSweatsMeta = const VerificationMeta(
+    'nightSweats',
+  );
+  @override
+  late final GeneratedColumn<int> nightSweats = GeneratedColumn<int>(
+    'night_sweats',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<FetalMovement?, int>
+  fetalMovement = GeneratedColumn<int>(
+    'fetal_movement',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  ).withConverter<FetalMovement?>($CycleDaysTable.$converterfetalMovementn);
+  static const VerificationMeta _weightKgMeta = const VerificationMeta(
+    'weightKg',
+  );
+  @override
+  late final GeneratedColumn<double> weightKg = GeneratedColumn<double>(
+    'weight_kg',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bpSystolicMeta = const VerificationMeta(
+    'bpSystolic',
+  );
+  @override
+  late final GeneratedColumn<int> bpSystolic = GeneratedColumn<int>(
+    'bp_systolic',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bpDiastolicMeta = const VerificationMeta(
+    'bpDiastolic',
+  );
+  @override
+  late final GeneratedColumn<int> bpDiastolic = GeneratedColumn<int>(
+    'bp_diastolic',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    day,
+    flow,
+    pbacJson,
+    pain,
+    painLocations,
+    symptoms,
+    discharge,
+    painkiller,
+    painkillerName,
+    painkillerHelped,
+    hotFlashes,
+    hotFlashIntensity,
+    nightSweats,
+    fetalMovement,
+    weightKg,
+    bpSystolic,
+    bpDiastolic,
+    note,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cycle_days';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CycleDay> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('day')) {
+      context.handle(
+        _dayMeta,
+        day.isAcceptableOrUnknown(data['day']!, _dayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayMeta);
+    }
+    if (data.containsKey('pbac_json')) {
+      context.handle(
+        _pbacJsonMeta,
+        pbacJson.isAcceptableOrUnknown(data['pbac_json']!, _pbacJsonMeta),
+      );
+    }
+    if (data.containsKey('pain')) {
+      context.handle(
+        _painMeta,
+        pain.isAcceptableOrUnknown(data['pain']!, _painMeta),
+      );
+    }
+    if (data.containsKey('pain_locations')) {
+      context.handle(
+        _painLocationsMeta,
+        painLocations.isAcceptableOrUnknown(
+          data['pain_locations']!,
+          _painLocationsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('symptoms')) {
+      context.handle(
+        _symptomsMeta,
+        symptoms.isAcceptableOrUnknown(data['symptoms']!, _symptomsMeta),
+      );
+    }
+    if (data.containsKey('discharge')) {
+      context.handle(
+        _dischargeMeta,
+        discharge.isAcceptableOrUnknown(data['discharge']!, _dischargeMeta),
+      );
+    }
+    if (data.containsKey('painkiller')) {
+      context.handle(
+        _painkillerMeta,
+        painkiller.isAcceptableOrUnknown(data['painkiller']!, _painkillerMeta),
+      );
+    }
+    if (data.containsKey('painkiller_name')) {
+      context.handle(
+        _painkillerNameMeta,
+        painkillerName.isAcceptableOrUnknown(
+          data['painkiller_name']!,
+          _painkillerNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('painkiller_helped')) {
+      context.handle(
+        _painkillerHelpedMeta,
+        painkillerHelped.isAcceptableOrUnknown(
+          data['painkiller_helped']!,
+          _painkillerHelpedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('hot_flashes')) {
+      context.handle(
+        _hotFlashesMeta,
+        hotFlashes.isAcceptableOrUnknown(data['hot_flashes']!, _hotFlashesMeta),
+      );
+    }
+    if (data.containsKey('hot_flash_intensity')) {
+      context.handle(
+        _hotFlashIntensityMeta,
+        hotFlashIntensity.isAcceptableOrUnknown(
+          data['hot_flash_intensity']!,
+          _hotFlashIntensityMeta,
+        ),
+      );
+    }
+    if (data.containsKey('night_sweats')) {
+      context.handle(
+        _nightSweatsMeta,
+        nightSweats.isAcceptableOrUnknown(
+          data['night_sweats']!,
+          _nightSweatsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('weight_kg')) {
+      context.handle(
+        _weightKgMeta,
+        weightKg.isAcceptableOrUnknown(data['weight_kg']!, _weightKgMeta),
+      );
+    }
+    if (data.containsKey('bp_systolic')) {
+      context.handle(
+        _bpSystolicMeta,
+        bpSystolic.isAcceptableOrUnknown(data['bp_systolic']!, _bpSystolicMeta),
+      );
+    }
+    if (data.containsKey('bp_diastolic')) {
+      context.handle(
+        _bpDiastolicMeta,
+        bpDiastolic.isAcceptableOrUnknown(
+          data['bp_diastolic']!,
+          _bpDiastolicMeta,
+        ),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {day};
+  @override
+  CycleDay map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CycleDay(
+      day: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}day'],
+      )!,
+      flow: $CycleDaysTable.$converterflown.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}flow'],
+        ),
+      ),
+      pbacJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pbac_json'],
+      ),
+      pain: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pain'],
+      ),
+      painLocations: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pain_locations'],
+      ),
+      symptoms: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}symptoms'],
+      ),
+      discharge: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}discharge'],
+      ),
+      painkiller: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}painkiller'],
+      ),
+      painkillerName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}painkiller_name'],
+      ),
+      painkillerHelped: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}painkiller_helped'],
+      ),
+      hotFlashes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hot_flashes'],
+      ),
+      hotFlashIntensity: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hot_flash_intensity'],
+      ),
+      nightSweats: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}night_sweats'],
+      ),
+      fetalMovement: $CycleDaysTable.$converterfetalMovementn.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}fetal_movement'],
+        ),
+      ),
+      weightKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}weight_kg'],
+      ),
+      bpSystolic: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}bp_systolic'],
+      ),
+      bpDiastolic: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}bp_diastolic'],
+      ),
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CycleDaysTable createAlias(String alias) {
+    return $CycleDaysTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<CycleFlow, int, int> $converterflow =
+      const EnumIndexConverter<CycleFlow>(CycleFlow.values);
+  static JsonTypeConverter2<CycleFlow?, int?, int?> $converterflown =
+      JsonTypeConverter2.asNullable($converterflow);
+  static JsonTypeConverter2<FetalMovement, int, int> $converterfetalMovement =
+      const EnumIndexConverter<FetalMovement>(FetalMovement.values);
+  static JsonTypeConverter2<FetalMovement?, int?, int?>
+  $converterfetalMovementn = JsonTypeConverter2.asNullable(
+    $converterfetalMovement,
+  );
+}
+
+class CycleDay extends DataClass implements Insertable<CycleDay> {
+  final String day;
+  final CycleFlow? flow;
+
+  /// PBAC-Zählungen als JSON (siehe `PbacCounts`).
+  final String? pbacJson;
+
+  /// Schmerz 0–10 (gleiche Anker wie bei Symptomen).
+  final int? pain;
+  final String? painLocations;
+  final String? symptoms;
+  final String? discharge;
+  final bool? painkiller;
+  final String? painkillerName;
+
+  /// Hat das Schmerzmittel geholfen? `null` = keine Angabe.
+  final bool? painkillerHelped;
+  final int? hotFlashes;
+
+  /// Stärke der Hitzewallungen 1–3 (leicht/mittel/stark).
+  final int? hotFlashIntensity;
+
+  /// Nachtschweiß 0–3.
+  final int? nightSweats;
+  final FetalMovement? fetalMovement;
+  final double? weightKg;
+  final int? bpSystolic;
+  final int? bpDiastolic;
+  final String? note;
+  final DateTime updatedAt;
+  const CycleDay({
+    required this.day,
+    this.flow,
+    this.pbacJson,
+    this.pain,
+    this.painLocations,
+    this.symptoms,
+    this.discharge,
+    this.painkiller,
+    this.painkillerName,
+    this.painkillerHelped,
+    this.hotFlashes,
+    this.hotFlashIntensity,
+    this.nightSweats,
+    this.fetalMovement,
+    this.weightKg,
+    this.bpSystolic,
+    this.bpDiastolic,
+    this.note,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['day'] = Variable<String>(day);
+    if (!nullToAbsent || flow != null) {
+      map['flow'] = Variable<int>($CycleDaysTable.$converterflown.toSql(flow));
+    }
+    if (!nullToAbsent || pbacJson != null) {
+      map['pbac_json'] = Variable<String>(pbacJson);
+    }
+    if (!nullToAbsent || pain != null) {
+      map['pain'] = Variable<int>(pain);
+    }
+    if (!nullToAbsent || painLocations != null) {
+      map['pain_locations'] = Variable<String>(painLocations);
+    }
+    if (!nullToAbsent || symptoms != null) {
+      map['symptoms'] = Variable<String>(symptoms);
+    }
+    if (!nullToAbsent || discharge != null) {
+      map['discharge'] = Variable<String>(discharge);
+    }
+    if (!nullToAbsent || painkiller != null) {
+      map['painkiller'] = Variable<bool>(painkiller);
+    }
+    if (!nullToAbsent || painkillerName != null) {
+      map['painkiller_name'] = Variable<String>(painkillerName);
+    }
+    if (!nullToAbsent || painkillerHelped != null) {
+      map['painkiller_helped'] = Variable<bool>(painkillerHelped);
+    }
+    if (!nullToAbsent || hotFlashes != null) {
+      map['hot_flashes'] = Variable<int>(hotFlashes);
+    }
+    if (!nullToAbsent || hotFlashIntensity != null) {
+      map['hot_flash_intensity'] = Variable<int>(hotFlashIntensity);
+    }
+    if (!nullToAbsent || nightSweats != null) {
+      map['night_sweats'] = Variable<int>(nightSweats);
+    }
+    if (!nullToAbsent || fetalMovement != null) {
+      map['fetal_movement'] = Variable<int>(
+        $CycleDaysTable.$converterfetalMovementn.toSql(fetalMovement),
+      );
+    }
+    if (!nullToAbsent || weightKg != null) {
+      map['weight_kg'] = Variable<double>(weightKg);
+    }
+    if (!nullToAbsent || bpSystolic != null) {
+      map['bp_systolic'] = Variable<int>(bpSystolic);
+    }
+    if (!nullToAbsent || bpDiastolic != null) {
+      map['bp_diastolic'] = Variable<int>(bpDiastolic);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  CycleDaysCompanion toCompanion(bool nullToAbsent) {
+    return CycleDaysCompanion(
+      day: Value(day),
+      flow: flow == null && nullToAbsent ? const Value.absent() : Value(flow),
+      pbacJson: pbacJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pbacJson),
+      pain: pain == null && nullToAbsent ? const Value.absent() : Value(pain),
+      painLocations: painLocations == null && nullToAbsent
+          ? const Value.absent()
+          : Value(painLocations),
+      symptoms: symptoms == null && nullToAbsent
+          ? const Value.absent()
+          : Value(symptoms),
+      discharge: discharge == null && nullToAbsent
+          ? const Value.absent()
+          : Value(discharge),
+      painkiller: painkiller == null && nullToAbsent
+          ? const Value.absent()
+          : Value(painkiller),
+      painkillerName: painkillerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(painkillerName),
+      painkillerHelped: painkillerHelped == null && nullToAbsent
+          ? const Value.absent()
+          : Value(painkillerHelped),
+      hotFlashes: hotFlashes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(hotFlashes),
+      hotFlashIntensity: hotFlashIntensity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(hotFlashIntensity),
+      nightSweats: nightSweats == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nightSweats),
+      fetalMovement: fetalMovement == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fetalMovement),
+      weightKg: weightKg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(weightKg),
+      bpSystolic: bpSystolic == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bpSystolic),
+      bpDiastolic: bpDiastolic == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bpDiastolic),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CycleDay.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CycleDay(
+      day: serializer.fromJson<String>(json['day']),
+      flow: $CycleDaysTable.$converterflown.fromJson(
+        serializer.fromJson<int?>(json['flow']),
+      ),
+      pbacJson: serializer.fromJson<String?>(json['pbacJson']),
+      pain: serializer.fromJson<int?>(json['pain']),
+      painLocations: serializer.fromJson<String?>(json['painLocations']),
+      symptoms: serializer.fromJson<String?>(json['symptoms']),
+      discharge: serializer.fromJson<String?>(json['discharge']),
+      painkiller: serializer.fromJson<bool?>(json['painkiller']),
+      painkillerName: serializer.fromJson<String?>(json['painkillerName']),
+      painkillerHelped: serializer.fromJson<bool?>(json['painkillerHelped']),
+      hotFlashes: serializer.fromJson<int?>(json['hotFlashes']),
+      hotFlashIntensity: serializer.fromJson<int?>(json['hotFlashIntensity']),
+      nightSweats: serializer.fromJson<int?>(json['nightSweats']),
+      fetalMovement: $CycleDaysTable.$converterfetalMovementn.fromJson(
+        serializer.fromJson<int?>(json['fetalMovement']),
+      ),
+      weightKg: serializer.fromJson<double?>(json['weightKg']),
+      bpSystolic: serializer.fromJson<int?>(json['bpSystolic']),
+      bpDiastolic: serializer.fromJson<int?>(json['bpDiastolic']),
+      note: serializer.fromJson<String?>(json['note']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'day': serializer.toJson<String>(day),
+      'flow': serializer.toJson<int?>(
+        $CycleDaysTable.$converterflown.toJson(flow),
+      ),
+      'pbacJson': serializer.toJson<String?>(pbacJson),
+      'pain': serializer.toJson<int?>(pain),
+      'painLocations': serializer.toJson<String?>(painLocations),
+      'symptoms': serializer.toJson<String?>(symptoms),
+      'discharge': serializer.toJson<String?>(discharge),
+      'painkiller': serializer.toJson<bool?>(painkiller),
+      'painkillerName': serializer.toJson<String?>(painkillerName),
+      'painkillerHelped': serializer.toJson<bool?>(painkillerHelped),
+      'hotFlashes': serializer.toJson<int?>(hotFlashes),
+      'hotFlashIntensity': serializer.toJson<int?>(hotFlashIntensity),
+      'nightSweats': serializer.toJson<int?>(nightSweats),
+      'fetalMovement': serializer.toJson<int?>(
+        $CycleDaysTable.$converterfetalMovementn.toJson(fetalMovement),
+      ),
+      'weightKg': serializer.toJson<double?>(weightKg),
+      'bpSystolic': serializer.toJson<int?>(bpSystolic),
+      'bpDiastolic': serializer.toJson<int?>(bpDiastolic),
+      'note': serializer.toJson<String?>(note),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  CycleDay copyWith({
+    String? day,
+    Value<CycleFlow?> flow = const Value.absent(),
+    Value<String?> pbacJson = const Value.absent(),
+    Value<int?> pain = const Value.absent(),
+    Value<String?> painLocations = const Value.absent(),
+    Value<String?> symptoms = const Value.absent(),
+    Value<String?> discharge = const Value.absent(),
+    Value<bool?> painkiller = const Value.absent(),
+    Value<String?> painkillerName = const Value.absent(),
+    Value<bool?> painkillerHelped = const Value.absent(),
+    Value<int?> hotFlashes = const Value.absent(),
+    Value<int?> hotFlashIntensity = const Value.absent(),
+    Value<int?> nightSweats = const Value.absent(),
+    Value<FetalMovement?> fetalMovement = const Value.absent(),
+    Value<double?> weightKg = const Value.absent(),
+    Value<int?> bpSystolic = const Value.absent(),
+    Value<int?> bpDiastolic = const Value.absent(),
+    Value<String?> note = const Value.absent(),
+    DateTime? updatedAt,
+  }) => CycleDay(
+    day: day ?? this.day,
+    flow: flow.present ? flow.value : this.flow,
+    pbacJson: pbacJson.present ? pbacJson.value : this.pbacJson,
+    pain: pain.present ? pain.value : this.pain,
+    painLocations: painLocations.present
+        ? painLocations.value
+        : this.painLocations,
+    symptoms: symptoms.present ? symptoms.value : this.symptoms,
+    discharge: discharge.present ? discharge.value : this.discharge,
+    painkiller: painkiller.present ? painkiller.value : this.painkiller,
+    painkillerName: painkillerName.present
+        ? painkillerName.value
+        : this.painkillerName,
+    painkillerHelped: painkillerHelped.present
+        ? painkillerHelped.value
+        : this.painkillerHelped,
+    hotFlashes: hotFlashes.present ? hotFlashes.value : this.hotFlashes,
+    hotFlashIntensity: hotFlashIntensity.present
+        ? hotFlashIntensity.value
+        : this.hotFlashIntensity,
+    nightSweats: nightSweats.present ? nightSweats.value : this.nightSweats,
+    fetalMovement: fetalMovement.present
+        ? fetalMovement.value
+        : this.fetalMovement,
+    weightKg: weightKg.present ? weightKg.value : this.weightKg,
+    bpSystolic: bpSystolic.present ? bpSystolic.value : this.bpSystolic,
+    bpDiastolic: bpDiastolic.present ? bpDiastolic.value : this.bpDiastolic,
+    note: note.present ? note.value : this.note,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  CycleDay copyWithCompanion(CycleDaysCompanion data) {
+    return CycleDay(
+      day: data.day.present ? data.day.value : this.day,
+      flow: data.flow.present ? data.flow.value : this.flow,
+      pbacJson: data.pbacJson.present ? data.pbacJson.value : this.pbacJson,
+      pain: data.pain.present ? data.pain.value : this.pain,
+      painLocations: data.painLocations.present
+          ? data.painLocations.value
+          : this.painLocations,
+      symptoms: data.symptoms.present ? data.symptoms.value : this.symptoms,
+      discharge: data.discharge.present ? data.discharge.value : this.discharge,
+      painkiller: data.painkiller.present
+          ? data.painkiller.value
+          : this.painkiller,
+      painkillerName: data.painkillerName.present
+          ? data.painkillerName.value
+          : this.painkillerName,
+      painkillerHelped: data.painkillerHelped.present
+          ? data.painkillerHelped.value
+          : this.painkillerHelped,
+      hotFlashes: data.hotFlashes.present
+          ? data.hotFlashes.value
+          : this.hotFlashes,
+      hotFlashIntensity: data.hotFlashIntensity.present
+          ? data.hotFlashIntensity.value
+          : this.hotFlashIntensity,
+      nightSweats: data.nightSweats.present
+          ? data.nightSweats.value
+          : this.nightSweats,
+      fetalMovement: data.fetalMovement.present
+          ? data.fetalMovement.value
+          : this.fetalMovement,
+      weightKg: data.weightKg.present ? data.weightKg.value : this.weightKg,
+      bpSystolic: data.bpSystolic.present
+          ? data.bpSystolic.value
+          : this.bpSystolic,
+      bpDiastolic: data.bpDiastolic.present
+          ? data.bpDiastolic.value
+          : this.bpDiastolic,
+      note: data.note.present ? data.note.value : this.note,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CycleDay(')
+          ..write('day: $day, ')
+          ..write('flow: $flow, ')
+          ..write('pbacJson: $pbacJson, ')
+          ..write('pain: $pain, ')
+          ..write('painLocations: $painLocations, ')
+          ..write('symptoms: $symptoms, ')
+          ..write('discharge: $discharge, ')
+          ..write('painkiller: $painkiller, ')
+          ..write('painkillerName: $painkillerName, ')
+          ..write('painkillerHelped: $painkillerHelped, ')
+          ..write('hotFlashes: $hotFlashes, ')
+          ..write('hotFlashIntensity: $hotFlashIntensity, ')
+          ..write('nightSweats: $nightSweats, ')
+          ..write('fetalMovement: $fetalMovement, ')
+          ..write('weightKg: $weightKg, ')
+          ..write('bpSystolic: $bpSystolic, ')
+          ..write('bpDiastolic: $bpDiastolic, ')
+          ..write('note: $note, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    day,
+    flow,
+    pbacJson,
+    pain,
+    painLocations,
+    symptoms,
+    discharge,
+    painkiller,
+    painkillerName,
+    painkillerHelped,
+    hotFlashes,
+    hotFlashIntensity,
+    nightSweats,
+    fetalMovement,
+    weightKg,
+    bpSystolic,
+    bpDiastolic,
+    note,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CycleDay &&
+          other.day == this.day &&
+          other.flow == this.flow &&
+          other.pbacJson == this.pbacJson &&
+          other.pain == this.pain &&
+          other.painLocations == this.painLocations &&
+          other.symptoms == this.symptoms &&
+          other.discharge == this.discharge &&
+          other.painkiller == this.painkiller &&
+          other.painkillerName == this.painkillerName &&
+          other.painkillerHelped == this.painkillerHelped &&
+          other.hotFlashes == this.hotFlashes &&
+          other.hotFlashIntensity == this.hotFlashIntensity &&
+          other.nightSweats == this.nightSweats &&
+          other.fetalMovement == this.fetalMovement &&
+          other.weightKg == this.weightKg &&
+          other.bpSystolic == this.bpSystolic &&
+          other.bpDiastolic == this.bpDiastolic &&
+          other.note == this.note &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CycleDaysCompanion extends UpdateCompanion<CycleDay> {
+  final Value<String> day;
+  final Value<CycleFlow?> flow;
+  final Value<String?> pbacJson;
+  final Value<int?> pain;
+  final Value<String?> painLocations;
+  final Value<String?> symptoms;
+  final Value<String?> discharge;
+  final Value<bool?> painkiller;
+  final Value<String?> painkillerName;
+  final Value<bool?> painkillerHelped;
+  final Value<int?> hotFlashes;
+  final Value<int?> hotFlashIntensity;
+  final Value<int?> nightSweats;
+  final Value<FetalMovement?> fetalMovement;
+  final Value<double?> weightKg;
+  final Value<int?> bpSystolic;
+  final Value<int?> bpDiastolic;
+  final Value<String?> note;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const CycleDaysCompanion({
+    this.day = const Value.absent(),
+    this.flow = const Value.absent(),
+    this.pbacJson = const Value.absent(),
+    this.pain = const Value.absent(),
+    this.painLocations = const Value.absent(),
+    this.symptoms = const Value.absent(),
+    this.discharge = const Value.absent(),
+    this.painkiller = const Value.absent(),
+    this.painkillerName = const Value.absent(),
+    this.painkillerHelped = const Value.absent(),
+    this.hotFlashes = const Value.absent(),
+    this.hotFlashIntensity = const Value.absent(),
+    this.nightSweats = const Value.absent(),
+    this.fetalMovement = const Value.absent(),
+    this.weightKg = const Value.absent(),
+    this.bpSystolic = const Value.absent(),
+    this.bpDiastolic = const Value.absent(),
+    this.note = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CycleDaysCompanion.insert({
+    required String day,
+    this.flow = const Value.absent(),
+    this.pbacJson = const Value.absent(),
+    this.pain = const Value.absent(),
+    this.painLocations = const Value.absent(),
+    this.symptoms = const Value.absent(),
+    this.discharge = const Value.absent(),
+    this.painkiller = const Value.absent(),
+    this.painkillerName = const Value.absent(),
+    this.painkillerHelped = const Value.absent(),
+    this.hotFlashes = const Value.absent(),
+    this.hotFlashIntensity = const Value.absent(),
+    this.nightSweats = const Value.absent(),
+    this.fetalMovement = const Value.absent(),
+    this.weightKg = const Value.absent(),
+    this.bpSystolic = const Value.absent(),
+    this.bpDiastolic = const Value.absent(),
+    this.note = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : day = Value(day),
+       updatedAt = Value(updatedAt);
+  static Insertable<CycleDay> custom({
+    Expression<String>? day,
+    Expression<int>? flow,
+    Expression<String>? pbacJson,
+    Expression<int>? pain,
+    Expression<String>? painLocations,
+    Expression<String>? symptoms,
+    Expression<String>? discharge,
+    Expression<bool>? painkiller,
+    Expression<String>? painkillerName,
+    Expression<bool>? painkillerHelped,
+    Expression<int>? hotFlashes,
+    Expression<int>? hotFlashIntensity,
+    Expression<int>? nightSweats,
+    Expression<int>? fetalMovement,
+    Expression<double>? weightKg,
+    Expression<int>? bpSystolic,
+    Expression<int>? bpDiastolic,
+    Expression<String>? note,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (day != null) 'day': day,
+      if (flow != null) 'flow': flow,
+      if (pbacJson != null) 'pbac_json': pbacJson,
+      if (pain != null) 'pain': pain,
+      if (painLocations != null) 'pain_locations': painLocations,
+      if (symptoms != null) 'symptoms': symptoms,
+      if (discharge != null) 'discharge': discharge,
+      if (painkiller != null) 'painkiller': painkiller,
+      if (painkillerName != null) 'painkiller_name': painkillerName,
+      if (painkillerHelped != null) 'painkiller_helped': painkillerHelped,
+      if (hotFlashes != null) 'hot_flashes': hotFlashes,
+      if (hotFlashIntensity != null) 'hot_flash_intensity': hotFlashIntensity,
+      if (nightSweats != null) 'night_sweats': nightSweats,
+      if (fetalMovement != null) 'fetal_movement': fetalMovement,
+      if (weightKg != null) 'weight_kg': weightKg,
+      if (bpSystolic != null) 'bp_systolic': bpSystolic,
+      if (bpDiastolic != null) 'bp_diastolic': bpDiastolic,
+      if (note != null) 'note': note,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CycleDaysCompanion copyWith({
+    Value<String>? day,
+    Value<CycleFlow?>? flow,
+    Value<String?>? pbacJson,
+    Value<int?>? pain,
+    Value<String?>? painLocations,
+    Value<String?>? symptoms,
+    Value<String?>? discharge,
+    Value<bool?>? painkiller,
+    Value<String?>? painkillerName,
+    Value<bool?>? painkillerHelped,
+    Value<int?>? hotFlashes,
+    Value<int?>? hotFlashIntensity,
+    Value<int?>? nightSweats,
+    Value<FetalMovement?>? fetalMovement,
+    Value<double?>? weightKg,
+    Value<int?>? bpSystolic,
+    Value<int?>? bpDiastolic,
+    Value<String?>? note,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return CycleDaysCompanion(
+      day: day ?? this.day,
+      flow: flow ?? this.flow,
+      pbacJson: pbacJson ?? this.pbacJson,
+      pain: pain ?? this.pain,
+      painLocations: painLocations ?? this.painLocations,
+      symptoms: symptoms ?? this.symptoms,
+      discharge: discharge ?? this.discharge,
+      painkiller: painkiller ?? this.painkiller,
+      painkillerName: painkillerName ?? this.painkillerName,
+      painkillerHelped: painkillerHelped ?? this.painkillerHelped,
+      hotFlashes: hotFlashes ?? this.hotFlashes,
+      hotFlashIntensity: hotFlashIntensity ?? this.hotFlashIntensity,
+      nightSweats: nightSweats ?? this.nightSweats,
+      fetalMovement: fetalMovement ?? this.fetalMovement,
+      weightKg: weightKg ?? this.weightKg,
+      bpSystolic: bpSystolic ?? this.bpSystolic,
+      bpDiastolic: bpDiastolic ?? this.bpDiastolic,
+      note: note ?? this.note,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (day.present) {
+      map['day'] = Variable<String>(day.value);
+    }
+    if (flow.present) {
+      map['flow'] = Variable<int>(
+        $CycleDaysTable.$converterflown.toSql(flow.value),
+      );
+    }
+    if (pbacJson.present) {
+      map['pbac_json'] = Variable<String>(pbacJson.value);
+    }
+    if (pain.present) {
+      map['pain'] = Variable<int>(pain.value);
+    }
+    if (painLocations.present) {
+      map['pain_locations'] = Variable<String>(painLocations.value);
+    }
+    if (symptoms.present) {
+      map['symptoms'] = Variable<String>(symptoms.value);
+    }
+    if (discharge.present) {
+      map['discharge'] = Variable<String>(discharge.value);
+    }
+    if (painkiller.present) {
+      map['painkiller'] = Variable<bool>(painkiller.value);
+    }
+    if (painkillerName.present) {
+      map['painkiller_name'] = Variable<String>(painkillerName.value);
+    }
+    if (painkillerHelped.present) {
+      map['painkiller_helped'] = Variable<bool>(painkillerHelped.value);
+    }
+    if (hotFlashes.present) {
+      map['hot_flashes'] = Variable<int>(hotFlashes.value);
+    }
+    if (hotFlashIntensity.present) {
+      map['hot_flash_intensity'] = Variable<int>(hotFlashIntensity.value);
+    }
+    if (nightSweats.present) {
+      map['night_sweats'] = Variable<int>(nightSweats.value);
+    }
+    if (fetalMovement.present) {
+      map['fetal_movement'] = Variable<int>(
+        $CycleDaysTable.$converterfetalMovementn.toSql(fetalMovement.value),
+      );
+    }
+    if (weightKg.present) {
+      map['weight_kg'] = Variable<double>(weightKg.value);
+    }
+    if (bpSystolic.present) {
+      map['bp_systolic'] = Variable<int>(bpSystolic.value);
+    }
+    if (bpDiastolic.present) {
+      map['bp_diastolic'] = Variable<int>(bpDiastolic.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CycleDaysCompanion(')
+          ..write('day: $day, ')
+          ..write('flow: $flow, ')
+          ..write('pbacJson: $pbacJson, ')
+          ..write('pain: $pain, ')
+          ..write('painLocations: $painLocations, ')
+          ..write('symptoms: $symptoms, ')
+          ..write('discharge: $discharge, ')
+          ..write('painkiller: $painkiller, ')
+          ..write('painkillerName: $painkillerName, ')
+          ..write('painkillerHelped: $painkillerHelped, ')
+          ..write('hotFlashes: $hotFlashes, ')
+          ..write('hotFlashIntensity: $hotFlashIntensity, ')
+          ..write('nightSweats: $nightSweats, ')
+          ..write('fetalMovement: $fetalMovement, ')
+          ..write('weightKg: $weightKg, ')
+          ..write('bpSystolic: $bpSystolic, ')
+          ..write('bpDiastolic: $bpDiastolic, ')
+          ..write('note: $note, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MrsAssessmentsTable extends MrsAssessments
+    with TableInfo<$MrsAssessmentsTable, MrsAssessment> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MrsAssessmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recordedAtMeta = const VerificationMeta(
+    'recordedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> recordedAt = GeneratedColumn<DateTime>(
+    'recorded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _scoresMeta = const VerificationMeta('scores');
+  @override
+  late final GeneratedColumn<String> scores = GeneratedColumn<String>(
+    'scores',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, recordedAt, scores, note];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mrs_assessments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MrsAssessment> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('recorded_at')) {
+      context.handle(
+        _recordedAtMeta,
+        recordedAt.isAcceptableOrUnknown(data['recorded_at']!, _recordedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedAtMeta);
+    }
+    if (data.containsKey('scores')) {
+      context.handle(
+        _scoresMeta,
+        scores.isAcceptableOrUnknown(data['scores']!, _scoresMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_scoresMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MrsAssessment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MrsAssessment(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      recordedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}recorded_at'],
+      )!,
+      scores: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scores'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+    );
+  }
+
+  @override
+  $MrsAssessmentsTable createAlias(String alias) {
+    return $MrsAssessmentsTable(attachedDatabase, alias);
+  }
+}
+
+class MrsAssessment extends DataClass implements Insertable<MrsAssessment> {
+  final String id;
+  final DateTime recordedAt;
+  final String scores;
+  final String? note;
+  const MrsAssessment({
+    required this.id,
+    required this.recordedAt,
+    required this.scores,
+    this.note,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['recorded_at'] = Variable<DateTime>(recordedAt);
+    map['scores'] = Variable<String>(scores);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    return map;
+  }
+
+  MrsAssessmentsCompanion toCompanion(bool nullToAbsent) {
+    return MrsAssessmentsCompanion(
+      id: Value(id),
+      recordedAt: Value(recordedAt),
+      scores: Value(scores),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+    );
+  }
+
+  factory MrsAssessment.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MrsAssessment(
+      id: serializer.fromJson<String>(json['id']),
+      recordedAt: serializer.fromJson<DateTime>(json['recordedAt']),
+      scores: serializer.fromJson<String>(json['scores']),
+      note: serializer.fromJson<String?>(json['note']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'recordedAt': serializer.toJson<DateTime>(recordedAt),
+      'scores': serializer.toJson<String>(scores),
+      'note': serializer.toJson<String?>(note),
+    };
+  }
+
+  MrsAssessment copyWith({
+    String? id,
+    DateTime? recordedAt,
+    String? scores,
+    Value<String?> note = const Value.absent(),
+  }) => MrsAssessment(
+    id: id ?? this.id,
+    recordedAt: recordedAt ?? this.recordedAt,
+    scores: scores ?? this.scores,
+    note: note.present ? note.value : this.note,
+  );
+  MrsAssessment copyWithCompanion(MrsAssessmentsCompanion data) {
+    return MrsAssessment(
+      id: data.id.present ? data.id.value : this.id,
+      recordedAt: data.recordedAt.present
+          ? data.recordedAt.value
+          : this.recordedAt,
+      scores: data.scores.present ? data.scores.value : this.scores,
+      note: data.note.present ? data.note.value : this.note,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MrsAssessment(')
+          ..write('id: $id, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('scores: $scores, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, recordedAt, scores, note);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MrsAssessment &&
+          other.id == this.id &&
+          other.recordedAt == this.recordedAt &&
+          other.scores == this.scores &&
+          other.note == this.note);
+}
+
+class MrsAssessmentsCompanion extends UpdateCompanion<MrsAssessment> {
+  final Value<String> id;
+  final Value<DateTime> recordedAt;
+  final Value<String> scores;
+  final Value<String?> note;
+  final Value<int> rowid;
+  const MrsAssessmentsCompanion({
+    this.id = const Value.absent(),
+    this.recordedAt = const Value.absent(),
+    this.scores = const Value.absent(),
+    this.note = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MrsAssessmentsCompanion.insert({
+    required String id,
+    required DateTime recordedAt,
+    required String scores,
+    this.note = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       recordedAt = Value(recordedAt),
+       scores = Value(scores);
+  static Insertable<MrsAssessment> custom({
+    Expression<String>? id,
+    Expression<DateTime>? recordedAt,
+    Expression<String>? scores,
+    Expression<String>? note,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (recordedAt != null) 'recorded_at': recordedAt,
+      if (scores != null) 'scores': scores,
+      if (note != null) 'note': note,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MrsAssessmentsCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? recordedAt,
+    Value<String>? scores,
+    Value<String?>? note,
+    Value<int>? rowid,
+  }) {
+    return MrsAssessmentsCompanion(
+      id: id ?? this.id,
+      recordedAt: recordedAt ?? this.recordedAt,
+      scores: scores ?? this.scores,
+      note: note ?? this.note,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (recordedAt.present) {
+      map['recorded_at'] = Variable<DateTime>(recordedAt.value);
+    }
+    if (scores.present) {
+      map['scores'] = Variable<String>(scores.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MrsAssessmentsCompanion(')
+          ..write('id: $id, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('scores: $scores, ')
+          ..write('note: $note, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PregnanciesTable extends Pregnancies
+    with TableInfo<$PregnanciesTable, Pregnancy> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PregnanciesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lmpMeta = const VerificationMeta('lmp');
+  @override
+  late final GeneratedColumn<String> lmp = GeneratedColumn<String>(
+    'lmp',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dueDateMeta = const VerificationMeta(
+    'dueDate',
+  );
+  @override
+  late final GeneratedColumn<String> dueDate = GeneratedColumn<String>(
+    'due_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endedAtMeta = const VerificationMeta(
+    'endedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> endedAt = GeneratedColumn<DateTime>(
+    'ended_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _outcomeMeta = const VerificationMeta(
+    'outcome',
+  );
+  @override
+  late final GeneratedColumn<String> outcome = GeneratedColumn<String>(
+    'outcome',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    lmp,
+    dueDate,
+    createdAt,
+    endedAt,
+    outcome,
+    note,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pregnancies';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Pregnancy> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('lmp')) {
+      context.handle(
+        _lmpMeta,
+        lmp.isAcceptableOrUnknown(data['lmp']!, _lmpMeta),
+      );
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(
+        _dueDateMeta,
+        dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('ended_at')) {
+      context.handle(
+        _endedAtMeta,
+        endedAt.isAcceptableOrUnknown(data['ended_at']!, _endedAtMeta),
+      );
+    }
+    if (data.containsKey('outcome')) {
+      context.handle(
+        _outcomeMeta,
+        outcome.isAcceptableOrUnknown(data['outcome']!, _outcomeMeta),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Pregnancy map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Pregnancy(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      lmp: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lmp'],
+      ),
+      dueDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}due_date'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      endedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}ended_at'],
+      ),
+      outcome: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}outcome'],
+      ),
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+    );
+  }
+
+  @override
+  $PregnanciesTable createAlias(String alias) {
+    return $PregnanciesTable(attachedDatabase, alias);
+  }
+}
+
+class Pregnancy extends DataClass implements Insertable<Pregnancy> {
+  final String id;
+
+  /// Erster Tag der letzten Periode.
+  final String? lmp;
+
+  /// Errechneter Termin (z. B. aus dem Ultraschall), sonst aus [lmp].
+  final String? dueDate;
+  final DateTime createdAt;
+  final DateTime? endedAt;
+
+  /// `birth`, `loss` oder `other` — nur, wenn angegeben.
+  final String? outcome;
+  final String? note;
+  const Pregnancy({
+    required this.id,
+    this.lmp,
+    this.dueDate,
+    required this.createdAt,
+    this.endedAt,
+    this.outcome,
+    this.note,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || lmp != null) {
+      map['lmp'] = Variable<String>(lmp);
+    }
+    if (!nullToAbsent || dueDate != null) {
+      map['due_date'] = Variable<String>(dueDate);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || endedAt != null) {
+      map['ended_at'] = Variable<DateTime>(endedAt);
+    }
+    if (!nullToAbsent || outcome != null) {
+      map['outcome'] = Variable<String>(outcome);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    return map;
+  }
+
+  PregnanciesCompanion toCompanion(bool nullToAbsent) {
+    return PregnanciesCompanion(
+      id: Value(id),
+      lmp: lmp == null && nullToAbsent ? const Value.absent() : Value(lmp),
+      dueDate: dueDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dueDate),
+      createdAt: Value(createdAt),
+      endedAt: endedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endedAt),
+      outcome: outcome == null && nullToAbsent
+          ? const Value.absent()
+          : Value(outcome),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+    );
+  }
+
+  factory Pregnancy.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Pregnancy(
+      id: serializer.fromJson<String>(json['id']),
+      lmp: serializer.fromJson<String?>(json['lmp']),
+      dueDate: serializer.fromJson<String?>(json['dueDate']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      endedAt: serializer.fromJson<DateTime?>(json['endedAt']),
+      outcome: serializer.fromJson<String?>(json['outcome']),
+      note: serializer.fromJson<String?>(json['note']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'lmp': serializer.toJson<String?>(lmp),
+      'dueDate': serializer.toJson<String?>(dueDate),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'endedAt': serializer.toJson<DateTime?>(endedAt),
+      'outcome': serializer.toJson<String?>(outcome),
+      'note': serializer.toJson<String?>(note),
+    };
+  }
+
+  Pregnancy copyWith({
+    String? id,
+    Value<String?> lmp = const Value.absent(),
+    Value<String?> dueDate = const Value.absent(),
+    DateTime? createdAt,
+    Value<DateTime?> endedAt = const Value.absent(),
+    Value<String?> outcome = const Value.absent(),
+    Value<String?> note = const Value.absent(),
+  }) => Pregnancy(
+    id: id ?? this.id,
+    lmp: lmp.present ? lmp.value : this.lmp,
+    dueDate: dueDate.present ? dueDate.value : this.dueDate,
+    createdAt: createdAt ?? this.createdAt,
+    endedAt: endedAt.present ? endedAt.value : this.endedAt,
+    outcome: outcome.present ? outcome.value : this.outcome,
+    note: note.present ? note.value : this.note,
+  );
+  Pregnancy copyWithCompanion(PregnanciesCompanion data) {
+    return Pregnancy(
+      id: data.id.present ? data.id.value : this.id,
+      lmp: data.lmp.present ? data.lmp.value : this.lmp,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      endedAt: data.endedAt.present ? data.endedAt.value : this.endedAt,
+      outcome: data.outcome.present ? data.outcome.value : this.outcome,
+      note: data.note.present ? data.note.value : this.note,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Pregnancy(')
+          ..write('id: $id, ')
+          ..write('lmp: $lmp, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('endedAt: $endedAt, ')
+          ..write('outcome: $outcome, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, lmp, dueDate, createdAt, endedAt, outcome, note);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Pregnancy &&
+          other.id == this.id &&
+          other.lmp == this.lmp &&
+          other.dueDate == this.dueDate &&
+          other.createdAt == this.createdAt &&
+          other.endedAt == this.endedAt &&
+          other.outcome == this.outcome &&
+          other.note == this.note);
+}
+
+class PregnanciesCompanion extends UpdateCompanion<Pregnancy> {
+  final Value<String> id;
+  final Value<String?> lmp;
+  final Value<String?> dueDate;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> endedAt;
+  final Value<String?> outcome;
+  final Value<String?> note;
+  final Value<int> rowid;
+  const PregnanciesCompanion({
+    this.id = const Value.absent(),
+    this.lmp = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.endedAt = const Value.absent(),
+    this.outcome = const Value.absent(),
+    this.note = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PregnanciesCompanion.insert({
+    required String id,
+    this.lmp = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    required DateTime createdAt,
+    this.endedAt = const Value.absent(),
+    this.outcome = const Value.absent(),
+    this.note = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       createdAt = Value(createdAt);
+  static Insertable<Pregnancy> custom({
+    Expression<String>? id,
+    Expression<String>? lmp,
+    Expression<String>? dueDate,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? endedAt,
+    Expression<String>? outcome,
+    Expression<String>? note,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (lmp != null) 'lmp': lmp,
+      if (dueDate != null) 'due_date': dueDate,
+      if (createdAt != null) 'created_at': createdAt,
+      if (endedAt != null) 'ended_at': endedAt,
+      if (outcome != null) 'outcome': outcome,
+      if (note != null) 'note': note,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PregnanciesCompanion copyWith({
+    Value<String>? id,
+    Value<String?>? lmp,
+    Value<String?>? dueDate,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? endedAt,
+    Value<String?>? outcome,
+    Value<String?>? note,
+    Value<int>? rowid,
+  }) {
+    return PregnanciesCompanion(
+      id: id ?? this.id,
+      lmp: lmp ?? this.lmp,
+      dueDate: dueDate ?? this.dueDate,
+      createdAt: createdAt ?? this.createdAt,
+      endedAt: endedAt ?? this.endedAt,
+      outcome: outcome ?? this.outcome,
+      note: note ?? this.note,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (lmp.present) {
+      map['lmp'] = Variable<String>(lmp.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<String>(dueDate.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (endedAt.present) {
+      map['ended_at'] = Variable<DateTime>(endedAt.value);
+    }
+    if (outcome.present) {
+      map['outcome'] = Variable<String>(outcome.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PregnanciesCompanion(')
+          ..write('id: $id, ')
+          ..write('lmp: $lmp, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('endedAt: $endedAt, ')
+          ..write('outcome: $outcome, ')
+          ..write('note: $note, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -11265,6 +13377,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MedicationIntakesTable(this);
   late final $VaccinationsTable vaccinations = $VaccinationsTable(this);
   late final $SymptomMediaTable symptomMedia = $SymptomMediaTable(this);
+  late final $CycleDaysTable cycleDays = $CycleDaysTable(this);
+  late final $MrsAssessmentsTable mrsAssessments = $MrsAssessmentsTable(this);
+  late final $PregnanciesTable pregnancies = $PregnanciesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -11290,6 +13405,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     medicationIntakes,
     vaccinations,
     symptomMedia,
+    cycleDays,
+    mrsAssessments,
+    pregnancies,
   ];
 }
 
@@ -17941,6 +20059,10 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<bool> appointmentRemindersEnabled,
       Value<String> appointmentReminderLeads,
       Value<String> notificationTopics,
+      Value<bool> cycleTracking,
+      Value<bool> menopauseTracking,
+      Value<bool> pregnancyTracking,
+      Value<bool> showFertileWindow,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -17959,6 +20081,10 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<bool> appointmentRemindersEnabled,
       Value<String> appointmentReminderLeads,
       Value<String> notificationTopics,
+      Value<bool> cycleTracking,
+      Value<bool> menopauseTracking,
+      Value<bool> pregnancyTracking,
+      Value<bool> showFertileWindow,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -18042,6 +20168,26 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<String> get notificationTopics => $composableBuilder(
     column: $table.notificationTopics,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get cycleTracking => $composableBuilder(
+    column: $table.cycleTracking,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get menopauseTracking => $composableBuilder(
+    column: $table.menopauseTracking,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get pregnancyTracking => $composableBuilder(
+    column: $table.pregnancyTracking,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get showFertileWindow => $composableBuilder(
+    column: $table.showFertileWindow,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -18129,6 +20275,26 @@ class $$AppSettingsTableOrderingComposer
     column: $table.notificationTopics,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get cycleTracking => $composableBuilder(
+    column: $table.cycleTracking,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get menopauseTracking => $composableBuilder(
+    column: $table.menopauseTracking,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get pregnancyTracking => $composableBuilder(
+    column: $table.pregnancyTracking,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get showFertileWindow => $composableBuilder(
+    column: $table.showFertileWindow,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -18212,6 +20378,26 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.notificationTopics,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get cycleTracking => $composableBuilder(
+    column: $table.cycleTracking,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get menopauseTracking => $composableBuilder(
+    column: $table.menopauseTracking,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get pregnancyTracking => $composableBuilder(
+    column: $table.pregnancyTracking,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get showFertileWindow => $composableBuilder(
+    column: $table.showFertileWindow,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -18260,6 +20446,10 @@ class $$AppSettingsTableTableManager
                 Value<bool> appointmentRemindersEnabled = const Value.absent(),
                 Value<String> appointmentReminderLeads = const Value.absent(),
                 Value<String> notificationTopics = const Value.absent(),
+                Value<bool> cycleTracking = const Value.absent(),
+                Value<bool> menopauseTracking = const Value.absent(),
+                Value<bool> pregnancyTracking = const Value.absent(),
+                Value<bool> showFertileWindow = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -18276,6 +20466,10 @@ class $$AppSettingsTableTableManager
                 appointmentRemindersEnabled: appointmentRemindersEnabled,
                 appointmentReminderLeads: appointmentReminderLeads,
                 notificationTopics: notificationTopics,
+                cycleTracking: cycleTracking,
+                menopauseTracking: menopauseTracking,
+                pregnancyTracking: pregnancyTracking,
+                showFertileWindow: showFertileWindow,
               ),
           createCompanionCallback:
               ({
@@ -18294,6 +20488,10 @@ class $$AppSettingsTableTableManager
                 Value<bool> appointmentRemindersEnabled = const Value.absent(),
                 Value<String> appointmentReminderLeads = const Value.absent(),
                 Value<String> notificationTopics = const Value.absent(),
+                Value<bool> cycleTracking = const Value.absent(),
+                Value<bool> menopauseTracking = const Value.absent(),
+                Value<bool> pregnancyTracking = const Value.absent(),
+                Value<bool> showFertileWindow = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -18310,6 +20508,10 @@ class $$AppSettingsTableTableManager
                 appointmentRemindersEnabled: appointmentRemindersEnabled,
                 appointmentReminderLeads: appointmentReminderLeads,
                 notificationTopics: notificationTopics,
+                cycleTracking: cycleTracking,
+                menopauseTracking: menopauseTracking,
+                pregnancyTracking: pregnancyTracking,
+                showFertileWindow: showFertileWindow,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -21364,6 +23566,934 @@ typedef $$SymptomMediaTableProcessedTableManager =
       SymptomMediaItem,
       PrefetchHooks Function({bool symptomId, bool observationId})
     >;
+typedef $$CycleDaysTableCreateCompanionBuilder = CycleDaysCompanion Function({
+  required String day,
+  Value<CycleFlow?> flow,
+  Value<String?> pbacJson,
+  Value<int?> pain,
+  Value<String?> painLocations,
+  Value<String?> symptoms,
+  Value<String?> discharge,
+  Value<bool?> painkiller,
+  Value<String?> painkillerName,
+  Value<bool?> painkillerHelped,
+  Value<int?> hotFlashes,
+  Value<int?> hotFlashIntensity,
+  Value<int?> nightSweats,
+  Value<FetalMovement?> fetalMovement,
+  Value<double?> weightKg,
+  Value<int?> bpSystolic,
+  Value<int?> bpDiastolic,
+  Value<String?> note,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$CycleDaysTableUpdateCompanionBuilder = CycleDaysCompanion Function({
+  Value<String> day,
+  Value<CycleFlow?> flow,
+  Value<String?> pbacJson,
+  Value<int?> pain,
+  Value<String?> painLocations,
+  Value<String?> symptoms,
+  Value<String?> discharge,
+  Value<bool?> painkiller,
+  Value<String?> painkillerName,
+  Value<bool?> painkillerHelped,
+  Value<int?> hotFlashes,
+  Value<int?> hotFlashIntensity,
+  Value<int?> nightSweats,
+  Value<FetalMovement?> fetalMovement,
+  Value<double?> weightKg,
+  Value<int?> bpSystolic,
+  Value<int?> bpDiastolic,
+  Value<String?> note,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$CycleDaysTableFilterComposer
+    extends Composer<_$AppDatabase, $CycleDaysTable> {
+  $$CycleDaysTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<CycleFlow?, CycleFlow, int> get flow =>
+      $composableBuilder(
+        column: $table.flow,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get pbacJson => $composableBuilder(
+    column: $table.pbacJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get pain => $composableBuilder(
+    column: $table.pain,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get painLocations => $composableBuilder(
+    column: $table.painLocations,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get symptoms => $composableBuilder(
+    column: $table.symptoms,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get discharge => $composableBuilder(
+    column: $table.discharge,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get painkiller => $composableBuilder(
+    column: $table.painkiller,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get painkillerName => $composableBuilder(
+    column: $table.painkillerName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get painkillerHelped => $composableBuilder(
+    column: $table.painkillerHelped,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get hotFlashes => $composableBuilder(
+    column: $table.hotFlashes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get hotFlashIntensity => $composableBuilder(
+    column: $table.hotFlashIntensity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get nightSweats => $composableBuilder(
+    column: $table.nightSweats,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<FetalMovement?, FetalMovement, int>
+  get fetalMovement => $composableBuilder(
+    column: $table.fetalMovement,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<double> get weightKg => $composableBuilder(
+    column: $table.weightKg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get bpSystolic => $composableBuilder(
+    column: $table.bpSystolic,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get bpDiastolic => $composableBuilder(
+    column: $table.bpDiastolic,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CycleDaysTableOrderingComposer
+    extends Composer<_$AppDatabase, $CycleDaysTable> {
+  $$CycleDaysTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get flow => $composableBuilder(
+    column: $table.flow,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pbacJson => $composableBuilder(
+    column: $table.pbacJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get pain => $composableBuilder(
+    column: $table.pain,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get painLocations => $composableBuilder(
+    column: $table.painLocations,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get symptoms => $composableBuilder(
+    column: $table.symptoms,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get discharge => $composableBuilder(
+    column: $table.discharge,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get painkiller => $composableBuilder(
+    column: $table.painkiller,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get painkillerName => $composableBuilder(
+    column: $table.painkillerName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get painkillerHelped => $composableBuilder(
+    column: $table.painkillerHelped,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get hotFlashes => $composableBuilder(
+    column: $table.hotFlashes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get hotFlashIntensity => $composableBuilder(
+    column: $table.hotFlashIntensity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get nightSweats => $composableBuilder(
+    column: $table.nightSweats,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fetalMovement => $composableBuilder(
+    column: $table.fetalMovement,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get weightKg => $composableBuilder(
+    column: $table.weightKg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get bpSystolic => $composableBuilder(
+    column: $table.bpSystolic,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get bpDiastolic => $composableBuilder(
+    column: $table.bpDiastolic,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CycleDaysTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CycleDaysTable> {
+  $$CycleDaysTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get day =>
+      $composableBuilder(column: $table.day, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<CycleFlow?, int> get flow =>
+      $composableBuilder(column: $table.flow, builder: (column) => column);
+
+  GeneratedColumn<String> get pbacJson =>
+      $composableBuilder(column: $table.pbacJson, builder: (column) => column);
+
+  GeneratedColumn<int> get pain =>
+      $composableBuilder(column: $table.pain, builder: (column) => column);
+
+  GeneratedColumn<String> get painLocations => $composableBuilder(
+    column: $table.painLocations,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get symptoms =>
+      $composableBuilder(column: $table.symptoms, builder: (column) => column);
+
+  GeneratedColumn<String> get discharge =>
+      $composableBuilder(column: $table.discharge, builder: (column) => column);
+
+  GeneratedColumn<bool> get painkiller => $composableBuilder(
+    column: $table.painkiller,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get painkillerName => $composableBuilder(
+    column: $table.painkillerName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get painkillerHelped => $composableBuilder(
+    column: $table.painkillerHelped,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get hotFlashes => $composableBuilder(
+    column: $table.hotFlashes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get hotFlashIntensity => $composableBuilder(
+    column: $table.hotFlashIntensity,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get nightSweats => $composableBuilder(
+    column: $table.nightSweats,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<FetalMovement?, int> get fetalMovement =>
+      $composableBuilder(
+        column: $table.fetalMovement,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<double> get weightKg =>
+      $composableBuilder(column: $table.weightKg, builder: (column) => column);
+
+  GeneratedColumn<int> get bpSystolic => $composableBuilder(
+    column: $table.bpSystolic,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get bpDiastolic => $composableBuilder(
+    column: $table.bpDiastolic,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$CycleDaysTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CycleDaysTable,
+          CycleDay,
+          $$CycleDaysTableFilterComposer,
+          $$CycleDaysTableOrderingComposer,
+          $$CycleDaysTableAnnotationComposer,
+          $$CycleDaysTableCreateCompanionBuilder,
+          $$CycleDaysTableUpdateCompanionBuilder,
+          (CycleDay, BaseReferences<_$AppDatabase, $CycleDaysTable, CycleDay>),
+          CycleDay,
+          PrefetchHooks Function()
+        > {
+  $$CycleDaysTableTableManager(_$AppDatabase db, $CycleDaysTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CycleDaysTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CycleDaysTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CycleDaysTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> day = const Value.absent(),
+                Value<CycleFlow?> flow = const Value.absent(),
+                Value<String?> pbacJson = const Value.absent(),
+                Value<int?> pain = const Value.absent(),
+                Value<String?> painLocations = const Value.absent(),
+                Value<String?> symptoms = const Value.absent(),
+                Value<String?> discharge = const Value.absent(),
+                Value<bool?> painkiller = const Value.absent(),
+                Value<String?> painkillerName = const Value.absent(),
+                Value<bool?> painkillerHelped = const Value.absent(),
+                Value<int?> hotFlashes = const Value.absent(),
+                Value<int?> hotFlashIntensity = const Value.absent(),
+                Value<int?> nightSweats = const Value.absent(),
+                Value<FetalMovement?> fetalMovement = const Value.absent(),
+                Value<double?> weightKg = const Value.absent(),
+                Value<int?> bpSystolic = const Value.absent(),
+                Value<int?> bpDiastolic = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CycleDaysCompanion(
+                day: day,
+                flow: flow,
+                pbacJson: pbacJson,
+                pain: pain,
+                painLocations: painLocations,
+                symptoms: symptoms,
+                discharge: discharge,
+                painkiller: painkiller,
+                painkillerName: painkillerName,
+                painkillerHelped: painkillerHelped,
+                hotFlashes: hotFlashes,
+                hotFlashIntensity: hotFlashIntensity,
+                nightSweats: nightSweats,
+                fetalMovement: fetalMovement,
+                weightKg: weightKg,
+                bpSystolic: bpSystolic,
+                bpDiastolic: bpDiastolic,
+                note: note,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String day,
+                Value<CycleFlow?> flow = const Value.absent(),
+                Value<String?> pbacJson = const Value.absent(),
+                Value<int?> pain = const Value.absent(),
+                Value<String?> painLocations = const Value.absent(),
+                Value<String?> symptoms = const Value.absent(),
+                Value<String?> discharge = const Value.absent(),
+                Value<bool?> painkiller = const Value.absent(),
+                Value<String?> painkillerName = const Value.absent(),
+                Value<bool?> painkillerHelped = const Value.absent(),
+                Value<int?> hotFlashes = const Value.absent(),
+                Value<int?> hotFlashIntensity = const Value.absent(),
+                Value<int?> nightSweats = const Value.absent(),
+                Value<FetalMovement?> fetalMovement = const Value.absent(),
+                Value<double?> weightKg = const Value.absent(),
+                Value<int?> bpSystolic = const Value.absent(),
+                Value<int?> bpDiastolic = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CycleDaysCompanion.insert(
+                day: day,
+                flow: flow,
+                pbacJson: pbacJson,
+                pain: pain,
+                painLocations: painLocations,
+                symptoms: symptoms,
+                discharge: discharge,
+                painkiller: painkiller,
+                painkillerName: painkillerName,
+                painkillerHelped: painkillerHelped,
+                hotFlashes: hotFlashes,
+                hotFlashIntensity: hotFlashIntensity,
+                nightSweats: nightSweats,
+                fetalMovement: fetalMovement,
+                weightKg: weightKg,
+                bpSystolic: bpSystolic,
+                bpDiastolic: bpDiastolic,
+                note: note,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CycleDaysTable, CycleDay>(table),
+                  BaseReferences<_$AppDatabase, $CycleDaysTable, CycleDay>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CycleDaysTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CycleDaysTable,
+      CycleDay,
+      $$CycleDaysTableFilterComposer,
+      $$CycleDaysTableOrderingComposer,
+      $$CycleDaysTableAnnotationComposer,
+      $$CycleDaysTableCreateCompanionBuilder,
+      $$CycleDaysTableUpdateCompanionBuilder,
+      (CycleDay, BaseReferences<_$AppDatabase, $CycleDaysTable, CycleDay>),
+      CycleDay,
+      PrefetchHooks Function()
+    >;
+typedef $$MrsAssessmentsTableCreateCompanionBuilder =
+    MrsAssessmentsCompanion Function({
+      required String id,
+      required DateTime recordedAt,
+      required String scores,
+      Value<String?> note,
+      Value<int> rowid,
+    });
+typedef $$MrsAssessmentsTableUpdateCompanionBuilder =
+    MrsAssessmentsCompanion Function({
+      Value<String> id,
+      Value<DateTime> recordedAt,
+      Value<String> scores,
+      Value<String?> note,
+      Value<int> rowid,
+    });
+
+class $$MrsAssessmentsTableFilterComposer
+    extends Composer<_$AppDatabase, $MrsAssessmentsTable> {
+  $$MrsAssessmentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scores => $composableBuilder(
+    column: $table.scores,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MrsAssessmentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MrsAssessmentsTable> {
+  $$MrsAssessmentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scores => $composableBuilder(
+    column: $table.scores,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MrsAssessmentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MrsAssessmentsTable> {
+  $$MrsAssessmentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get scores =>
+      $composableBuilder(column: $table.scores, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+}
+
+class $$MrsAssessmentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MrsAssessmentsTable,
+          MrsAssessment,
+          $$MrsAssessmentsTableFilterComposer,
+          $$MrsAssessmentsTableOrderingComposer,
+          $$MrsAssessmentsTableAnnotationComposer,
+          $$MrsAssessmentsTableCreateCompanionBuilder,
+          $$MrsAssessmentsTableUpdateCompanionBuilder,
+          (
+            MrsAssessment,
+            BaseReferences<_$AppDatabase, $MrsAssessmentsTable, MrsAssessment>,
+          ),
+          MrsAssessment,
+          PrefetchHooks Function()
+        > {
+  $$MrsAssessmentsTableTableManager(
+    _$AppDatabase db,
+    $MrsAssessmentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MrsAssessmentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MrsAssessmentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MrsAssessmentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> recordedAt = const Value.absent(),
+                Value<String> scores = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MrsAssessmentsCompanion(
+                id: id,
+                recordedAt: recordedAt,
+                scores: scores,
+                note: note,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime recordedAt,
+                required String scores,
+                Value<String?> note = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MrsAssessmentsCompanion.insert(
+                id: id,
+                recordedAt: recordedAt,
+                scores: scores,
+                note: note,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MrsAssessmentsTable, MrsAssessment>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $MrsAssessmentsTable,
+                    MrsAssessment
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MrsAssessmentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MrsAssessmentsTable,
+      MrsAssessment,
+      $$MrsAssessmentsTableFilterComposer,
+      $$MrsAssessmentsTableOrderingComposer,
+      $$MrsAssessmentsTableAnnotationComposer,
+      $$MrsAssessmentsTableCreateCompanionBuilder,
+      $$MrsAssessmentsTableUpdateCompanionBuilder,
+      (
+        MrsAssessment,
+        BaseReferences<_$AppDatabase, $MrsAssessmentsTable, MrsAssessment>,
+      ),
+      MrsAssessment,
+      PrefetchHooks Function()
+    >;
+typedef $$PregnanciesTableCreateCompanionBuilder =
+    PregnanciesCompanion Function({
+      required String id,
+      Value<String?> lmp,
+      Value<String?> dueDate,
+      required DateTime createdAt,
+      Value<DateTime?> endedAt,
+      Value<String?> outcome,
+      Value<String?> note,
+      Value<int> rowid,
+    });
+typedef $$PregnanciesTableUpdateCompanionBuilder =
+    PregnanciesCompanion Function({
+      Value<String> id,
+      Value<String?> lmp,
+      Value<String?> dueDate,
+      Value<DateTime> createdAt,
+      Value<DateTime?> endedAt,
+      Value<String?> outcome,
+      Value<String?> note,
+      Value<int> rowid,
+    });
+
+class $$PregnanciesTableFilterComposer
+    extends Composer<_$AppDatabase, $PregnanciesTable> {
+  $$PregnanciesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lmp => $composableBuilder(
+    column: $table.lmp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endedAt => $composableBuilder(
+    column: $table.endedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get outcome => $composableBuilder(
+    column: $table.outcome,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PregnanciesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PregnanciesTable> {
+  $$PregnanciesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lmp => $composableBuilder(
+    column: $table.lmp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endedAt => $composableBuilder(
+    column: $table.endedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get outcome => $composableBuilder(
+    column: $table.outcome,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PregnanciesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PregnanciesTable> {
+  $$PregnanciesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get lmp =>
+      $composableBuilder(column: $table.lmp, builder: (column) => column);
+
+  GeneratedColumn<String> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endedAt =>
+      $composableBuilder(column: $table.endedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get outcome =>
+      $composableBuilder(column: $table.outcome, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+}
+
+class $$PregnanciesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PregnanciesTable,
+          Pregnancy,
+          $$PregnanciesTableFilterComposer,
+          $$PregnanciesTableOrderingComposer,
+          $$PregnanciesTableAnnotationComposer,
+          $$PregnanciesTableCreateCompanionBuilder,
+          $$PregnanciesTableUpdateCompanionBuilder,
+          (
+            Pregnancy,
+            BaseReferences<_$AppDatabase, $PregnanciesTable, Pregnancy>,
+          ),
+          Pregnancy,
+          PrefetchHooks Function()
+        > {
+  $$PregnanciesTableTableManager(_$AppDatabase db, $PregnanciesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PregnanciesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PregnanciesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PregnanciesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String?> lmp = const Value.absent(),
+                Value<String?> dueDate = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> endedAt = const Value.absent(),
+                Value<String?> outcome = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PregnanciesCompanion(
+                id: id,
+                lmp: lmp,
+                dueDate: dueDate,
+                createdAt: createdAt,
+                endedAt: endedAt,
+                outcome: outcome,
+                note: note,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String?> lmp = const Value.absent(),
+                Value<String?> dueDate = const Value.absent(),
+                required DateTime createdAt,
+                Value<DateTime?> endedAt = const Value.absent(),
+                Value<String?> outcome = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PregnanciesCompanion.insert(
+                id: id,
+                lmp: lmp,
+                dueDate: dueDate,
+                createdAt: createdAt,
+                endedAt: endedAt,
+                outcome: outcome,
+                note: note,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PregnanciesTable, Pregnancy>(table),
+                  BaseReferences<_$AppDatabase, $PregnanciesTable, Pregnancy>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PregnanciesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PregnanciesTable,
+      Pregnancy,
+      $$PregnanciesTableFilterComposer,
+      $$PregnanciesTableOrderingComposer,
+      $$PregnanciesTableAnnotationComposer,
+      $$PregnanciesTableCreateCompanionBuilder,
+      $$PregnanciesTableUpdateCompanionBuilder,
+      (Pregnancy, BaseReferences<_$AppDatabase, $PregnanciesTable, Pregnancy>),
+      Pregnancy,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -21408,4 +24538,10 @@ class $AppDatabaseManager {
       $$VaccinationsTableTableManager(_db, _db.vaccinations);
   $$SymptomMediaTableTableManager get symptomMedia =>
       $$SymptomMediaTableTableManager(_db, _db.symptomMedia);
+  $$CycleDaysTableTableManager get cycleDays =>
+      $$CycleDaysTableTableManager(_db, _db.cycleDays);
+  $$MrsAssessmentsTableTableManager get mrsAssessments =>
+      $$MrsAssessmentsTableTableManager(_db, _db.mrsAssessments);
+  $$PregnanciesTableTableManager get pregnancies =>
+      $$PregnanciesTableTableManager(_db, _db.pregnancies);
 }

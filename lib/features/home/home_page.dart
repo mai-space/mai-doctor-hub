@@ -10,6 +10,7 @@ import '../../theme/icon_mappings.dart';
 import '../../widgets/app_logo.dart';
 import '../../widgets/empty_state.dart';
 import '../check_in/check_in_sheet.dart';
+import '../cycle/cycle_home_card.dart';
 import '../medications/intake_widgets.dart';
 import 'add_appointment_sheet.dart';
 import 'appointment_detail_page.dart';
@@ -121,6 +122,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
+                          const CycleHomeCard(),
                           if (!empty) ...[
                             const SizedBox(height: 20),
                             Text(

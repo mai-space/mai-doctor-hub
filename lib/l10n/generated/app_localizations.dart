@@ -386,6 +386,1404 @@ abstract class AppLocalizations {
   /// **'Eintrag'**
   String get entityEntry;
 
+  /// No description provided for @cycleTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zyklus'**
+  String get cycleTitle;
+
+  /// No description provided for @cycleSettingsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zyklus & Frauengesundheit'**
+  String get cycleSettingsTitle;
+
+  /// No description provided for @cycleSettingsIntro.
+  ///
+  /// In de, this message translates to:
+  /// **'Alles optional. Schalte nur ein, was für dich passt — du kannst es jederzeit ändern.'**
+  String get cycleSettingsIntro;
+
+  /// No description provided for @cycleTabToday.
+  ///
+  /// In de, this message translates to:
+  /// **'Heute'**
+  String get cycleTabToday;
+
+  /// No description provided for @cycleTabCalendar.
+  ///
+  /// In de, this message translates to:
+  /// **'Kalender'**
+  String get cycleTabCalendar;
+
+  /// No description provided for @cycleTabInsights.
+  ///
+  /// In de, this message translates to:
+  /// **'Auswertung'**
+  String get cycleTabInsights;
+
+  /// No description provided for @cycleOnboardingTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zyklus & Frauengesundheit'**
+  String get cycleOnboardingTitle;
+
+  /// No description provided for @cycleOnboardingText.
+  ///
+  /// In de, this message translates to:
+  /// **'Möchtest du deinen Zyklus, die Wechseljahre oder eine Schwangerschaft festhalten? Wähle, was passt — oder überspring den Schritt.'**
+  String get cycleOnboardingText;
+
+  /// No description provided for @cycleModeCycle.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode/Zyklus tracken'**
+  String get cycleModeCycle;
+
+  /// No description provided for @cycleModeCycleSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutung, Schmerzen, Symptome; geschätzte nächste Periode'**
+  String get cycleModeCycleSubtitle;
+
+  /// No description provided for @cycleModeMenopause.
+  ///
+  /// In de, this message translates to:
+  /// **'Wechseljahre'**
+  String get cycleModeMenopause;
+
+  /// No description provided for @cycleModeMenopauseSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Hitzewallungen, Schlaf, monatlicher Fragebogen (MRS)'**
+  String get cycleModeMenopauseSubtitle;
+
+  /// No description provided for @cycleModePregnancy.
+  ///
+  /// In de, this message translates to:
+  /// **'Schwangerschaft'**
+  String get cycleModePregnancy;
+
+  /// No description provided for @cycleModePregnancySubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'SSW, Vorsorge-Zeitplan, Gewicht und Blutdruck; pausiert die Perioden-Schätzung'**
+  String get cycleModePregnancySubtitle;
+
+  /// No description provided for @cycleModeNone.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht für mich'**
+  String get cycleModeNone;
+
+  /// No description provided for @cycleModeNoneSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Überspringen — später in den Einstellungen möglich'**
+  String get cycleModeNoneSubtitle;
+
+  /// No description provided for @cycleCreateGynecologist.
+  ///
+  /// In de, this message translates to:
+  /// **'Gynäkologie als Ärztin/Arzt anlegen'**
+  String get cycleCreateGynecologist;
+
+  /// No description provided for @cycleCreateGynecologistSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Platzhalter, später änderbar — z. B. für Termine und das Arzt-PDF'**
+  String get cycleCreateGynecologistSubtitle;
+
+  /// No description provided for @cycleGynecologistPlaceholder.
+  ///
+  /// In de, this message translates to:
+  /// **'Meine Gynäkologin/mein Gynäkologe'**
+  String get cycleGynecologistPlaceholder;
+
+  /// No description provided for @cyclePrivacyNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Zyklus- und Schwangerschaftsdaten sind besonders sensibel. Sie bleiben verschlüsselt auf diesem Gerät. Tipp: Schalte unter Einstellungen → Sicherheit die App-Sperre ein.'**
+  String get cyclePrivacyNote;
+
+  /// No description provided for @cycleShowFertile.
+  ///
+  /// In de, this message translates to:
+  /// **'Fruchtbares Fenster anzeigen'**
+  String get cycleShowFertile;
+
+  /// No description provided for @cycleShowFertileSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur eine grobe Schätzung — keine Verhütungsmethode'**
+  String get cycleShowFertileSubtitle;
+
+  /// No description provided for @cycleOpen.
+  ///
+  /// In de, this message translates to:
+  /// **'Zyklus öffnen'**
+  String get cycleOpen;
+
+  /// No description provided for @cycleDeleteAllTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle Zyklusdaten löschen'**
+  String get cycleDeleteAllTitle;
+
+  /// No description provided for @cycleDeleteAllSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Tagebuch, Fragebögen und Schwangerschaft'**
+  String get cycleDeleteAllSubtitle;
+
+  /// No description provided for @cycleDeleteAllText.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle Einträge zu Zyklus, Wechseljahren und Schwangerschaft werden endgültig gelöscht und die Bereiche ausgeschaltet. Deine Ärztinnen und Ärzte bleiben erhalten.'**
+  String get cycleDeleteAllText;
+
+  /// No description provided for @cycleDeleteAllDone.
+  ///
+  /// In de, this message translates to:
+  /// **'Zyklusdaten gelöscht'**
+  String get cycleDeleteAllDone;
+
+  /// No description provided for @cycleRecordsSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Kalender, Verlauf und Auswertung'**
+  String get cycleRecordsSubtitle;
+
+  /// No description provided for @cycleToday.
+  ///
+  /// In de, this message translates to:
+  /// **'heute'**
+  String get cycleToday;
+
+  /// No description provided for @cycleFlowTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutung'**
+  String get cycleFlowTitle;
+
+  /// No description provided for @cycleFlowNone.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine'**
+  String get cycleFlowNone;
+
+  /// No description provided for @cycleFlowSpotting.
+  ///
+  /// In de, this message translates to:
+  /// **'Schmierblutung'**
+  String get cycleFlowSpotting;
+
+  /// No description provided for @cycleFlowLight.
+  ///
+  /// In de, this message translates to:
+  /// **'Leicht'**
+  String get cycleFlowLight;
+
+  /// No description provided for @cycleFlowMedium.
+  ///
+  /// In de, this message translates to:
+  /// **'Mittel'**
+  String get cycleFlowMedium;
+
+  /// No description provided for @cycleFlowHeavy.
+  ///
+  /// In de, this message translates to:
+  /// **'Stark'**
+  String get cycleFlowHeavy;
+
+  /// No description provided for @cycleFlowVeryHeavy.
+  ///
+  /// In de, this message translates to:
+  /// **'Sehr stark'**
+  String get cycleFlowVeryHeavy;
+
+  /// No description provided for @cyclePainTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Schmerz'**
+  String get cyclePainTitle;
+
+  /// No description provided for @cyclePainNotLogged.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht erfasst — Regler bewegen'**
+  String get cyclePainNotLogged;
+
+  /// No description provided for @cyclePainClear.
+  ///
+  /// In de, this message translates to:
+  /// **'Entfernen'**
+  String get cyclePainClear;
+
+  /// No description provided for @cyclePainValue.
+  ///
+  /// In de, this message translates to:
+  /// **'Schmerz {value}/10'**
+  String cyclePainValue(int value);
+
+  /// No description provided for @cyclePainLocations.
+  ///
+  /// In de, this message translates to:
+  /// **'Wo?'**
+  String get cyclePainLocations;
+
+  /// No description provided for @cyclePainkiller.
+  ///
+  /// In de, this message translates to:
+  /// **'Schmerzmittel genommen'**
+  String get cyclePainkiller;
+
+  /// No description provided for @cyclePainkillerName.
+  ///
+  /// In de, this message translates to:
+  /// **'Welches? (optional)'**
+  String get cyclePainkillerName;
+
+  /// No description provided for @cyclePainkillerHelped.
+  ///
+  /// In de, this message translates to:
+  /// **'Hat es geholfen?'**
+  String get cyclePainkillerHelped;
+
+  /// No description provided for @cycleNoAnswer.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Angabe'**
+  String get cycleNoAnswer;
+
+  /// No description provided for @cycleOtherSymptoms.
+  ///
+  /// In de, this message translates to:
+  /// **'Andere'**
+  String get cycleOtherSymptoms;
+
+  /// No description provided for @cycleOtherHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Eigenes Symptom hinzufügen'**
+  String get cycleOtherHint;
+
+  /// No description provided for @cycleOtherAdd.
+  ///
+  /// In de, this message translates to:
+  /// **'Hinzufügen'**
+  String get cycleOtherAdd;
+
+  /// No description provided for @cycleDischargeTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Ausfluss'**
+  String get cycleDischargeTitle;
+
+  /// No description provided for @cycleMenopauseTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wechseljahre'**
+  String get cycleMenopauseTitle;
+
+  /// No description provided for @cycleHotFlashes.
+  ///
+  /// In de, this message translates to:
+  /// **'Hitzewallungen heute'**
+  String get cycleHotFlashes;
+
+  /// No description provided for @cycleHotFlashIntensity.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie stark?'**
+  String get cycleHotFlashIntensity;
+
+  /// No description provided for @cycleNightSweats.
+  ///
+  /// In de, this message translates to:
+  /// **'Nachtschweiß'**
+  String get cycleNightSweats;
+
+  /// No description provided for @cycleHotFlashesToday.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{1 Hitzewallung heute} other{{count} Hitzewallungen heute}}'**
+  String cycleHotFlashesToday(int count);
+
+  /// No description provided for @cyclePregnancyTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Schwangerschaft'**
+  String get cyclePregnancyTitle;
+
+  /// No description provided for @cycleFetalMovement.
+  ///
+  /// In de, this message translates to:
+  /// **'Kindsbewegungen'**
+  String get cycleFetalMovement;
+
+  /// No description provided for @cycleFetalNotYet.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch nicht spürbar'**
+  String get cycleFetalNotYet;
+
+  /// No description provided for @cycleFetalNormal.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie gewohnt'**
+  String get cycleFetalNormal;
+
+  /// No description provided for @cycleFetalLess.
+  ///
+  /// In de, this message translates to:
+  /// **'Weniger als sonst'**
+  String get cycleFetalLess;
+
+  /// No description provided for @cycleWeight.
+  ///
+  /// In de, this message translates to:
+  /// **'Gewicht'**
+  String get cycleWeight;
+
+  /// No description provided for @cycleBpSystolic.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutdruck oben'**
+  String get cycleBpSystolic;
+
+  /// No description provided for @cycleBpDiastolic.
+  ///
+  /// In de, this message translates to:
+  /// **'unten'**
+  String get cycleBpDiastolic;
+
+  /// No description provided for @cycleNoteHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Was dir heute wichtig ist'**
+  String get cycleNoteHint;
+
+  /// No description provided for @cycleDayTitlePattern.
+  ///
+  /// In de, this message translates to:
+  /// **'EEE, d. MMM yyyy'**
+  String get cycleDayTitlePattern;
+
+  /// No description provided for @cycleDayPattern.
+  ///
+  /// In de, this message translates to:
+  /// **'EEEE, d. MMMM'**
+  String get cycleDayPattern;
+
+  /// No description provided for @cycleDatePattern.
+  ///
+  /// In de, this message translates to:
+  /// **'dd.MM.yyyy'**
+  String get cycleDatePattern;
+
+  /// No description provided for @cycleShortDatePattern.
+  ///
+  /// In de, this message translates to:
+  /// **'d.M.'**
+  String get cycleShortDatePattern;
+
+  /// No description provided for @cycleMonthPattern.
+  ///
+  /// In de, this message translates to:
+  /// **'MMMM yyyy'**
+  String get cycleMonthPattern;
+
+  /// No description provided for @cycleDayDeleteTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Eintrag löschen?'**
+  String get cycleDayDeleteTitle;
+
+  /// No description provided for @cycleDayDeleteText.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle Angaben zu diesem Tag werden gelöscht.'**
+  String get cycleDayDeleteText;
+
+  /// No description provided for @cyclePbacTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutverlust zählen (PBAC, optional)'**
+  String get cyclePbacTitle;
+
+  /// No description provided for @cyclePbacSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Für ein genaueres Bild bei starker Periode'**
+  String get cyclePbacSubtitle;
+
+  /// No description provided for @cyclePbacExplain.
+  ///
+  /// In de, this message translates to:
+  /// **'PBAC (Higham 1990): Zähle Binden/Tampons nach Füllung, Blutklumpen und Durchbluten. Punkte je Zyklus über 100 sprechen für eine verstärkte Regelblutung — das lohnt sich ärztlich anzuschauen.'**
+  String get cyclePbacExplain;
+
+  /// No description provided for @cyclePbacScore.
+  ///
+  /// In de, this message translates to:
+  /// **'{score} PBAC-Punkte heute'**
+  String cyclePbacScore(int score);
+
+  /// No description provided for @cyclePbacPoints.
+  ///
+  /// In de, this message translates to:
+  /// **'{points} Punkte je Stück'**
+  String cyclePbacPoints(int points);
+
+  /// No description provided for @cyclePbacPadsLight.
+  ///
+  /// In de, this message translates to:
+  /// **'Binde, leicht gefüllt'**
+  String get cyclePbacPadsLight;
+
+  /// No description provided for @cyclePbacPadsMedium.
+  ///
+  /// In de, this message translates to:
+  /// **'Binde, mittel gefüllt'**
+  String get cyclePbacPadsMedium;
+
+  /// No description provided for @cyclePbacPadsFull.
+  ///
+  /// In de, this message translates to:
+  /// **'Binde, voll'**
+  String get cyclePbacPadsFull;
+
+  /// No description provided for @cyclePbacTamponsLight.
+  ///
+  /// In de, this message translates to:
+  /// **'Tampon, leicht gefüllt'**
+  String get cyclePbacTamponsLight;
+
+  /// No description provided for @cyclePbacTamponsMedium.
+  ///
+  /// In de, this message translates to:
+  /// **'Tampon, mittel gefüllt'**
+  String get cyclePbacTamponsMedium;
+
+  /// No description provided for @cyclePbacTamponsFull.
+  ///
+  /// In de, this message translates to:
+  /// **'Tampon, voll'**
+  String get cyclePbacTamponsFull;
+
+  /// No description provided for @cyclePbacClotsSmall.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutklumpen, klein (etwa 1-Cent-Münze)'**
+  String get cyclePbacClotsSmall;
+
+  /// No description provided for @cyclePbacClotsLarge.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutklumpen, groß (etwa 2-Euro-Münze oder größer)'**
+  String get cyclePbacClotsLarge;
+
+  /// No description provided for @cyclePbacFlooding.
+  ///
+  /// In de, this message translates to:
+  /// **'Durchgeblutet (Flooding)'**
+  String get cyclePbacFlooding;
+
+  /// No description provided for @cycleLess.
+  ///
+  /// In de, this message translates to:
+  /// **'Weniger'**
+  String get cycleLess;
+
+  /// No description provided for @cycleMore.
+  ///
+  /// In de, this message translates to:
+  /// **'Mehr'**
+  String get cycleMore;
+
+  /// No description provided for @cyclePhaseMenstruation.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode'**
+  String get cyclePhaseMenstruation;
+
+  /// No description provided for @cyclePhaseFollicular.
+  ///
+  /// In de, this message translates to:
+  /// **'Follikelphase'**
+  String get cyclePhaseFollicular;
+
+  /// No description provided for @cyclePhaseOvulation.
+  ///
+  /// In de, this message translates to:
+  /// **'Eisprung (ca.)'**
+  String get cyclePhaseOvulation;
+
+  /// No description provided for @cyclePhaseLuteal.
+  ///
+  /// In de, this message translates to:
+  /// **'Lutealphase'**
+  String get cyclePhaseLuteal;
+
+  /// No description provided for @cycleStatusNoData.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Periode erfasst — trag den ersten Tag ein.'**
+  String get cycleStatusNoData;
+
+  /// No description provided for @cycleStatusCycleDay.
+  ///
+  /// In de, this message translates to:
+  /// **'Zyklustag {day}'**
+  String cycleStatusCycleDay(int day);
+
+  /// No description provided for @cycleStatusPeriodDay.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode, Tag {day}'**
+  String cycleStatusPeriodDay(int day);
+
+  /// No description provided for @cycleStatusNextIn.
+  ///
+  /// In de, this message translates to:
+  /// **'{days, plural, =1{nächste Periode in ~1 Tag (geschätzt)} other{nächste Periode in ~{days} Tagen (geschätzt)}}'**
+  String cycleStatusNextIn(int days);
+
+  /// No description provided for @cycleStatusExpectedNow.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode etwa jetzt erwartet (geschätzt)'**
+  String get cycleStatusExpectedNow;
+
+  /// No description provided for @cycleStatusLate.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode später als geschätzt'**
+  String get cycleStatusLate;
+
+  /// No description provided for @cycleEstimateDisclaimer.
+  ///
+  /// In de, this message translates to:
+  /// **'Schätzung aus deinen bisherigen Zyklen — keine Verhütungsmethode und kein Schwangerschaftstest.'**
+  String get cycleEstimateDisclaimer;
+
+  /// No description provided for @cyclePredictionRange.
+  ///
+  /// In de, this message translates to:
+  /// **'Nächste Periode etwa {from} – {to} (geschätzt)'**
+  String cyclePredictionRange(String from, String to);
+
+  /// No description provided for @cycleFertileRange.
+  ///
+  /// In de, this message translates to:
+  /// **'Fruchtbares Fenster grob geschätzt: {from} – {to}'**
+  String cycleFertileRange(String from, String to);
+
+  /// No description provided for @cycleQuickLogTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Heute erfassen'**
+  String get cycleQuickLogTitle;
+
+  /// No description provided for @cycleQuickLogMore.
+  ///
+  /// In de, this message translates to:
+  /// **'Mehr erfassen (Symptome, Ausfluss, Notiz …)'**
+  String get cycleQuickLogMore;
+
+  /// No description provided for @cycleQuickLogSymptoms.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{1 Symptom erfasst} other{{count} Symptome erfasst}}'**
+  String cycleQuickLogSymptoms(int count);
+
+  /// No description provided for @cyclePrevMonth.
+  ///
+  /// In de, this message translates to:
+  /// **'Vorheriger Monat'**
+  String get cyclePrevMonth;
+
+  /// No description provided for @cycleNextMonth.
+  ///
+  /// In de, this message translates to:
+  /// **'Nächster Monat'**
+  String get cycleNextMonth;
+
+  /// No description provided for @cycleCalendarHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Tippe auf einen Tag, um ihn zu erfassen oder zu ändern.'**
+  String get cycleCalendarHint;
+
+  /// No description provided for @cycleLegendPeriod.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutung'**
+  String get cycleLegendPeriod;
+
+  /// No description provided for @cycleLegendPredicted.
+  ///
+  /// In de, this message translates to:
+  /// **'erwartet (geschätzt)'**
+  String get cycleLegendPredicted;
+
+  /// No description provided for @cycleLegendFertile.
+  ///
+  /// In de, this message translates to:
+  /// **'fruchtbar (grob)'**
+  String get cycleLegendFertile;
+
+  /// No description provided for @cycleLegendLogged.
+  ///
+  /// In de, this message translates to:
+  /// **'erfasst'**
+  String get cycleLegendLogged;
+
+  /// No description provided for @cycleInsightsOverview.
+  ///
+  /// In de, this message translates to:
+  /// **'Überblick'**
+  String get cycleInsightsOverview;
+
+  /// No description provided for @cycleInsightsNotEnough.
+  ///
+  /// In de, this message translates to:
+  /// **'Für Durchschnitt und Schätzung braucht es mindestens zwei erfasste Perioden.'**
+  String get cycleInsightsNotEnough;
+
+  /// No description provided for @cycleInsightsAverage.
+  ///
+  /// In de, this message translates to:
+  /// **'Zykluslänge Ø {average} Tage (Median {median}, {min}–{max})'**
+  String cycleInsightsAverage(String average, int median, int min, int max);
+
+  /// No description provided for @cycleInsightsPeriod.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =1{Periode Ø {average} Tage · 1 Zyklus ausgewertet} other{Periode Ø {average} Tage · {count} Zyklen ausgewertet}}'**
+  String cycleInsightsPeriod(String average, int count);
+
+  /// No description provided for @cycleInsightsEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Auswertung — erfasse ein paar Tage, dann erscheinen hier Diagramme.'**
+  String get cycleInsightsEmpty;
+
+  /// No description provided for @cycleChartLengthTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zykluslängen'**
+  String get cycleChartLengthTitle;
+
+  /// No description provided for @cycleChartLengthHelp.
+  ///
+  /// In de, this message translates to:
+  /// **'Balken = Zykluslänge, dunkler Anteil = Periode. Grün hinterlegt: 21–35 Tage; gestrichelt: dein Durchschnitt.'**
+  String get cycleChartLengthHelp;
+
+  /// No description provided for @cycleChartLengthSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'Zykluslängen der letzten {count} Zyklen: {values} Tage'**
+  String cycleChartLengthSemantics(int count, String values);
+
+  /// No description provided for @cycleChartPainTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Schmerz nach Zyklustag'**
+  String get cycleChartPainTitle;
+
+  /// No description provided for @cycleChartPainHelp.
+  ///
+  /// In de, this message translates to:
+  /// **'Jede Zeile ein Zyklus, jede Spalte ein Zyklustag. So werden Muster sichtbar, etwa Schmerz kurz vor oder zu Beginn der Periode.'**
+  String get cycleChartPainHelp;
+
+  /// No description provided for @cycleChartPainSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'Schmerz in {count} Zyklen; starke Schmerzen an Zyklustag {days}'**
+  String cycleChartPainSemantics(int count, String days);
+
+  /// No description provided for @cyclePainStripLegend.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe = Schmerz 0–10 · roter Strich = Periode'**
+  String get cyclePainStripLegend;
+
+  /// No description provided for @cycleChartPhaseTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Symptome nach Zyklusphase'**
+  String get cycleChartPhaseTitle;
+
+  /// No description provided for @cycleChartPhaseHelp.
+  ///
+  /// In de, this message translates to:
+  /// **'Anteil der erfassten Tage je Phase, an denen das Symptom auftrat. Phasen sind aus deinen Zyklen geschätzt.'**
+  String get cycleChartPhaseHelp;
+
+  /// No description provided for @cycleChartPbacTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'PBAC je Zyklus'**
+  String get cycleChartPbacTitle;
+
+  /// No description provided for @cycleChartPbacSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'PBAC-Punkte je Zyklus: {values}; Grenze 100'**
+  String cycleChartPbacSemantics(String values);
+
+  /// No description provided for @cycleChartHotFlashTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Hitzewallungen je Woche'**
+  String get cycleChartHotFlashTitle;
+
+  /// No description provided for @cycleChartHotFlashSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'Hitzewallungen je Woche, letzte 12 Wochen: {values}'**
+  String cycleChartHotFlashSemantics(String values);
+
+  /// No description provided for @cycleChartMrsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Verlauf Menopause Rating Scale'**
+  String get cycleChartMrsTitle;
+
+  /// No description provided for @cycleChartMrsSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'MRS-Gesamtwerte: {values} (von 44)'**
+  String cycleChartMrsSemantics(String values);
+
+  /// No description provided for @cycleChartWeightTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Gewicht'**
+  String get cycleChartWeightTitle;
+
+  /// No description provided for @cycleChartWeightSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'Gewicht, {count} Messungen, zuletzt {latest} kg'**
+  String cycleChartWeightSemantics(int count, String latest);
+
+  /// No description provided for @cycleChartBpTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutdruck'**
+  String get cycleChartBpTitle;
+
+  /// No description provided for @cycleChartBpHelp.
+  ///
+  /// In de, this message translates to:
+  /// **'Werte ab 140/90 mmHg in der Schwangerschaft bitte zeitnah ärztlich besprechen.'**
+  String get cycleChartBpHelp;
+
+  /// No description provided for @cycleChartBpSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutdruck, {count} Messungen'**
+  String cycleChartBpSemantics(int count);
+
+  /// No description provided for @cycleHintsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Lohnt sich, mit deiner Gynäkologin/deinem Gynäkologen zu besprechen'**
+  String get cycleHintsTitle;
+
+  /// No description provided for @cycleHintsUrgentTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Bitte zeitnah ärztlich abklären lassen'**
+  String get cycleHintsUrgentTitle;
+
+  /// No description provided for @cycleHintsFooter.
+  ///
+  /// In de, this message translates to:
+  /// **'Das ist keine Diagnose — nur ein Hinweis aus deinen Einträgen.'**
+  String get cycleHintsFooter;
+
+  /// No description provided for @cycleHintShortCycles.
+  ///
+  /// In de, this message translates to:
+  /// **'Deine Zyklen waren wiederholt kürzer als 21 Tage (Median {days} Tage).'**
+  String cycleHintShortCycles(int days);
+
+  /// No description provided for @cycleHintLongCycles.
+  ///
+  /// In de, this message translates to:
+  /// **'Deine Zyklen waren wiederholt länger als 35 Tage (Median {days} Tage).'**
+  String cycleHintLongCycles(int days);
+
+  /// No description provided for @cycleHintIrregular.
+  ///
+  /// In de, this message translates to:
+  /// **'Deine Zykluslängen schwanken um {days} Tage (kürzester bis längster).'**
+  String cycleHintIrregular(int days);
+
+  /// No description provided for @cycleHintLongPeriod.
+  ///
+  /// In de, this message translates to:
+  /// **'Eine Periode dauerte {days} Tage (länger als 7 Tage).'**
+  String cycleHintLongPeriod(int days);
+
+  /// No description provided for @cycleHintHeavyBleeding.
+  ///
+  /// In de, this message translates to:
+  /// **'PBAC von {score} Punkten in einem Zyklus (über 100 spricht für eine verstärkte Blutung).'**
+  String cycleHintHeavyBleeding(int score);
+
+  /// No description provided for @cycleHintStrongPain.
+  ///
+  /// In de, this message translates to:
+  /// **'Starke Schmerzen (7/10 oder mehr) an {days} Tagen eines Zyklus.'**
+  String cycleHintStrongPain(int days);
+
+  /// No description provided for @cycleHintPainkiller.
+  ///
+  /// In de, this message translates to:
+  /// **'Schmerzmittel haben nicht ausreichend geholfen.'**
+  String get cycleHintPainkiller;
+
+  /// No description provided for @cycleHintIntermenstrual.
+  ///
+  /// In de, this message translates to:
+  /// **'{days, plural, =1{Schmierblutung an 1 Tag zwischen den Perioden (letzte 90 Tage).} other{Schmierblutung an {days} Tagen zwischen den Perioden (letzte 90 Tage).}}'**
+  String cycleHintIntermenstrual(int days);
+
+  /// No description provided for @cycleHintPostmenopausal.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutung nach mehr als 12 Monaten ohne Periode — bitte ärztlich abklären lassen.'**
+  String get cycleHintPostmenopausal;
+
+  /// No description provided for @cycleHintPregnancyBleeding.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutungen in der Schwangerschaft bitte zeitnah ärztlich abklären lassen — oft harmlos, aber wichtig zu wissen.'**
+  String get cycleHintPregnancyBleeding;
+
+  /// No description provided for @cycleHintFetalMovement.
+  ///
+  /// In de, this message translates to:
+  /// **'Spürst du dein Kind weniger als sonst, melde dich bitte zeitnah in deiner Praxis oder im Kreißsaal.'**
+  String get cycleHintFetalMovement;
+
+  /// No description provided for @cycleMrsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Menopause Rating Scale (MRS)'**
+  String get cycleMrsTitle;
+
+  /// No description provided for @cycleMrsIntro.
+  ///
+  /// In de, this message translates to:
+  /// **'Welche der folgenden Beschwerden hast du derzeit — und wie stark? Kreuze bitte zu jeder Beschwerde an. Einmal im Monat genügt.'**
+  String get cycleMrsIntro;
+
+  /// No description provided for @cycleMrsExplain.
+  ///
+  /// In de, this message translates to:
+  /// **'Ein kurzer, wissenschaftlich geprüfter Fragebogen (11 Fragen) — einmal im Monat zeigt er den Verlauf deiner Beschwerden.'**
+  String get cycleMrsExplain;
+
+  /// No description provided for @cycleMrsFill.
+  ///
+  /// In de, this message translates to:
+  /// **'Fragebogen ausfüllen'**
+  String get cycleMrsFill;
+
+  /// No description provided for @cycleMrsSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichern ({answered}/{total})'**
+  String cycleMrsSave(int answered, int total);
+
+  /// No description provided for @cycleMrsSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Gespeichert: {summary}'**
+  String cycleMrsSaved(String summary);
+
+  /// No description provided for @cycleMrsSource.
+  ///
+  /// In de, this message translates to:
+  /// **'Menopause Rating Scale nach Heinemann et al. (Health Qual Life Outcomes 2003; 2004). Summe 0–44: 0–4 keine/kaum, 5–8 leicht, 9–16 mittel, ab 17 stark.'**
+  String get cycleMrsSource;
+
+  /// No description provided for @cycleMrsBands.
+  ///
+  /// In de, this message translates to:
+  /// **'Summe 0–44: 0–4 keine/kaum, 5–8 leicht, 9–16 mittel, ab 17 stark.'**
+  String get cycleMrsBands;
+
+  /// No description provided for @cycleMrsLevel0.
+  ///
+  /// In de, this message translates to:
+  /// **'keine'**
+  String get cycleMrsLevel0;
+
+  /// No description provided for @cycleMrsLevel1.
+  ///
+  /// In de, this message translates to:
+  /// **'leicht'**
+  String get cycleMrsLevel1;
+
+  /// No description provided for @cycleMrsLevel2.
+  ///
+  /// In de, this message translates to:
+  /// **'mittel'**
+  String get cycleMrsLevel2;
+
+  /// No description provided for @cycleMrsLevel3.
+  ///
+  /// In de, this message translates to:
+  /// **'stark'**
+  String get cycleMrsLevel3;
+
+  /// No description provided for @cycleMrsLevel4.
+  ///
+  /// In de, this message translates to:
+  /// **'sehr stark'**
+  String get cycleMrsLevel4;
+
+  /// No description provided for @cycleMrsItem1.
+  ///
+  /// In de, this message translates to:
+  /// **'Wallungen, Schwitzen (aufsteigende Hitze, Schweißausbrüche)'**
+  String get cycleMrsItem1;
+
+  /// No description provided for @cycleMrsItem2.
+  ///
+  /// In de, this message translates to:
+  /// **'Herzbeschwerden (Herzklopfen, Herzrasen, Herzstolpern, Herzbeklemmungen)'**
+  String get cycleMrsItem2;
+
+  /// No description provided for @cycleMrsItem3.
+  ///
+  /// In de, this message translates to:
+  /// **'Schlafstörungen (Einschlafstörungen, Durchschlafstörungen, zu frühes Aufwachen)'**
+  String get cycleMrsItem3;
+
+  /// No description provided for @cycleMrsItem4.
+  ///
+  /// In de, this message translates to:
+  /// **'Depressive Verstimmung (Mutlosigkeit, Traurigkeit, Weinerlichkeit, Antriebslosigkeit, Stimmungsschwankungen)'**
+  String get cycleMrsItem4;
+
+  /// No description provided for @cycleMrsItem5.
+  ///
+  /// In de, this message translates to:
+  /// **'Reizbarkeit (Nervosität, innere Anspannung, Aggressivität)'**
+  String get cycleMrsItem5;
+
+  /// No description provided for @cycleMrsItem6.
+  ///
+  /// In de, this message translates to:
+  /// **'Ängstlichkeit (innere Unruhe, Panik)'**
+  String get cycleMrsItem6;
+
+  /// No description provided for @cycleMrsItem7.
+  ///
+  /// In de, this message translates to:
+  /// **'Körperliche und geistige Erschöpfung (Leistungsminderung, Gedächtnisminderung, Konzentrationsschwäche, Vergesslichkeit)'**
+  String get cycleMrsItem7;
+
+  /// No description provided for @cycleMrsItem8.
+  ///
+  /// In de, this message translates to:
+  /// **'Sexualprobleme (Veränderung des sexuellen Verlangens, der sexuellen Betätigung und Befriedigung)'**
+  String get cycleMrsItem8;
+
+  /// No description provided for @cycleMrsItem9.
+  ///
+  /// In de, this message translates to:
+  /// **'Harnwegsbeschwerden (Beschwerden beim Wasserlassen, häufiger Harndrang, unwillkürlicher Harnabgang)'**
+  String get cycleMrsItem9;
+
+  /// No description provided for @cycleMrsItem10.
+  ///
+  /// In de, this message translates to:
+  /// **'Trockenheit der Scheide (Trockenheitsgefühl oder Brennen der Scheide, Beschwerden beim Geschlechtsverkehr)'**
+  String get cycleMrsItem10;
+
+  /// No description provided for @cycleMrsItem11.
+  ///
+  /// In de, this message translates to:
+  /// **'Gelenk- und Muskelbeschwerden (Schmerzen im Bereich der Gelenke, rheumaähnliche Beschwerden)'**
+  String get cycleMrsItem11;
+
+  /// No description provided for @cycleMrsSomatic.
+  ///
+  /// In de, this message translates to:
+  /// **'körperlich'**
+  String get cycleMrsSomatic;
+
+  /// No description provided for @cycleMrsPsychological.
+  ///
+  /// In de, this message translates to:
+  /// **'psychisch'**
+  String get cycleMrsPsychological;
+
+  /// No description provided for @cycleMrsUrogenital.
+  ///
+  /// In de, this message translates to:
+  /// **'urogenital'**
+  String get cycleMrsUrogenital;
+
+  /// No description provided for @cycleMrsTotalLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Gesamt'**
+  String get cycleMrsTotalLabel;
+
+  /// No description provided for @cycleMrsTotal.
+  ///
+  /// In de, this message translates to:
+  /// **'MRS {total} ({severity})'**
+  String cycleMrsTotal(int total, String severity);
+
+  /// No description provided for @cycleMrsSeverityNone.
+  ///
+  /// In de, this message translates to:
+  /// **'keine/kaum'**
+  String get cycleMrsSeverityNone;
+
+  /// No description provided for @cycleMrsSeverityMild.
+  ///
+  /// In de, this message translates to:
+  /// **'leicht'**
+  String get cycleMrsSeverityMild;
+
+  /// No description provided for @cycleMrsSeverityModerate.
+  ///
+  /// In de, this message translates to:
+  /// **'mittel'**
+  String get cycleMrsSeverityModerate;
+
+  /// No description provided for @cycleMrsSeveritySevere.
+  ///
+  /// In de, this message translates to:
+  /// **'stark'**
+  String get cycleMrsSeveritySevere;
+
+  /// No description provided for @cycleMrsNotYet.
+  ///
+  /// In de, this message translates to:
+  /// **'Wechseljahre: MRS-Fragebogen noch nicht ausgefüllt'**
+  String get cycleMrsNotYet;
+
+  /// No description provided for @cycleMrsLatest.
+  ///
+  /// In de, this message translates to:
+  /// **'Wechseljahre: MRS {total} ({severity}) am {date}'**
+  String cycleMrsLatest(int total, String severity, String date);
+
+  /// No description provided for @cyclePregnancyNoDates.
+  ///
+  /// In de, this message translates to:
+  /// **'Schwangerschaft: trag die letzte Periode oder den errechneten Termin ein.'**
+  String get cyclePregnancyNoDates;
+
+  /// No description provided for @cyclePregnancyWeek.
+  ///
+  /// In de, this message translates to:
+  /// **'SSW {week}'**
+  String cyclePregnancyWeek(String week);
+
+  /// No description provided for @cyclePregnancyTrimester.
+  ///
+  /// In de, this message translates to:
+  /// **'{trimester}. Trimester'**
+  String cyclePregnancyTrimester(int trimester);
+
+  /// No description provided for @cyclePregnancyDaysToDue.
+  ///
+  /// In de, this message translates to:
+  /// **'{days, plural, =0{Termin heute} =1{noch 1 Tag bis zum Termin} other{noch {days} Tage bis zum Termin}}'**
+  String cyclePregnancyDaysToDue(int days);
+
+  /// No description provided for @cyclePregnancyDue.
+  ///
+  /// In de, this message translates to:
+  /// **'Errechneter Termin {date}'**
+  String cyclePregnancyDue(String date);
+
+  /// No description provided for @cyclePregnancyDueNote.
+  ///
+  /// In de, this message translates to:
+  /// **'Der errechnete Termin ist ein Richtwert — nur wenige Kinder kommen genau an diesem Tag.'**
+  String get cyclePregnancyDueNote;
+
+  /// No description provided for @cyclePregnancyEditDates.
+  ///
+  /// In de, this message translates to:
+  /// **'Termin & letzte Periode'**
+  String get cyclePregnancyEditDates;
+
+  /// No description provided for @cyclePregnancyLmp.
+  ///
+  /// In de, this message translates to:
+  /// **'Erster Tag der letzten Periode'**
+  String get cyclePregnancyLmp;
+
+  /// No description provided for @cyclePregnancyNaegele.
+  ///
+  /// In de, this message translates to:
+  /// **'Errechnet (Naegele, + 280 Tage): {date}'**
+  String cyclePregnancyNaegele(String date);
+
+  /// No description provided for @cyclePregnancyDueOverride.
+  ///
+  /// In de, this message translates to:
+  /// **'Termin laut Ärztin/Arzt/Ultraschall (hat Vorrang)'**
+  String get cyclePregnancyDueOverride;
+
+  /// No description provided for @cyclePregnancyTimeline.
+  ///
+  /// In de, this message translates to:
+  /// **'Vorsorge-Zeitplan (Vorschläge)'**
+  String get cyclePregnancyTimeline;
+
+  /// No description provided for @cyclePregnancyTimelineSource.
+  ///
+  /// In de, this message translates to:
+  /// **'Nach den Mutterschafts-Richtlinien: Vorsorge alle 4 Wochen, ab SSW 32 alle 2 Wochen; drei Basis-Ultraschalle. Deine Praxis plant individuell.'**
+  String get cyclePregnancyTimelineSource;
+
+  /// No description provided for @cyclePregnancyShowAll.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle {count} anzeigen'**
+  String cyclePregnancyShowAll(int count);
+
+  /// No description provided for @cyclePregnancyShowLess.
+  ///
+  /// In de, this message translates to:
+  /// **'Weniger anzeigen'**
+  String get cyclePregnancyShowLess;
+
+  /// No description provided for @cycleMilestoneCheckup.
+  ///
+  /// In de, this message translates to:
+  /// **'Vorsorge (SSW {weeks})'**
+  String cycleMilestoneCheckup(String weeks);
+
+  /// No description provided for @cycleMilestoneUltrasound.
+  ///
+  /// In de, this message translates to:
+  /// **'Basis-Ultraschall (SSW {weeks})'**
+  String cycleMilestoneUltrasound(String weeks);
+
+  /// No description provided for @cycleMilestoneAround.
+  ///
+  /// In de, this message translates to:
+  /// **'ab {date}'**
+  String cycleMilestoneAround(String date);
+
+  /// No description provided for @cycleMilestoneCreate.
+  ///
+  /// In de, this message translates to:
+  /// **'Als Termin anlegen'**
+  String get cycleMilestoneCreate;
+
+  /// No description provided for @cycleMilestoneCreated.
+  ///
+  /// In de, this message translates to:
+  /// **'Termin angelegt'**
+  String get cycleMilestoneCreated;
+
+  /// No description provided for @cyclePregnancyEnd.
+  ///
+  /// In de, this message translates to:
+  /// **'Schwangerschaft beenden'**
+  String get cyclePregnancyEnd;
+
+  /// No description provided for @cyclePregnancyEndText.
+  ///
+  /// In de, this message translates to:
+  /// **'Die Schwangerschaft wird abgeschlossen und der Bereich ausgeblendet. Deine Einträge bleiben erhalten. Du kannst optional angeben, wie sie geendet hat.'**
+  String get cyclePregnancyEndText;
+
+  /// No description provided for @cyclePregnancyOutcomeBirth.
+  ///
+  /// In de, this message translates to:
+  /// **'Geburt'**
+  String get cyclePregnancyOutcomeBirth;
+
+  /// No description provided for @cyclePregnancyOutcomeLoss.
+  ///
+  /// In de, this message translates to:
+  /// **'Fehlgeburt oder Verlust'**
+  String get cyclePregnancyOutcomeLoss;
+
+  /// No description provided for @cyclePregnancyOutcomeNone.
+  ///
+  /// In de, this message translates to:
+  /// **'Möchte ich nicht angeben'**
+  String get cyclePregnancyOutcomeNone;
+
+  /// No description provided for @cyclePregnancyEndConfirm.
+  ///
+  /// In de, this message translates to:
+  /// **'Beenden'**
+  String get cyclePregnancyEndConfirm;
+
+  /// No description provided for @cyclePregnancyEnded.
+  ///
+  /// In de, this message translates to:
+  /// **'Gespeichert'**
+  String get cyclePregnancyEnded;
+
+  /// No description provided for @cycleTopic.
+  ///
+  /// In de, this message translates to:
+  /// **'Zyklus & Frauengesundheit'**
+  String get cycleTopic;
+
+  /// No description provided for @cycleTopicDescription.
+  ///
+  /// In de, this message translates to:
+  /// **'Erwartete Periode, monatlicher Fragebogen, Vorsorge-Vorschläge — standardmäßig diskret'**
+  String get cycleTopicDescription;
+
+  /// No description provided for @cycleDiscreetTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Erinnerung'**
+  String get cycleDiscreetTitle;
+
+  /// No description provided for @cycleReminderSoonTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode in etwa 2 Tagen erwartet (geschätzt)'**
+  String get cycleReminderSoonTitle;
+
+  /// No description provided for @cycleReminderTodayTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode etwa heute erwartet (geschätzt)'**
+  String get cycleReminderTodayTitle;
+
+  /// No description provided for @cycleReminderBody.
+  ///
+  /// In de, this message translates to:
+  /// **'Trag sie im Zyklus-Tagebuch ein, wenn sie beginnt.'**
+  String get cycleReminderBody;
+
+  /// No description provided for @cycleReminderMrsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zeit für deinen monatlichen Wechseljahre-Fragebogen'**
+  String get cycleReminderMrsTitle;
+
+  /// No description provided for @cycleReminderMrsBody.
+  ///
+  /// In de, this message translates to:
+  /// **'Letzter Wert: MRS {total}'**
+  String cycleReminderMrsBody(int total);
+
+  /// No description provided for @cycleReminderMilestoneBody.
+  ///
+  /// In de, this message translates to:
+  /// **'Vorschlag aus dem Vorsorge-Zeitplan — schon einen Termin?'**
+  String get cycleReminderMilestoneBody;
+
+  /// No description provided for @cycleSummarySubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Letzte Zyklen, Durchschnitte, PBAC, Schmerztage, Symptome, Hinweise; ggf. Schwangerschaft und MRS'**
+  String get cycleSummarySubtitle;
+
+  /// No description provided for @cycleReportWeight.
+  ///
+  /// In de, this message translates to:
+  /// **'Gewicht zuletzt {kg} kg ({date})'**
+  String cycleReportWeight(String kg, String date);
+
+  /// No description provided for @cycleReportBp.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutdruck zuletzt {sys}/{dia} mmHg ({date})'**
+  String cycleReportBp(int sys, int dia, String date);
+
+  /// No description provided for @cycleReportStats.
+  ///
+  /// In de, this message translates to:
+  /// **'Zykluslänge Ø {average} Tage, Median {median} ({min}–{max}), {count} Zyklen'**
+  String cycleReportStats(
+    String average,
+    int median,
+    int min,
+    int max,
+    int count,
+  );
+
+  /// No description provided for @cycleReportPeriodLength.
+  ///
+  /// In de, this message translates to:
+  /// **'Periodendauer Ø {average} Tage'**
+  String cycleReportPeriodLength(String average);
+
+  /// No description provided for @cycleReportPainDays.
+  ///
+  /// In de, this message translates to:
+  /// **'{days, plural, =1{1 Tag mit Schmerzen (letzte 6 Monate)} other{{days} Tage mit Schmerzen (letzte 6 Monate)}}'**
+  String cycleReportPainDays(int days);
+
+  /// No description provided for @cycleReportTopSymptoms.
+  ///
+  /// In de, this message translates to:
+  /// **'Häufigste Symptome (Tage): {symptoms}'**
+  String cycleReportTopSymptoms(String symptoms);
+
+  /// No description provided for @cycleReportRecentStarts.
+  ///
+  /// In de, this message translates to:
+  /// **'Letzte Periodenbeginne: {dates}'**
+  String cycleReportRecentStarts(String dates);
+
+  /// No description provided for @cycleReportStart.
+  ///
+  /// In de, this message translates to:
+  /// **'Beginn'**
+  String get cycleReportStart;
+
+  /// No description provided for @cycleReportLength.
+  ///
+  /// In de, this message translates to:
+  /// **'Zyklus (Tage)'**
+  String get cycleReportLength;
+
+  /// No description provided for @cycleReportPeriod.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode (Tage)'**
+  String get cycleReportPeriod;
+
+  /// No description provided for @cycleReportStrongPain.
+  ///
+  /// In de, this message translates to:
+  /// **'Tage Schmerz ≥ 7'**
+  String get cycleReportStrongPain;
+
+  /// No description provided for @cycleReportRunning.
+  ///
+  /// In de, this message translates to:
+  /// **'läuft'**
+  String get cycleReportRunning;
+
+  /// No description provided for @cycleReportFooter.
+  ///
+  /// In de, this message translates to:
+  /// **'Selbst erfasst in Mai Doctor Hub. Schätzungen und Hinweise sind keine Diagnose.'**
+  String get cycleReportFooter;
+
   /// No description provided for @homeAppointmentSaved.
   ///
   /// In de, this message translates to:
