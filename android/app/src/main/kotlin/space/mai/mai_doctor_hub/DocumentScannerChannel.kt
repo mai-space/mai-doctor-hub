@@ -2,6 +2,7 @@ package space.mai.mai_doctor_hub
 
 import android.app.Activity
 import android.net.Uri
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -97,7 +98,12 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
             return
         }
         try {
-            val scan = GmsDocumentScanningResult.fromActivityResultIntent(activityResult.data)
+            val data = activityResult.data
+            if (data == null) {
+                result.error("failed", "Scanner lieferte kein Ergebnis (leerer Intent).", null)
+                return
+            }
+            val scan = GmsDocumentScanningResult.fromActivityResultIntent(data)
             val pdf = scan?.pdf
             if (pdf == null) {
                 result.success(null)
@@ -106,7 +112,8 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
             result.success(
                 mapOf(
                     "pdf" to localPath(pdf.uri, "pdf"),
-                    "images" to (scan.pages ?: emptyList()).map { localPath(it.imageUri, "jpg") },
+                    "images" to (scan.pages ?: emptyList())
+                        .mapNotNull { page -> page.imageUri?.let { localPath(it, "jpg") } },
                 ),
             )
         } catch (e: Throwable) {
@@ -147,19 +154,36 @@ class DocumentScannerChannel(private val activity: ComponentActivity) :
         }
     }
 
-    /** „Typ: Meldung (Ursache: …)“ — auch wenn die Meldung fehlt. */
+    /**
+     * „Typ: Meldung (bei Klasse.methode:Zeile; Ursache: …)“ — auch wenn die
+     * Meldung fehlt (z. B. NullPointerException), damit Fehlerberichte die
+     * Stelle zeigen. Der volle Stacktrace landet zusätzlich im Logcat.
+     */
     private fun describe(e: Throwable): String {
+        Log.e("DocumentScanner", "Scanner-Fehler", e)
         val text = listOfNotNull(e.javaClass.simpleName, e.message).joinToString(": ")
-        val cause = e.cause ?: return text
-        return "$text (Ursache: ${cause.javaClass.simpleName}: ${cause.message})"
+        val where = e.stackTrace.firstOrNull()?.let {
+            "${it.className.substringAfterLast('.')}.${it.methodName}:${it.lineNumber}"
+        }
+        val cause = e.cause
+        val parts = listOfNotNull(
+            where?.let { "bei $it" },
+            cause?.let { "Ursache: ${it.javaClass.simpleName}: ${it.message}" },
+        )
+        return if (parts.isEmpty()) text else "$text (${parts.joinToString("; ")})"
     }
 
-    /** Dateipfad für Dart; content://-URIs werden in den Cache kopiert. */
-    private fun localPath(uri: Uri, extension: String): String {
-        if (uri.scheme == "file") return uri.path!!
+    /** Dateipfad für Dart; content://-URIs (oder file:// ohne Pfad) werden in
+     *  den Cache kopiert. */
+    private fun localPath(uri: Uri?, extension: String): String {
+        requireNotNull(uri) { "Scanner lieferte keine Datei ($extension)" }
+        val path = uri.path
+        if (uri.scheme == "file" && path != null) return path
         val target = File.createTempFile("scan", ".$extension", activity.cacheDir)
-        activity.contentResolver.openInputStream(uri)!!.use { input ->
-            target.outputStream().use { input.copyTo(it) }
+        val input = activity.contentResolver.openInputStream(uri)
+            ?: throw IllegalStateException("Scan-Datei nicht lesbar: $uri")
+        input.use { source ->
+            target.outputStream().use { source.copyTo(it) }
         }
         return target.absolutePath
     }
