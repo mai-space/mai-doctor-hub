@@ -9,7 +9,11 @@ import 'package:mai_doctor_hub/services/file_vault.dart';
 import 'package:mai_doctor_hub/data/connection/connection_io.dart';
 import 'package:mai_doctor_hub/data/repositories/appointment_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/doctor_repository.dart';
+import 'package:mai_doctor_hub/data/repositories/psych_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/records_repository.dart';
+import 'package:mai_doctor_hub/data/repositories/symptom_repository.dart';
+import 'package:mai_doctor_hub/data/symptom_measure.dart';
+import 'package:mai_doctor_hub/services/psych/psych_questionnaires.dart';
 import 'package:mai_doctor_hub/services/backup_service_io.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 
@@ -144,8 +148,25 @@ void main() {
             morningHour: Value(6),
             calendarSyncEnabled: Value(true),
             calendarId: Value('device-a-calendar'),
+            temperatureUnit: Value('fahrenheit'),
           ),
         );
+    // v15: Messwerte, Tagebuch und Fragebögen reisen mit (alle Tabellen
+    // werden generisch kopiert).
+    final moodId = await SymptomRepository(dbA).create(
+      label: 'Stimmung',
+      measures: (primary: SymptomMeasure.mood, secondary: null),
+    );
+    await SymptomRepository(dbA).addMeasurement(
+      symptomId: moodId,
+      measure: SymptomMeasure.mood,
+      value: -2,
+      sleepHours: 6,
+      journal: 'Privat',
+    );
+    await PsychRepository(dbA).add(
+      PsychResult(PsychInstrument.gad7, [1, 1, 1, 1, 1, 1, 1]),
+    );
     await dbA
         .into(dbA.calendarLinks)
         .insert(
@@ -195,6 +216,19 @@ void main() {
 
     final settings = await dbB.select(dbB.appSettings).getSingle();
     expect(settings.morningHour, 6);
+    expect(settings.temperatureUnit, 'fahrenheit');
+    final mood = (await SymptomRepository(dbB).latestObservation(moodId))!;
+    expect((mood.measure, mood.valueNumber, mood.sleepHours, mood.journal), (
+      'mood',
+      -2.0,
+      6.0,
+      'Privat',
+    ));
+    expect(
+      (await dbB.select(dbB.symptoms).getSingle()).measure,
+      'mood',
+    );
+    expect((await PsychRepository(dbB).all()).single.result.total, 7);
     expect(settings.calendarSyncEnabled, isFalse);
     expect(settings.calendarId, isNull);
     expect(await dbB.select(dbB.calendarLinks).get(), isEmpty);

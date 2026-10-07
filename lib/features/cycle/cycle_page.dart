@@ -4,6 +4,7 @@ import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
+import '../../data/measure_units.dart';
 import '../../data/repositories/cycle_repository.dart';
 import '../../l10n/l10n.dart';
 import '../../services/cycle/cycle_analytics.dart';
@@ -571,7 +572,9 @@ class _InsightsTab extends StatelessWidget {
     ];
     final weight = [
       for (final l in logs)
-        if (l.weightKg != null) ChartPoint(l.day, l.weightKg!),
+        // v15: in der gewählten Einheit (kg/lb).
+        if (l.weightKg != null)
+          ChartPoint(l.day, AppUnits.current.weightToDisplay(l.weightKg!)),
     ];
     final sys = [
       for (final l in logs)
@@ -586,9 +589,10 @@ class _InsightsTab extends StatelessWidget {
         section(
           l10n.cycleChartWeightTitle,
           CycleLineChart(
-            semanticsLabel: l10n.cycleChartWeightSemantics(
+            semanticsLabel: l10n.cycleChartWeightSemanticsValue(
               weight.length,
-              weight.last.value.toStringAsFixed(1),
+              '${weight.last.value.toStringAsFixed(1)} '
+              '${AppUnits.current.weight.symbol}',
             ),
             series: [LineSeries(l10n.cycleWeight, scheme.primary, weight)],
           ),

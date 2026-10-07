@@ -3,7 +3,28 @@ import 'package:sqlite3/sqlite3.dart';
 /// Enum-Indizes wie in der App (drift `intEnum`).
 const _appointmentStatus = ['geplant', 'erledigt', 'abgesagt'];
 const _diagnosisStatus = ['aktiv', 'abgeschlossen'];
-const _observationKind = ['skala_1_10', 'farbe', 'menge', 'notiz'];
+const _observationKind = [
+  'skala_1_10',
+  'farbe',
+  'menge',
+  'notiz',
+  // v15: Messwert in kanonischer Einheit, Größe in `measure`.
+  'messung',
+];
+
+/// v15: Messgrößen der App (Code → kanonische Einheit).
+const _measureUnits = {
+  'intensity': '/10',
+  'temperature': '°C',
+  'count': '×',
+  'duration': 'min',
+  'pulse': '/min',
+  'bloodPressure': 'mmHg',
+  'spo2': '%',
+  'glucose': 'mg/dL',
+  'weight': 'kg',
+  'mood': '-5..+5',
+};
 
 const maxLimit = 50;
 const defaultReportChars = 8000;
@@ -259,7 +280,13 @@ class MaiRecords {
   }) {
     // App-Schema ≥ 12: strukturierte Beschreibung (ältere Snapshots ohne).
     final described = _hasColumn('symptom_observations', 'sensation');
-    final defaults = described ? ', sensation, quality, side' : '';
+    // App-Schema ≥ 15: Messgröße je Symptom/Check-in. Das Tagebuch bleibt
+    // bewusst draußen (privat).
+    final measured = _hasColumn('symptom_observations', 'measure');
+    final defaults = [
+      if (described) ', sensation, quality, side',
+      if (measured) ', measure, measure2',
+    ].join();
     final matches = _db.select(
       '''
       SELECT id, label, body_region, healed_at$defaults FROM symptoms
@@ -280,18 +307,26 @@ class MaiRecords {
       range += ' AND recorded_at < ?';
       args.add(_seconds(to));
     }
-    final details = described
-        ? ', sensation, quality, location, side, pattern'
-        : '';
+    final details = [
+      if (described) ', sensation, quality, location, side, pattern',
+      if (measured)
+        ', measure, value_number2, measure2, secondary_value, energy, '
+            'sleep_hours, anxiety',
+    ].join();
     final observations = _db.select('''
       SELECT recorded_at, kind, value_number, value_text, value_color, unit,
              note$details
       FROM symptom_observations WHERE symptom_id = ?$range
       ORDER BY recorded_at
       ''', args);
+    final measure = measured
+        ? (s['measure'] as String? ?? 'intensity')
+        : 'intensity';
+    final units = _units();
+    // Statistik der Hauptgröße (Stärke: Skalenwerte wie bisher).
     final scale = [
       for (final o in observations)
-        if (o['kind'] == 0 && o['value_number'] != null)
+        if (_measureOf(o) == measure && o['value_number'] != null)
           (o['value_number'] as num).toDouble(),
     ];
     return {
@@ -299,6 +334,11 @@ class MaiRecords {
       'label': s['label'],
       'body_region': s['body_region'],
       'healed_at': _iso(s['healed_at']),
+      if (measured) ...{
+        'measure': measure,
+        'unit': _measureUnits[measure],
+        if (s['measure2'] != null) 'measure2': s['measure2'],
+      },
       if (described)
         'default_description': _description(s, location: s['body_region']),
       'stats': scale.isEmpty
@@ -323,8 +363,110 @@ class MaiRecords {
             'unit': o['unit'],
             'note': o['note'],
             if (described) 'description': _description(o),
+            if (measured) ..._measurement(o, units),
           },
       ],
+    };
+  }
+
+  /// Messgröße eines Check-ins; alte Skalenwerte = Stärke.
+  static String? _measureOf(Row o) {
+    final kind = o['kind'] as int;
+    if (kind == 0) return 'intensity';
+    if (kind == 4 && o.containsKey('measure')) return o['measure'] as String?;
+    return null;
+  }
+
+  /// Einheiten aus den App-Einstellungen (leer = kanonisch).
+  ({String temperature, String glucose, String weight}) _units() {
+    if (!_hasColumn('app_settings', 'temperature_unit')) {
+      return (temperature: 'celsius', glucose: 'mgdl', weight: 'kg');
+    }
+    final rows = _db.select(
+      'SELECT temperature_unit, glucose_unit, weight_unit FROM app_settings '
+      'WHERE id = 1',
+    );
+    final r = rows.isEmpty ? null : rows.first;
+    return (
+      temperature: r?['temperature_unit'] as String? ?? 'celsius',
+      glucose: r?['glucose_unit'] as String? ?? 'mgdl',
+      weight: r?['weight_unit'] as String? ?? 'kg',
+    );
+  }
+
+  /// Wert lesbar in den Einheiten der Nutzerin/des Nutzers, z. B.
+  /// „38.4 °C“, „101.1 °F“, „128/84 mmHg“, „+2“, „7/10“.
+  static String? formatMeasure(
+    String measure,
+    num? value, {
+    num? value2,
+    ({String temperature, String glucose, String weight}) units = (
+      temperature: 'celsius',
+      glucose: 'mgdl',
+      weight: 'kg',
+    ),
+  }) {
+    if (value == null) return null;
+    final v = value.toDouble();
+    String fixed(double x, int digits) => x.toStringAsFixed(digits);
+    return switch (measure) {
+      'intensity' => '${v.round()}/10',
+      'temperature' =>
+        units.temperature == 'fahrenheit'
+            ? '${fixed(v * 9 / 5 + 32, 1)} °F'
+            : '${fixed(v, 1)} °C',
+      'count' => '${v.round()}×',
+      'duration' => '${v.round()} min',
+      'pulse' => '${v.round()}/min',
+      'bloodPressure' => '${v.round()}/${value2?.round() ?? '-'} mmHg',
+      'spo2' => '${v.round()} %',
+      'glucose' =>
+        units.glucose == 'mmol'
+            ? '${fixed(v / 18.016, 1)} mmol/L'
+            : '${v.round()} mg/dL',
+      'weight' =>
+        units.weight == 'lb'
+            ? '${fixed(v / 0.45359237, 1)} lb'
+            : '${fixed(v, 1)} kg',
+      'mood' => v > 0 ? '+${v.round()}' : '${v.round()}',
+      _ => '$v',
+    };
+  }
+
+  /// v15: Messgröße, Einheit, lesbarer Wert, Zusatzwert und
+  /// Stimmungs-Extras eines Check-ins (ohne Tagebuch).
+  static Map<String, Object?> _measurement(
+    Row o,
+    ({String temperature, String glucose, String weight}) units,
+  ) {
+    final measure = _measureOf(o);
+    final secondary = o['measure2'] as String?;
+    return {
+      if (measure != null) ...{
+        'measure': measure,
+        'canonical_unit': _measureUnits[measure],
+        'display': formatMeasure(
+          measure,
+          o['value_number'] as num?,
+          value2: o['value_number2'] as num?,
+          units: units,
+        ),
+      },
+      if (o['value_number2'] != null) 'value2': o['value_number2'],
+      if (secondary != null && o['secondary_value'] != null)
+        'secondary': {
+          'measure': secondary,
+          'value': o['secondary_value'],
+          'canonical_unit': _measureUnits[secondary],
+          'display': formatMeasure(
+            secondary,
+            o['secondary_value'] as num?,
+            units: units,
+          ),
+        },
+      if (o['energy'] != null) 'energy_0_10': o['energy'],
+      if (o['sleep_hours'] != null) 'sleep_hours': o['sleep_hours'],
+      if (o['anxiety'] != null) 'anxiety_0_10': o['anxiety'],
     };
   }
 

@@ -2726,6 +2726,707 @@ abstract class AppLocalizations {
   /// **'{number}. Dosis'**
   String homeVaccinationDoseLabel(int number);
 
+  /// No description provided for @measureIntensity.
+  ///
+  /// In de, this message translates to:
+  /// **'Stärke 0–10'**
+  String get measureIntensity;
+
+  /// No description provided for @measureTemperature.
+  ///
+  /// In de, this message translates to:
+  /// **'Temperatur'**
+  String get measureTemperature;
+
+  /// No description provided for @measureCount.
+  ///
+  /// In de, this message translates to:
+  /// **'Anzahl'**
+  String get measureCount;
+
+  /// No description provided for @measureDuration.
+  ///
+  /// In de, this message translates to:
+  /// **'Dauer'**
+  String get measureDuration;
+
+  /// No description provided for @measurePulse.
+  ///
+  /// In de, this message translates to:
+  /// **'Puls'**
+  String get measurePulse;
+
+  /// No description provided for @measureBloodPressure.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutdruck'**
+  String get measureBloodPressure;
+
+  /// No description provided for @measureSpo2.
+  ///
+  /// In de, this message translates to:
+  /// **'Sauerstoffsättigung (SpO₂)'**
+  String get measureSpo2;
+
+  /// No description provided for @measureGlucose.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutzucker'**
+  String get measureGlucose;
+
+  /// No description provided for @measureWeight.
+  ///
+  /// In de, this message translates to:
+  /// **'Gewicht'**
+  String get measureWeight;
+
+  /// No description provided for @measureMood.
+  ///
+  /// In de, this message translates to:
+  /// **'Stimmung −5 bis +5'**
+  String get measureMood;
+
+  /// No description provided for @measureMoodShort.
+  ///
+  /// In de, this message translates to:
+  /// **'Stimmung'**
+  String get measureMoodShort;
+
+  /// No description provided for @measureUnitPulse.
+  ///
+  /// In de, this message translates to:
+  /// **'/min'**
+  String get measureUnitPulse;
+
+  /// No description provided for @measureTempNormal.
+  ///
+  /// In de, this message translates to:
+  /// **'normal'**
+  String get measureTempNormal;
+
+  /// No description provided for @measureTempElevated.
+  ///
+  /// In de, this message translates to:
+  /// **'erhöht'**
+  String get measureTempElevated;
+
+  /// No description provided for @measureTempFever.
+  ///
+  /// In de, this message translates to:
+  /// **'Fieber'**
+  String get measureTempFever;
+
+  /// No description provided for @measureTempHighFever.
+  ///
+  /// In de, this message translates to:
+  /// **'hohes Fieber'**
+  String get measureTempHighFever;
+
+  /// No description provided for @measureBpOptimal.
+  ///
+  /// In de, this message translates to:
+  /// **'optimal'**
+  String get measureBpOptimal;
+
+  /// No description provided for @measureBpNormal.
+  ///
+  /// In de, this message translates to:
+  /// **'normal'**
+  String get measureBpNormal;
+
+  /// No description provided for @measureBpHighNormal.
+  ///
+  /// In de, this message translates to:
+  /// **'hoch-normal'**
+  String get measureBpHighNormal;
+
+  /// No description provided for @measureBpGrade1.
+  ///
+  /// In de, this message translates to:
+  /// **'Hypertonie Grad 1'**
+  String get measureBpGrade1;
+
+  /// No description provided for @measureBpGrade2.
+  ///
+  /// In de, this message translates to:
+  /// **'Hypertonie Grad 2'**
+  String get measureBpGrade2;
+
+  /// No description provided for @measureBpGrade3.
+  ///
+  /// In de, this message translates to:
+  /// **'Hypertonie Grad 3'**
+  String get measureBpGrade3;
+
+  /// No description provided for @measureSpo2Normal.
+  ///
+  /// In de, this message translates to:
+  /// **'normal'**
+  String get measureSpo2Normal;
+
+  /// No description provided for @measureSpo2Low.
+  ///
+  /// In de, this message translates to:
+  /// **'leicht erniedrigt'**
+  String get measureSpo2Low;
+
+  /// No description provided for @measureSpo2Check.
+  ///
+  /// In de, this message translates to:
+  /// **'ärztlich abklären'**
+  String get measureSpo2Check;
+
+  /// No description provided for @measureSpo2Urgent.
+  ///
+  /// In de, this message translates to:
+  /// **'zeitnah ärztlich abklären'**
+  String get measureSpo2Urgent;
+
+  /// No description provided for @measureSpo2HintCheck.
+  ///
+  /// In de, this message translates to:
+  /// **'Unter 92 %: bitte ärztlich abklären lassen, besonders bei Atemnot.'**
+  String get measureSpo2HintCheck;
+
+  /// No description provided for @measureSpo2HintUrgent.
+  ///
+  /// In de, this message translates to:
+  /// **'Unter 90 %: bitte zeitnah ärztlich abklären. Bei starker Atemnot, Verwirrtheit oder blauen Lippen den Notruf wählen.'**
+  String get measureSpo2HintUrgent;
+
+  /// No description provided for @measureGlucoseVeryLow.
+  ///
+  /// In de, this message translates to:
+  /// **'sehr niedrig'**
+  String get measureGlucoseVeryLow;
+
+  /// No description provided for @measureGlucoseLow.
+  ///
+  /// In de, this message translates to:
+  /// **'niedrig'**
+  String get measureGlucoseLow;
+
+  /// No description provided for @measureGlucoseInRange.
+  ///
+  /// In de, this message translates to:
+  /// **'im Zielbereich'**
+  String get measureGlucoseInRange;
+
+  /// No description provided for @measureGlucoseHigh.
+  ///
+  /// In de, this message translates to:
+  /// **'erhöht'**
+  String get measureGlucoseHigh;
+
+  /// No description provided for @measureGlucoseVeryHigh.
+  ///
+  /// In de, this message translates to:
+  /// **'sehr hoch'**
+  String get measureGlucoseVeryHigh;
+
+  /// No description provided for @measurePulseLow.
+  ///
+  /// In de, this message translates to:
+  /// **'niedrig'**
+  String get measurePulseLow;
+
+  /// No description provided for @measurePulseNormal.
+  ///
+  /// In de, this message translates to:
+  /// **'normal (Ruhe)'**
+  String get measurePulseNormal;
+
+  /// No description provided for @measurePulseHigh.
+  ///
+  /// In de, this message translates to:
+  /// **'erhöht'**
+  String get measurePulseHigh;
+
+  /// No description provided for @moodM5.
+  ///
+  /// In de, this message translates to:
+  /// **'schwer depressiv'**
+  String get moodM5;
+
+  /// No description provided for @moodM4.
+  ///
+  /// In de, this message translates to:
+  /// **'stark gedrückt'**
+  String get moodM4;
+
+  /// No description provided for @moodM3.
+  ///
+  /// In de, this message translates to:
+  /// **'deutlich gedrückt'**
+  String get moodM3;
+
+  /// No description provided for @moodM2.
+  ///
+  /// In de, this message translates to:
+  /// **'gedrückt'**
+  String get moodM2;
+
+  /// No description provided for @moodM1.
+  ///
+  /// In de, this message translates to:
+  /// **'leicht gedrückt'**
+  String get moodM1;
+
+  /// No description provided for @mood0.
+  ///
+  /// In de, this message translates to:
+  /// **'ausgeglichen'**
+  String get mood0;
+
+  /// No description provided for @moodP1.
+  ///
+  /// In de, this message translates to:
+  /// **'leicht gehoben'**
+  String get moodP1;
+
+  /// No description provided for @moodP2.
+  ///
+  /// In de, this message translates to:
+  /// **'gehoben'**
+  String get moodP2;
+
+  /// No description provided for @moodP3.
+  ///
+  /// In de, this message translates to:
+  /// **'deutlich gehoben'**
+  String get moodP3;
+
+  /// No description provided for @moodP4.
+  ///
+  /// In de, this message translates to:
+  /// **'stark gehoben'**
+  String get moodP4;
+
+  /// No description provided for @moodP5.
+  ///
+  /// In de, this message translates to:
+  /// **'manisch'**
+  String get moodP5;
+
+  /// No description provided for @moodAnchor0.
+  ///
+  /// In de, this message translates to:
+  /// **'Weder gedrückt noch aufgedreht'**
+  String get moodAnchor0;
+
+  /// No description provided for @moodAnchorMild.
+  ///
+  /// In de, this message translates to:
+  /// **'Spürbar, Alltag aber gut machbar'**
+  String get moodAnchorMild;
+
+  /// No description provided for @moodAnchorModerate.
+  ///
+  /// In de, this message translates to:
+  /// **'Alltag (Arbeit, Familie) nur mit deutlicher Mühe'**
+  String get moodAnchorModerate;
+
+  /// No description provided for @moodAnchorSevere.
+  ///
+  /// In de, this message translates to:
+  /// **'Alltag kaum noch möglich'**
+  String get moodAnchorSevere;
+
+  /// No description provided for @moodScaleLow.
+  ///
+  /// In de, this message translates to:
+  /// **'−5 schwer depressiv'**
+  String get moodScaleLow;
+
+  /// No description provided for @moodScaleHigh.
+  ///
+  /// In de, this message translates to:
+  /// **'+5 manisch'**
+  String get moodScaleHigh;
+
+  /// No description provided for @moodExtras.
+  ///
+  /// In de, this message translates to:
+  /// **'Energie, Schlaf, Angst'**
+  String get moodExtras;
+
+  /// No description provided for @moodEnergy.
+  ///
+  /// In de, this message translates to:
+  /// **'Energie'**
+  String get moodEnergy;
+
+  /// No description provided for @moodSleep.
+  ///
+  /// In de, this message translates to:
+  /// **'Schlaf (Stunden)'**
+  String get moodSleep;
+
+  /// No description provided for @moodAnxiety.
+  ///
+  /// In de, this message translates to:
+  /// **'Angst/Anspannung'**
+  String get moodAnxiety;
+
+  /// No description provided for @moodEnergyValue.
+  ///
+  /// In de, this message translates to:
+  /// **'Energie {value}/10'**
+  String moodEnergyValue(String value);
+
+  /// No description provided for @moodSleepValue.
+  ///
+  /// In de, this message translates to:
+  /// **'Schlaf {value} h'**
+  String moodSleepValue(String value);
+
+  /// No description provided for @moodAnxietyValue.
+  ///
+  /// In de, this message translates to:
+  /// **'Angst {value}/10'**
+  String moodAnxietyValue(String value);
+
+  /// No description provided for @measureHowTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie messen?'**
+  String get measureHowTitle;
+
+  /// No description provided for @measureHowHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Vorschlag aus dem Namen – tippe, um es zu ändern.'**
+  String get measureHowHint;
+
+  /// No description provided for @measureSecondary.
+  ///
+  /// In de, this message translates to:
+  /// **'Zusätzlich erfassen'**
+  String get measureSecondary;
+
+  /// No description provided for @measureSecondaryNone.
+  ///
+  /// In de, this message translates to:
+  /// **'nichts weiter'**
+  String get measureSecondaryNone;
+
+  /// No description provided for @symptomBlocksHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Tippe Bausteine an – daraus entsteht der Name. Du kannst ihn danach frei ändern.'**
+  String get symptomBlocksHint;
+
+  /// No description provided for @symptomTitleRegenerate.
+  ///
+  /// In de, this message translates to:
+  /// **'Aus Bausteinen neu erzeugen'**
+  String get symptomTitleRegenerate;
+
+  /// No description provided for @checkInDetails.
+  ///
+  /// In de, this message translates to:
+  /// **'Details ändern'**
+  String get checkInDetails;
+
+  /// No description provided for @checkInHintMeasure.
+  ///
+  /// In de, this message translates to:
+  /// **'Erfasse den aktuellen Wert. Beschreibung und Ort kommen aus dem Symptom – „Details ändern“ passt sie für diesen Check-in an.'**
+  String get checkInHintMeasure;
+
+  /// No description provided for @measureCountHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie oft seit dem letzten Check-in?'**
+  String get measureCountHint;
+
+  /// No description provided for @measureDurationHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie lange insgesamt?'**
+  String get measureDurationHint;
+
+  /// No description provided for @measureBpSystolic.
+  ///
+  /// In de, this message translates to:
+  /// **'Systolisch'**
+  String get measureBpSystolic;
+
+  /// No description provided for @measureBpDiastolic.
+  ///
+  /// In de, this message translates to:
+  /// **'Diastolisch'**
+  String get measureBpDiastolic;
+
+  /// No description provided for @measureAdd.
+  ///
+  /// In de, this message translates to:
+  /// **'{measure} ergänzen'**
+  String measureAdd(String measure);
+
+  /// No description provided for @measureRemove.
+  ///
+  /// In de, this message translates to:
+  /// **'Entfernen'**
+  String get measureRemove;
+
+  /// No description provided for @measureDecrease.
+  ///
+  /// In de, this message translates to:
+  /// **'Weniger'**
+  String get measureDecrease;
+
+  /// No description provided for @measureIncrease.
+  ///
+  /// In de, this message translates to:
+  /// **'Mehr'**
+  String get measureIncrease;
+
+  /// No description provided for @measureFeverLine.
+  ///
+  /// In de, this message translates to:
+  /// **'Fieber ab {value}'**
+  String measureFeverLine(String value);
+
+  /// No description provided for @measureReferenceLine.
+  ///
+  /// In de, this message translates to:
+  /// **'Grenze {value}'**
+  String measureReferenceLine(String value);
+
+  /// No description provided for @measureChartSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'{measure}: {count} Werte, zuletzt {latest}'**
+  String measureChartSemantics(String measure, int count, String latest);
+
+  /// No description provided for @measureStats.
+  ///
+  /// In de, this message translates to:
+  /// **'Ø {average} · min {min} · max {max} · zuletzt {last}'**
+  String measureStats(String average, String min, String max, String last);
+
+  /// No description provided for @measureStatsCount.
+  ///
+  /// In de, this message translates to:
+  /// **'{count} Check-in(s) · {stats}'**
+  String measureStatsCount(int count, String stats);
+
+  /// No description provided for @measureTotalPerDay.
+  ///
+  /// In de, this message translates to:
+  /// **'Summe pro Tag'**
+  String get measureTotalPerDay;
+
+  /// No description provided for @heatmapCellMeasure.
+  ///
+  /// In de, this message translates to:
+  /// **'{date}: {value}'**
+  String heatmapCellMeasure(String date, String value);
+
+  /// No description provided for @heatmapSemanticsMeasure.
+  ///
+  /// In de, this message translates to:
+  /// **'Kalender ({measure}): {days} Tage mit Check-in'**
+  String heatmapSemanticsMeasure(String measure, int days);
+
+  /// No description provided for @severityNone.
+  ///
+  /// In de, this message translates to:
+  /// **'unauffällig'**
+  String get severityNone;
+
+  /// No description provided for @severityMild.
+  ///
+  /// In de, this message translates to:
+  /// **'leicht'**
+  String get severityMild;
+
+  /// No description provided for @severityModerate.
+  ///
+  /// In de, this message translates to:
+  /// **'mittel'**
+  String get severityModerate;
+
+  /// No description provided for @severitySevere.
+  ///
+  /// In de, this message translates to:
+  /// **'deutlich'**
+  String get severitySevere;
+
+  /// No description provided for @severityMax.
+  ///
+  /// In de, this message translates to:
+  /// **'sehr deutlich'**
+  String get severityMax;
+
+  /// No description provided for @heatmapMapTemperature.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe nach Temperatur: erhöht ab {elevated}, Fieber ab {fever}, hohes Fieber ab {high}, dunkelste Stufe ab {max}.'**
+  String heatmapMapTemperature(
+    String elevated,
+    String fever,
+    String high,
+    String max,
+  );
+
+  /// No description provided for @heatmapMapRelative.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe relativ zum höchsten Tageswert ({max}).'**
+  String heatmapMapRelative(String max);
+
+  /// No description provided for @heatmapMapBloodPressure.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe nach ESC/ESH-Stufe: hoch-normal, Hypertonie Grad 1, 2, 3.'**
+  String get heatmapMapBloodPressure;
+
+  /// No description provided for @heatmapMapSpo2.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe nach Sättigung: unter 95 %, 92 %, 90 %, 85 % (niedrigster Wert des Tages).'**
+  String get heatmapMapSpo2;
+
+  /// No description provided for @heatmapMapGlucose.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe: außerhalb des Zielbereichs {low}–{high}; sehr niedrig am dunkelsten.'**
+  String heatmapMapGlucose(String low, String high);
+
+  /// No description provided for @heatmapMapPulse.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe: Abstand vom Ruhepuls 60–100/min.'**
+  String get heatmapMapPulse;
+
+  /// No description provided for @heatmapMapMood.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe: Abstand von „ausgeglichen“ (0) – die Richtung zeigt das Stimmungsdiagramm.'**
+  String get heatmapMapMood;
+
+  /// No description provided for @heatmapMapWeight.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe: Tage mit Messung.'**
+  String get heatmapMapWeight;
+
+  /// No description provided for @journalTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Tagebuch'**
+  String get journalTitle;
+
+  /// No description provided for @journalAdd.
+  ///
+  /// In de, this message translates to:
+  /// **'Tagebuch-Eintrag'**
+  String get journalAdd;
+
+  /// No description provided for @journalHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Was beschäftigt dich? (optional)'**
+  String get journalHint;
+
+  /// No description provided for @journalPromptHelped.
+  ///
+  /// In de, this message translates to:
+  /// **'Was hat heute geholfen?'**
+  String get journalPromptHelped;
+
+  /// No description provided for @journalPromptBurden.
+  ///
+  /// In de, this message translates to:
+  /// **'Was hat mich belastet?'**
+  String get journalPromptBurden;
+
+  /// No description provided for @journalPromptGrateful.
+  ///
+  /// In de, this message translates to:
+  /// **'Wofür bin ich dankbar?'**
+  String get journalPromptGrateful;
+
+  /// No description provided for @journalPrivacy.
+  ///
+  /// In de, this message translates to:
+  /// **'Bleibt auf dem Gerät. Ins Arzt-PDF nur, wenn du es dort einschaltest.'**
+  String get journalPrivacy;
+
+  /// No description provided for @journalEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Tagebuch-Einträge.'**
+  String get journalEmpty;
+
+  /// No description provided for @journalChartHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Punkte über dem Diagramm = Tagebuch-Eintrag. Antippen zum Lesen.'**
+  String get journalChartHint;
+
+  /// No description provided for @journalContext.
+  ///
+  /// In de, this message translates to:
+  /// **'Tagebuch {date}: {text}'**
+  String journalContext(String date, String text);
+
+  /// No description provided for @summaryIncludeJournal.
+  ///
+  /// In de, this message translates to:
+  /// **'Tagebuch-Einträge einschließen'**
+  String get summaryIncludeJournal;
+
+  /// No description provided for @summaryIncludeJournalSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Standardmäßig aus – persönliche Notizen bleiben privat.'**
+  String get summaryIncludeJournalSubtitle;
+
+  /// No description provided for @unitsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Einheiten'**
+  String get unitsTitle;
+
+  /// No description provided for @unitsIntro.
+  ///
+  /// In de, this message translates to:
+  /// **'Gespeichert wird immer gleich – umgerechnet wird nur die Anzeige. Standard nach Region des Geräts.'**
+  String get unitsIntro;
+
+  /// No description provided for @unitsTemperature.
+  ///
+  /// In de, this message translates to:
+  /// **'Temperatur'**
+  String get unitsTemperature;
+
+  /// No description provided for @unitsGlucose.
+  ///
+  /// In de, this message translates to:
+  /// **'Blutzucker'**
+  String get unitsGlucose;
+
+  /// No description provided for @unitsWeight.
+  ///
+  /// In de, this message translates to:
+  /// **'Gewicht'**
+  String get unitsWeight;
+
+  /// No description provided for @cycleReportWeightValue.
+  ///
+  /// In de, this message translates to:
+  /// **'Gewicht zuletzt {value} ({date})'**
+  String cycleReportWeightValue(String value, String date);
+
+  /// No description provided for @cycleChartWeightSemanticsValue.
+  ///
+  /// In de, this message translates to:
+  /// **'Gewicht, {count} Messungen, zuletzt {latest}'**
+  String cycleChartWeightSemanticsValue(int count, String latest);
+
   /// No description provided for @mediaSectionTitle.
   ///
   /// In de, this message translates to:
@@ -2881,6 +3582,335 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Belege: {photos} Fotos, {videos} Videos, {audio} Sprachnotizen (in der App)'**
   String svcSummaryPdfEvidence(int photos, int videos, int audio);
+
+  /// No description provided for @psychTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Psyche'**
+  String get psychTitle;
+
+  /// No description provided for @psychIntro.
+  ///
+  /// In de, this message translates to:
+  /// **'Kurze, anerkannte Fragebögen zeigen, wie es dir über die Wochen geht. Das Ergebnis ist keine Diagnose – sprich mit deiner Ärztin oder deinem Arzt darüber.'**
+  String get psychIntro;
+
+  /// No description provided for @psychSettingsSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Stimmung, Angst und Tagebuch – mit PHQ-9 und GAD-7 als monatlichem Fragebogen.'**
+  String get psychSettingsSubtitle;
+
+  /// No description provided for @psychQuestionnairesToggle.
+  ///
+  /// In de, this message translates to:
+  /// **'Monatliche Fragebögen (PHQ-9, GAD-7)'**
+  String get psychQuestionnairesToggle;
+
+  /// No description provided for @psychQuestionnairesSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Erinnerung 30 Tage nach dem letzten Bogen; Verlauf auf der Seite „Psyche“.'**
+  String get psychQuestionnairesSubtitle;
+
+  /// No description provided for @psychOpen.
+  ///
+  /// In de, this message translates to:
+  /// **'Psyche öffnen'**
+  String get psychOpen;
+
+  /// No description provided for @psychAreaLink.
+  ///
+  /// In de, this message translates to:
+  /// **'Psyche: Fragebögen & Verlauf'**
+  String get psychAreaLink;
+
+  /// No description provided for @psychPhq9Title.
+  ///
+  /// In de, this message translates to:
+  /// **'PHQ-9 (Depression)'**
+  String get psychPhq9Title;
+
+  /// No description provided for @psychGad7Title.
+  ///
+  /// In de, this message translates to:
+  /// **'GAD-7 (Angst)'**
+  String get psychGad7Title;
+
+  /// No description provided for @psychQuestion.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie oft fühlten Sie sich im Verlauf der letzten 2 Wochen durch die folgenden Beschwerden beeinträchtigt?'**
+  String get psychQuestion;
+
+  /// No description provided for @psychPhq1.
+  ///
+  /// In de, this message translates to:
+  /// **'Wenig Interesse oder Freude an Ihren Tätigkeiten'**
+  String get psychPhq1;
+
+  /// No description provided for @psychPhq2.
+  ///
+  /// In de, this message translates to:
+  /// **'Niedergeschlagenheit, Schwermut oder Hoffnungslosigkeit'**
+  String get psychPhq2;
+
+  /// No description provided for @psychPhq3.
+  ///
+  /// In de, this message translates to:
+  /// **'Schwierigkeiten ein- oder durchzuschlafen oder vermehrter Schlaf'**
+  String get psychPhq3;
+
+  /// No description provided for @psychPhq4.
+  ///
+  /// In de, this message translates to:
+  /// **'Müdigkeit oder Gefühl, keine Energie zu haben'**
+  String get psychPhq4;
+
+  /// No description provided for @psychPhq5.
+  ///
+  /// In de, this message translates to:
+  /// **'Verminderter Appetit oder übermäßiges Bedürfnis zu essen'**
+  String get psychPhq5;
+
+  /// No description provided for @psychPhq6.
+  ///
+  /// In de, this message translates to:
+  /// **'Schlechte Meinung von sich selbst; Gefühl, ein Versager zu sein oder die Familie enttäuscht zu haben'**
+  String get psychPhq6;
+
+  /// No description provided for @psychPhq7.
+  ///
+  /// In de, this message translates to:
+  /// **'Schwierigkeiten, sich auf etwas zu konzentrieren, z. B. beim Zeitunglesen oder Fernsehen'**
+  String get psychPhq7;
+
+  /// No description provided for @psychPhq8.
+  ///
+  /// In de, this message translates to:
+  /// **'Waren Ihre Bewegungen oder Ihre Sprache so verlangsamt, dass es auch anderen auffallen würde? Oder waren Sie im Gegenteil „zappelig“ oder ruhelos und hatten dadurch einen stärkeren Bewegungsdrang als sonst?'**
+  String get psychPhq8;
+
+  /// No description provided for @psychPhq9.
+  ///
+  /// In de, this message translates to:
+  /// **'Gedanken, dass Sie lieber tot wären oder sich Leid zufügen möchten'**
+  String get psychPhq9;
+
+  /// No description provided for @psychGad1.
+  ///
+  /// In de, this message translates to:
+  /// **'Nervosität, Ängstlichkeit oder Anspannung'**
+  String get psychGad1;
+
+  /// No description provided for @psychGad2.
+  ///
+  /// In de, this message translates to:
+  /// **'Nicht in der Lage sein, Sorgen zu stoppen oder zu kontrollieren'**
+  String get psychGad2;
+
+  /// No description provided for @psychGad3.
+  ///
+  /// In de, this message translates to:
+  /// **'Übermäßige Sorgen bezüglich verschiedener Angelegenheiten'**
+  String get psychGad3;
+
+  /// No description provided for @psychGad4.
+  ///
+  /// In de, this message translates to:
+  /// **'Schwierigkeiten zu entspannen'**
+  String get psychGad4;
+
+  /// No description provided for @psychGad5.
+  ///
+  /// In de, this message translates to:
+  /// **'Rastlosigkeit, so dass Stillsitzen schwer fällt'**
+  String get psychGad5;
+
+  /// No description provided for @psychGad6.
+  ///
+  /// In de, this message translates to:
+  /// **'Schnelle Verärgerung oder Gereiztheit'**
+  String get psychGad6;
+
+  /// No description provided for @psychGad7.
+  ///
+  /// In de, this message translates to:
+  /// **'Gefühl der Angst, so als würde etwas Schlimmes passieren'**
+  String get psychGad7;
+
+  /// No description provided for @psychAnswer0.
+  ///
+  /// In de, this message translates to:
+  /// **'Überhaupt nicht'**
+  String get psychAnswer0;
+
+  /// No description provided for @psychAnswer1.
+  ///
+  /// In de, this message translates to:
+  /// **'An einzelnen Tagen'**
+  String get psychAnswer1;
+
+  /// No description provided for @psychAnswer2.
+  ///
+  /// In de, this message translates to:
+  /// **'An mehr als der Hälfte der Tage'**
+  String get psychAnswer2;
+
+  /// No description provided for @psychAnswer3.
+  ///
+  /// In de, this message translates to:
+  /// **'Beinahe jeden Tag'**
+  String get psychAnswer3;
+
+  /// No description provided for @psychSeverityMinimal.
+  ///
+  /// In de, this message translates to:
+  /// **'minimal'**
+  String get psychSeverityMinimal;
+
+  /// No description provided for @psychSeverityMild.
+  ///
+  /// In de, this message translates to:
+  /// **'leicht'**
+  String get psychSeverityMild;
+
+  /// No description provided for @psychSeverityModerate.
+  ///
+  /// In de, this message translates to:
+  /// **'mittelgradig'**
+  String get psychSeverityModerate;
+
+  /// No description provided for @psychSeverityModeratelySevere.
+  ///
+  /// In de, this message translates to:
+  /// **'ausgeprägt'**
+  String get psychSeverityModeratelySevere;
+
+  /// No description provided for @psychSeveritySevere.
+  ///
+  /// In de, this message translates to:
+  /// **'schwer'**
+  String get psychSeveritySevere;
+
+  /// No description provided for @psychResultSummary.
+  ///
+  /// In de, this message translates to:
+  /// **'{instrument}: {total} von {max} – {severity}'**
+  String psychResultSummary(
+    String instrument,
+    int total,
+    int max,
+    String severity,
+  );
+
+  /// No description provided for @psychSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichern ({answered}/{count})'**
+  String psychSave(int answered, int count);
+
+  /// No description provided for @psychSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Gespeichert: {summary}'**
+  String psychSaved(String summary);
+
+  /// No description provided for @psychFill.
+  ///
+  /// In de, this message translates to:
+  /// **'{instrument} ausfüllen'**
+  String psychFill(String instrument);
+
+  /// No description provided for @psychTrend.
+  ///
+  /// In de, this message translates to:
+  /// **'Verlauf'**
+  String get psychTrend;
+
+  /// No description provided for @psychNoResults.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Fragebögen ausgefüllt.'**
+  String get psychNoResults;
+
+  /// No description provided for @psychBands.
+  ///
+  /// In de, this message translates to:
+  /// **'PHQ-9: 0–4 minimal · 5–9 leicht · 10–14 mittelgradig · 15–19 ausgeprägt · 20–27 schwer. GAD-7: 0–4 minimal · 5–9 leicht · 10–14 mittelgradig · 15–21 schwer.'**
+  String get psychBands;
+
+  /// No description provided for @psychSource.
+  ///
+  /// In de, this message translates to:
+  /// **'PHQ-9 (Kroenke et al. 2001) und GAD-7 (Spitzer et al. 2006), deutsche Fassung PHQ-D (Löwe et al.). Frei verwendbar; kein Ersatz für eine ärztliche Diagnose.'**
+  String get psychSource;
+
+  /// No description provided for @psychSupportTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Du musst das nicht allein tragen'**
+  String get psychSupportTitle;
+
+  /// No description provided for @psychSupportText.
+  ///
+  /// In de, this message translates to:
+  /// **'Wenn du gerade daran denkst, dir etwas anzutun, sprich mit jemandem. Diese Stellen sind rund um die Uhr für dich da – anonym und kostenlos:'**
+  String get psychSupportText;
+
+  /// No description provided for @psychSupportGeneric.
+  ///
+  /// In de, this message translates to:
+  /// **'Wende dich an eine Krisen-Hotline in deinem Land oder an den örtlichen Notruf. Auch Ärztinnen, Ärzte und Menschen, denen du vertraust, helfen.'**
+  String get psychSupportGeneric;
+
+  /// No description provided for @psychSupportEmergency.
+  ///
+  /// In de, this message translates to:
+  /// **'Bei akuter Gefahr: Notruf {number}'**
+  String psychSupportEmergency(String number);
+
+  /// No description provided for @psychSupportPrivacy.
+  ///
+  /// In de, this message translates to:
+  /// **'Dieser Hinweis erscheint nur auf deinem Gerät. Es wird nichts gesendet.'**
+  String get psychSupportPrivacy;
+
+  /// No description provided for @psychSupportCall.
+  ///
+  /// In de, this message translates to:
+  /// **'{name}: {number}'**
+  String psychSupportCall(String name, String number);
+
+  /// No description provided for @psychTopic.
+  ///
+  /// In de, this message translates to:
+  /// **'Stimmung & Psyche'**
+  String get psychTopic;
+
+  /// No description provided for @psychTopicDescription.
+  ///
+  /// In de, this message translates to:
+  /// **'Check-ins zu psychischen Symptomen und monatliche Fragebögen'**
+  String get psychTopicDescription;
+
+  /// No description provided for @psychDiscreetTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Kurz innehalten'**
+  String get psychDiscreetTitle;
+
+  /// No description provided for @psychReminderTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Fragebogen zur Psyche'**
+  String get psychReminderTitle;
+
+  /// No description provided for @psychReminderBody.
+  ///
+  /// In de, this message translates to:
+  /// **'Ein Monat ist um – zwei Minuten für PHQ-9 und GAD-7?'**
+  String get psychReminderBody;
 
   /// No description provided for @recordsTitle.
   ///

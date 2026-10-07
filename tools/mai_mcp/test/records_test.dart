@@ -93,6 +93,59 @@ void main() {
     expect(records.symptomTimeline('Bauch'), isNull);
   });
 
+  test('v15 timeline: measure, unit, display; journal stays private', () async {
+    // Eigene Akte: der Snapshot zeigt Tabellen als (Archiv-)Views.
+    final own = Directory.systemTemp.createTempSync('mai_v15');
+    addTearDown(() => own.deleteSync(recursive: true));
+    final path = buildFixtureDb(own);
+    final db = sqlite3.open(path);
+    final at = DateTime.now().subtract(const Duration(days: 2));
+    int sec(DateTime d) => d.millisecondsSinceEpoch ~/ 1000;
+    db
+      ..execute(
+        'INSERT INTO symptoms (id, label, check_in_cadence, created_at, '
+        "updated_at, measure, measure2) VALUES ('sym2', 'Fieber', 0, 0, 0, "
+        "'temperature', 'pulse')",
+      )
+      ..execute(
+        'INSERT INTO symptom_observations (id, symptom_id, recorded_at, kind, '
+        'value_number, unit, measure, measure2, secondary_value, journal) '
+        "VALUES ('f1', 'sym2', ${sec(at)}, 4, 38.4, '°C', 'temperature', "
+        "'pulse', 96, 'Sehr privat'), "
+        "('f2', 'sym2', ${sec(at.add(const Duration(hours: 6)))}, 4, 37.6, "
+        "'°C', 'temperature', NULL, NULL, NULL)",
+      );
+    db.close();
+    var opened = MaiSnapshot.openSqlite(path);
+    var t = MaiRecords(opened.db).symptomTimeline('Fieber')!;
+    expect(t['measure'], 'temperature');
+    expect(t['unit'], '°C');
+    expect(t['measure2'], 'pulse');
+    expect((t['stats'] as Map)['max'], 38.4);
+    final first = (t['observations'] as List).first as Map;
+    expect(first['kind'], 'messung');
+    expect(first['display'], '38.4 °C');
+    expect((first['secondary'] as Map)['display'], '96/min');
+    expect(first.toString(), isNot(contains('Sehr privat')));
+    expect(first.containsKey('journal'), isFalse);
+
+    // Einheiten der App-Einstellungen gelten auch hier.
+    await opened.close();
+    sqlite3.open(path)
+      ..execute("UPDATE app_settings SET temperature_unit = 'fahrenheit'")
+      ..close();
+    opened = MaiSnapshot.openSqlite(path);
+    addTearDown(opened.close);
+    t = MaiRecords(opened.db).symptomTimeline('Fieber')!;
+    expect(((t['observations'] as List).first as Map)['display'], '101.1 °F');
+    expect(
+      MaiRecords.formatMeasure('bloodPressure', 128, value2: 84),
+      '128/84 mmHg',
+    );
+    expect(MaiRecords.formatMeasure('mood', -2), '-2');
+    expect(MaiRecords.formatMeasure('mood', 3), '+3');
+  });
+
   test('medications: active only by default filter', () {
     expect(records.listMedications(), hasLength(2));
     final active = records.listMedications(activeOnly: true);

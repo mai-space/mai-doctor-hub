@@ -12,7 +12,11 @@ enum DiagnosisStatus { active, resolved }
 enum CheckInCadence { daily, hourly, weekly, custom }
 
 /// Art einer Symptom-Beobachtung.
-enum ObservationKind { scale_1_10, color, quantity, note }
+///
+/// v15: [measurement] = Messwert in kanonischer Einheit, welche Messgröße
+/// steht in `SymptomObservations.measure` (siehe `SymptomMeasure`). Neue
+/// Werte nur hinten anhängen — gespeichert wird der Index.
+enum ObservationKind { scale_1_10, color, quantity, note, measurement }
 
 /// v12: Körperseite einer Symptom-Beschreibung (in der DB als [name]).
 enum BodySide {
@@ -111,6 +115,11 @@ class Symptoms extends Table with Archivable {
   /// Seite als Code: `left`, `right`, `both`, `center` (siehe [BodySide]).
   TextColumn get side => text().nullable()();
 
+  // v15: Messgröße für Check-ins (Code aus `SymptomMeasure`); leer = Stärke
+  // 0–10. [measure2] ist eine optionale zweite Größe (z. B. SpO₂ bei Atemnot).
+  TextColumn get measure => text().nullable()();
+  TextColumn get measure2 => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -135,6 +144,27 @@ class SymptomObservations extends Table {
 
   /// Verlauf/Muster, z. B. „anfallsartig“, „nachts“ (kommagetrennt).
   TextColumn get pattern => text().nullable()();
+
+  // v15: adaptive Messung. Werte immer in kanonischer Einheit (°C, mg/dL,
+  // kg, Minuten, /min, mmHg, %); Umrechnung nur in der Anzeige.
+  /// Messgröße von [valueNumber]; leer = aus [kind] (Skala = Stärke 0–10).
+  TextColumn get measure => text().nullable()();
+
+  /// Zweiter Wert derselben Größe (Blutdruck: diastolisch).
+  RealColumn get valueNumber2 => real().nullable()();
+
+  /// Optionale zweite Messgröße des Check-ins und ihr Wert.
+  TextColumn get measure2 => text().nullable()();
+  RealColumn get secondaryValue => real().nullable()();
+
+  /// Stimmungs-Extras: Energie 0–10, Schlaf in Stunden, Angst/Anspannung 0–10.
+  IntColumn get energy => integer().nullable()();
+  RealColumn get sleepHours => real().nullable()();
+  IntColumn get anxiety => integer().nullable()();
+
+  /// Kurzer Tagebuch-Eintrag. Bewusst getrennt von [note]: [note] steht im
+  /// Arzt-PDF, das Tagebuch nur auf ausdrücklichen Wunsch.
+  TextColumn get journal => text().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -383,6 +413,14 @@ class AppSettings extends Table {
   BoolColumn get showFertileWindow =>
       boolean().withDefault(const Constant(false))();
 
+  // v15: Einheiten (Code, leer = nach Region des Geräts, siehe
+  // `UnitPreferences`) und monatliche Psyche-Fragebögen (PHQ-9/GAD-7).
+  TextColumn get temperatureUnit => text().nullable()();
+  TextColumn get glucoseUnit => text().nullable()();
+  TextColumn get weightUnit => text().nullable()();
+  BoolColumn get psychQuestionnaires =>
+      boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -441,6 +479,19 @@ class CycleDays extends Table {
 class MrsAssessments extends Table {
   TextColumn get id => text()();
   DateTimeColumn get recordedAt => dateTime()();
+  TextColumn get scores => text()();
+  TextColumn get note => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// v15: Fragebogen zur Psyche ([instrument] `phq9` oder `gad7`), Antworten
+/// je Item 0–3 kommagetrennt (siehe `psych_questionnaires.dart`).
+class PsychAssessments extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get recordedAt => dateTime()();
+  TextColumn get instrument => text()();
   TextColumn get scores => text()();
   TextColumn get note => text().nullable()();
 
@@ -536,6 +587,7 @@ class CalendarLinks extends Table {
     CycleDays,
     MrsAssessments,
     Pregnancies,
+    PsychAssessments,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -543,7 +595,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? openAppDatabase());
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -681,6 +733,31 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(cycleDays);
         await migrator.createTable(mrsAssessments);
         await migrator.createTable(pregnancies);
+      }
+      if (from < 15) {
+        await migrator.addColumn(symptoms, symptoms.measure);
+        await migrator.addColumn(symptoms, symptoms.measure2);
+        for (final column in [
+          symptomObservations.measure,
+          symptomObservations.valueNumber2,
+          symptomObservations.measure2,
+          symptomObservations.secondaryValue,
+          symptomObservations.energy,
+          symptomObservations.sleepHours,
+          symptomObservations.anxiety,
+          symptomObservations.journal,
+        ]) {
+          await migrator.addColumn(symptomObservations, column);
+        }
+        for (final column in [
+          appSettings.temperatureUnit,
+          appSettings.glucoseUnit,
+          appSettings.weightUnit,
+          appSettings.psychQuestionnaires,
+        ]) {
+          await migrator.addColumn(appSettings, column);
+        }
+        await migrator.createTable(psychAssessments);
       }
     },
     beforeOpen: (details) async {

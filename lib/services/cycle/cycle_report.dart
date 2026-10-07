@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 
 import '../../data/cycle_catalog.dart';
 import '../../data/repositories/cycle_repository.dart';
+import '../../data/symptom_measure.dart'
+    show SymptomMeasure, formatMeasureValue;
 import '../../l10n/l10n.dart';
 import 'cycle_analytics.dart';
 import 'cycle_dates.dart';
@@ -128,7 +130,11 @@ class CycleReport {
       if (pregnancyWeek != null) l10n.cyclePregnancyWeek(pregnancyWeek!),
       if (dueDate != null) l10n.cyclePregnancyDue(date.format(dueDate!)),
       if (latestWeight case (final kg, final day)?)
-        l10n.cycleReportWeight(decimal.format(kg), date.format(day)),
+        // v15: in der gewählten Einheit (kg/lb).
+        l10n.cycleReportWeightValue(
+          formatMeasureValue(SymptomMeasure.weight, kg, l10n: l10n),
+          date.format(day),
+        ),
       if (latestBp case (final sys, final dia, final day)?)
         l10n.cycleReportBp(sys, dia, date.format(day)),
       if (s != null)

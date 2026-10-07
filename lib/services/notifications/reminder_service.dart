@@ -1,5 +1,6 @@
 import '../../data/app_database.dart';
 import '../../data/repositories/reminder_repository.dart';
+import '../../data/symptom_measure.dart' show isPsychSymptom;
 import '../../l10n/l10n.dart';
 import 'notification_plan.dart';
 import 'plan_sync.dart';
@@ -38,6 +39,12 @@ abstract final class ReminderPlanner {
       final payload = CheckInPayload.encode([
         for (final s in item.symptoms) s.id,
       ]);
+      // v15: Erinnerung nur für psychische Symptome → Thema „Stimmung“
+      // (standardmäßig diskret).
+      final topic =
+          item.symptoms.isNotEmpty && item.symptoms.every(isPsychSymptom)
+          ? NotificationTopic.mood
+          : NotificationTopic.checkIn;
       // slot * 8: Platz für „täglich“ (0) und sieben Wochentage (1–7).
       final base = NotificationGroup.reminders.base + r.slot * 8;
       if (r.weekdays & Weekdays.all == Weekdays.all) {
@@ -47,7 +54,7 @@ abstract final class ReminderPlanner {
             title: r.title,
             body: body,
             payload: payload,
-            topic: NotificationTopic.checkIn,
+            topic: topic,
             hour: r.hour,
             minute: r.minute,
           ),
@@ -61,7 +68,7 @@ abstract final class ReminderPlanner {
             title: r.title,
             body: body,
             payload: payload,
-            topic: NotificationTopic.checkIn,
+            topic: topic,
             hour: r.hour,
             minute: r.minute,
             weekday: day,

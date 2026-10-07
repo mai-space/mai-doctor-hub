@@ -23,6 +23,7 @@ class SymptomDescriptionComposer extends StatelessWidget {
     this.showPattern = true,
     this.showIntensity = true,
     this.showPreview = true,
+    this.qualityFirst = false,
   });
 
   final SymptomDescription value;
@@ -32,11 +33,42 @@ class SymptomDescriptionComposer extends StatelessWidget {
   final bool showIntensity;
   final bool showPreview;
 
+  /// v15: Reihenfolge wie im Titel („Brennender Schmerz am Hinterkopf“):
+  /// Charakter vor Empfindung (Symptom-Formular).
+  final bool qualityFirst;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final intensity = value.intensity;
+    final sensationChip = _PartChip(
+      icon: Icons.bolt_outlined,
+      field: l10n.symptomSensation,
+      value: value.sensation,
+      onPressed: () => _pick(
+        context,
+        DescriptorField.sensation,
+        title: l10n.symptomSensation,
+        groups: SymptomDescriptors.sensations,
+        selected: [?value.sensation],
+        apply: (v) => value.copyWith(sensation: () => v.firstOrNull),
+      ),
+    );
+    final qualityChip = _PartChip(
+      icon: Icons.tune,
+      field: l10n.symptomQuality,
+      value: SymptomDescription.joinList(value.qualities),
+      onPressed: () => _pick(
+        context,
+        DescriptorField.quality,
+        title: l10n.symptomQuality,
+        groups: SymptomDescriptors.qualitiesFor(value.sensation),
+        selected: value.qualities,
+        multiple: true,
+        apply: (v) => value.copyWith(qualities: v),
+      ),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -44,33 +76,9 @@ class SymptomDescriptionComposer extends StatelessWidget {
           spacing: 6,
           runSpacing: 6,
           children: [
-            _PartChip(
-              icon: Icons.bolt_outlined,
-              field: l10n.symptomSensation,
-              value: value.sensation,
-              onPressed: () => _pick(
-                context,
-                DescriptorField.sensation,
-                title: l10n.symptomSensation,
-                groups: SymptomDescriptors.sensations,
-                selected: [?value.sensation],
-                apply: (v) => value.copyWith(sensation: () => v.firstOrNull),
-              ),
-            ),
-            _PartChip(
-              icon: Icons.tune,
-              field: l10n.symptomQuality,
-              value: SymptomDescription.joinList(value.qualities),
-              onPressed: () => _pick(
-                context,
-                DescriptorField.quality,
-                title: l10n.symptomQuality,
-                groups: SymptomDescriptors.qualitiesFor(value.sensation),
-                selected: value.qualities,
-                multiple: true,
-                apply: (v) => value.copyWith(qualities: v),
-              ),
-            ),
+            if (!qualityFirst) sensationChip,
+            qualityChip,
+            if (qualityFirst) sensationChip,
             if (showLocation)
               _PartChip(
                 icon: Icons.place_outlined,

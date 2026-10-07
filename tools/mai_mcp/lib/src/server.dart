@@ -176,8 +176,10 @@ base class MaiMcpServer extends MCPServer with ToolsSupport, ResourcesSupport {
         name: 'symptom_timeline',
         description:
             'Check-in-Verlauf eines Symptoms (ID oder Bezeichnung) mit '
-            'Statistik der Skalenwerte 0–10 und Beschreibung je Check-in '
-            '(Empfindung, Qualität, Ort, Seite, Verlauf).',
+            'Statistik der Hauptmessgröße (Stärke 0–10, Temperatur, Anzahl, '
+            'Blutdruck, Stimmung −5…+5 …) samt Einheit und Beschreibung je '
+            'Check-in (Empfindung, Qualität, Ort, Seite, Verlauf). '
+            'Tagebuch-Einträge sind nicht enthalten.',
         annotations: _readOnly,
         inputSchema: Schema.object(
           properties: {

@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
+import '../../data/measure_units.dart';
 import '../../data/repositories/appointment_repository.dart';
 import '../../data/repositories/diagnosis_hub_repository.dart';
 import '../../data/repositories/doctor_repository.dart';
@@ -14,9 +15,11 @@ import '../../data/repositories/reminder_repository.dart' show Weekdays;
 import '../../data/repositories/symptom_repository.dart';
 import '../../data/repositories/vaccination_repository.dart';
 import '../../data/symptom_description.dart';
+import '../../data/symptom_measure.dart';
 import '../../l10n/l10n.dart';
+import '../../services/psych/psych_safety.dart';
 import '../../theme/icon_mappings.dart';
-import '../../widgets/observation_chart.dart';
+import '../../widgets/measure_chart.dart';
 import '../../widgets/symptom_heatmap.dart';
 import '../../widgets/symptom_media_section.dart';
 import '../../widgets/symptom_report_card.dart';
@@ -25,6 +28,8 @@ import '../home/appointment_detail_page.dart';
 import '../medications/medication_form_page.dart';
 import '../medications/pharmacy_form.dart';
 import '../medications/vaccination_form.dart';
+import '../psych/psych_page.dart';
+import '../psych/support_card.dart';
 import '../settings/reminders_section.dart' show ensureNotificationPermission;
 import '../reports/report_viewer_page.dart';
 import 'entity_forms.dart';
@@ -86,6 +91,14 @@ class _DetailScaffoldState<T> extends State<_DetailScaffold<T>> {
 
   @override
   Widget build(BuildContext context) {
+    // v15: Einheiten (°C/°F …) gewechselt → Werte neu darstellen.
+    return ValueListenableBuilder<UnitPreferences>(
+      valueListenable: AppUnits.notifier,
+      builder: (context, _, _) => _build(context),
+    );
+  }
+
+  Widget _build(BuildContext context) {
     return StreamBuilder<T?>(
       stream: _stream,
       builder: (context, snapshot) {
@@ -648,13 +661,17 @@ class SymptomDetailPage extends StatelessWidget {
         final s = data.symptom;
         final repo = SymptomRepository(DatabaseScope.of(context));
         final l10n = context.l10n;
-        // Ort steht schon im Untertitel; hier Empfindung, Charakter, Seite.
-        final defaults = SymptomDescription.fromSymptom(
-          s,
-        ).copyWith(location: () => null);
+        // v15: Beschreibung steckt im Titel (Bausteine); hier die Messgröße.
+        final measures = symptomMeasures(s);
         final latest = data.observations
             .where((o) => !SymptomDescription.fromObservation(o).isEmpty)
             .firstOrNull;
+        final journal = [
+          for (final o in data.observations)
+            if (o.journal?.trim().isNotEmpty == true) o,
+        ];
+        final newest = data.observations.firstOrNull;
+        final psych = isPsychSymptom(s);
         return [
           DetailHeader(
             title: s.label,
@@ -682,18 +699,36 @@ class SymptomDetailPage extends StatelessWidget {
                     label: Text(l10n.recordsReopen),
                   ),
           ),
-          if (!defaults.isEmpty)
-            _infoTile(
-              Icons.tune,
-              l10n.symptomDefaultsTitle,
-              defaults.describe(l10n),
+          if (newest != null && observationNeedsSupport(s, newest))
+            const Padding(
+              padding: EdgeInsets.only(top: 12),
+              child: SupportCard(),
             ),
+          _infoTile(
+            Icons.straighten,
+            l10n.measureHowTitle,
+            [
+              measureLabel(measures.primary, l10n),
+              if (measures.secondary != null)
+                measureLabel(measures.secondary!, l10n),
+            ].join(' + '),
+          ),
           if (latest != null)
             _infoTile(
               Icons.short_text,
               '${l10n.symptomLatestDescription} · '
                   '${_dateTime(context).format(latest.recordedAt)}',
               SymptomDescription.fromObservation(latest).describe(l10n),
+            ),
+          if (psych)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.self_improvement),
+              title: Text(l10n.psychAreaLink),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const PsychPage()),
+              ),
             ),
           if (data.diagnosis != null)
             _linkTile(
@@ -731,7 +766,32 @@ class SymptomDetailPage extends StatelessWidget {
           DetailSection(
             title: l10n.recordsHistory,
             children: [
-              ObservationChart(points: scalePoints(data.observations)),
+              for (final m in [measures.primary, ?measures.secondary]) ...[
+                if (measures.secondary != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8, bottom: 4),
+                    child: Text(
+                      measureLabel(m, l10n),
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ),
+                // Tagebuch-Marker nur am ersten Diagramm.
+                MeasureChart(
+                  data: MeasureChartData.from(
+                    data.observations,
+                    m,
+                  ).withoutMarkers(m != measures.primary),
+                  onMarkerTap: (o) => _showJournalEntry(context, o),
+                ),
+              ],
+              if (journal.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    l10n.journalChartHint,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
             ],
           ),
           Padding(
@@ -741,7 +801,34 @@ class SymptomDetailPage extends StatelessWidget {
           if (data.observations.isNotEmpty)
             DetailSection(
               title: l10n.symptomHeatmapTitle,
-              children: [SymptomHeatmap(observations: data.observations)],
+              children: [
+                SymptomHeatmap(
+                  observations: data.observations,
+                  measure: measures.primary,
+                ),
+              ],
+            ),
+          if (journal.isNotEmpty || psych)
+            DetailSection(
+              title: l10n.journalTitle,
+              empty: l10n.journalEmpty,
+              children: [
+                for (final o in journal.take(30))
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.edit_note),
+                    title: Text(
+                      o.journal!.trim(),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      '${_dateTime(context).format(o.recordedAt)} · '
+                      '${observationLabel(o)}',
+                    ),
+                    onTap: () => _showJournalEntry(context, o),
+                  ),
+              ],
             ),
           DetailSection(
             title: l10n.recordsCheckIns,
@@ -771,6 +858,33 @@ class SymptomDetailPage extends StatelessWidget {
   }
 }
 
+/// Tagebuch-Eintrag eines Check-ins lesen.
+Future<void> _showJournalEntry(BuildContext context, SymptomObservation o) =>
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(_dateTime(context).format(o.recordedAt)),
+        scrollable: true,
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              observationLabel(o),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            SelectableText(o.journal?.trim() ?? ''),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.commonClose),
+          ),
+        ],
+      ),
+    );
 
 // --- Medikament ------------------------------------------------------------
 

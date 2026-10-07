@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../../services/notifications/notification_plan.dart';
 import '../app_database.dart';
+import '../measure_units.dart';
 
 class SettingsRepository {
   SettingsRepository(this._db);
@@ -48,6 +49,18 @@ class SettingsRepository {
     return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
       AppSettingsCompanion(notificationTopics: Value(preferences.encode())),
     );
+  }
+
+  /// v15: Einheiten speichern und sofort überall anwenden ([AppUnits]).
+  Future<void> setUnits(UnitPreferences units) async {
+    await (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
+      AppSettingsCompanion(
+        temperatureUnit: Value(units.temperature.name),
+        glucoseUnit: Value(units.glucose.name),
+        weightUnit: Value(units.weight.name),
+      ),
+    );
+    AppUnits.update(units);
   }
 
   Future<void> updateAppointmentReminders({

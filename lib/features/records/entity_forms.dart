@@ -12,6 +12,8 @@ import '../../data/repositories/records_repository.dart';
 import '../../data/repositories/suggestion_repository.dart';
 import '../../data/repositories/symptom_repository.dart';
 import '../../data/symptom_description.dart';
+import '../../data/symptom_measure.dart';
+import '../../data/symptom_title.dart';
 import '../../l10n/l10n.dart';
 import '../../services/ocr/document_scanner.dart';
 import '../../services/report_import_service.dart';
@@ -306,12 +308,19 @@ Future<String?> showSymptomForm(
   Symptom? symptom,
 }) async {
   final label = TextEditingController(text: symptom?.label);
-  final region = TextEditingController(text: symptom?.bodyRegion);
   var diagnosisId = symptom?.diagnosisId;
-  // Standard-Beschreibung für Check-ins (Ort = Körperregion oben).
+  // v15: Bausteine (Charakter, Empfindung, Ort = Körperregion, Seite) setzen
+  // den Namen zusammen und werden für Auswertungen weiter einzeln gespeichert.
   var description = symptom == null
       ? const SymptomDescription()
       : SymptomDescription.fromSymptom(symptom);
+  // Messgröße: bestehendes Symptom behält seine (alte Symptome: Stärke,
+  // damit bisherige Check-ins vergleichbar bleiben); neu = Vorschlag aus dem
+  // Namen, bis man selbst wählt.
+  var measures = symptom == null
+      ? suggestMeasures('')
+      : symptomMeasures(symptom);
+  var measureChosen = symptom != null;
   final db = DatabaseScope.of(context);
   final repo = SymptomRepository(db);
   final doctors = await DoctorRepository(db).watchAll().first;
@@ -322,87 +331,254 @@ Future<String?> showSymptomForm(
   if (!context.mounted) return null;
   final l10n = context.l10n;
 
+  String composed() =>
+      composeSymptomTitle(TitleBlocks.fromDescription(description), l10n);
+  // Automatisch, solange der Name leer ist oder genau den Bausteinen
+  // entspricht; eigene Eingabe wird nie überschrieben.
+  var autoTitle =
+      label.text.trim().isEmpty || label.text.trim() == composed();
+  var programmatic = false;
+  StateSetter? rebuild;
+
+  void suggest() {
+    if (!measureChosen) {
+      measures = suggestMeasures(label.text, sensation: description.sensation);
+    }
+  }
+
+  void setTitle(String text) {
+    programmatic = true;
+    label.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+    programmatic = false;
+  }
+
+  label.addListener(() {
+    if (programmatic) return;
+    final text = label.text.trim();
+    final auto = text.isEmpty || text == composed();
+    if (auto == autoTitle && measureChosen) return;
+    autoTitle = auto;
+    suggest();
+    rebuild?.call(() {});
+  });
+
   final ok = await _showFormDialog(
     context,
     title: symptom == null
         ? l10n.recordsSymptomCreateTitle
         : l10n.recordsSymptomEditTitle,
-    fields: (setState) => [
-      SuggestionTextField(
-        controller: label,
-        field: SuggestionField.symptomLabel,
-        decoration: InputDecoration(labelText: l10n.recordsFieldSymptomLabel),
-        autofocus: symptom == null,
-      ),
-      SuggestionTextField(
-        controller: region,
-        field: SuggestionField.bodyRegion,
-        decoration: InputDecoration(labelText: l10n.recordsFieldBodyRegion),
-      ),
-      const SizedBox(height: 12),
-      Text(l10n.symptomDefaultsTitle),
-      Text(
-        l10n.symptomDefaultsHint,
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
-      const SizedBox(height: 4),
-      SymptomDescriptionComposer(
-        value: description,
-        onChanged: (v) => setState(() => description = v),
-        showLocation: false,
-        showPattern: false,
-        showIntensity: false,
-        showPreview: false,
-      ),
-      DiagnosisPicker(
-        value: diagnosisId,
-        onChanged: (v) => setState(() => diagnosisId = v),
-      ),
-      if (doctors.isNotEmpty) ...[
-        const SizedBox(height: 12),
-        Text(l10n.entityDoctors),
-        const SizedBox(height: 4),
-        Wrap(
-          spacing: 6,
-          children: [
-            for (final d in doctors)
-              FilterChip(
-                label: Text(d.name),
-                selected: doctorIds.contains(d.id),
-                onSelected: (v) => setState(
-                  () => v ? doctorIds.add(d.id) : doctorIds.remove(d.id),
-                ),
-              ),
-          ],
+    fields: (setState) {
+      rebuild = setState;
+      final title = composed();
+      return [
+        Text(
+          l10n.symptomBlocksHint,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
-      ],
-    ],
+        const SizedBox(height: 6),
+        SymptomDescriptionComposer(
+          value: description,
+          onChanged: (v) => setState(() {
+            description = v;
+            if (autoTitle) setTitle(composed());
+            suggest();
+          }),
+          qualityFirst: true,
+          showPattern: false,
+          showIntensity: false,
+          showPreview: false,
+        ),
+        SuggestionTextField(
+          controller: label,
+          field: SuggestionField.symptomLabel,
+          decoration: InputDecoration(labelText: l10n.recordsFieldSymptomLabel),
+          autofocus: symptom == null,
+        ),
+        if (!autoTitle && title.isNotEmpty && title != label.text.trim())
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: () => setState(() {
+                autoTitle = true;
+                setTitle(title);
+                suggest();
+              }),
+              icon: const Icon(Icons.auto_fix_high, size: 18),
+              label: Text(l10n.symptomTitleRegenerate),
+            ),
+          ),
+        const SizedBox(height: 4),
+        ListTile(
+          key: const ValueKey('symptom-measure'),
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.straighten),
+          title: Text(l10n.measureHowTitle),
+          subtitle: Text(
+            [
+              measureLabel(measures.primary, l10n),
+              if (measures.secondary != null)
+                measureLabel(measures.secondary!, l10n),
+            ].join(' + '),
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () async {
+            final picked = await showMeasurePicker(context, measures);
+            if (picked == null) return;
+            setState(() {
+              measures = picked;
+              measureChosen = true;
+            });
+          },
+        ),
+        DiagnosisPicker(
+          value: diagnosisId,
+          onChanged: (v) => setState(() => diagnosisId = v),
+        ),
+        if (doctors.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Text(l10n.entityDoctors),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 6,
+            children: [
+              for (final d in doctors)
+                FilterChip(
+                  label: Text(d.name),
+                  selected: doctorIds.contains(d.id),
+                  onSelected: (v) => setState(
+                    () => v ? doctorIds.add(d.id) : doctorIds.remove(d.id),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ];
+    },
   );
-  if (!ok || label.text.trim().isEmpty) return null;
+  rebuild = null;
+  final name = label.text.trim().isEmpty ? composed() : label.text.trim();
+  if (!ok || name.isEmpty) return null;
   final String id;
   if (symptom == null) {
     id = await repo.create(
-      label: label.text.trim(),
-      bodyRegion: _trimOrNull(region),
+      label: name,
+      bodyRegion: description.location,
       diagnosisId: diagnosisId,
       sensation: description.sensation,
       quality: description.qualityText,
       side: description.side,
+      measures: measures,
     );
   } else {
     id = symptom.id;
     await repo.update(
       id: id,
-      label: label.text.trim(),
-      bodyRegion: _trimOrNull(region),
+      label: name,
+      bodyRegion: description.location,
       diagnosisId: diagnosisId,
       sensation: description.sensation,
       quality: description.qualityText,
       side: description.side,
+      measures: measures,
     );
   }
   await repo.setDoctors(id, doctorIds.toList());
   return id;
+}
+
+/// „Wie messen?“: erste Messgröße und optional eine zweite. `null` =
+/// abgebrochen.
+Future<MeasurePair?> showMeasurePicker(
+  BuildContext context,
+  MeasurePair current,
+) {
+  var primary = current.primary;
+  var secondary = current.secondary;
+  return showModalBottomSheet<MeasurePair>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) {
+        final l10n = context.l10n;
+        final theme = Theme.of(context);
+        return SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+            ),
+            child: ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              children: [
+                Text(
+                  l10n.measureHowTitle,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(l10n.measureHowHint, style: theme.textTheme.bodySmall),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final m in SymptomMeasure.values)
+                      ChoiceChip(
+                        key: ValueKey('measure-${m.code}'),
+                        label: Text(measureLabel(m, l10n)),
+                        selected: primary == m,
+                        onSelected: (_) => setState(() {
+                          primary = m;
+                          if (secondary == m || !m.canHaveSecondary) {
+                            secondary = null;
+                          }
+                        }),
+                      ),
+                  ],
+                ),
+                if (primary.canHaveSecondary) ...[
+                  const SizedBox(height: 16),
+                  Text(l10n.measureSecondary, style: theme.textTheme.titleSmall),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      ChoiceChip(
+                        label: Text(l10n.measureSecondaryNone),
+                        selected: secondary == null,
+                        onSelected: (_) => setState(() => secondary = null),
+                      ),
+                      for (final m in SymptomMeasure.values)
+                        if (m != primary && m.canBeSecondary)
+                          ChoiceChip(
+                            key: ValueKey('measure2-${m.code}'),
+                            label: Text(measureLabel(m, l10n)),
+                            selected: secondary == m,
+                            onSelected: (_) => setState(() => secondary = m),
+                          ),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => Navigator.pop(
+                    context,
+                    (primary: primary, secondary: secondary),
+                  ),
+                  child: Text(l10n.symptomPickerApply),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  );
 }
 
 Future<String?> showMedicationForm(

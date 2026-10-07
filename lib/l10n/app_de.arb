@@ -892,6 +892,286 @@
       }
     }
   },
+  "measureIntensity": "Stärke 0–10",
+  "measureTemperature": "Temperatur",
+  "measureCount": "Anzahl",
+  "measureDuration": "Dauer",
+  "measurePulse": "Puls",
+  "measureBloodPressure": "Blutdruck",
+  "measureSpo2": "Sauerstoffsättigung (SpO₂)",
+  "measureGlucose": "Blutzucker",
+  "measureWeight": "Gewicht",
+  "measureMood": "Stimmung −5 bis +5",
+  "measureMoodShort": "Stimmung",
+  "measureUnitPulse": "/min",
+  "measureTempNormal": "normal",
+  "measureTempElevated": "erhöht",
+  "measureTempFever": "Fieber",
+  "measureTempHighFever": "hohes Fieber",
+  "measureBpOptimal": "optimal",
+  "measureBpNormal": "normal",
+  "measureBpHighNormal": "hoch-normal",
+  "measureBpGrade1": "Hypertonie Grad 1",
+  "measureBpGrade2": "Hypertonie Grad 2",
+  "measureBpGrade3": "Hypertonie Grad 3",
+  "measureSpo2Normal": "normal",
+  "measureSpo2Low": "leicht erniedrigt",
+  "measureSpo2Check": "ärztlich abklären",
+  "measureSpo2Urgent": "zeitnah ärztlich abklären",
+  "measureSpo2HintCheck": "Unter 92 %: bitte ärztlich abklären lassen, besonders bei Atemnot.",
+  "measureSpo2HintUrgent": "Unter 90 %: bitte zeitnah ärztlich abklären. Bei starker Atemnot, Verwirrtheit oder blauen Lippen den Notruf wählen.",
+  "measureGlucoseVeryLow": "sehr niedrig",
+  "measureGlucoseLow": "niedrig",
+  "measureGlucoseInRange": "im Zielbereich",
+  "measureGlucoseHigh": "erhöht",
+  "measureGlucoseVeryHigh": "sehr hoch",
+  "measurePulseLow": "niedrig",
+  "measurePulseNormal": "normal (Ruhe)",
+  "measurePulseHigh": "erhöht",
+  "moodM5": "schwer depressiv",
+  "moodM4": "stark gedrückt",
+  "moodM3": "deutlich gedrückt",
+  "moodM2": "gedrückt",
+  "moodM1": "leicht gedrückt",
+  "mood0": "ausgeglichen",
+  "moodP1": "leicht gehoben",
+  "moodP2": "gehoben",
+  "moodP3": "deutlich gehoben",
+  "moodP4": "stark gehoben",
+  "moodP5": "manisch",
+  "moodAnchor0": "Weder gedrückt noch aufgedreht",
+  "moodAnchorMild": "Spürbar, Alltag aber gut machbar",
+  "moodAnchorModerate": "Alltag (Arbeit, Familie) nur mit deutlicher Mühe",
+  "moodAnchorSevere": "Alltag kaum noch möglich",
+  "moodScaleLow": "−5 schwer depressiv",
+  "moodScaleHigh": "+5 manisch",
+  "moodExtras": "Energie, Schlaf, Angst",
+  "moodEnergy": "Energie",
+  "moodSleep": "Schlaf (Stunden)",
+  "moodAnxiety": "Angst/Anspannung",
+  "moodEnergyValue": "Energie {value}/10",
+  "@moodEnergyValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "moodSleepValue": "Schlaf {value} h",
+  "@moodSleepValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "moodAnxietyValue": "Angst {value}/10",
+  "@moodAnxietyValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "measureHowTitle": "Wie messen?",
+  "measureHowHint": "Vorschlag aus dem Namen – tippe, um es zu ändern.",
+  "measureSecondary": "Zusätzlich erfassen",
+  "measureSecondaryNone": "nichts weiter",
+  "symptomBlocksHint": "Tippe Bausteine an – daraus entsteht der Name. Du kannst ihn danach frei ändern.",
+  "symptomTitleRegenerate": "Aus Bausteinen neu erzeugen",
+  "checkInDetails": "Details ändern",
+  "checkInHintMeasure": "Erfasse den aktuellen Wert. Beschreibung und Ort kommen aus dem Symptom – „Details ändern“ passt sie für diesen Check-in an.",
+  "measureCountHint": "Wie oft seit dem letzten Check-in?",
+  "measureDurationHint": "Wie lange insgesamt?",
+  "measureBpSystolic": "Systolisch",
+  "measureBpDiastolic": "Diastolisch",
+  "measureAdd": "{measure} ergänzen",
+  "@measureAdd": {
+    "placeholders": {
+      "measure": {
+        "type": "String"
+      }
+    }
+  },
+  "measureRemove": "Entfernen",
+  "measureDecrease": "Weniger",
+  "measureIncrease": "Mehr",
+  "measureFeverLine": "Fieber ab {value}",
+  "@measureFeverLine": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "measureReferenceLine": "Grenze {value}",
+  "@measureReferenceLine": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "measureChartSemantics": "{measure}: {count} Werte, zuletzt {latest}",
+  "@measureChartSemantics": {
+    "placeholders": {
+      "measure": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "latest": {
+        "type": "String"
+      }
+    }
+  },
+  "measureStats": "Ø {average} · min {min} · max {max} · zuletzt {last}",
+  "@measureStats": {
+    "placeholders": {
+      "average": {
+        "type": "String"
+      },
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "measureStatsCount": "{count} Check-in(s) · {stats}",
+  "@measureStatsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "stats": {
+        "type": "String"
+      }
+    }
+  },
+  "measureTotalPerDay": "Summe pro Tag",
+  "heatmapCellMeasure": "{date}: {value}",
+  "@heatmapCellMeasure": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "heatmapSemanticsMeasure": "Kalender ({measure}): {days} Tage mit Check-in",
+  "@heatmapSemanticsMeasure": {
+    "placeholders": {
+      "measure": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "severityNone": "unauffällig",
+  "severityMild": "leicht",
+  "severityModerate": "mittel",
+  "severitySevere": "deutlich",
+  "severityMax": "sehr deutlich",
+  "heatmapMapTemperature": "Farbe nach Temperatur: erhöht ab {elevated}, Fieber ab {fever}, hohes Fieber ab {high}, dunkelste Stufe ab {max}.",
+  "@heatmapMapTemperature": {
+    "placeholders": {
+      "elevated": {
+        "type": "String"
+      },
+      "fever": {
+        "type": "String"
+      },
+      "high": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "heatmapMapRelative": "Farbe relativ zum höchsten Tageswert ({max}).",
+  "@heatmapMapRelative": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "heatmapMapBloodPressure": "Farbe nach ESC/ESH-Stufe: hoch-normal, Hypertonie Grad 1, 2, 3.",
+  "heatmapMapSpo2": "Farbe nach Sättigung: unter 95 %, 92 %, 90 %, 85 % (niedrigster Wert des Tages).",
+  "heatmapMapGlucose": "Farbe: außerhalb des Zielbereichs {low}–{high}; sehr niedrig am dunkelsten.",
+  "@heatmapMapGlucose": {
+    "placeholders": {
+      "low": {
+        "type": "String"
+      },
+      "high": {
+        "type": "String"
+      }
+    }
+  },
+  "heatmapMapPulse": "Farbe: Abstand vom Ruhepuls 60–100/min.",
+  "heatmapMapMood": "Farbe: Abstand von „ausgeglichen“ (0) – die Richtung zeigt das Stimmungsdiagramm.",
+  "heatmapMapWeight": "Farbe: Tage mit Messung.",
+  "journalTitle": "Tagebuch",
+  "journalAdd": "Tagebuch-Eintrag",
+  "journalHint": "Was beschäftigt dich? (optional)",
+  "journalPromptHelped": "Was hat heute geholfen?",
+  "journalPromptBurden": "Was hat mich belastet?",
+  "journalPromptGrateful": "Wofür bin ich dankbar?",
+  "journalPrivacy": "Bleibt auf dem Gerät. Ins Arzt-PDF nur, wenn du es dort einschaltest.",
+  "journalEmpty": "Noch keine Tagebuch-Einträge.",
+  "journalChartHint": "Punkte über dem Diagramm = Tagebuch-Eintrag. Antippen zum Lesen.",
+  "journalContext": "Tagebuch {date}: {text}",
+  "@journalContext": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryIncludeJournal": "Tagebuch-Einträge einschließen",
+  "summaryIncludeJournalSubtitle": "Standardmäßig aus – persönliche Notizen bleiben privat.",
+  "unitsTitle": "Einheiten",
+  "unitsIntro": "Gespeichert wird immer gleich – umgerechnet wird nur die Anzeige. Standard nach Region des Geräts.",
+  "unitsTemperature": "Temperatur",
+  "unitsGlucose": "Blutzucker",
+  "unitsWeight": "Gewicht",
+  "cycleReportWeightValue": "Gewicht zuletzt {value} ({date})",
+  "@cycleReportWeightValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleChartWeightSemanticsValue": "Gewicht, {count} Messungen, zuletzt {latest}",
+  "@cycleChartWeightSemanticsValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "latest": {
+        "type": "String"
+      }
+    }
+  },
   "mediaSectionTitle": "Belege",
   "mediaSectionHint": "Fotos, Videos oder Sprachnotizen zeigen der Ärztin oder dem Arzt, was du beschreibst – z. B. einen Ausschlag, eine Schwellung, ein Geräusch beim Atmen oder einen Anfall. Alles bleibt verschlüsselt auf diesem Gerät.",
   "mediaTakePhoto": "Foto",
@@ -945,6 +1225,117 @@
       }
     }
   },
+  "psychTitle": "Psyche",
+  "psychIntro": "Kurze, anerkannte Fragebögen zeigen, wie es dir über die Wochen geht. Das Ergebnis ist keine Diagnose – sprich mit deiner Ärztin oder deinem Arzt darüber.",
+  "psychSettingsSubtitle": "Stimmung, Angst und Tagebuch – mit PHQ-9 und GAD-7 als monatlichem Fragebogen.",
+  "psychQuestionnairesToggle": "Monatliche Fragebögen (PHQ-9, GAD-7)",
+  "psychQuestionnairesSubtitle": "Erinnerung 30 Tage nach dem letzten Bogen; Verlauf auf der Seite „Psyche“.",
+  "psychOpen": "Psyche öffnen",
+  "psychAreaLink": "Psyche: Fragebögen & Verlauf",
+  "psychPhq9Title": "PHQ-9 (Depression)",
+  "psychGad7Title": "GAD-7 (Angst)",
+  "psychQuestion": "Wie oft fühlten Sie sich im Verlauf der letzten 2 Wochen durch die folgenden Beschwerden beeinträchtigt?",
+  "psychPhq1": "Wenig Interesse oder Freude an Ihren Tätigkeiten",
+  "psychPhq2": "Niedergeschlagenheit, Schwermut oder Hoffnungslosigkeit",
+  "psychPhq3": "Schwierigkeiten ein- oder durchzuschlafen oder vermehrter Schlaf",
+  "psychPhq4": "Müdigkeit oder Gefühl, keine Energie zu haben",
+  "psychPhq5": "Verminderter Appetit oder übermäßiges Bedürfnis zu essen",
+  "psychPhq6": "Schlechte Meinung von sich selbst; Gefühl, ein Versager zu sein oder die Familie enttäuscht zu haben",
+  "psychPhq7": "Schwierigkeiten, sich auf etwas zu konzentrieren, z. B. beim Zeitunglesen oder Fernsehen",
+  "psychPhq8": "Waren Ihre Bewegungen oder Ihre Sprache so verlangsamt, dass es auch anderen auffallen würde? Oder waren Sie im Gegenteil „zappelig“ oder ruhelos und hatten dadurch einen stärkeren Bewegungsdrang als sonst?",
+  "psychPhq9": "Gedanken, dass Sie lieber tot wären oder sich Leid zufügen möchten",
+  "psychGad1": "Nervosität, Ängstlichkeit oder Anspannung",
+  "psychGad2": "Nicht in der Lage sein, Sorgen zu stoppen oder zu kontrollieren",
+  "psychGad3": "Übermäßige Sorgen bezüglich verschiedener Angelegenheiten",
+  "psychGad4": "Schwierigkeiten zu entspannen",
+  "psychGad5": "Rastlosigkeit, so dass Stillsitzen schwer fällt",
+  "psychGad6": "Schnelle Verärgerung oder Gereiztheit",
+  "psychGad7": "Gefühl der Angst, so als würde etwas Schlimmes passieren",
+  "psychAnswer0": "Überhaupt nicht",
+  "psychAnswer1": "An einzelnen Tagen",
+  "psychAnswer2": "An mehr als der Hälfte der Tage",
+  "psychAnswer3": "Beinahe jeden Tag",
+  "psychSeverityMinimal": "minimal",
+  "psychSeverityMild": "leicht",
+  "psychSeverityModerate": "mittelgradig",
+  "psychSeverityModeratelySevere": "ausgeprägt",
+  "psychSeveritySevere": "schwer",
+  "psychResultSummary": "{instrument}: {total} von {max} – {severity}",
+  "@psychResultSummary": {
+    "placeholders": {
+      "instrument": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "severity": {
+        "type": "String"
+      }
+    }
+  },
+  "psychSave": "Speichern ({answered}/{count})",
+  "@psychSave": {
+    "placeholders": {
+      "answered": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "psychSaved": "Gespeichert: {summary}",
+  "@psychSaved": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "psychFill": "{instrument} ausfüllen",
+  "@psychFill": {
+    "placeholders": {
+      "instrument": {
+        "type": "String"
+      }
+    }
+  },
+  "psychTrend": "Verlauf",
+  "psychNoResults": "Noch keine Fragebögen ausgefüllt.",
+  "psychBands": "PHQ-9: 0–4 minimal · 5–9 leicht · 10–14 mittelgradig · 15–19 ausgeprägt · 20–27 schwer. GAD-7: 0–4 minimal · 5–9 leicht · 10–14 mittelgradig · 15–21 schwer.",
+  "psychSource": "PHQ-9 (Kroenke et al. 2001) und GAD-7 (Spitzer et al. 2006), deutsche Fassung PHQ-D (Löwe et al.). Frei verwendbar; kein Ersatz für eine ärztliche Diagnose.",
+  "psychSupportTitle": "Du musst das nicht allein tragen",
+  "psychSupportText": "Wenn du gerade daran denkst, dir etwas anzutun, sprich mit jemandem. Diese Stellen sind rund um die Uhr für dich da – anonym und kostenlos:",
+  "psychSupportGeneric": "Wende dich an eine Krisen-Hotline in deinem Land oder an den örtlichen Notruf. Auch Ärztinnen, Ärzte und Menschen, denen du vertraust, helfen.",
+  "psychSupportEmergency": "Bei akuter Gefahr: Notruf {number}",
+  "@psychSupportEmergency": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "psychSupportPrivacy": "Dieser Hinweis erscheint nur auf deinem Gerät. Es wird nichts gesendet.",
+  "psychSupportCall": "{name}: {number}",
+  "@psychSupportCall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "psychTopic": "Stimmung & Psyche",
+  "psychTopicDescription": "Check-ins zu psychischen Symptomen und monatliche Fragebögen",
+  "psychDiscreetTitle": "Kurz innehalten",
+  "psychReminderTitle": "Fragebogen zur Psyche",
+  "psychReminderBody": "Ein Monat ist um – zwei Minuten für PHQ-9 und GAD-7?",
   "recordsTitle": "Meine Akte",
   "recordsAssistantTooltip": "Assistent — Fragen an deine Akte",
   "recordsVisitSummaryTooltip": "Zusammenfassung für den Arztbesuch",

@@ -6,6 +6,7 @@ import 'package:pdfrx/pdfrx.dart';
 
 import 'data/app_database.dart';
 import 'data/database_provider.dart';
+import 'data/measure_units.dart';
 import 'data/repositories/records_repository.dart' show reportsDirectory;
 import 'data/repositories/settings_repository.dart';
 import 'data/repositories/symptom_media_repository.dart' show mediaDirectory;
@@ -15,6 +16,7 @@ import 'features/cycle/mrs_page.dart';
 import 'features/home/appointment_detail_page.dart';
 import 'features/medications/intake_widgets.dart';
 import 'features/onboarding/onboarding_page.dart';
+import 'features/psych/psych_page.dart';
 import 'features/records/detail_pages.dart';
 import 'services/app_lock.dart';
 import 'services/calendar/calendar_gateway.dart';
@@ -24,6 +26,7 @@ import 'services/notifications/appointment_reminders.dart';
 import 'services/notifications/cycle_reminders.dart';
 import 'services/notifications/medication_reminders.dart';
 import 'services/notifications/notification_plan.dart';
+import 'services/notifications/psych_reminders.dart';
 import 'services/notifications/reminder_service.dart';
 import 'services/notifications/vaccination_reminders.dart';
 import 'services/file_vault.dart';
@@ -94,11 +97,18 @@ Future<void> _start() async {
   )..start();
   final cycleReminders = CycleReminderService(database, notifications)
     ..start();
+  final psychReminders = PsychReminderService(database, notifications)
+    ..start();
 
   // Ein Android-Kanal je Thema in der gewählten Wichtigkeit.
   final topicSettings = SettingsRepository(
     database,
   ).watch().map((s) => s.notificationTopics).distinct();
+  // v15: Einheiten auch außerhalb von Widgets (PDF, Assistent) aktuell.
+  SettingsRepository(database).watch().listen(
+    (s) => AppUnits.update(UnitPreferences.fromSettings(s)),
+    onError: (Object e) => debugPrint('Einheiten: $e'),
+  );
   topicSettings.listen((raw) {
     notifications
         .applyChannels(NotificationPreferences.parse(raw))
@@ -136,6 +146,7 @@ Future<void> _start() async {
     await medicationReminders.sync();
     await vaccinationReminders.sync();
     await cycleReminders.sync();
+    await psychReminders.sync();
     calendarSync?.trigger();
   }).attach();
 
@@ -151,6 +162,7 @@ Future<void> _start() async {
     await medicationReminders.sync();
     await vaccinationReminders.sync();
     await cycleReminders.sync();
+    await psychReminders.sync();
     calendarSync?.trigger();
   });
 
@@ -267,6 +279,11 @@ void _openFromNotification(String? payload) {
       ).push(MaterialPageRoute<void>(builder: (_) => const MrsPage()));
     case final String _:
       openCyclePage(context);
+  }
+  if (PsychPayload.decode(payload) != null) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const PsychPage()));
   }
   final appointmentId = AppointmentPayload.decode(payload);
   if (appointmentId != null) {

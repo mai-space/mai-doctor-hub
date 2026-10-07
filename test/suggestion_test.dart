@@ -152,20 +152,31 @@ void main() {
     }
     await tester.pumpAndSettle();
 
-    final region = find.widgetWithText(TextField, 'Körperregion');
+    // v15: Ort ist ein Baustein (kein eigenes Feld mehr); zuletzt
+    // verwendete Orte stehen in der Auswahl, der Name entsteht daraus.
     await tester.runAsync(() async {
-      await tester.tap(region);
-      await tester.enterText(region, 'lend');
+      await tester.tap(find.byTooltip('Ort'));
       await Future<void>.delayed(const Duration(milliseconds: 50));
     });
     await tester.pumpAndSettle();
-
-    final option = find.text('Lendenwirbelsäule');
-    expect(option, findsOneWidget);
-    await tester.tap(option);
+    expect(find.text('Zuletzt verwendet'), findsOneWidget);
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Suchen oder eigenen Begriff eingeben'),
+      'lend',
+    );
     await tester.pumpAndSettle();
 
-    final field = tester.widget<TextField>(region);
+    final option = find.widgetWithText(ListTile, 'Lendenwirbelsäule');
+    expect(option, findsOneWidget);
+    await tester.tap(option);
+    // Die Auswahl kehrt in die (echt asynchrone) Bausteine-Abfrage zurück.
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
+    await tester.pumpAndSettle();
+
+    final name = find.widgetWithText(TextField, 'Bezeichnung');
+    final field = tester.widget<TextField>(name);
     expect(field.controller!.text, 'Lendenwirbelsäule');
 
     await tester.pumpWidget(const SizedBox.shrink());

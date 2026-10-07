@@ -7,6 +7,7 @@ import '../../data/repositories/cycle_repository.dart';
 import '../../data/repositories/medication_repository.dart';
 import '../../data/repositories/records_repository.dart';
 import '../../data/symptom_description.dart';
+import '../../data/symptom_measure.dart';
 import '../../l10n/l10n.dart';
 import '../../widgets/symptom_report_card.dart' show observationLabel;
 import '../cycle/cycle_report.dart';
@@ -392,15 +393,29 @@ class AssistantContextBuilder {
         : t.observations.reduce(
             (a, b) => a.recordedAt.isAfter(b.recordedAt) ? a : b,
           );
+    // v15: letzter Tagebuch-Eintrag, kurz (nur lokal im Assistenten).
+    final journal = t.observations
+        .where((o) => o.journal?.trim().isNotEmpty == true)
+        .lastOrNull;
+    final stats = t.stats;
     return [
       s.label,
       if (!description.isEmpty) description.describe(_l10n),
       _l10n.svcCheckInCount(t.observations.length),
-      if (t.average != null) 'Ø ${t.average!.toStringAsFixed(1)}/10',
+      if (t.measure == SymptomMeasure.intensity && t.average != null)
+        'Ø ${t.average!.toStringAsFixed(1)}/10',
+      if (t.measure != SymptomMeasure.intensity && stats != null)
+        '${measureLabel(t.measure, _l10n)}: '
+            '${stats.describe(t.measure, _l10n)}',
       if (latest != null)
         _l10n.svcContextLatest(
           _day.format(latest.recordedAt),
           observationLabel(latest),
+        ),
+      if (journal != null)
+        _l10n.journalContext(
+          _day.format(journal.recordedAt),
+          _clip(journal.journal!.trim().replaceAll('\n', ' '), 160),
         ),
     ].join(', ');
   }

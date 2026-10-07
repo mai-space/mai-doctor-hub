@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import '../app_database.dart';
+import '../symptom_measure.dart';
 import 'suggestion_repository.dart';
 import 'symptom_media_repository.dart';
 
@@ -36,6 +37,7 @@ class SymptomRepository {
     String? sensation,
     String? quality,
     BodySide? side,
+    MeasurePair? measures,
   }) async {
     final id = _uuid.v4();
     final now = DateTime.now();
@@ -53,6 +55,8 @@ class SymptomRepository {
             sensation: Value(sensation),
             quality: Value(quality),
             side: Value(side?.name),
+            measure: Value(measures?.primary.code),
+            measure2: Value(measures?.secondary?.code),
           ),
         );
     await _db.upsertFts(
@@ -100,6 +104,7 @@ class SymptomRepository {
     String? sensation,
     String? quality,
     BodySide? side,
+    MeasurePair? measures,
   }) async {
     await (_db.update(_db.symptoms)..where((t) => t.id.equals(id))).write(
       SymptomsCompanion(
@@ -113,6 +118,13 @@ class SymptomRepository {
         sensation: Value(sensation),
         quality: Value(quality),
         side: Value(side?.name),
+        // v15: Messgrößen nur, wenn angegeben (sonst unverändert).
+        measure: measures == null
+            ? const Value.absent()
+            : Value(measures.primary.code),
+        measure2: measures == null
+            ? const Value.absent()
+            : Value(measures.secondary?.code),
       ),
     );
     await _db.upsertFts(
@@ -231,6 +243,14 @@ class SymptomRepository {
     String? location,
     BodySide? side,
     String? pattern,
+    SymptomMeasure? measure,
+    double? valueNumber2,
+    SymptomMeasure? measure2,
+    double? secondaryValue,
+    int? energy,
+    double? sleepHours,
+    int? anxiety,
+    String? journal,
   }) async {
     final id = _uuid.v4();
     await _db
@@ -251,6 +271,16 @@ class SymptomRepository {
             location: Value(location),
             side: Value(side?.name),
             pattern: Value(pattern),
+            measure: Value(measure?.code),
+            valueNumber2: Value(valueNumber2),
+            measure2: Value(secondaryValue == null ? null : measure2?.code),
+            secondaryValue: Value(measure2 == null ? null : secondaryValue),
+            energy: Value(energy),
+            sleepHours: Value(sleepHours),
+            anxiety: Value(anxiety),
+            journal: Value(
+              journal?.trim().isEmpty ?? true ? null : journal!.trim(),
+            ),
           ),
         );
     return id;
@@ -338,6 +368,71 @@ class SymptomRepository {
     }
     return result.values.toList()
       ..sort((a, b) => a.$1.label.toLowerCase().compareTo(b.$1.label.toLowerCase()));
+  }
+
+  /// v15: Check-in mit Messwert in kanonischer Einheit — Stärke als Skala
+  /// (wie bisher), alles andere als [ObservationKind.measurement].
+  Future<String> addMeasurement({
+    required String symptomId,
+    required SymptomMeasure measure,
+    required double value,
+    double? value2,
+    SymptomMeasure? measure2,
+    double? secondaryValue,
+    int? energy,
+    double? sleepHours,
+    int? anxiety,
+    String? journal,
+    DateTime? recordedAt,
+    String? sensation,
+    String? quality,
+    String? location,
+    BodySide? side,
+    String? pattern,
+  }) => addObservation(
+    symptomId: symptomId,
+    kind: measure.isScale
+        ? ObservationKind.scale_1_10
+        : ObservationKind.measurement,
+    valueNumber: value,
+    unit: measure.isScale ? null : measure.canonicalUnit,
+    measure: measure,
+    valueNumber2: measure == SymptomMeasure.bloodPressure ? value2 : null,
+    measure2: measure2,
+    secondaryValue: secondaryValue,
+    energy: energy,
+    sleepHours: sleepHours,
+    anxiety: anxiety,
+    journal: journal,
+    recordedAt: recordedAt,
+    sensation: sensation,
+    quality: quality,
+    location: location,
+    side: side,
+    pattern: pattern,
+  );
+
+  /// Letzter Wert einer Messgröße (Haupt- oder Zusatzwert) — Startwert des
+  /// nächsten Check-ins, z. B. das Gewicht.
+  Future<(double, double?)?> latestValue(
+    String symptomId,
+    SymptomMeasure measure,
+  ) async {
+    final rows = await (_db.select(_db.symptomObservations)
+          ..where((t) => t.symptomId.equals(symptomId))
+          ..orderBy([(t) => OrderingTerm.desc(t.recordedAt)])
+          ..limit(50))
+        .get();
+    for (final o in rows) {
+      if (observationMeasure(o) == measure && o.valueNumber != null) {
+        return (o.valueNumber!, o.valueNumber2);
+      }
+      if (SymptomMeasure.fromCode(o.measure2) == measure &&
+          o.secondaryValue != null) {
+        return (o.secondaryValue!, null);
+      }
+    }
+    return null;
   }
 
   /// Gemeldete Check-ins im Zeitraum [from, to), älteste zuerst.

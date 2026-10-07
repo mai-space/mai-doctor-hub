@@ -8,7 +8,10 @@ enum NotificationGroup {
   appointments(200000),
   medications(300000),
   vaccinations(400000),
-  cycle(500000);
+  cycle(500000),
+
+  /// v15: monatliche Fragebögen zur Psyche (PHQ-9/GAD-7).
+  psych(600000);
 
   const NotificationGroup(this.base);
 
@@ -40,7 +43,11 @@ enum NotificationTopic {
 
   /// v14: Zyklus, Wechseljahre (MRS), Schwangerschaft — standardmäßig
   /// diskret, damit auf dem Sperrbildschirm nichts über die Periode steht.
-  cycle('cycle', NotificationLevel.normal, defaultDiscreet: true);
+  cycle('cycle', NotificationLevel.normal, defaultDiscreet: true),
+
+  /// v15: Check-ins zu psychischen Symptomen und PHQ-9/GAD-7 — standardmäßig
+  /// diskret: „Traurigkeit“ gehört nicht auf den Sperrbildschirm.
+  mood('mood', NotificationLevel.normal, defaultDiscreet: true);
 
   const NotificationTopic(
     this.id,
@@ -69,6 +76,7 @@ enum NotificationTopic {
       vaccination => l10n.svcTopicVaccination,
       checkIn => l10n.svcChannelCheckIn,
       cycle => l10n.cycleTopic,
+      mood => l10n.psychTopic,
     };
   }
 
@@ -81,6 +89,7 @@ enum NotificationTopic {
       vaccination => l10n.svcTopicVaccinationDescription,
       checkIn => l10n.svcChannelCheckInDescription,
       cycle => l10n.cycleTopicDescription,
+      mood => l10n.psychTopicDescription,
     };
   }
 
@@ -94,6 +103,7 @@ enum NotificationTopic {
       vaccination => (l10n.svcDiscreetVaccinationTitle, l10n.svcDiscreetBody),
       checkIn => (l10n.svcDiscreetCheckInTitle, l10n.svcDiscreetBody),
       cycle => (l10n.cycleDiscreetTitle, l10n.svcDiscreetBody),
+      mood => (l10n.psychDiscreetTitle, l10n.svcDiscreetBody),
     };
   }
 }

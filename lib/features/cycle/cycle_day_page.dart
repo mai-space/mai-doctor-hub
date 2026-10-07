@@ -6,6 +6,7 @@ import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 import '../../data/app_database.dart';
 import '../../data/cycle_catalog.dart';
 import '../../data/database_provider.dart';
+import '../../data/measure_units.dart';
 import '../../data/repositories/cycle_repository.dart';
 import '../../l10n/l10n.dart';
 import '../../services/cycle/cycle_analytics.dart' show joinKeys, splitKeys;
@@ -93,7 +94,14 @@ class _CycleDayPageState extends State<CycleDayPage> {
       _hotFlashIntensity = row.hotFlashIntensity;
       _nightSweats = row.nightSweats;
       _fetal = row.fetalMovement;
-      _weight.text = row.weightKg == null ? '' : decimal.format(row.weightKg);
+      // v15: Anzeige in kg oder lb (gespeichert immer kg).
+      _weight.text = row.weightKg == null
+          ? ''
+          : decimal.format(
+              double.parse(
+                AppUnits.current.weightToDisplay(row.weightKg!).toStringAsFixed(1),
+              ),
+            );
       _bpSys.text = row.bpSystolic?.toString() ?? '';
       _bpDia.text = row.bpDiastolic?.toString() ?? '';
       _note.text = row.note ?? '';
@@ -132,7 +140,11 @@ class _CycleDayPageState extends State<CycleDayPage> {
         ),
         nightSweats: Value(_nightSweats),
         fetalMovement: Value(_fetal),
-        weightKg: Value(_decimal(_weight.text)),
+        weightKg: Value(
+          _decimal(_weight.text) == null
+              ? null
+              : AppUnits.current.weightFromDisplay(_decimal(_weight.text)!),
+        ),
         bpSystolic: Value(int.tryParse(_bpSys.text.trim())),
         bpDiastolic: Value(int.tryParse(_bpDia.text.trim())),
         note: Value(_text(_note)),
@@ -476,7 +488,7 @@ class _CycleDayPageState extends State<CycleDayPage> {
                     ),
                     decoration: InputDecoration(
                       labelText: l10n.cycleWeight,
-                      suffixText: 'kg',
+                      suffixText: AppUnits.current.weight.symbol,
                     ),
                   ),
                   const SizedBox(height: 12),

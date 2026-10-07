@@ -15,10 +15,12 @@ import '../data/repositories/symptom_media_repository.dart';
 import '../data/repositories/symptom_repository.dart';
 import '../data/repositories/vaccination_repository.dart';
 import '../data/symptom_description.dart';
+import '../data/symptom_measure.dart';
 import '../l10n/l10n.dart';
 import 'cycle/cycle_report.dart';
 import 'cycle/cycle_text.dart' show hintText;
 import 'file_vault.dart';
+import '../widgets/measure_chart.dart' show MeasureStats;
 import '../widgets/symptom_report_card.dart' show observationLabel;
 
 /// Was in die Zusammenfassung soll.
@@ -32,6 +34,7 @@ class VisitSummaryOptions {
     this.questions = '',
     this.patientName,
     this.includeCycle = false,
+    this.includeJournal = false,
   });
 
   /// Bezugstermin: bestimmt Arzt und Zeitraum der Symptom-Verläufe.
@@ -47,6 +50,10 @@ class VisitSummaryOptions {
 
   /// v14: Abschnitt „Zyklus & Frauengesundheit“ (nur auf Wunsch).
   final bool includeCycle;
+
+  /// v15: Tagebuch-Einträge der Check-ins — persönlich, deshalb nur auf
+  /// ausdrücklichen Wunsch (Standard aus).
+  final bool includeJournal;
 }
 
 /// Foto-Beleg für das PDF (verkleinert).
@@ -85,6 +92,10 @@ class SymptomTrend {
 
   double? get average =>
       scale.isEmpty ? null : scale.reduce((a, b) => a + b) / scale.length;
+
+  /// v15: Messgröße des Symptoms und Kennzahlen dazu (kanonische Einheit).
+  SymptomMeasure get measure => symptomMeasures(symptom).primary;
+  MeasureStats? get stats => MeasureStats.of(observations, measure);
 }
 
 class VisitSummaryData {
@@ -101,6 +112,7 @@ class VisitSummaryData {
     this.appointment,
     this.patientName,
     this.cycle,
+    this.includeJournal = false,
   });
 
   final DateTime generatedAt;
@@ -117,6 +129,9 @@ class VisitSummaryData {
 
   /// Nur, wenn gewünscht und ein Bereich aktiv ist.
   final CycleReport? cycle;
+
+  /// v15: Tagebuch-Spalte im PDF.
+  final bool includeJournal;
 }
 
 /// Stellt die Daten für den Arztbesuch zusammen.
@@ -203,6 +218,7 @@ class VisitSummaryBuilder {
     }
     return VisitSummaryData(
       cycle: cycle,
+      includeJournal: options.includeJournal,
       generatedAt: current,
       from: from,
       to: to,
@@ -351,7 +367,12 @@ abstract final class VisitSummaryPdf {
                       ? l10n.svcSummaryPdfNoCheckIns
                       : [
                           l10n.svcCheckInCount(t.observations.length),
-                          if (t.average != null)
+                          // v15: andere Messgrößen mit Einheit.
+                          if (t.measure != SymptomMeasure.intensity &&
+                              t.stats != null)
+                            _latin(t.stats!.describe(t.measure, l10n)),
+                          if (t.measure == SymptomMeasure.intensity &&
+                              t.average != null)
                             l10n.svcSummaryPdfStats(
                               t.average!
                                   .toStringAsFixed(1)
@@ -414,6 +435,7 @@ abstract final class VisitSummaryPdf {
                       l10n.svcSummaryPdfDate,
                       l10n.svcSummaryPdfValue,
                       l10n.entityNote,
+                      if (data.includeJournal) l10n.journalTitle,
                     ],
                     cellStyle: const pw.TextStyle(fontSize: 9),
                     headerStyle: pw.TextStyle(
@@ -424,8 +446,9 @@ abstract final class VisitSummaryPdf {
                       for (final o in t.observations.reversed.take(14))
                         [
                           dateTime.format(o.recordedAt),
-                          observationLabel(o),
+                          _latin(observationLabel(o)),
                           o.note ?? '',
+                          if (data.includeJournal) _latin(o.journal ?? ''),
                         ],
                     ],
                   ),
@@ -556,7 +579,12 @@ String _latin(String text) => text
     .replaceAll('≥', '>=')
     .replaceAll('–', '-')
     .replaceAll('—', '-')
-    .replaceAll('…', '...');
+    .replaceAll('…', '...')
+    // v15: Messwerte (Stimmung „−2“, „SpO₂“) und Zitate aus dem Tagebuch.
+    .replaceAll('−', '-')
+    .replaceAll('₂', '2')
+    .replaceAll(RegExp('[„“”]'), '"')
+    .replaceAll(RegExp('[‚‘’]'), "'");
 
 /// Für die Auswahl im Formular: alle Symptome/Medikamente.
 Future<(List<Symptom>, List<MedicationDetails>, List<AppointmentSummary>)>

@@ -4,9 +4,13 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/symptom_repository.dart';
 import '../../data/symptom_description.dart';
+import '../../data/symptom_measure.dart';
 import '../../l10n/l10n.dart';
+import '../../services/psych/psych_safety.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/empty_state.dart';
+import '../psych/support_card.dart';
+import 'measure_input.dart';
 import 'symptom_description_composer.dart';
 
 /// Bottom-Sheet für schnelle Symptom-Observations (Check-in).
@@ -25,6 +29,44 @@ Future<void> showCheckInSheet(
   );
 }
 
+/// v15: Eingaben eines Symptoms im Check-in — der Messwert steht im
+/// Vordergrund; Beschreibung kommt aus dem Symptom („Details ändern“).
+class _Entry {
+  _Entry(this.symptom)
+    : measures = symptomMeasures(symptom),
+      description = SymptomDescription.fromSymptom(symptom) {
+    value = measures.primary.initialValue;
+    if (measures.primary == SymptomMeasure.bloodPressure) value2 = 80;
+    journalOpen = isPsychSymptom(symptom);
+  }
+
+  final Symptom symptom;
+  final MeasurePair measures;
+  SymptomDescription description;
+  late double value;
+  double? value2;
+
+  /// Zusatzwert (`null` = nicht erfasst).
+  double? secondary;
+  int? energy;
+  double? sleepHours;
+  int? anxiety;
+  final journal = TextEditingController();
+  bool detailsOpen = false;
+  bool extrasOpen = false;
+  late bool journalOpen;
+
+  /// Wert schon angefasst — dann nicht mehr mit dem letzten Wert vorbelegen.
+  bool touched = false;
+
+  bool get needsSupport => checkInNeedsSupport(
+    symptom: symptom,
+    measure: measures.primary,
+    value: value,
+    journal: journal.text,
+  );
+}
+
 class CheckInSheet extends StatefulWidget {
   const CheckInSheet({super.key, this.symptomIds = const []});
 
@@ -35,15 +77,42 @@ class CheckInSheet extends StatefulWidget {
 }
 
 class _CheckInSheetState extends State<CheckInSheet> {
-  /// Beschreibung je Symptom, vorbelegt aus dessen Standard-Beschreibung —
+  /// Eingaben je Symptom, vorbelegt aus dessen Standard-Beschreibung —
   /// ein schneller Check-in bleibt so ein Zug am Schieberegler.
-  final Map<String, SymptomDescription> _descriptions = {};
+  final Map<String, _Entry> _entries = {};
   final Set<String> _healed = {};
 
-  SymptomDescription _descriptionFor(Symptom symptom) =>
-      _descriptions[symptom.id] ??= SymptomDescription.fromSymptom(
-        symptom,
-      ).copyWith(intensity: () => 5);
+  @override
+  void dispose() {
+    for (final e in _entries.values) {
+      e.journal.dispose();
+    }
+    super.dispose();
+  }
+
+  _Entry _entryFor(Symptom symptom, SymptomRepository repo) {
+    final existing = _entries[symptom.id];
+    if (existing != null) return existing;
+    final entry = _entries[symptom.id] = _Entry(symptom);
+    // Gemessene Größen (Temperatur, Gewicht …) mit dem letzten Wert
+    // vorbelegen; Stärke, Anzahl, Dauer und Stimmung nicht.
+    final m = entry.measures.primary;
+    if (!{
+      SymptomMeasure.intensity,
+      SymptomMeasure.count,
+      SymptomMeasure.duration,
+      SymptomMeasure.mood,
+    }.contains(m)) {
+      repo.latestValue(symptom.id, m).then((last) {
+        if (last == null || entry.touched || !mounted) return;
+        setState(() {
+          entry.value = last.$1;
+          entry.value2 = last.$2 ?? entry.value2;
+        });
+      });
+    }
+    return entry;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,16 +150,14 @@ class _CheckInSheetState extends State<CheckInSheet> {
             children: [
               Text(
                 context.l10n.homeCheckIn,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(context).textTheme.titleLarge
+                    ?.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 4),
               Text(
-                context.l10n.symptomCheckInHint,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppColors.muted),
+                context.l10n.checkInHintMeasure,
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: AppColors.muted),
               ),
               const SizedBox(height: 16),
               Flexible(
@@ -100,7 +167,7 @@ class _CheckInSheetState extends State<CheckInSheet> {
                   separatorBuilder: (_, _) => const Divider(height: 24),
                   itemBuilder: (context, index) {
                     final symptom = symptoms[index];
-                    final description = _descriptionFor(symptom);
+                    final entry = _entryFor(symptom, repo);
                     final healed = _healed.contains(symptom.id);
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,10 +179,9 @@ class _CheckInSheetState extends State<CheckInSheet> {
                         ),
                         const SizedBox(height: 8),
                         if (!healed) ...[
-                          SymptomDescriptionComposer(
-                            value: description,
-                            onChanged: (v) =>
-                                setState(() => _descriptions[symptom.id] = v),
+                          _EntryEditor(
+                            entry: entry,
+                            onChanged: () => setState(() {}),
                           ),
                           TextButton.icon(
                             onPressed: () =>
@@ -136,16 +202,27 @@ class _CheckInSheetState extends State<CheckInSheet> {
               const SizedBox(height: 12),
               FilledButton(
                 onPressed: () async {
+                  var support = false;
                   for (final symptom in symptoms) {
                     if (_healed.contains(symptom.id)) {
                       await repo.markHealed(symptom.id);
                       continue;
                     }
-                    final d = _descriptionFor(symptom);
-                    await repo.addObservation(
+                    final e = _entryFor(symptom, repo);
+                    final d = e.description;
+                    support = support || e.needsSupport;
+                    final mood = e.measures.primary == SymptomMeasure.mood;
+                    await repo.addMeasurement(
                       symptomId: symptom.id,
-                      kind: ObservationKind.scale_1_10,
-                      valueNumber: d.intensity,
+                      measure: e.measures.primary,
+                      value: e.value,
+                      value2: e.value2,
+                      measure2: e.measures.secondary,
+                      secondaryValue: e.secondary,
+                      energy: mood ? e.energy : null,
+                      sleepHours: mood ? e.sleepHours : null,
+                      anxiety: mood ? e.anxiety : null,
+                      journal: e.journal.text,
                       sensation: d.sensation,
                       quality: d.qualityText,
                       location: d.location,
@@ -155,10 +232,15 @@ class _CheckInSheetState extends State<CheckInSheet> {
                   }
                   if (!context.mounted) return;
                   final saved = context.l10n.homeCheckInSaved;
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(saved)),
-                  );
+                  final navigator = Navigator.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
+                  final parent = navigator.context;
+                  navigator.pop();
+                  messenger.showSnackBar(SnackBar(content: Text(saved)));
+                  // Ruhiges Hilfsangebot auch nach dem Schließen.
+                  if (support && parent.mounted) {
+                    await showSupportDialog(parent);
+                  }
                 },
                 child: Text(context.l10n.commonSave),
               ),
@@ -168,4 +250,199 @@ class _CheckInSheetState extends State<CheckInSheet> {
       ),
     );
   }
+}
+
+class _EntryEditor extends StatelessWidget {
+  const _EntryEditor({required this.entry, required this.onChanged});
+
+  final _Entry entry;
+  final VoidCallback onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final e = entry;
+    final primary = e.measures.primary;
+    final secondary = e.measures.secondary;
+    // Vorschau inkl. Stärke, wie bisher („Schmerz · Hinterkopf (links) ·
+    // 5/10 mittel“).
+    final preview = primary == SymptomMeasure.intensity
+        ? e.description.copyWith(intensity: () => e.value)
+        : e.description;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        MeasureInput(
+          measure: primary,
+          value: e.value,
+          value2: e.value2,
+          onChanged: (v, v2) {
+            e
+              ..value = v
+              ..value2 = v2 ?? e.value2
+              ..touched = true;
+            onChanged();
+          },
+        ),
+        if (secondary != null) ...[
+          const SizedBox(height: 8),
+          if (e.secondary == null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () {
+                  e.secondary = secondary.initialValue;
+                  onChanged();
+                },
+                icon: const Icon(Icons.add),
+                label: Text(l10n.measureAdd(measureLabel(secondary, l10n))),
+              ),
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: MeasureInput(
+                    measure: secondary,
+                    value: e.secondary!,
+                    onChanged: (v, _) {
+                      e.secondary = v;
+                      onChanged();
+                    },
+                  ),
+                ),
+                IconButton(
+                  tooltip: l10n.measureRemove,
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    e.secondary = null;
+                    onChanged();
+                  },
+                ),
+              ],
+            ),
+        ],
+        if (primary == SymptomMeasure.mood) ...[
+          _Toggle(
+            icon: Icons.bolt_outlined,
+            label: l10n.moodExtras,
+            open: e.extrasOpen,
+            onPressed: () {
+              e.extrasOpen = !e.extrasOpen;
+              onChanged();
+            },
+          ),
+          if (e.extrasOpen)
+            MoodExtrasInput(
+              energy: e.energy,
+              sleepHours: e.sleepHours,
+              anxiety: e.anxiety,
+              onChanged: (energy, sleep, anxiety) {
+                e
+                  ..energy = energy
+                  ..sleepHours = sleep
+                  ..anxiety = anxiety;
+                onChanged();
+              },
+            ),
+        ],
+        Wrap(
+          children: [
+            _Toggle(
+              icon: Icons.tune,
+              label: l10n.checkInDetails,
+              open: e.detailsOpen,
+              onPressed: () {
+                e.detailsOpen = !e.detailsOpen;
+                onChanged();
+              },
+            ),
+            _Toggle(
+              icon: Icons.edit_note,
+              label: l10n.journalAdd,
+              open: e.journalOpen,
+              onPressed: () {
+                e.journalOpen = !e.journalOpen;
+                onChanged();
+              },
+            ),
+          ],
+        ),
+        if (e.detailsOpen)
+          SymptomDescriptionComposer(
+            value: preview,
+            onChanged: (v) {
+              e.description = v.copyWith(intensity: () => null);
+              onChanged();
+            },
+            showIntensity: false,
+          ),
+        if (e.journalOpen) ...[
+          const SizedBox(height: 4),
+          TextField(
+            key: ValueKey('journal-${e.symptom.id}'),
+            controller: e.journal,
+            minLines: 2,
+            maxLines: 6,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: InputDecoration(
+              hintText: l10n.journalHint,
+              border: const OutlineInputBorder(),
+            ),
+            onChanged: (_) => onChanged(),
+          ),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: [
+              for (final prompt in [
+                l10n.journalPromptHelped,
+                l10n.journalPromptBurden,
+                l10n.journalPromptGrateful,
+              ])
+                ActionChip(
+                  label: Text(prompt),
+                  onPressed: () {
+                    final text = e.journal.text.trimRight();
+                    e.journal.text = text.isEmpty
+                        ? '$prompt '
+                        : '$text\n$prompt ';
+                    onChanged();
+                  },
+                ),
+            ],
+          ),
+          Text(
+            l10n.journalPrivacy,
+            style: theme.textTheme.bodySmall?.copyWith(color: AppColors.muted),
+          ),
+        ],
+        if (e.needsSupport) ...[const SizedBox(height: 8), const SupportCard()],
+      ],
+    );
+  }
+}
+
+class _Toggle extends StatelessWidget {
+  const _Toggle({
+    required this.icon,
+    required this.label,
+    required this.open,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool open;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => TextButton.icon(
+    onPressed: onPressed,
+    icon: Icon(open ? Icons.expand_less : icon, size: 18),
+    label: Text(label),
+  );
 }

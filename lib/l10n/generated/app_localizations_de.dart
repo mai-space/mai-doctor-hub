@@ -1552,6 +1552,406 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get measureIntensity => 'Stärke 0–10';
+
+  @override
+  String get measureTemperature => 'Temperatur';
+
+  @override
+  String get measureCount => 'Anzahl';
+
+  @override
+  String get measureDuration => 'Dauer';
+
+  @override
+  String get measurePulse => 'Puls';
+
+  @override
+  String get measureBloodPressure => 'Blutdruck';
+
+  @override
+  String get measureSpo2 => 'Sauerstoffsättigung (SpO₂)';
+
+  @override
+  String get measureGlucose => 'Blutzucker';
+
+  @override
+  String get measureWeight => 'Gewicht';
+
+  @override
+  String get measureMood => 'Stimmung −5 bis +5';
+
+  @override
+  String get measureMoodShort => 'Stimmung';
+
+  @override
+  String get measureUnitPulse => '/min';
+
+  @override
+  String get measureTempNormal => 'normal';
+
+  @override
+  String get measureTempElevated => 'erhöht';
+
+  @override
+  String get measureTempFever => 'Fieber';
+
+  @override
+  String get measureTempHighFever => 'hohes Fieber';
+
+  @override
+  String get measureBpOptimal => 'optimal';
+
+  @override
+  String get measureBpNormal => 'normal';
+
+  @override
+  String get measureBpHighNormal => 'hoch-normal';
+
+  @override
+  String get measureBpGrade1 => 'Hypertonie Grad 1';
+
+  @override
+  String get measureBpGrade2 => 'Hypertonie Grad 2';
+
+  @override
+  String get measureBpGrade3 => 'Hypertonie Grad 3';
+
+  @override
+  String get measureSpo2Normal => 'normal';
+
+  @override
+  String get measureSpo2Low => 'leicht erniedrigt';
+
+  @override
+  String get measureSpo2Check => 'ärztlich abklären';
+
+  @override
+  String get measureSpo2Urgent => 'zeitnah ärztlich abklären';
+
+  @override
+  String get measureSpo2HintCheck =>
+      'Unter 92 %: bitte ärztlich abklären lassen, besonders bei Atemnot.';
+
+  @override
+  String get measureSpo2HintUrgent =>
+      'Unter 90 %: bitte zeitnah ärztlich abklären. Bei starker Atemnot, Verwirrtheit oder blauen Lippen den Notruf wählen.';
+
+  @override
+  String get measureGlucoseVeryLow => 'sehr niedrig';
+
+  @override
+  String get measureGlucoseLow => 'niedrig';
+
+  @override
+  String get measureGlucoseInRange => 'im Zielbereich';
+
+  @override
+  String get measureGlucoseHigh => 'erhöht';
+
+  @override
+  String get measureGlucoseVeryHigh => 'sehr hoch';
+
+  @override
+  String get measurePulseLow => 'niedrig';
+
+  @override
+  String get measurePulseNormal => 'normal (Ruhe)';
+
+  @override
+  String get measurePulseHigh => 'erhöht';
+
+  @override
+  String get moodM5 => 'schwer depressiv';
+
+  @override
+  String get moodM4 => 'stark gedrückt';
+
+  @override
+  String get moodM3 => 'deutlich gedrückt';
+
+  @override
+  String get moodM2 => 'gedrückt';
+
+  @override
+  String get moodM1 => 'leicht gedrückt';
+
+  @override
+  String get mood0 => 'ausgeglichen';
+
+  @override
+  String get moodP1 => 'leicht gehoben';
+
+  @override
+  String get moodP2 => 'gehoben';
+
+  @override
+  String get moodP3 => 'deutlich gehoben';
+
+  @override
+  String get moodP4 => 'stark gehoben';
+
+  @override
+  String get moodP5 => 'manisch';
+
+  @override
+  String get moodAnchor0 => 'Weder gedrückt noch aufgedreht';
+
+  @override
+  String get moodAnchorMild => 'Spürbar, Alltag aber gut machbar';
+
+  @override
+  String get moodAnchorModerate =>
+      'Alltag (Arbeit, Familie) nur mit deutlicher Mühe';
+
+  @override
+  String get moodAnchorSevere => 'Alltag kaum noch möglich';
+
+  @override
+  String get moodScaleLow => '−5 schwer depressiv';
+
+  @override
+  String get moodScaleHigh => '+5 manisch';
+
+  @override
+  String get moodExtras => 'Energie, Schlaf, Angst';
+
+  @override
+  String get moodEnergy => 'Energie';
+
+  @override
+  String get moodSleep => 'Schlaf (Stunden)';
+
+  @override
+  String get moodAnxiety => 'Angst/Anspannung';
+
+  @override
+  String moodEnergyValue(String value) {
+    return 'Energie $value/10';
+  }
+
+  @override
+  String moodSleepValue(String value) {
+    return 'Schlaf $value h';
+  }
+
+  @override
+  String moodAnxietyValue(String value) {
+    return 'Angst $value/10';
+  }
+
+  @override
+  String get measureHowTitle => 'Wie messen?';
+
+  @override
+  String get measureHowHint =>
+      'Vorschlag aus dem Namen – tippe, um es zu ändern.';
+
+  @override
+  String get measureSecondary => 'Zusätzlich erfassen';
+
+  @override
+  String get measureSecondaryNone => 'nichts weiter';
+
+  @override
+  String get symptomBlocksHint =>
+      'Tippe Bausteine an – daraus entsteht der Name. Du kannst ihn danach frei ändern.';
+
+  @override
+  String get symptomTitleRegenerate => 'Aus Bausteinen neu erzeugen';
+
+  @override
+  String get checkInDetails => 'Details ändern';
+
+  @override
+  String get checkInHintMeasure =>
+      'Erfasse den aktuellen Wert. Beschreibung und Ort kommen aus dem Symptom – „Details ändern“ passt sie für diesen Check-in an.';
+
+  @override
+  String get measureCountHint => 'Wie oft seit dem letzten Check-in?';
+
+  @override
+  String get measureDurationHint => 'Wie lange insgesamt?';
+
+  @override
+  String get measureBpSystolic => 'Systolisch';
+
+  @override
+  String get measureBpDiastolic => 'Diastolisch';
+
+  @override
+  String measureAdd(String measure) {
+    return '$measure ergänzen';
+  }
+
+  @override
+  String get measureRemove => 'Entfernen';
+
+  @override
+  String get measureDecrease => 'Weniger';
+
+  @override
+  String get measureIncrease => 'Mehr';
+
+  @override
+  String measureFeverLine(String value) {
+    return 'Fieber ab $value';
+  }
+
+  @override
+  String measureReferenceLine(String value) {
+    return 'Grenze $value';
+  }
+
+  @override
+  String measureChartSemantics(String measure, int count, String latest) {
+    return '$measure: $count Werte, zuletzt $latest';
+  }
+
+  @override
+  String measureStats(String average, String min, String max, String last) {
+    return 'Ø $average · min $min · max $max · zuletzt $last';
+  }
+
+  @override
+  String measureStatsCount(int count, String stats) {
+    return '$count Check-in(s) · $stats';
+  }
+
+  @override
+  String get measureTotalPerDay => 'Summe pro Tag';
+
+  @override
+  String heatmapCellMeasure(String date, String value) {
+    return '$date: $value';
+  }
+
+  @override
+  String heatmapSemanticsMeasure(String measure, int days) {
+    return 'Kalender ($measure): $days Tage mit Check-in';
+  }
+
+  @override
+  String get severityNone => 'unauffällig';
+
+  @override
+  String get severityMild => 'leicht';
+
+  @override
+  String get severityModerate => 'mittel';
+
+  @override
+  String get severitySevere => 'deutlich';
+
+  @override
+  String get severityMax => 'sehr deutlich';
+
+  @override
+  String heatmapMapTemperature(
+    String elevated,
+    String fever,
+    String high,
+    String max,
+  ) {
+    return 'Farbe nach Temperatur: erhöht ab $elevated, Fieber ab $fever, hohes Fieber ab $high, dunkelste Stufe ab $max.';
+  }
+
+  @override
+  String heatmapMapRelative(String max) {
+    return 'Farbe relativ zum höchsten Tageswert ($max).';
+  }
+
+  @override
+  String get heatmapMapBloodPressure =>
+      'Farbe nach ESC/ESH-Stufe: hoch-normal, Hypertonie Grad 1, 2, 3.';
+
+  @override
+  String get heatmapMapSpo2 =>
+      'Farbe nach Sättigung: unter 95 %, 92 %, 90 %, 85 % (niedrigster Wert des Tages).';
+
+  @override
+  String heatmapMapGlucose(String low, String high) {
+    return 'Farbe: außerhalb des Zielbereichs $low–$high; sehr niedrig am dunkelsten.';
+  }
+
+  @override
+  String get heatmapMapPulse => 'Farbe: Abstand vom Ruhepuls 60–100/min.';
+
+  @override
+  String get heatmapMapMood =>
+      'Farbe: Abstand von „ausgeglichen“ (0) – die Richtung zeigt das Stimmungsdiagramm.';
+
+  @override
+  String get heatmapMapWeight => 'Farbe: Tage mit Messung.';
+
+  @override
+  String get journalTitle => 'Tagebuch';
+
+  @override
+  String get journalAdd => 'Tagebuch-Eintrag';
+
+  @override
+  String get journalHint => 'Was beschäftigt dich? (optional)';
+
+  @override
+  String get journalPromptHelped => 'Was hat heute geholfen?';
+
+  @override
+  String get journalPromptBurden => 'Was hat mich belastet?';
+
+  @override
+  String get journalPromptGrateful => 'Wofür bin ich dankbar?';
+
+  @override
+  String get journalPrivacy =>
+      'Bleibt auf dem Gerät. Ins Arzt-PDF nur, wenn du es dort einschaltest.';
+
+  @override
+  String get journalEmpty => 'Noch keine Tagebuch-Einträge.';
+
+  @override
+  String get journalChartHint =>
+      'Punkte über dem Diagramm = Tagebuch-Eintrag. Antippen zum Lesen.';
+
+  @override
+  String journalContext(String date, String text) {
+    return 'Tagebuch $date: $text';
+  }
+
+  @override
+  String get summaryIncludeJournal => 'Tagebuch-Einträge einschließen';
+
+  @override
+  String get summaryIncludeJournalSubtitle =>
+      'Standardmäßig aus – persönliche Notizen bleiben privat.';
+
+  @override
+  String get unitsTitle => 'Einheiten';
+
+  @override
+  String get unitsIntro =>
+      'Gespeichert wird immer gleich – umgerechnet wird nur die Anzeige. Standard nach Region des Geräts.';
+
+  @override
+  String get unitsTemperature => 'Temperatur';
+
+  @override
+  String get unitsGlucose => 'Blutzucker';
+
+  @override
+  String get unitsWeight => 'Gewicht';
+
+  @override
+  String cycleReportWeightValue(String value, String date) {
+    return 'Gewicht zuletzt $value ($date)';
+  }
+
+  @override
+  String cycleChartWeightSemanticsValue(int count, String latest) {
+    return 'Gewicht, $count Messungen, zuletzt $latest';
+  }
+
+  @override
   String get mediaSectionTitle => 'Belege';
 
   @override
@@ -1644,6 +2044,207 @@ class AppLocalizationsDe extends AppLocalizations {
   String svcSummaryPdfEvidence(int photos, int videos, int audio) {
     return 'Belege: $photos Fotos, $videos Videos, $audio Sprachnotizen (in der App)';
   }
+
+  @override
+  String get psychTitle => 'Psyche';
+
+  @override
+  String get psychIntro =>
+      'Kurze, anerkannte Fragebögen zeigen, wie es dir über die Wochen geht. Das Ergebnis ist keine Diagnose – sprich mit deiner Ärztin oder deinem Arzt darüber.';
+
+  @override
+  String get psychSettingsSubtitle =>
+      'Stimmung, Angst und Tagebuch – mit PHQ-9 und GAD-7 als monatlichem Fragebogen.';
+
+  @override
+  String get psychQuestionnairesToggle =>
+      'Monatliche Fragebögen (PHQ-9, GAD-7)';
+
+  @override
+  String get psychQuestionnairesSubtitle =>
+      'Erinnerung 30 Tage nach dem letzten Bogen; Verlauf auf der Seite „Psyche“.';
+
+  @override
+  String get psychOpen => 'Psyche öffnen';
+
+  @override
+  String get psychAreaLink => 'Psyche: Fragebögen & Verlauf';
+
+  @override
+  String get psychPhq9Title => 'PHQ-9 (Depression)';
+
+  @override
+  String get psychGad7Title => 'GAD-7 (Angst)';
+
+  @override
+  String get psychQuestion =>
+      'Wie oft fühlten Sie sich im Verlauf der letzten 2 Wochen durch die folgenden Beschwerden beeinträchtigt?';
+
+  @override
+  String get psychPhq1 => 'Wenig Interesse oder Freude an Ihren Tätigkeiten';
+
+  @override
+  String get psychPhq2 =>
+      'Niedergeschlagenheit, Schwermut oder Hoffnungslosigkeit';
+
+  @override
+  String get psychPhq3 =>
+      'Schwierigkeiten ein- oder durchzuschlafen oder vermehrter Schlaf';
+
+  @override
+  String get psychPhq4 => 'Müdigkeit oder Gefühl, keine Energie zu haben';
+
+  @override
+  String get psychPhq5 =>
+      'Verminderter Appetit oder übermäßiges Bedürfnis zu essen';
+
+  @override
+  String get psychPhq6 =>
+      'Schlechte Meinung von sich selbst; Gefühl, ein Versager zu sein oder die Familie enttäuscht zu haben';
+
+  @override
+  String get psychPhq7 =>
+      'Schwierigkeiten, sich auf etwas zu konzentrieren, z. B. beim Zeitunglesen oder Fernsehen';
+
+  @override
+  String get psychPhq8 =>
+      'Waren Ihre Bewegungen oder Ihre Sprache so verlangsamt, dass es auch anderen auffallen würde? Oder waren Sie im Gegenteil „zappelig“ oder ruhelos und hatten dadurch einen stärkeren Bewegungsdrang als sonst?';
+
+  @override
+  String get psychPhq9 =>
+      'Gedanken, dass Sie lieber tot wären oder sich Leid zufügen möchten';
+
+  @override
+  String get psychGad1 => 'Nervosität, Ängstlichkeit oder Anspannung';
+
+  @override
+  String get psychGad2 =>
+      'Nicht in der Lage sein, Sorgen zu stoppen oder zu kontrollieren';
+
+  @override
+  String get psychGad3 =>
+      'Übermäßige Sorgen bezüglich verschiedener Angelegenheiten';
+
+  @override
+  String get psychGad4 => 'Schwierigkeiten zu entspannen';
+
+  @override
+  String get psychGad5 => 'Rastlosigkeit, so dass Stillsitzen schwer fällt';
+
+  @override
+  String get psychGad6 => 'Schnelle Verärgerung oder Gereiztheit';
+
+  @override
+  String get psychGad7 =>
+      'Gefühl der Angst, so als würde etwas Schlimmes passieren';
+
+  @override
+  String get psychAnswer0 => 'Überhaupt nicht';
+
+  @override
+  String get psychAnswer1 => 'An einzelnen Tagen';
+
+  @override
+  String get psychAnswer2 => 'An mehr als der Hälfte der Tage';
+
+  @override
+  String get psychAnswer3 => 'Beinahe jeden Tag';
+
+  @override
+  String get psychSeverityMinimal => 'minimal';
+
+  @override
+  String get psychSeverityMild => 'leicht';
+
+  @override
+  String get psychSeverityModerate => 'mittelgradig';
+
+  @override
+  String get psychSeverityModeratelySevere => 'ausgeprägt';
+
+  @override
+  String get psychSeveritySevere => 'schwer';
+
+  @override
+  String psychResultSummary(
+    String instrument,
+    int total,
+    int max,
+    String severity,
+  ) {
+    return '$instrument: $total von $max – $severity';
+  }
+
+  @override
+  String psychSave(int answered, int count) {
+    return 'Speichern ($answered/$count)';
+  }
+
+  @override
+  String psychSaved(String summary) {
+    return 'Gespeichert: $summary';
+  }
+
+  @override
+  String psychFill(String instrument) {
+    return '$instrument ausfüllen';
+  }
+
+  @override
+  String get psychTrend => 'Verlauf';
+
+  @override
+  String get psychNoResults => 'Noch keine Fragebögen ausgefüllt.';
+
+  @override
+  String get psychBands =>
+      'PHQ-9: 0–4 minimal · 5–9 leicht · 10–14 mittelgradig · 15–19 ausgeprägt · 20–27 schwer. GAD-7: 0–4 minimal · 5–9 leicht · 10–14 mittelgradig · 15–21 schwer.';
+
+  @override
+  String get psychSource =>
+      'PHQ-9 (Kroenke et al. 2001) und GAD-7 (Spitzer et al. 2006), deutsche Fassung PHQ-D (Löwe et al.). Frei verwendbar; kein Ersatz für eine ärztliche Diagnose.';
+
+  @override
+  String get psychSupportTitle => 'Du musst das nicht allein tragen';
+
+  @override
+  String get psychSupportText =>
+      'Wenn du gerade daran denkst, dir etwas anzutun, sprich mit jemandem. Diese Stellen sind rund um die Uhr für dich da – anonym und kostenlos:';
+
+  @override
+  String get psychSupportGeneric =>
+      'Wende dich an eine Krisen-Hotline in deinem Land oder an den örtlichen Notruf. Auch Ärztinnen, Ärzte und Menschen, denen du vertraust, helfen.';
+
+  @override
+  String psychSupportEmergency(String number) {
+    return 'Bei akuter Gefahr: Notruf $number';
+  }
+
+  @override
+  String get psychSupportPrivacy =>
+      'Dieser Hinweis erscheint nur auf deinem Gerät. Es wird nichts gesendet.';
+
+  @override
+  String psychSupportCall(String name, String number) {
+    return '$name: $number';
+  }
+
+  @override
+  String get psychTopic => 'Stimmung & Psyche';
+
+  @override
+  String get psychTopicDescription =>
+      'Check-ins zu psychischen Symptomen und monatliche Fragebögen';
+
+  @override
+  String get psychDiscreetTitle => 'Kurz innehalten';
+
+  @override
+  String get psychReminderTitle => 'Fragebogen zur Psyche';
+
+  @override
+  String get psychReminderBody =>
+      'Ein Monat ist um – zwei Minuten für PHQ-9 und GAD-7?';
 
   @override
   String get recordsTitle => 'Meine Akte';

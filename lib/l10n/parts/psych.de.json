@@ -1,0 +1,113 @@
+{
+  "psychTitle": "Psyche",
+  "psychIntro": "Kurze, anerkannte Fragebögen zeigen, wie es dir über die Wochen geht. Das Ergebnis ist keine Diagnose – sprich mit deiner Ärztin oder deinem Arzt darüber.",
+  "psychSettingsSubtitle": "Stimmung, Angst und Tagebuch – mit PHQ-9 und GAD-7 als monatlichem Fragebogen.",
+  "psychQuestionnairesToggle": "Monatliche Fragebögen (PHQ-9, GAD-7)",
+  "psychQuestionnairesSubtitle": "Erinnerung 30 Tage nach dem letzten Bogen; Verlauf auf der Seite „Psyche“.",
+  "psychOpen": "Psyche öffnen",
+  "psychAreaLink": "Psyche: Fragebögen & Verlauf",
+  "psychPhq9Title": "PHQ-9 (Depression)",
+  "psychGad7Title": "GAD-7 (Angst)",
+  "psychQuestion": "Wie oft fühlten Sie sich im Verlauf der letzten 2 Wochen durch die folgenden Beschwerden beeinträchtigt?",
+  "psychPhq1": "Wenig Interesse oder Freude an Ihren Tätigkeiten",
+  "psychPhq2": "Niedergeschlagenheit, Schwermut oder Hoffnungslosigkeit",
+  "psychPhq3": "Schwierigkeiten ein- oder durchzuschlafen oder vermehrter Schlaf",
+  "psychPhq4": "Müdigkeit oder Gefühl, keine Energie zu haben",
+  "psychPhq5": "Verminderter Appetit oder übermäßiges Bedürfnis zu essen",
+  "psychPhq6": "Schlechte Meinung von sich selbst; Gefühl, ein Versager zu sein oder die Familie enttäuscht zu haben",
+  "psychPhq7": "Schwierigkeiten, sich auf etwas zu konzentrieren, z. B. beim Zeitunglesen oder Fernsehen",
+  "psychPhq8": "Waren Ihre Bewegungen oder Ihre Sprache so verlangsamt, dass es auch anderen auffallen würde? Oder waren Sie im Gegenteil „zappelig“ oder ruhelos und hatten dadurch einen stärkeren Bewegungsdrang als sonst?",
+  "psychPhq9": "Gedanken, dass Sie lieber tot wären oder sich Leid zufügen möchten",
+  "psychGad1": "Nervosität, Ängstlichkeit oder Anspannung",
+  "psychGad2": "Nicht in der Lage sein, Sorgen zu stoppen oder zu kontrollieren",
+  "psychGad3": "Übermäßige Sorgen bezüglich verschiedener Angelegenheiten",
+  "psychGad4": "Schwierigkeiten zu entspannen",
+  "psychGad5": "Rastlosigkeit, so dass Stillsitzen schwer fällt",
+  "psychGad6": "Schnelle Verärgerung oder Gereiztheit",
+  "psychGad7": "Gefühl der Angst, so als würde etwas Schlimmes passieren",
+  "psychAnswer0": "Überhaupt nicht",
+  "psychAnswer1": "An einzelnen Tagen",
+  "psychAnswer2": "An mehr als der Hälfte der Tage",
+  "psychAnswer3": "Beinahe jeden Tag",
+  "psychSeverityMinimal": "minimal",
+  "psychSeverityMild": "leicht",
+  "psychSeverityModerate": "mittelgradig",
+  "psychSeverityModeratelySevere": "ausgeprägt",
+  "psychSeveritySevere": "schwer",
+  "psychResultSummary": "{instrument}: {total} von {max} – {severity}",
+  "@psychResultSummary": {
+    "placeholders": {
+      "instrument": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "severity": {
+        "type": "String"
+      }
+    }
+  },
+  "psychSave": "Speichern ({answered}/{count})",
+  "@psychSave": {
+    "placeholders": {
+      "answered": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "psychSaved": "Gespeichert: {summary}",
+  "@psychSaved": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "psychFill": "{instrument} ausfüllen",
+  "@psychFill": {
+    "placeholders": {
+      "instrument": {
+        "type": "String"
+      }
+    }
+  },
+  "psychTrend": "Verlauf",
+  "psychNoResults": "Noch keine Fragebögen ausgefüllt.",
+  "psychBands": "PHQ-9: 0–4 minimal · 5–9 leicht · 10–14 mittelgradig · 15–19 ausgeprägt · 20–27 schwer. GAD-7: 0–4 minimal · 5–9 leicht · 10–14 mittelgradig · 15–21 schwer.",
+  "psychSource": "PHQ-9 (Kroenke et al. 2001) und GAD-7 (Spitzer et al. 2006), deutsche Fassung PHQ-D (Löwe et al.). Frei verwendbar; kein Ersatz für eine ärztliche Diagnose.",
+  "psychSupportTitle": "Du musst das nicht allein tragen",
+  "psychSupportText": "Wenn du gerade daran denkst, dir etwas anzutun, sprich mit jemandem. Diese Stellen sind rund um die Uhr für dich da – anonym und kostenlos:",
+  "psychSupportGeneric": "Wende dich an eine Krisen-Hotline in deinem Land oder an den örtlichen Notruf. Auch Ärztinnen, Ärzte und Menschen, denen du vertraust, helfen.",
+  "psychSupportEmergency": "Bei akuter Gefahr: Notruf {number}",
+  "@psychSupportEmergency": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "psychSupportPrivacy": "Dieser Hinweis erscheint nur auf deinem Gerät. Es wird nichts gesendet.",
+  "psychSupportCall": "{name}: {number}",
+  "@psychSupportCall": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "psychTopic": "Stimmung & Psyche",
+  "psychTopicDescription": "Check-ins zu psychischen Symptomen und monatliche Fragebögen",
+  "psychDiscreetTitle": "Kurz innehalten",
+  "psychReminderTitle": "Fragebogen zur Psyche",
+  "psychReminderBody": "Ein Monat ist um – zwei Minuten für PHQ-9 und GAD-7?"
+}

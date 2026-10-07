@@ -1545,6 +1545,406 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get measureIntensity => 'Intensity 0–10';
+
+  @override
+  String get measureTemperature => 'Temperature';
+
+  @override
+  String get measureCount => 'Count';
+
+  @override
+  String get measureDuration => 'Duration';
+
+  @override
+  String get measurePulse => 'Pulse';
+
+  @override
+  String get measureBloodPressure => 'Blood pressure';
+
+  @override
+  String get measureSpo2 => 'Oxygen saturation (SpO₂)';
+
+  @override
+  String get measureGlucose => 'Blood glucose';
+
+  @override
+  String get measureWeight => 'Weight';
+
+  @override
+  String get measureMood => 'Mood −5 to +5';
+
+  @override
+  String get measureMoodShort => 'Mood';
+
+  @override
+  String get measureUnitPulse => 'bpm';
+
+  @override
+  String get measureTempNormal => 'normal';
+
+  @override
+  String get measureTempElevated => 'raised';
+
+  @override
+  String get measureTempFever => 'fever';
+
+  @override
+  String get measureTempHighFever => 'high fever';
+
+  @override
+  String get measureBpOptimal => 'optimal';
+
+  @override
+  String get measureBpNormal => 'normal';
+
+  @override
+  String get measureBpHighNormal => 'high-normal';
+
+  @override
+  String get measureBpGrade1 => 'grade 1 hypertension';
+
+  @override
+  String get measureBpGrade2 => 'grade 2 hypertension';
+
+  @override
+  String get measureBpGrade3 => 'grade 3 hypertension';
+
+  @override
+  String get measureSpo2Normal => 'normal';
+
+  @override
+  String get measureSpo2Low => 'slightly low';
+
+  @override
+  String get measureSpo2Check => 'get it checked';
+
+  @override
+  String get measureSpo2Urgent => 'seek medical advice promptly';
+
+  @override
+  String get measureSpo2HintCheck =>
+      'Below 92%: please get this checked by a doctor, especially if you are short of breath.';
+
+  @override
+  String get measureSpo2HintUrgent =>
+      'Below 90%: please seek medical advice promptly. Call emergency services if you are very short of breath, confused or your lips turn blue.';
+
+  @override
+  String get measureGlucoseVeryLow => 'very low';
+
+  @override
+  String get measureGlucoseLow => 'low';
+
+  @override
+  String get measureGlucoseInRange => 'in range';
+
+  @override
+  String get measureGlucoseHigh => 'high';
+
+  @override
+  String get measureGlucoseVeryHigh => 'very high';
+
+  @override
+  String get measurePulseLow => 'low';
+
+  @override
+  String get measurePulseNormal => 'normal (at rest)';
+
+  @override
+  String get measurePulseHigh => 'raised';
+
+  @override
+  String get moodM5 => 'severely depressed';
+
+  @override
+  String get moodM4 => 'very low';
+
+  @override
+  String get moodM3 => 'clearly low';
+
+  @override
+  String get moodM2 => 'low';
+
+  @override
+  String get moodM1 => 'slightly low';
+
+  @override
+  String get mood0 => 'balanced';
+
+  @override
+  String get moodP1 => 'slightly elevated';
+
+  @override
+  String get moodP2 => 'elevated';
+
+  @override
+  String get moodP3 => 'clearly elevated';
+
+  @override
+  String get moodP4 => 'very elevated';
+
+  @override
+  String get moodP5 => 'manic';
+
+  @override
+  String get moodAnchor0 => 'Neither low nor high';
+
+  @override
+  String get moodAnchorMild => 'Noticeable, but daily life goes fine';
+
+  @override
+  String get moodAnchorModerate =>
+      'Daily life (work, family) only with clear effort';
+
+  @override
+  String get moodAnchorSevere => 'Daily life hardly possible';
+
+  @override
+  String get moodScaleLow => '−5 severely depressed';
+
+  @override
+  String get moodScaleHigh => '+5 manic';
+
+  @override
+  String get moodExtras => 'Energy, sleep, anxiety';
+
+  @override
+  String get moodEnergy => 'Energy';
+
+  @override
+  String get moodSleep => 'Sleep (hours)';
+
+  @override
+  String get moodAnxiety => 'Anxiety/tension';
+
+  @override
+  String moodEnergyValue(String value) {
+    return 'Energy $value/10';
+  }
+
+  @override
+  String moodSleepValue(String value) {
+    return 'Sleep $value h';
+  }
+
+  @override
+  String moodAnxietyValue(String value) {
+    return 'Anxiety $value/10';
+  }
+
+  @override
+  String get measureHowTitle => 'How to measure?';
+
+  @override
+  String get measureHowHint => 'Suggested from the name – tap to change.';
+
+  @override
+  String get measureSecondary => 'Also record';
+
+  @override
+  String get measureSecondaryNone => 'nothing else';
+
+  @override
+  String get symptomBlocksHint =>
+      'Tap building blocks to compose the name. You can still edit it freely.';
+
+  @override
+  String get symptomTitleRegenerate => 'Regenerate from building blocks';
+
+  @override
+  String get checkInDetails => 'Change details';
+
+  @override
+  String get checkInHintMeasure =>
+      'Record the current value. Description and location come from the symptom – “Change details” adjusts them for this check-in.';
+
+  @override
+  String get measureCountHint => 'How many times since the last check-in?';
+
+  @override
+  String get measureDurationHint => 'How long in total?';
+
+  @override
+  String get measureBpSystolic => 'Systolic';
+
+  @override
+  String get measureBpDiastolic => 'Diastolic';
+
+  @override
+  String measureAdd(String measure) {
+    return 'Add $measure';
+  }
+
+  @override
+  String get measureRemove => 'Remove';
+
+  @override
+  String get measureDecrease => 'Less';
+
+  @override
+  String get measureIncrease => 'More';
+
+  @override
+  String measureFeverLine(String value) {
+    return 'Fever from $value';
+  }
+
+  @override
+  String measureReferenceLine(String value) {
+    return 'Limit $value';
+  }
+
+  @override
+  String measureChartSemantics(String measure, int count, String latest) {
+    return '$measure: $count values, latest $latest';
+  }
+
+  @override
+  String measureStats(String average, String min, String max, String last) {
+    return 'avg $average · min $min · max $max · latest $last';
+  }
+
+  @override
+  String measureStatsCount(int count, String stats) {
+    return '$count check-in(s) · $stats';
+  }
+
+  @override
+  String get measureTotalPerDay => 'Total per day';
+
+  @override
+  String heatmapCellMeasure(String date, String value) {
+    return '$date: $value';
+  }
+
+  @override
+  String heatmapSemanticsMeasure(String measure, int days) {
+    return 'Calendar ($measure): $days days with check-ins';
+  }
+
+  @override
+  String get severityNone => 'unremarkable';
+
+  @override
+  String get severityMild => 'mild';
+
+  @override
+  String get severityModerate => 'moderate';
+
+  @override
+  String get severitySevere => 'marked';
+
+  @override
+  String get severityMax => 'very marked';
+
+  @override
+  String heatmapMapTemperature(
+    String elevated,
+    String fever,
+    String high,
+    String max,
+  ) {
+    return 'Colour by temperature: raised from $elevated, fever from $fever, high fever from $high, darkest from $max.';
+  }
+
+  @override
+  String heatmapMapRelative(String max) {
+    return 'Colour relative to the highest daily value ($max).';
+  }
+
+  @override
+  String get heatmapMapBloodPressure =>
+      'Colour by ESC/ESH category: high-normal, grade 1, 2, 3 hypertension.';
+
+  @override
+  String get heatmapMapSpo2 =>
+      'Colour by saturation: below 95%, 92%, 90%, 85% (lowest value of the day).';
+
+  @override
+  String heatmapMapGlucose(String low, String high) {
+    return 'Colour: outside the target range $low–$high; very low is darkest.';
+  }
+
+  @override
+  String get heatmapMapPulse =>
+      'Colour: distance from the resting pulse range 60–100 bpm.';
+
+  @override
+  String get heatmapMapMood =>
+      'Colour: distance from “balanced” (0) – the mood chart shows the direction.';
+
+  @override
+  String get heatmapMapWeight => 'Colour: days with a measurement.';
+
+  @override
+  String get journalTitle => 'Journal';
+
+  @override
+  String get journalAdd => 'Journal entry';
+
+  @override
+  String get journalHint => 'What is on your mind? (optional)';
+
+  @override
+  String get journalPromptHelped => 'What helped today?';
+
+  @override
+  String get journalPromptBurden => 'What weighed on me?';
+
+  @override
+  String get journalPromptGrateful => 'What am I grateful for?';
+
+  @override
+  String get journalPrivacy =>
+      'Stays on your device. Included in the doctor PDF only if you switch it on there.';
+
+  @override
+  String get journalEmpty => 'No journal entries yet.';
+
+  @override
+  String get journalChartHint =>
+      'Dots above the chart = journal entry. Tap to read.';
+
+  @override
+  String journalContext(String date, String text) {
+    return 'Journal $date: $text';
+  }
+
+  @override
+  String get summaryIncludeJournal => 'Include journal entries';
+
+  @override
+  String get summaryIncludeJournalSubtitle =>
+      'Off by default – personal notes stay private.';
+
+  @override
+  String get unitsTitle => 'Units';
+
+  @override
+  String get unitsIntro =>
+      'Values are always stored the same way – only the display is converted. Default by device region.';
+
+  @override
+  String get unitsTemperature => 'Temperature';
+
+  @override
+  String get unitsGlucose => 'Blood glucose';
+
+  @override
+  String get unitsWeight => 'Weight';
+
+  @override
+  String cycleReportWeightValue(String value, String date) {
+    return 'Latest weight $value ($date)';
+  }
+
+  @override
+  String cycleChartWeightSemanticsValue(int count, String latest) {
+    return 'Weight, $count readings, latest $latest';
+  }
+
+  @override
   String get mediaSectionTitle => 'Evidence';
 
   @override
@@ -1637,6 +2037,202 @@ class AppLocalizationsEn extends AppLocalizations {
   String svcSummaryPdfEvidence(int photos, int videos, int audio) {
     return 'Evidence: $photos photos, $videos videos, $audio voice notes (in the app)';
   }
+
+  @override
+  String get psychTitle => 'Mental health';
+
+  @override
+  String get psychIntro =>
+      'Short, well-established questionnaires show how you have been over the weeks. The result is not a diagnosis – talk to your doctor about it.';
+
+  @override
+  String get psychSettingsSubtitle =>
+      'Mood, anxiety and journal – with PHQ-9 and GAD-7 as a monthly questionnaire.';
+
+  @override
+  String get psychQuestionnairesToggle =>
+      'Monthly questionnaires (PHQ-9, GAD-7)';
+
+  @override
+  String get psychQuestionnairesSubtitle =>
+      'Reminder 30 days after the last one; trend on the “Mental health” page.';
+
+  @override
+  String get psychOpen => 'Open mental health';
+
+  @override
+  String get psychAreaLink => 'Mental health: questionnaires & trend';
+
+  @override
+  String get psychPhq9Title => 'PHQ-9 (depression)';
+
+  @override
+  String get psychGad7Title => 'GAD-7 (anxiety)';
+
+  @override
+  String get psychQuestion =>
+      'Over the last 2 weeks, how often have you been bothered by any of the following problems?';
+
+  @override
+  String get psychPhq1 => 'Little interest or pleasure in doing things';
+
+  @override
+  String get psychPhq2 => 'Feeling down, depressed, or hopeless';
+
+  @override
+  String get psychPhq3 =>
+      'Trouble falling or staying asleep, or sleeping too much';
+
+  @override
+  String get psychPhq4 => 'Feeling tired or having little energy';
+
+  @override
+  String get psychPhq5 => 'Poor appetite or overeating';
+
+  @override
+  String get psychPhq6 =>
+      'Feeling bad about yourself — or that you are a failure or have let yourself or your family down';
+
+  @override
+  String get psychPhq7 =>
+      'Trouble concentrating on things, such as reading the newspaper or watching television';
+
+  @override
+  String get psychPhq8 =>
+      'Moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless that you have been moving around a lot more than usual';
+
+  @override
+  String get psychPhq9 =>
+      'Thoughts that you would be better off dead or of hurting yourself in some way';
+
+  @override
+  String get psychGad1 => 'Feeling nervous, anxious or on edge';
+
+  @override
+  String get psychGad2 => 'Not being able to stop or control worrying';
+
+  @override
+  String get psychGad3 => 'Worrying too much about different things';
+
+  @override
+  String get psychGad4 => 'Trouble relaxing';
+
+  @override
+  String get psychGad5 => 'Being so restless that it is hard to sit still';
+
+  @override
+  String get psychGad6 => 'Becoming easily annoyed or irritable';
+
+  @override
+  String get psychGad7 => 'Feeling afraid as if something awful might happen';
+
+  @override
+  String get psychAnswer0 => 'Not at all';
+
+  @override
+  String get psychAnswer1 => 'Several days';
+
+  @override
+  String get psychAnswer2 => 'More than half the days';
+
+  @override
+  String get psychAnswer3 => 'Nearly every day';
+
+  @override
+  String get psychSeverityMinimal => 'minimal';
+
+  @override
+  String get psychSeverityMild => 'mild';
+
+  @override
+  String get psychSeverityModerate => 'moderate';
+
+  @override
+  String get psychSeverityModeratelySevere => 'moderately severe';
+
+  @override
+  String get psychSeveritySevere => 'severe';
+
+  @override
+  String psychResultSummary(
+    String instrument,
+    int total,
+    int max,
+    String severity,
+  ) {
+    return '$instrument: $total of $max – $severity';
+  }
+
+  @override
+  String psychSave(int answered, int count) {
+    return 'Save ($answered/$count)';
+  }
+
+  @override
+  String psychSaved(String summary) {
+    return 'Saved: $summary';
+  }
+
+  @override
+  String psychFill(String instrument) {
+    return 'Fill in $instrument';
+  }
+
+  @override
+  String get psychTrend => 'Trend';
+
+  @override
+  String get psychNoResults => 'No questionnaires filled in yet.';
+
+  @override
+  String get psychBands =>
+      'PHQ-9: 0–4 minimal · 5–9 mild · 10–14 moderate · 15–19 moderately severe · 20–27 severe. GAD-7: 0–4 minimal · 5–9 mild · 10–14 moderate · 15–21 severe.';
+
+  @override
+  String get psychSource =>
+      'PHQ-9 (Kroenke et al. 2001) and GAD-7 (Spitzer et al. 2006). Free to use; not a substitute for a medical diagnosis.';
+
+  @override
+  String get psychSupportTitle => 'You don’t have to carry this alone';
+
+  @override
+  String get psychSupportText =>
+      'If you are thinking about hurting yourself, please talk to someone. These services are there for you around the clock:';
+
+  @override
+  String get psychSupportGeneric =>
+      'Please contact a crisis line in your country or your local emergency services. Doctors and people you trust can help, too.';
+
+  @override
+  String psychSupportEmergency(String number) {
+    return 'In immediate danger: call $number';
+  }
+
+  @override
+  String get psychSupportPrivacy =>
+      'This note only appears on your device. Nothing is sent.';
+
+  @override
+  String psychSupportCall(String name, String number) {
+    return '$name: $number';
+  }
+
+  @override
+  String get psychTopic => 'Mood & mental health';
+
+  @override
+  String get psychTopicDescription =>
+      'Check-ins for mental health symptoms and monthly questionnaires';
+
+  @override
+  String get psychDiscreetTitle => 'A moment for you';
+
+  @override
+  String get psychReminderTitle => 'Mental health questionnaire';
+
+  @override
+  String get psychReminderBody =>
+      'A month has passed – two minutes for PHQ-9 and GAD-7?';
 
   @override
   String get recordsTitle => 'My records';

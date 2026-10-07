@@ -184,6 +184,102 @@ void main() {
     await db.close();
   });
 
+  test('migrates v14 → v15: measures, journal, units, psych table', () async {
+    // Echtes v14-Schema (Stand des MCP-Fixtures vor v15).
+    final raw = sqlite3.openInMemory();
+    final sql = File('test/migrations/v14.sql').readAsStringSync();
+    for (final statement in sql.split('---')) {
+      final body = statement
+          .split('\n')
+          .where((l) => !l.startsWith('--'))
+          .join('\n')
+          .trim();
+      if (body.isNotEmpty) raw.execute(body);
+    }
+    raw
+      ..execute(
+        'INSERT INTO app_settings (id, onboarding_completed, cycle_tracking) '
+        'VALUES (1, 1, 1)',
+      )
+      ..execute(
+        'INSERT INTO symptoms (id, label, body_region, check_in_cadence, '
+        "created_at, updated_at, sensation) VALUES ('s1', 'Kopfschmerz', "
+        "'Stirn', 0, 0, 0, 'Schmerz')",
+      )
+      ..execute(
+        'INSERT INTO symptom_observations (id, symptom_id, recorded_at, kind, '
+        "value_number, note) VALUES ('o1', 's1', 1700000000, 0, 6, 'alt')",
+      )
+      ..execute('PRAGMA user_version = 14');
+    final db = AppDatabase(NativeDatabase.opened(raw));
+
+    final settings = await db.select(db.appSettings).getSingle();
+    expect(settings.cycleTracking, isTrue);
+    expect(settings.temperatureUnit, isNull, reason: 'Standard nach Region');
+    expect(settings.glucoseUnit, isNull);
+    expect(settings.weightUnit, isNull);
+    expect(settings.psychQuestionnaires, isFalse);
+
+    // Alte Symptome und Check-ins bleiben Stärke 0–10.
+    final symptom = await db.select(db.symptoms).getSingle();
+    expect(symptom.measure, isNull);
+    expect(symptom.measure2, isNull);
+    final old = await db.select(db.symptomObservations).getSingle();
+    expect(old.kind, ObservationKind.scale_1_10);
+    expect(old.valueNumber, 6);
+    expect(old.note, 'alt');
+    expect(old.measure, isNull);
+    expect(old.journal, isNull);
+
+    // Neue Spalten und Tabelle sind beschreibbar.
+    await db
+        .into(db.symptomObservations)
+        .insert(
+          SymptomObservationsCompanion.insert(
+            id: 'o2',
+            symptomId: 's1',
+            recordedAt: DateTime(2026, 10, 7),
+            kind: ObservationKind.measurement,
+            valueNumber: const Value(38.4),
+            measure: const Value('temperature'),
+            measure2: const Value('pulse'),
+            secondaryValue: const Value(96),
+            valueNumber2: const Value(null),
+            energy: const Value(4),
+            sleepHours: const Value(6.5),
+            anxiety: const Value(2),
+            journal: const Value('Tagebuch'),
+          ),
+        );
+    final o2 = await (db.select(
+      db.symptomObservations,
+    )..where((t) => t.id.equals('o2'))).getSingle();
+    expect(o2.kind, ObservationKind.measurement);
+    expect((o2.measure, o2.secondaryValue, o2.journal), (
+      'temperature',
+      96.0,
+      'Tagebuch',
+    ));
+    await (db.update(db.symptoms)..where((t) => t.id.equals('s1'))).write(
+      const SymptomsCompanion(measure: Value('temperature')),
+    );
+    await db
+        .into(db.psychAssessments)
+        .insert(
+          PsychAssessmentsCompanion.insert(
+            id: 'p1',
+            recordedAt: DateTime(2026, 10, 7),
+            instrument: 'phq9',
+            scores: '0,1,2,3,0,1,2,3,0',
+          ),
+        );
+    expect(await db.select(db.psychAssessments).get(), hasLength(1));
+    final version = await db.customSelect('PRAGMA user_version').getSingle();
+    expect(version.read<int>('user_version'), db.schemaVersion);
+    expect(db.schemaVersion, 15);
+    await db.close();
+  });
+
   test('fresh database has settings row and two default reminders', () async {
     final db = AppDatabase(NativeDatabase.memory());
     final settings = await db.select(db.appSettings).getSingle();

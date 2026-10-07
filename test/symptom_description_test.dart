@@ -351,6 +351,11 @@ void main() {
     await tester.tap(find.text('open'));
     await settle();
 
+    // v15: Beschreibung steckt hinter „Details ändern“ (Messwert zuerst).
+    expect(find.byTooltip('Charakter'), findsNothing);
+    await tester.tap(find.text('Details ändern'));
+    await settle();
+
     // Vorbelegt aus dem Symptom.
     expect(
       find.text('Schmerz · Hinterkopf (links) · 5/10 mittel'),

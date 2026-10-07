@@ -1331,6 +1331,28 @@ class $SymptomsTable extends Symptoms with TableInfo<$SymptomsTable, Symptom> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _measureMeta = const VerificationMeta(
+    'measure',
+  );
+  @override
+  late final GeneratedColumn<String> measure = GeneratedColumn<String>(
+    'measure',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _measure2Meta = const VerificationMeta(
+    'measure2',
+  );
+  @override
+  late final GeneratedColumn<String> measure2 = GeneratedColumn<String>(
+    'measure2',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     archivedAt,
@@ -1346,6 +1368,8 @@ class $SymptomsTable extends Symptoms with TableInfo<$SymptomsTable, Symptom> {
     sensation,
     quality,
     side,
+    measure,
+    measure2,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1442,6 +1466,18 @@ class $SymptomsTable extends Symptoms with TableInfo<$SymptomsTable, Symptom> {
         side.isAcceptableOrUnknown(data['side']!, _sideMeta),
       );
     }
+    if (data.containsKey('measure')) {
+      context.handle(
+        _measureMeta,
+        measure.isAcceptableOrUnknown(data['measure']!, _measureMeta),
+      );
+    }
+    if (data.containsKey('measure2')) {
+      context.handle(
+        _measure2Meta,
+        measure2.isAcceptableOrUnknown(data['measure2']!, _measure2Meta),
+      );
+    }
     return context;
   }
 
@@ -1505,6 +1541,14 @@ class $SymptomsTable extends Symptoms with TableInfo<$SymptomsTable, Symptom> {
         DriftSqlType.string,
         data['${effectivePrefix}side'],
       ),
+      measure: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}measure'],
+      ),
+      measure2: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}measure2'],
+      ),
     );
   }
 
@@ -1538,6 +1582,8 @@ class Symptom extends DataClass implements Insertable<Symptom> {
 
   /// Seite als Code: `left`, `right`, `both`, `center` (siehe [BodySide]).
   final String? side;
+  final String? measure;
+  final String? measure2;
   const Symptom({
     this.archivedAt,
     required this.id,
@@ -1552,6 +1598,8 @@ class Symptom extends DataClass implements Insertable<Symptom> {
     this.sensation,
     this.quality,
     this.side,
+    this.measure,
+    this.measure2,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1587,6 +1635,12 @@ class Symptom extends DataClass implements Insertable<Symptom> {
     if (!nullToAbsent || side != null) {
       map['side'] = Variable<String>(side);
     }
+    if (!nullToAbsent || measure != null) {
+      map['measure'] = Variable<String>(measure);
+    }
+    if (!nullToAbsent || measure2 != null) {
+      map['measure2'] = Variable<String>(measure2);
+    }
     return map;
   }
 
@@ -1617,6 +1671,12 @@ class Symptom extends DataClass implements Insertable<Symptom> {
           ? const Value.absent()
           : Value(quality),
       side: side == null && nullToAbsent ? const Value.absent() : Value(side),
+      measure: measure == null && nullToAbsent
+          ? const Value.absent()
+          : Value(measure),
+      measure2: measure2 == null && nullToAbsent
+          ? const Value.absent()
+          : Value(measure2),
     );
   }
 
@@ -1641,6 +1701,8 @@ class Symptom extends DataClass implements Insertable<Symptom> {
       sensation: serializer.fromJson<String?>(json['sensation']),
       quality: serializer.fromJson<String?>(json['quality']),
       side: serializer.fromJson<String?>(json['side']),
+      measure: serializer.fromJson<String?>(json['measure']),
+      measure2: serializer.fromJson<String?>(json['measure2']),
     );
   }
   @override
@@ -1662,6 +1724,8 @@ class Symptom extends DataClass implements Insertable<Symptom> {
       'sensation': serializer.toJson<String?>(sensation),
       'quality': serializer.toJson<String?>(quality),
       'side': serializer.toJson<String?>(side),
+      'measure': serializer.toJson<String?>(measure),
+      'measure2': serializer.toJson<String?>(measure2),
     };
   }
 
@@ -1679,6 +1743,8 @@ class Symptom extends DataClass implements Insertable<Symptom> {
     Value<String?> sensation = const Value.absent(),
     Value<String?> quality = const Value.absent(),
     Value<String?> side = const Value.absent(),
+    Value<String?> measure = const Value.absent(),
+    Value<String?> measure2 = const Value.absent(),
   }) => Symptom(
     archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     id: id ?? this.id,
@@ -1693,6 +1759,8 @@ class Symptom extends DataClass implements Insertable<Symptom> {
     sensation: sensation.present ? sensation.value : this.sensation,
     quality: quality.present ? quality.value : this.quality,
     side: side.present ? side.value : this.side,
+    measure: measure.present ? measure.value : this.measure,
+    measure2: measure2.present ? measure2.value : this.measure2,
   );
   Symptom copyWithCompanion(SymptomsCompanion data) {
     return Symptom(
@@ -1719,6 +1787,8 @@ class Symptom extends DataClass implements Insertable<Symptom> {
       sensation: data.sensation.present ? data.sensation.value : this.sensation,
       quality: data.quality.present ? data.quality.value : this.quality,
       side: data.side.present ? data.side.value : this.side,
+      measure: data.measure.present ? data.measure.value : this.measure,
+      measure2: data.measure2.present ? data.measure2.value : this.measure2,
     );
   }
 
@@ -1737,7 +1807,9 @@ class Symptom extends DataClass implements Insertable<Symptom> {
           ..write('updatedAt: $updatedAt, ')
           ..write('sensation: $sensation, ')
           ..write('quality: $quality, ')
-          ..write('side: $side')
+          ..write('side: $side, ')
+          ..write('measure: $measure, ')
+          ..write('measure2: $measure2')
           ..write(')'))
         .toString();
   }
@@ -1757,6 +1829,8 @@ class Symptom extends DataClass implements Insertable<Symptom> {
     sensation,
     quality,
     side,
+    measure,
+    measure2,
   );
   @override
   bool operator ==(Object other) =>
@@ -1774,7 +1848,9 @@ class Symptom extends DataClass implements Insertable<Symptom> {
           other.updatedAt == this.updatedAt &&
           other.sensation == this.sensation &&
           other.quality == this.quality &&
-          other.side == this.side);
+          other.side == this.side &&
+          other.measure == this.measure &&
+          other.measure2 == this.measure2);
 }
 
 class SymptomsCompanion extends UpdateCompanion<Symptom> {
@@ -1791,6 +1867,8 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
   final Value<String?> sensation;
   final Value<String?> quality;
   final Value<String?> side;
+  final Value<String?> measure;
+  final Value<String?> measure2;
   final Value<int> rowid;
   const SymptomsCompanion({
     this.archivedAt = const Value.absent(),
@@ -1806,6 +1884,8 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
     this.sensation = const Value.absent(),
     this.quality = const Value.absent(),
     this.side = const Value.absent(),
+    this.measure = const Value.absent(),
+    this.measure2 = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SymptomsCompanion.insert({
@@ -1822,6 +1902,8 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
     this.sensation = const Value.absent(),
     this.quality = const Value.absent(),
     this.side = const Value.absent(),
+    this.measure = const Value.absent(),
+    this.measure2 = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        label = Value(label),
@@ -1842,6 +1924,8 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
     Expression<String>? sensation,
     Expression<String>? quality,
     Expression<String>? side,
+    Expression<String>? measure,
+    Expression<String>? measure2,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1858,6 +1942,8 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
       if (sensation != null) 'sensation': sensation,
       if (quality != null) 'quality': quality,
       if (side != null) 'side': side,
+      if (measure != null) 'measure': measure,
+      if (measure2 != null) 'measure2': measure2,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1876,6 +1962,8 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
     Value<String?>? sensation,
     Value<String?>? quality,
     Value<String?>? side,
+    Value<String?>? measure,
+    Value<String?>? measure2,
     Value<int>? rowid,
   }) {
     return SymptomsCompanion(
@@ -1892,6 +1980,8 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
       sensation: sensation ?? this.sensation,
       quality: quality ?? this.quality,
       side: side ?? this.side,
+      measure: measure ?? this.measure,
+      measure2: measure2 ?? this.measure2,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1940,6 +2030,12 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
     if (side.present) {
       map['side'] = Variable<String>(side.value);
     }
+    if (measure.present) {
+      map['measure'] = Variable<String>(measure.value);
+    }
+    if (measure2.present) {
+      map['measure2'] = Variable<String>(measure2.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1962,6 +2058,8 @@ class SymptomsCompanion extends UpdateCompanion<Symptom> {
           ..write('sensation: $sensation, ')
           ..write('quality: $quality, ')
           ..write('side: $side, ')
+          ..write('measure: $measure, ')
+          ..write('measure2: $measure2, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2123,6 +2221,92 @@ class $SymptomObservationsTable extends SymptomObservations
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _measureMeta = const VerificationMeta(
+    'measure',
+  );
+  @override
+  late final GeneratedColumn<String> measure = GeneratedColumn<String>(
+    'measure',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _valueNumber2Meta = const VerificationMeta(
+    'valueNumber2',
+  );
+  @override
+  late final GeneratedColumn<double> valueNumber2 = GeneratedColumn<double>(
+    'value_number2',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _measure2Meta = const VerificationMeta(
+    'measure2',
+  );
+  @override
+  late final GeneratedColumn<String> measure2 = GeneratedColumn<String>(
+    'measure2',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _secondaryValueMeta = const VerificationMeta(
+    'secondaryValue',
+  );
+  @override
+  late final GeneratedColumn<double> secondaryValue = GeneratedColumn<double>(
+    'secondary_value',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _energyMeta = const VerificationMeta('energy');
+  @override
+  late final GeneratedColumn<int> energy = GeneratedColumn<int>(
+    'energy',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sleepHoursMeta = const VerificationMeta(
+    'sleepHours',
+  );
+  @override
+  late final GeneratedColumn<double> sleepHours = GeneratedColumn<double>(
+    'sleep_hours',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _anxietyMeta = const VerificationMeta(
+    'anxiety',
+  );
+  @override
+  late final GeneratedColumn<int> anxiety = GeneratedColumn<int>(
+    'anxiety',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _journalMeta = const VerificationMeta(
+    'journal',
+  );
+  @override
+  late final GeneratedColumn<String> journal = GeneratedColumn<String>(
+    'journal',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2139,6 +2323,14 @@ class $SymptomObservationsTable extends SymptomObservations
     location,
     side,
     pattern,
+    measure,
+    valueNumber2,
+    measure2,
+    secondaryValue,
+    energy,
+    sleepHours,
+    anxiety,
+    journal,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2236,6 +2428,60 @@ class $SymptomObservationsTable extends SymptomObservations
         pattern.isAcceptableOrUnknown(data['pattern']!, _patternMeta),
       );
     }
+    if (data.containsKey('measure')) {
+      context.handle(
+        _measureMeta,
+        measure.isAcceptableOrUnknown(data['measure']!, _measureMeta),
+      );
+    }
+    if (data.containsKey('value_number2')) {
+      context.handle(
+        _valueNumber2Meta,
+        valueNumber2.isAcceptableOrUnknown(
+          data['value_number2']!,
+          _valueNumber2Meta,
+        ),
+      );
+    }
+    if (data.containsKey('measure2')) {
+      context.handle(
+        _measure2Meta,
+        measure2.isAcceptableOrUnknown(data['measure2']!, _measure2Meta),
+      );
+    }
+    if (data.containsKey('secondary_value')) {
+      context.handle(
+        _secondaryValueMeta,
+        secondaryValue.isAcceptableOrUnknown(
+          data['secondary_value']!,
+          _secondaryValueMeta,
+        ),
+      );
+    }
+    if (data.containsKey('energy')) {
+      context.handle(
+        _energyMeta,
+        energy.isAcceptableOrUnknown(data['energy']!, _energyMeta),
+      );
+    }
+    if (data.containsKey('sleep_hours')) {
+      context.handle(
+        _sleepHoursMeta,
+        sleepHours.isAcceptableOrUnknown(data['sleep_hours']!, _sleepHoursMeta),
+      );
+    }
+    if (data.containsKey('anxiety')) {
+      context.handle(
+        _anxietyMeta,
+        anxiety.isAcceptableOrUnknown(data['anxiety']!, _anxietyMeta),
+      );
+    }
+    if (data.containsKey('journal')) {
+      context.handle(
+        _journalMeta,
+        journal.isAcceptableOrUnknown(data['journal']!, _journalMeta),
+      );
+    }
     return context;
   }
 
@@ -2303,6 +2549,38 @@ class $SymptomObservationsTable extends SymptomObservations
         DriftSqlType.string,
         data['${effectivePrefix}pattern'],
       ),
+      measure: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}measure'],
+      ),
+      valueNumber2: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}value_number2'],
+      ),
+      measure2: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}measure2'],
+      ),
+      secondaryValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}secondary_value'],
+      ),
+      energy: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}energy'],
+      ),
+      sleepHours: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}sleep_hours'],
+      ),
+      anxiety: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}anxiety'],
+      ),
+      journal: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}journal'],
+      ),
     );
   }
 
@@ -2333,6 +2611,25 @@ class SymptomObservation extends DataClass
 
   /// Verlauf/Muster, z. B. „anfallsartig“, „nachts“ (kommagetrennt).
   final String? pattern;
+
+  /// Messgröße von [valueNumber]; leer = aus [kind] (Skala = Stärke 0–10).
+  final String? measure;
+
+  /// Zweiter Wert derselben Größe (Blutdruck: diastolisch).
+  final double? valueNumber2;
+
+  /// Optionale zweite Messgröße des Check-ins und ihr Wert.
+  final String? measure2;
+  final double? secondaryValue;
+
+  /// Stimmungs-Extras: Energie 0–10, Schlaf in Stunden, Angst/Anspannung 0–10.
+  final int? energy;
+  final double? sleepHours;
+  final int? anxiety;
+
+  /// Kurzer Tagebuch-Eintrag. Bewusst getrennt von [note]: [note] steht im
+  /// Arzt-PDF, das Tagebuch nur auf ausdrücklichen Wunsch.
+  final String? journal;
   const SymptomObservation({
     required this.id,
     required this.symptomId,
@@ -2348,6 +2645,14 @@ class SymptomObservation extends DataClass
     this.location,
     this.side,
     this.pattern,
+    this.measure,
+    this.valueNumber2,
+    this.measure2,
+    this.secondaryValue,
+    this.energy,
+    this.sleepHours,
+    this.anxiety,
+    this.journal,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2390,6 +2695,30 @@ class SymptomObservation extends DataClass
     if (!nullToAbsent || pattern != null) {
       map['pattern'] = Variable<String>(pattern);
     }
+    if (!nullToAbsent || measure != null) {
+      map['measure'] = Variable<String>(measure);
+    }
+    if (!nullToAbsent || valueNumber2 != null) {
+      map['value_number2'] = Variable<double>(valueNumber2);
+    }
+    if (!nullToAbsent || measure2 != null) {
+      map['measure2'] = Variable<String>(measure2);
+    }
+    if (!nullToAbsent || secondaryValue != null) {
+      map['secondary_value'] = Variable<double>(secondaryValue);
+    }
+    if (!nullToAbsent || energy != null) {
+      map['energy'] = Variable<int>(energy);
+    }
+    if (!nullToAbsent || sleepHours != null) {
+      map['sleep_hours'] = Variable<double>(sleepHours);
+    }
+    if (!nullToAbsent || anxiety != null) {
+      map['anxiety'] = Variable<int>(anxiety);
+    }
+    if (!nullToAbsent || journal != null) {
+      map['journal'] = Variable<String>(journal);
+    }
     return map;
   }
 
@@ -2423,6 +2752,30 @@ class SymptomObservation extends DataClass
       pattern: pattern == null && nullToAbsent
           ? const Value.absent()
           : Value(pattern),
+      measure: measure == null && nullToAbsent
+          ? const Value.absent()
+          : Value(measure),
+      valueNumber2: valueNumber2 == null && nullToAbsent
+          ? const Value.absent()
+          : Value(valueNumber2),
+      measure2: measure2 == null && nullToAbsent
+          ? const Value.absent()
+          : Value(measure2),
+      secondaryValue: secondaryValue == null && nullToAbsent
+          ? const Value.absent()
+          : Value(secondaryValue),
+      energy: energy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(energy),
+      sleepHours: sleepHours == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sleepHours),
+      anxiety: anxiety == null && nullToAbsent
+          ? const Value.absent()
+          : Value(anxiety),
+      journal: journal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(journal),
     );
   }
 
@@ -2448,6 +2801,14 @@ class SymptomObservation extends DataClass
       location: serializer.fromJson<String?>(json['location']),
       side: serializer.fromJson<String?>(json['side']),
       pattern: serializer.fromJson<String?>(json['pattern']),
+      measure: serializer.fromJson<String?>(json['measure']),
+      valueNumber2: serializer.fromJson<double?>(json['valueNumber2']),
+      measure2: serializer.fromJson<String?>(json['measure2']),
+      secondaryValue: serializer.fromJson<double?>(json['secondaryValue']),
+      energy: serializer.fromJson<int?>(json['energy']),
+      sleepHours: serializer.fromJson<double?>(json['sleepHours']),
+      anxiety: serializer.fromJson<int?>(json['anxiety']),
+      journal: serializer.fromJson<String?>(json['journal']),
     );
   }
   @override
@@ -2470,6 +2831,14 @@ class SymptomObservation extends DataClass
       'location': serializer.toJson<String?>(location),
       'side': serializer.toJson<String?>(side),
       'pattern': serializer.toJson<String?>(pattern),
+      'measure': serializer.toJson<String?>(measure),
+      'valueNumber2': serializer.toJson<double?>(valueNumber2),
+      'measure2': serializer.toJson<String?>(measure2),
+      'secondaryValue': serializer.toJson<double?>(secondaryValue),
+      'energy': serializer.toJson<int?>(energy),
+      'sleepHours': serializer.toJson<double?>(sleepHours),
+      'anxiety': serializer.toJson<int?>(anxiety),
+      'journal': serializer.toJson<String?>(journal),
     };
   }
 
@@ -2488,6 +2857,14 @@ class SymptomObservation extends DataClass
     Value<String?> location = const Value.absent(),
     Value<String?> side = const Value.absent(),
     Value<String?> pattern = const Value.absent(),
+    Value<String?> measure = const Value.absent(),
+    Value<double?> valueNumber2 = const Value.absent(),
+    Value<String?> measure2 = const Value.absent(),
+    Value<double?> secondaryValue = const Value.absent(),
+    Value<int?> energy = const Value.absent(),
+    Value<double?> sleepHours = const Value.absent(),
+    Value<int?> anxiety = const Value.absent(),
+    Value<String?> journal = const Value.absent(),
   }) => SymptomObservation(
     id: id ?? this.id,
     symptomId: symptomId ?? this.symptomId,
@@ -2503,6 +2880,16 @@ class SymptomObservation extends DataClass
     location: location.present ? location.value : this.location,
     side: side.present ? side.value : this.side,
     pattern: pattern.present ? pattern.value : this.pattern,
+    measure: measure.present ? measure.value : this.measure,
+    valueNumber2: valueNumber2.present ? valueNumber2.value : this.valueNumber2,
+    measure2: measure2.present ? measure2.value : this.measure2,
+    secondaryValue: secondaryValue.present
+        ? secondaryValue.value
+        : this.secondaryValue,
+    energy: energy.present ? energy.value : this.energy,
+    sleepHours: sleepHours.present ? sleepHours.value : this.sleepHours,
+    anxiety: anxiety.present ? anxiety.value : this.anxiety,
+    journal: journal.present ? journal.value : this.journal,
   );
   SymptomObservation copyWithCompanion(SymptomObservationsCompanion data) {
     return SymptomObservation(
@@ -2526,6 +2913,20 @@ class SymptomObservation extends DataClass
       location: data.location.present ? data.location.value : this.location,
       side: data.side.present ? data.side.value : this.side,
       pattern: data.pattern.present ? data.pattern.value : this.pattern,
+      measure: data.measure.present ? data.measure.value : this.measure,
+      valueNumber2: data.valueNumber2.present
+          ? data.valueNumber2.value
+          : this.valueNumber2,
+      measure2: data.measure2.present ? data.measure2.value : this.measure2,
+      secondaryValue: data.secondaryValue.present
+          ? data.secondaryValue.value
+          : this.secondaryValue,
+      energy: data.energy.present ? data.energy.value : this.energy,
+      sleepHours: data.sleepHours.present
+          ? data.sleepHours.value
+          : this.sleepHours,
+      anxiety: data.anxiety.present ? data.anxiety.value : this.anxiety,
+      journal: data.journal.present ? data.journal.value : this.journal,
     );
   }
 
@@ -2545,13 +2946,21 @@ class SymptomObservation extends DataClass
           ..write('quality: $quality, ')
           ..write('location: $location, ')
           ..write('side: $side, ')
-          ..write('pattern: $pattern')
+          ..write('pattern: $pattern, ')
+          ..write('measure: $measure, ')
+          ..write('valueNumber2: $valueNumber2, ')
+          ..write('measure2: $measure2, ')
+          ..write('secondaryValue: $secondaryValue, ')
+          ..write('energy: $energy, ')
+          ..write('sleepHours: $sleepHours, ')
+          ..write('anxiety: $anxiety, ')
+          ..write('journal: $journal')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     symptomId,
     recordedAt,
@@ -2566,7 +2975,15 @@ class SymptomObservation extends DataClass
     location,
     side,
     pattern,
-  );
+    measure,
+    valueNumber2,
+    measure2,
+    secondaryValue,
+    energy,
+    sleepHours,
+    anxiety,
+    journal,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2584,7 +3001,15 @@ class SymptomObservation extends DataClass
           other.quality == this.quality &&
           other.location == this.location &&
           other.side == this.side &&
-          other.pattern == this.pattern);
+          other.pattern == this.pattern &&
+          other.measure == this.measure &&
+          other.valueNumber2 == this.valueNumber2 &&
+          other.measure2 == this.measure2 &&
+          other.secondaryValue == this.secondaryValue &&
+          other.energy == this.energy &&
+          other.sleepHours == this.sleepHours &&
+          other.anxiety == this.anxiety &&
+          other.journal == this.journal);
 }
 
 class SymptomObservationsCompanion extends UpdateCompanion<SymptomObservation> {
@@ -2602,6 +3027,14 @@ class SymptomObservationsCompanion extends UpdateCompanion<SymptomObservation> {
   final Value<String?> location;
   final Value<String?> side;
   final Value<String?> pattern;
+  final Value<String?> measure;
+  final Value<double?> valueNumber2;
+  final Value<String?> measure2;
+  final Value<double?> secondaryValue;
+  final Value<int?> energy;
+  final Value<double?> sleepHours;
+  final Value<int?> anxiety;
+  final Value<String?> journal;
   final Value<int> rowid;
   const SymptomObservationsCompanion({
     this.id = const Value.absent(),
@@ -2618,6 +3051,14 @@ class SymptomObservationsCompanion extends UpdateCompanion<SymptomObservation> {
     this.location = const Value.absent(),
     this.side = const Value.absent(),
     this.pattern = const Value.absent(),
+    this.measure = const Value.absent(),
+    this.valueNumber2 = const Value.absent(),
+    this.measure2 = const Value.absent(),
+    this.secondaryValue = const Value.absent(),
+    this.energy = const Value.absent(),
+    this.sleepHours = const Value.absent(),
+    this.anxiety = const Value.absent(),
+    this.journal = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SymptomObservationsCompanion.insert({
@@ -2635,6 +3076,14 @@ class SymptomObservationsCompanion extends UpdateCompanion<SymptomObservation> {
     this.location = const Value.absent(),
     this.side = const Value.absent(),
     this.pattern = const Value.absent(),
+    this.measure = const Value.absent(),
+    this.valueNumber2 = const Value.absent(),
+    this.measure2 = const Value.absent(),
+    this.secondaryValue = const Value.absent(),
+    this.energy = const Value.absent(),
+    this.sleepHours = const Value.absent(),
+    this.anxiety = const Value.absent(),
+    this.journal = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        symptomId = Value(symptomId),
@@ -2655,6 +3104,14 @@ class SymptomObservationsCompanion extends UpdateCompanion<SymptomObservation> {
     Expression<String>? location,
     Expression<String>? side,
     Expression<String>? pattern,
+    Expression<String>? measure,
+    Expression<double>? valueNumber2,
+    Expression<String>? measure2,
+    Expression<double>? secondaryValue,
+    Expression<int>? energy,
+    Expression<double>? sleepHours,
+    Expression<int>? anxiety,
+    Expression<String>? journal,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2672,6 +3129,14 @@ class SymptomObservationsCompanion extends UpdateCompanion<SymptomObservation> {
       if (location != null) 'location': location,
       if (side != null) 'side': side,
       if (pattern != null) 'pattern': pattern,
+      if (measure != null) 'measure': measure,
+      if (valueNumber2 != null) 'value_number2': valueNumber2,
+      if (measure2 != null) 'measure2': measure2,
+      if (secondaryValue != null) 'secondary_value': secondaryValue,
+      if (energy != null) 'energy': energy,
+      if (sleepHours != null) 'sleep_hours': sleepHours,
+      if (anxiety != null) 'anxiety': anxiety,
+      if (journal != null) 'journal': journal,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2691,6 +3156,14 @@ class SymptomObservationsCompanion extends UpdateCompanion<SymptomObservation> {
     Value<String?>? location,
     Value<String?>? side,
     Value<String?>? pattern,
+    Value<String?>? measure,
+    Value<double?>? valueNumber2,
+    Value<String?>? measure2,
+    Value<double?>? secondaryValue,
+    Value<int?>? energy,
+    Value<double?>? sleepHours,
+    Value<int?>? anxiety,
+    Value<String?>? journal,
     Value<int>? rowid,
   }) {
     return SymptomObservationsCompanion(
@@ -2708,6 +3181,14 @@ class SymptomObservationsCompanion extends UpdateCompanion<SymptomObservation> {
       location: location ?? this.location,
       side: side ?? this.side,
       pattern: pattern ?? this.pattern,
+      measure: measure ?? this.measure,
+      valueNumber2: valueNumber2 ?? this.valueNumber2,
+      measure2: measure2 ?? this.measure2,
+      secondaryValue: secondaryValue ?? this.secondaryValue,
+      energy: energy ?? this.energy,
+      sleepHours: sleepHours ?? this.sleepHours,
+      anxiety: anxiety ?? this.anxiety,
+      journal: journal ?? this.journal,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2759,6 +3240,30 @@ class SymptomObservationsCompanion extends UpdateCompanion<SymptomObservation> {
     if (pattern.present) {
       map['pattern'] = Variable<String>(pattern.value);
     }
+    if (measure.present) {
+      map['measure'] = Variable<String>(measure.value);
+    }
+    if (valueNumber2.present) {
+      map['value_number2'] = Variable<double>(valueNumber2.value);
+    }
+    if (measure2.present) {
+      map['measure2'] = Variable<String>(measure2.value);
+    }
+    if (secondaryValue.present) {
+      map['secondary_value'] = Variable<double>(secondaryValue.value);
+    }
+    if (energy.present) {
+      map['energy'] = Variable<int>(energy.value);
+    }
+    if (sleepHours.present) {
+      map['sleep_hours'] = Variable<double>(sleepHours.value);
+    }
+    if (anxiety.present) {
+      map['anxiety'] = Variable<int>(anxiety.value);
+    }
+    if (journal.present) {
+      map['journal'] = Variable<String>(journal.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2782,6 +3287,14 @@ class SymptomObservationsCompanion extends UpdateCompanion<SymptomObservation> {
           ..write('location: $location, ')
           ..write('side: $side, ')
           ..write('pattern: $pattern, ')
+          ..write('measure: $measure, ')
+          ..write('valueNumber2: $valueNumber2, ')
+          ..write('measure2: $measure2, ')
+          ..write('secondaryValue: $secondaryValue, ')
+          ..write('energy: $energy, ')
+          ..write('sleepHours: $sleepHours, ')
+          ..write('anxiety: $anxiety, ')
+          ..write('journal: $journal, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6796,6 +7309,53 @@ class $AppSettingsTable extends AppSettings
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _temperatureUnitMeta = const VerificationMeta(
+    'temperatureUnit',
+  );
+  @override
+  late final GeneratedColumn<String> temperatureUnit = GeneratedColumn<String>(
+    'temperature_unit',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _glucoseUnitMeta = const VerificationMeta(
+    'glucoseUnit',
+  );
+  @override
+  late final GeneratedColumn<String> glucoseUnit = GeneratedColumn<String>(
+    'glucose_unit',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _weightUnitMeta = const VerificationMeta(
+    'weightUnit',
+  );
+  @override
+  late final GeneratedColumn<String> weightUnit = GeneratedColumn<String>(
+    'weight_unit',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _psychQuestionnairesMeta =
+      const VerificationMeta('psychQuestionnaires');
+  @override
+  late final GeneratedColumn<bool> psychQuestionnaires = GeneratedColumn<bool>(
+    'psych_questionnaires',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("psych_questionnaires" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -6817,6 +7377,10 @@ class $AppSettingsTable extends AppSettings
     menopauseTracking,
     pregnancyTracking,
     showFertileWindow,
+    temperatureUnit,
+    glucoseUnit,
+    weightUnit,
+    psychQuestionnaires,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6992,6 +7556,39 @@ class $AppSettingsTable extends AppSettings
         ),
       );
     }
+    if (data.containsKey('temperature_unit')) {
+      context.handle(
+        _temperatureUnitMeta,
+        temperatureUnit.isAcceptableOrUnknown(
+          data['temperature_unit']!,
+          _temperatureUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('glucose_unit')) {
+      context.handle(
+        _glucoseUnitMeta,
+        glucoseUnit.isAcceptableOrUnknown(
+          data['glucose_unit']!,
+          _glucoseUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('weight_unit')) {
+      context.handle(
+        _weightUnitMeta,
+        weightUnit.isAcceptableOrUnknown(data['weight_unit']!, _weightUnitMeta),
+      );
+    }
+    if (data.containsKey('psych_questionnaires')) {
+      context.handle(
+        _psychQuestionnairesMeta,
+        psychQuestionnaires.isAcceptableOrUnknown(
+          data['psych_questionnaires']!,
+          _psychQuestionnairesMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -7077,6 +7674,22 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.bool,
         data['${effectivePrefix}show_fertile_window'],
       )!,
+      temperatureUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}temperature_unit'],
+      ),
+      glucoseUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}glucose_unit'],
+      ),
+      weightUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}weight_unit'],
+      ),
+      psychQuestionnaires: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}psych_questionnaires'],
+      )!,
     );
   }
 
@@ -7108,6 +7721,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
 
   /// Grob geschätztes fruchtbares Fenster im Kalender zeigen.
   final bool showFertileWindow;
+  final String? temperatureUnit;
+  final String? glucoseUnit;
+  final String? weightUnit;
+  final bool psychQuestionnaires;
   const AppSetting({
     required this.id,
     required this.morningReminderEnabled,
@@ -7128,6 +7745,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.menopauseTracking,
     required this.pregnancyTracking,
     required this.showFertileWindow,
+    this.temperatureUnit,
+    this.glucoseUnit,
+    this.weightUnit,
+    required this.psychQuestionnaires,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7157,6 +7778,16 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['menopause_tracking'] = Variable<bool>(menopauseTracking);
     map['pregnancy_tracking'] = Variable<bool>(pregnancyTracking);
     map['show_fertile_window'] = Variable<bool>(showFertileWindow);
+    if (!nullToAbsent || temperatureUnit != null) {
+      map['temperature_unit'] = Variable<String>(temperatureUnit);
+    }
+    if (!nullToAbsent || glucoseUnit != null) {
+      map['glucose_unit'] = Variable<String>(glucoseUnit);
+    }
+    if (!nullToAbsent || weightUnit != null) {
+      map['weight_unit'] = Variable<String>(weightUnit);
+    }
+    map['psych_questionnaires'] = Variable<bool>(psychQuestionnaires);
     return map;
   }
 
@@ -7183,6 +7814,16 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       menopauseTracking: Value(menopauseTracking),
       pregnancyTracking: Value(pregnancyTracking),
       showFertileWindow: Value(showFertileWindow),
+      temperatureUnit: temperatureUnit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(temperatureUnit),
+      glucoseUnit: glucoseUnit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(glucoseUnit),
+      weightUnit: weightUnit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(weightUnit),
+      psychQuestionnaires: Value(psychQuestionnaires),
     );
   }
 
@@ -7227,6 +7868,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       menopauseTracking: serializer.fromJson<bool>(json['menopauseTracking']),
       pregnancyTracking: serializer.fromJson<bool>(json['pregnancyTracking']),
       showFertileWindow: serializer.fromJson<bool>(json['showFertileWindow']),
+      temperatureUnit: serializer.fromJson<String?>(json['temperatureUnit']),
+      glucoseUnit: serializer.fromJson<String?>(json['glucoseUnit']),
+      weightUnit: serializer.fromJson<String?>(json['weightUnit']),
+      psychQuestionnaires: serializer.fromJson<bool>(
+        json['psychQuestionnaires'],
+      ),
     );
   }
   @override
@@ -7256,6 +7903,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'menopauseTracking': serializer.toJson<bool>(menopauseTracking),
       'pregnancyTracking': serializer.toJson<bool>(pregnancyTracking),
       'showFertileWindow': serializer.toJson<bool>(showFertileWindow),
+      'temperatureUnit': serializer.toJson<String?>(temperatureUnit),
+      'glucoseUnit': serializer.toJson<String?>(glucoseUnit),
+      'weightUnit': serializer.toJson<String?>(weightUnit),
+      'psychQuestionnaires': serializer.toJson<bool>(psychQuestionnaires),
     };
   }
 
@@ -7279,6 +7930,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     bool? menopauseTracking,
     bool? pregnancyTracking,
     bool? showFertileWindow,
+    Value<String?> temperatureUnit = const Value.absent(),
+    Value<String?> glucoseUnit = const Value.absent(),
+    Value<String?> weightUnit = const Value.absent(),
+    bool? psychQuestionnaires,
   }) => AppSetting(
     id: id ?? this.id,
     morningReminderEnabled:
@@ -7303,6 +7958,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     menopauseTracking: menopauseTracking ?? this.menopauseTracking,
     pregnancyTracking: pregnancyTracking ?? this.pregnancyTracking,
     showFertileWindow: showFertileWindow ?? this.showFertileWindow,
+    temperatureUnit: temperatureUnit.present
+        ? temperatureUnit.value
+        : this.temperatureUnit,
+    glucoseUnit: glucoseUnit.present ? glucoseUnit.value : this.glucoseUnit,
+    weightUnit: weightUnit.present ? weightUnit.value : this.weightUnit,
+    psychQuestionnaires: psychQuestionnaires ?? this.psychQuestionnaires,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -7361,6 +8022,18 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       showFertileWindow: data.showFertileWindow.present
           ? data.showFertileWindow.value
           : this.showFertileWindow,
+      temperatureUnit: data.temperatureUnit.present
+          ? data.temperatureUnit.value
+          : this.temperatureUnit,
+      glucoseUnit: data.glucoseUnit.present
+          ? data.glucoseUnit.value
+          : this.glucoseUnit,
+      weightUnit: data.weightUnit.present
+          ? data.weightUnit.value
+          : this.weightUnit,
+      psychQuestionnaires: data.psychQuestionnaires.present
+          ? data.psychQuestionnaires.value
+          : this.psychQuestionnaires,
     );
   }
 
@@ -7385,13 +8058,17 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('cycleTracking: $cycleTracking, ')
           ..write('menopauseTracking: $menopauseTracking, ')
           ..write('pregnancyTracking: $pregnancyTracking, ')
-          ..write('showFertileWindow: $showFertileWindow')
+          ..write('showFertileWindow: $showFertileWindow, ')
+          ..write('temperatureUnit: $temperatureUnit, ')
+          ..write('glucoseUnit: $glucoseUnit, ')
+          ..write('weightUnit: $weightUnit, ')
+          ..write('psychQuestionnaires: $psychQuestionnaires')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     morningReminderEnabled,
     eveningReminderEnabled,
@@ -7411,7 +8088,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     menopauseTracking,
     pregnancyTracking,
     showFertileWindow,
-  );
+    temperatureUnit,
+    glucoseUnit,
+    weightUnit,
+    psychQuestionnaires,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -7435,7 +8116,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.cycleTracking == this.cycleTracking &&
           other.menopauseTracking == this.menopauseTracking &&
           other.pregnancyTracking == this.pregnancyTracking &&
-          other.showFertileWindow == this.showFertileWindow);
+          other.showFertileWindow == this.showFertileWindow &&
+          other.temperatureUnit == this.temperatureUnit &&
+          other.glucoseUnit == this.glucoseUnit &&
+          other.weightUnit == this.weightUnit &&
+          other.psychQuestionnaires == this.psychQuestionnaires);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -7458,6 +8143,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<bool> menopauseTracking;
   final Value<bool> pregnancyTracking;
   final Value<bool> showFertileWindow;
+  final Value<String?> temperatureUnit;
+  final Value<String?> glucoseUnit;
+  final Value<String?> weightUnit;
+  final Value<bool> psychQuestionnaires;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.morningReminderEnabled = const Value.absent(),
@@ -7478,6 +8167,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.menopauseTracking = const Value.absent(),
     this.pregnancyTracking = const Value.absent(),
     this.showFertileWindow = const Value.absent(),
+    this.temperatureUnit = const Value.absent(),
+    this.glucoseUnit = const Value.absent(),
+    this.weightUnit = const Value.absent(),
+    this.psychQuestionnaires = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -7499,6 +8192,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.menopauseTracking = const Value.absent(),
     this.pregnancyTracking = const Value.absent(),
     this.showFertileWindow = const Value.absent(),
+    this.temperatureUnit = const Value.absent(),
+    this.glucoseUnit = const Value.absent(),
+    this.weightUnit = const Value.absent(),
+    this.psychQuestionnaires = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -7520,6 +8217,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<bool>? menopauseTracking,
     Expression<bool>? pregnancyTracking,
     Expression<bool>? showFertileWindow,
+    Expression<String>? temperatureUnit,
+    Expression<String>? glucoseUnit,
+    Expression<String>? weightUnit,
+    Expression<bool>? psychQuestionnaires,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -7548,6 +8249,11 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (menopauseTracking != null) 'menopause_tracking': menopauseTracking,
       if (pregnancyTracking != null) 'pregnancy_tracking': pregnancyTracking,
       if (showFertileWindow != null) 'show_fertile_window': showFertileWindow,
+      if (temperatureUnit != null) 'temperature_unit': temperatureUnit,
+      if (glucoseUnit != null) 'glucose_unit': glucoseUnit,
+      if (weightUnit != null) 'weight_unit': weightUnit,
+      if (psychQuestionnaires != null)
+        'psych_questionnaires': psychQuestionnaires,
     });
   }
 
@@ -7571,6 +8277,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<bool>? menopauseTracking,
     Value<bool>? pregnancyTracking,
     Value<bool>? showFertileWindow,
+    Value<String?>? temperatureUnit,
+    Value<String?>? glucoseUnit,
+    Value<String?>? weightUnit,
+    Value<bool>? psychQuestionnaires,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -7596,6 +8306,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       menopauseTracking: menopauseTracking ?? this.menopauseTracking,
       pregnancyTracking: pregnancyTracking ?? this.pregnancyTracking,
       showFertileWindow: showFertileWindow ?? this.showFertileWindow,
+      temperatureUnit: temperatureUnit ?? this.temperatureUnit,
+      glucoseUnit: glucoseUnit ?? this.glucoseUnit,
+      weightUnit: weightUnit ?? this.weightUnit,
+      psychQuestionnaires: psychQuestionnaires ?? this.psychQuestionnaires,
     );
   }
 
@@ -7669,6 +8383,18 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (showFertileWindow.present) {
       map['show_fertile_window'] = Variable<bool>(showFertileWindow.value);
     }
+    if (temperatureUnit.present) {
+      map['temperature_unit'] = Variable<String>(temperatureUnit.value);
+    }
+    if (glucoseUnit.present) {
+      map['glucose_unit'] = Variable<String>(glucoseUnit.value);
+    }
+    if (weightUnit.present) {
+      map['weight_unit'] = Variable<String>(weightUnit.value);
+    }
+    if (psychQuestionnaires.present) {
+      map['psych_questionnaires'] = Variable<bool>(psychQuestionnaires.value);
+    }
     return map;
   }
 
@@ -7693,7 +8419,11 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('cycleTracking: $cycleTracking, ')
           ..write('menopauseTracking: $menopauseTracking, ')
           ..write('pregnancyTracking: $pregnancyTracking, ')
-          ..write('showFertileWindow: $showFertileWindow')
+          ..write('showFertileWindow: $showFertileWindow, ')
+          ..write('temperatureUnit: $temperatureUnit, ')
+          ..write('glucoseUnit: $glucoseUnit, ')
+          ..write('weightUnit: $weightUnit, ')
+          ..write('psychQuestionnaires: $psychQuestionnaires')
           ..write(')'))
         .toString();
   }
@@ -13347,6 +14077,367 @@ class PregnanciesCompanion extends UpdateCompanion<Pregnancy> {
   }
 }
 
+class $PsychAssessmentsTable extends PsychAssessments
+    with TableInfo<$PsychAssessmentsTable, PsychAssessment> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PsychAssessmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recordedAtMeta = const VerificationMeta(
+    'recordedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> recordedAt = GeneratedColumn<DateTime>(
+    'recorded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _instrumentMeta = const VerificationMeta(
+    'instrument',
+  );
+  @override
+  late final GeneratedColumn<String> instrument = GeneratedColumn<String>(
+    'instrument',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _scoresMeta = const VerificationMeta('scores');
+  @override
+  late final GeneratedColumn<String> scores = GeneratedColumn<String>(
+    'scores',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    recordedAt,
+    instrument,
+    scores,
+    note,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'psych_assessments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PsychAssessment> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('recorded_at')) {
+      context.handle(
+        _recordedAtMeta,
+        recordedAt.isAcceptableOrUnknown(data['recorded_at']!, _recordedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedAtMeta);
+    }
+    if (data.containsKey('instrument')) {
+      context.handle(
+        _instrumentMeta,
+        instrument.isAcceptableOrUnknown(data['instrument']!, _instrumentMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_instrumentMeta);
+    }
+    if (data.containsKey('scores')) {
+      context.handle(
+        _scoresMeta,
+        scores.isAcceptableOrUnknown(data['scores']!, _scoresMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_scoresMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PsychAssessment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PsychAssessment(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      recordedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}recorded_at'],
+      )!,
+      instrument: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}instrument'],
+      )!,
+      scores: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scores'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+    );
+  }
+
+  @override
+  $PsychAssessmentsTable createAlias(String alias) {
+    return $PsychAssessmentsTable(attachedDatabase, alias);
+  }
+}
+
+class PsychAssessment extends DataClass implements Insertable<PsychAssessment> {
+  final String id;
+  final DateTime recordedAt;
+  final String instrument;
+  final String scores;
+  final String? note;
+  const PsychAssessment({
+    required this.id,
+    required this.recordedAt,
+    required this.instrument,
+    required this.scores,
+    this.note,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['recorded_at'] = Variable<DateTime>(recordedAt);
+    map['instrument'] = Variable<String>(instrument);
+    map['scores'] = Variable<String>(scores);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    return map;
+  }
+
+  PsychAssessmentsCompanion toCompanion(bool nullToAbsent) {
+    return PsychAssessmentsCompanion(
+      id: Value(id),
+      recordedAt: Value(recordedAt),
+      instrument: Value(instrument),
+      scores: Value(scores),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+    );
+  }
+
+  factory PsychAssessment.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PsychAssessment(
+      id: serializer.fromJson<String>(json['id']),
+      recordedAt: serializer.fromJson<DateTime>(json['recordedAt']),
+      instrument: serializer.fromJson<String>(json['instrument']),
+      scores: serializer.fromJson<String>(json['scores']),
+      note: serializer.fromJson<String?>(json['note']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'recordedAt': serializer.toJson<DateTime>(recordedAt),
+      'instrument': serializer.toJson<String>(instrument),
+      'scores': serializer.toJson<String>(scores),
+      'note': serializer.toJson<String?>(note),
+    };
+  }
+
+  PsychAssessment copyWith({
+    String? id,
+    DateTime? recordedAt,
+    String? instrument,
+    String? scores,
+    Value<String?> note = const Value.absent(),
+  }) => PsychAssessment(
+    id: id ?? this.id,
+    recordedAt: recordedAt ?? this.recordedAt,
+    instrument: instrument ?? this.instrument,
+    scores: scores ?? this.scores,
+    note: note.present ? note.value : this.note,
+  );
+  PsychAssessment copyWithCompanion(PsychAssessmentsCompanion data) {
+    return PsychAssessment(
+      id: data.id.present ? data.id.value : this.id,
+      recordedAt: data.recordedAt.present
+          ? data.recordedAt.value
+          : this.recordedAt,
+      instrument: data.instrument.present
+          ? data.instrument.value
+          : this.instrument,
+      scores: data.scores.present ? data.scores.value : this.scores,
+      note: data.note.present ? data.note.value : this.note,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PsychAssessment(')
+          ..write('id: $id, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('instrument: $instrument, ')
+          ..write('scores: $scores, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, recordedAt, instrument, scores, note);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PsychAssessment &&
+          other.id == this.id &&
+          other.recordedAt == this.recordedAt &&
+          other.instrument == this.instrument &&
+          other.scores == this.scores &&
+          other.note == this.note);
+}
+
+class PsychAssessmentsCompanion extends UpdateCompanion<PsychAssessment> {
+  final Value<String> id;
+  final Value<DateTime> recordedAt;
+  final Value<String> instrument;
+  final Value<String> scores;
+  final Value<String?> note;
+  final Value<int> rowid;
+  const PsychAssessmentsCompanion({
+    this.id = const Value.absent(),
+    this.recordedAt = const Value.absent(),
+    this.instrument = const Value.absent(),
+    this.scores = const Value.absent(),
+    this.note = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PsychAssessmentsCompanion.insert({
+    required String id,
+    required DateTime recordedAt,
+    required String instrument,
+    required String scores,
+    this.note = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       recordedAt = Value(recordedAt),
+       instrument = Value(instrument),
+       scores = Value(scores);
+  static Insertable<PsychAssessment> custom({
+    Expression<String>? id,
+    Expression<DateTime>? recordedAt,
+    Expression<String>? instrument,
+    Expression<String>? scores,
+    Expression<String>? note,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (recordedAt != null) 'recorded_at': recordedAt,
+      if (instrument != null) 'instrument': instrument,
+      if (scores != null) 'scores': scores,
+      if (note != null) 'note': note,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PsychAssessmentsCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? recordedAt,
+    Value<String>? instrument,
+    Value<String>? scores,
+    Value<String?>? note,
+    Value<int>? rowid,
+  }) {
+    return PsychAssessmentsCompanion(
+      id: id ?? this.id,
+      recordedAt: recordedAt ?? this.recordedAt,
+      instrument: instrument ?? this.instrument,
+      scores: scores ?? this.scores,
+      note: note ?? this.note,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (recordedAt.present) {
+      map['recorded_at'] = Variable<DateTime>(recordedAt.value);
+    }
+    if (instrument.present) {
+      map['instrument'] = Variable<String>(instrument.value);
+    }
+    if (scores.present) {
+      map['scores'] = Variable<String>(scores.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PsychAssessmentsCompanion(')
+          ..write('id: $id, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('instrument: $instrument, ')
+          ..write('scores: $scores, ')
+          ..write('note: $note, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -13380,6 +14471,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CycleDaysTable cycleDays = $CycleDaysTable(this);
   late final $MrsAssessmentsTable mrsAssessments = $MrsAssessmentsTable(this);
   late final $PregnanciesTable pregnancies = $PregnanciesTable(this);
+  late final $PsychAssessmentsTable psychAssessments = $PsychAssessmentsTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -13408,6 +14502,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cycleDays,
     mrsAssessments,
     pregnancies,
+    psychAssessments,
   ];
 }
 
@@ -14790,6 +15885,8 @@ typedef $$SymptomsTableCreateCompanionBuilder = SymptomsCompanion Function({
   Value<String?> sensation,
   Value<String?> quality,
   Value<String?> side,
+  Value<String?> measure,
+  Value<String?> measure2,
   Value<int> rowid,
 });
 typedef $$SymptomsTableUpdateCompanionBuilder = SymptomsCompanion Function({
@@ -14806,6 +15903,8 @@ typedef $$SymptomsTableUpdateCompanionBuilder = SymptomsCompanion Function({
   Value<String?> sensation,
   Value<String?> quality,
   Value<String?> side,
+  Value<String?> measure,
+  Value<String?> measure2,
   Value<int> rowid,
 });
 
@@ -15002,6 +16101,16 @@ class $$SymptomsTableFilterComposer
 
   ColumnFilters<String> get side => $composableBuilder(
     column: $table.side,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get measure => $composableBuilder(
+    column: $table.measure,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get measure2 => $composableBuilder(
+    column: $table.measure2,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15223,6 +16332,16 @@ class $$SymptomsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get measure => $composableBuilder(
+    column: $table.measure,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get measure2 => $composableBuilder(
+    column: $table.measure2,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$DiagnosesTableOrderingComposer get diagnosisId {
     final $$DiagnosesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -15300,6 +16419,12 @@ class $$SymptomsTableAnnotationComposer
 
   GeneratedColumn<String> get side =>
       $composableBuilder(column: $table.side, builder: (column) => column);
+
+  GeneratedColumn<String> get measure =>
+      $composableBuilder(column: $table.measure, builder: (column) => column);
+
+  GeneratedColumn<String> get measure2 =>
+      $composableBuilder(column: $table.measure2, builder: (column) => column);
 
   $$DiagnosesTableAnnotationComposer get diagnosisId {
     final $$DiagnosesTableAnnotationComposer composer = $composerBuilder(
@@ -15500,6 +16625,8 @@ class $$SymptomsTableTableManager
                 Value<String?> sensation = const Value.absent(),
                 Value<String?> quality = const Value.absent(),
                 Value<String?> side = const Value.absent(),
+                Value<String?> measure = const Value.absent(),
+                Value<String?> measure2 = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SymptomsCompanion(
                 archivedAt: archivedAt,
@@ -15515,6 +16642,8 @@ class $$SymptomsTableTableManager
                 sensation: sensation,
                 quality: quality,
                 side: side,
+                measure: measure,
+                measure2: measure2,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -15532,6 +16661,8 @@ class $$SymptomsTableTableManager
                 Value<String?> sensation = const Value.absent(),
                 Value<String?> quality = const Value.absent(),
                 Value<String?> side = const Value.absent(),
+                Value<String?> measure = const Value.absent(),
+                Value<String?> measure2 = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SymptomsCompanion.insert(
                 archivedAt: archivedAt,
@@ -15547,6 +16678,8 @@ class $$SymptomsTableTableManager
                 sensation: sensation,
                 quality: quality,
                 side: side,
+                measure: measure,
+                measure2: measure2,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -15757,6 +16890,14 @@ typedef $$SymptomObservationsTableCreateCompanionBuilder =
       Value<String?> location,
       Value<String?> side,
       Value<String?> pattern,
+      Value<String?> measure,
+      Value<double?> valueNumber2,
+      Value<String?> measure2,
+      Value<double?> secondaryValue,
+      Value<int?> energy,
+      Value<double?> sleepHours,
+      Value<int?> anxiety,
+      Value<String?> journal,
       Value<int> rowid,
     });
 typedef $$SymptomObservationsTableUpdateCompanionBuilder =
@@ -15775,6 +16916,14 @@ typedef $$SymptomObservationsTableUpdateCompanionBuilder =
       Value<String?> location,
       Value<String?> side,
       Value<String?> pattern,
+      Value<String?> measure,
+      Value<double?> valueNumber2,
+      Value<String?> measure2,
+      Value<double?> secondaryValue,
+      Value<int?> energy,
+      Value<double?> sleepHours,
+      Value<int?> anxiety,
+      Value<String?> journal,
       Value<int> rowid,
     });
 
@@ -15902,6 +17051,46 @@ class $$SymptomObservationsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get measure => $composableBuilder(
+    column: $table.measure,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get valueNumber2 => $composableBuilder(
+    column: $table.valueNumber2,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get measure2 => $composableBuilder(
+    column: $table.measure2,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get secondaryValue => $composableBuilder(
+    column: $table.secondaryValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get energy => $composableBuilder(
+    column: $table.energy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get sleepHours => $composableBuilder(
+    column: $table.sleepHours,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get anxiety => $composableBuilder(
+    column: $table.anxiety,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get journal => $composableBuilder(
+    column: $table.journal,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$SymptomsTableFilterComposer get symptomId {
     final $$SymptomsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -16025,6 +17214,46 @@ class $$SymptomObservationsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get measure => $composableBuilder(
+    column: $table.measure,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get valueNumber2 => $composableBuilder(
+    column: $table.valueNumber2,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get measure2 => $composableBuilder(
+    column: $table.measure2,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get secondaryValue => $composableBuilder(
+    column: $table.secondaryValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get energy => $composableBuilder(
+    column: $table.energy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get sleepHours => $composableBuilder(
+    column: $table.sleepHours,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get anxiety => $composableBuilder(
+    column: $table.anxiety,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get journal => $composableBuilder(
+    column: $table.journal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$SymptomsTableOrderingComposer get symptomId {
     final $$SymptomsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -16102,6 +17331,36 @@ class $$SymptomObservationsTableAnnotationComposer
 
   GeneratedColumn<String> get pattern =>
       $composableBuilder(column: $table.pattern, builder: (column) => column);
+
+  GeneratedColumn<String> get measure =>
+      $composableBuilder(column: $table.measure, builder: (column) => column);
+
+  GeneratedColumn<double> get valueNumber2 => $composableBuilder(
+    column: $table.valueNumber2,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get measure2 =>
+      $composableBuilder(column: $table.measure2, builder: (column) => column);
+
+  GeneratedColumn<double> get secondaryValue => $composableBuilder(
+    column: $table.secondaryValue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get energy =>
+      $composableBuilder(column: $table.energy, builder: (column) => column);
+
+  GeneratedColumn<double> get sleepHours => $composableBuilder(
+    column: $table.sleepHours,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get anxiety =>
+      $composableBuilder(column: $table.anxiety, builder: (column) => column);
+
+  GeneratedColumn<String> get journal =>
+      $composableBuilder(column: $table.journal, builder: (column) => column);
 
   $$SymptomsTableAnnotationComposer get symptomId {
     final $$SymptomsTableAnnotationComposer composer = $composerBuilder(
@@ -16202,6 +17461,14 @@ class $$SymptomObservationsTableTableManager
                 Value<String?> location = const Value.absent(),
                 Value<String?> side = const Value.absent(),
                 Value<String?> pattern = const Value.absent(),
+                Value<String?> measure = const Value.absent(),
+                Value<double?> valueNumber2 = const Value.absent(),
+                Value<String?> measure2 = const Value.absent(),
+                Value<double?> secondaryValue = const Value.absent(),
+                Value<int?> energy = const Value.absent(),
+                Value<double?> sleepHours = const Value.absent(),
+                Value<int?> anxiety = const Value.absent(),
+                Value<String?> journal = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SymptomObservationsCompanion(
                 id: id,
@@ -16218,6 +17485,14 @@ class $$SymptomObservationsTableTableManager
                 location: location,
                 side: side,
                 pattern: pattern,
+                measure: measure,
+                valueNumber2: valueNumber2,
+                measure2: measure2,
+                secondaryValue: secondaryValue,
+                energy: energy,
+                sleepHours: sleepHours,
+                anxiety: anxiety,
+                journal: journal,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -16236,6 +17511,14 @@ class $$SymptomObservationsTableTableManager
                 Value<String?> location = const Value.absent(),
                 Value<String?> side = const Value.absent(),
                 Value<String?> pattern = const Value.absent(),
+                Value<String?> measure = const Value.absent(),
+                Value<double?> valueNumber2 = const Value.absent(),
+                Value<String?> measure2 = const Value.absent(),
+                Value<double?> secondaryValue = const Value.absent(),
+                Value<int?> energy = const Value.absent(),
+                Value<double?> sleepHours = const Value.absent(),
+                Value<int?> anxiety = const Value.absent(),
+                Value<String?> journal = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SymptomObservationsCompanion.insert(
                 id: id,
@@ -16252,6 +17535,14 @@ class $$SymptomObservationsTableTableManager
                 location: location,
                 side: side,
                 pattern: pattern,
+                measure: measure,
+                valueNumber2: valueNumber2,
+                measure2: measure2,
+                secondaryValue: secondaryValue,
+                energy: energy,
+                sleepHours: sleepHours,
+                anxiety: anxiety,
+                journal: journal,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -20063,6 +21354,10 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<bool> menopauseTracking,
       Value<bool> pregnancyTracking,
       Value<bool> showFertileWindow,
+      Value<String?> temperatureUnit,
+      Value<String?> glucoseUnit,
+      Value<String?> weightUnit,
+      Value<bool> psychQuestionnaires,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -20085,6 +21380,10 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<bool> menopauseTracking,
       Value<bool> pregnancyTracking,
       Value<bool> showFertileWindow,
+      Value<String?> temperatureUnit,
+      Value<String?> glucoseUnit,
+      Value<String?> weightUnit,
+      Value<bool> psychQuestionnaires,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -20188,6 +21487,26 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<bool> get showFertileWindow => $composableBuilder(
     column: $table.showFertileWindow,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get temperatureUnit => $composableBuilder(
+    column: $table.temperatureUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get glucoseUnit => $composableBuilder(
+    column: $table.glucoseUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get weightUnit => $composableBuilder(
+    column: $table.weightUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get psychQuestionnaires => $composableBuilder(
+    column: $table.psychQuestionnaires,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -20295,6 +21614,26 @@ class $$AppSettingsTableOrderingComposer
     column: $table.showFertileWindow,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get temperatureUnit => $composableBuilder(
+    column: $table.temperatureUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get glucoseUnit => $composableBuilder(
+    column: $table.glucoseUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get weightUnit => $composableBuilder(
+    column: $table.weightUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get psychQuestionnaires => $composableBuilder(
+    column: $table.psychQuestionnaires,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -20398,6 +21737,26 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.showFertileWindow,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get temperatureUnit => $composableBuilder(
+    column: $table.temperatureUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get glucoseUnit => $composableBuilder(
+    column: $table.glucoseUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get weightUnit => $composableBuilder(
+    column: $table.weightUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get psychQuestionnaires => $composableBuilder(
+    column: $table.psychQuestionnaires,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -20450,6 +21809,10 @@ class $$AppSettingsTableTableManager
                 Value<bool> menopauseTracking = const Value.absent(),
                 Value<bool> pregnancyTracking = const Value.absent(),
                 Value<bool> showFertileWindow = const Value.absent(),
+                Value<String?> temperatureUnit = const Value.absent(),
+                Value<String?> glucoseUnit = const Value.absent(),
+                Value<String?> weightUnit = const Value.absent(),
+                Value<bool> psychQuestionnaires = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -20470,6 +21833,10 @@ class $$AppSettingsTableTableManager
                 menopauseTracking: menopauseTracking,
                 pregnancyTracking: pregnancyTracking,
                 showFertileWindow: showFertileWindow,
+                temperatureUnit: temperatureUnit,
+                glucoseUnit: glucoseUnit,
+                weightUnit: weightUnit,
+                psychQuestionnaires: psychQuestionnaires,
               ),
           createCompanionCallback:
               ({
@@ -20492,6 +21859,10 @@ class $$AppSettingsTableTableManager
                 Value<bool> menopauseTracking = const Value.absent(),
                 Value<bool> pregnancyTracking = const Value.absent(),
                 Value<bool> showFertileWindow = const Value.absent(),
+                Value<String?> temperatureUnit = const Value.absent(),
+                Value<String?> glucoseUnit = const Value.absent(),
+                Value<String?> weightUnit = const Value.absent(),
+                Value<bool> psychQuestionnaires = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -20512,6 +21883,10 @@ class $$AppSettingsTableTableManager
                 menopauseTracking: menopauseTracking,
                 pregnancyTracking: pregnancyTracking,
                 showFertileWindow: showFertileWindow,
+                temperatureUnit: temperatureUnit,
+                glucoseUnit: glucoseUnit,
+                weightUnit: weightUnit,
+                psychQuestionnaires: psychQuestionnaires,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -24494,6 +25869,225 @@ typedef $$PregnanciesTableProcessedTableManager =
       Pregnancy,
       PrefetchHooks Function()
     >;
+typedef $$PsychAssessmentsTableCreateCompanionBuilder =
+    PsychAssessmentsCompanion Function({
+      required String id,
+      required DateTime recordedAt,
+      required String instrument,
+      required String scores,
+      Value<String?> note,
+      Value<int> rowid,
+    });
+typedef $$PsychAssessmentsTableUpdateCompanionBuilder =
+    PsychAssessmentsCompanion Function({
+      Value<String> id,
+      Value<DateTime> recordedAt,
+      Value<String> instrument,
+      Value<String> scores,
+      Value<String?> note,
+      Value<int> rowid,
+    });
+
+class $$PsychAssessmentsTableFilterComposer
+    extends Composer<_$AppDatabase, $PsychAssessmentsTable> {
+  $$PsychAssessmentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get instrument => $composableBuilder(
+    column: $table.instrument,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scores => $composableBuilder(
+    column: $table.scores,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PsychAssessmentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PsychAssessmentsTable> {
+  $$PsychAssessmentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get instrument => $composableBuilder(
+    column: $table.instrument,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scores => $composableBuilder(
+    column: $table.scores,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PsychAssessmentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PsychAssessmentsTable> {
+  $$PsychAssessmentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get instrument => $composableBuilder(
+    column: $table.instrument,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get scores =>
+      $composableBuilder(column: $table.scores, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+}
+
+class $$PsychAssessmentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PsychAssessmentsTable,
+          PsychAssessment,
+          $$PsychAssessmentsTableFilterComposer,
+          $$PsychAssessmentsTableOrderingComposer,
+          $$PsychAssessmentsTableAnnotationComposer,
+          $$PsychAssessmentsTableCreateCompanionBuilder,
+          $$PsychAssessmentsTableUpdateCompanionBuilder,
+          (
+            PsychAssessment,
+            BaseReferences<
+              _$AppDatabase,
+              $PsychAssessmentsTable,
+              PsychAssessment
+            >,
+          ),
+          PsychAssessment,
+          PrefetchHooks Function()
+        > {
+  $$PsychAssessmentsTableTableManager(
+    _$AppDatabase db,
+    $PsychAssessmentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PsychAssessmentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PsychAssessmentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PsychAssessmentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> recordedAt = const Value.absent(),
+                Value<String> instrument = const Value.absent(),
+                Value<String> scores = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PsychAssessmentsCompanion(
+                id: id,
+                recordedAt: recordedAt,
+                instrument: instrument,
+                scores: scores,
+                note: note,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime recordedAt,
+                required String instrument,
+                required String scores,
+                Value<String?> note = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PsychAssessmentsCompanion.insert(
+                id: id,
+                recordedAt: recordedAt,
+                instrument: instrument,
+                scores: scores,
+                note: note,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PsychAssessmentsTable, PsychAssessment>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $PsychAssessmentsTable,
+                    PsychAssessment
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PsychAssessmentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PsychAssessmentsTable,
+      PsychAssessment,
+      $$PsychAssessmentsTableFilterComposer,
+      $$PsychAssessmentsTableOrderingComposer,
+      $$PsychAssessmentsTableAnnotationComposer,
+      $$PsychAssessmentsTableCreateCompanionBuilder,
+      $$PsychAssessmentsTableUpdateCompanionBuilder,
+      (
+        PsychAssessment,
+        BaseReferences<_$AppDatabase, $PsychAssessmentsTable, PsychAssessment>,
+      ),
+      PsychAssessment,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -24544,4 +26138,6 @@ class $AppDatabaseManager {
       $$MrsAssessmentsTableTableManager(_db, _db.mrsAssessments);
   $$PregnanciesTableTableManager get pregnancies =>
       $$PregnanciesTableTableManager(_db, _db.pregnancies);
+  $$PsychAssessmentsTableTableManager get psychAssessments =>
+      $$PsychAssessmentsTableTableManager(_db, _db.psychAssessments);
 }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../data/app_database.dart';
+import '../data/measure_units.dart';
 import '../data/symptom_description.dart';
+import '../data/symptom_measure.dart';
 import '../l10n/l10n.dart';
 import 'symptom_report_card.dart' show observationLabel;
 
@@ -36,6 +38,68 @@ Map<DateTime, double> dailyMaxIntensity(
     final clamped = value.clamp(0, 10).toDouble();
     final current = result[day];
     if (current == null || clamped > current) result[day] = clamped;
+  }
+  return result;
+}
+
+/// v15: Tageswert einer Messgröße mit Schweregrad 0–10 (siehe
+/// [measureSeverity]). Anzahl/Dauer: Summe des Tages, Schweregrad relativ
+/// zum höchsten Tageswert; sonst der auffälligste Wert des Tages (SpO₂: der
+/// niedrigste, Stimmung: der weiteste von 0).
+typedef DayMeasure = ({double severity, double value, double? value2});
+
+Map<DateTime, DayMeasure> dailySeverity(
+  Iterable<SymptomObservation> observations,
+  SymptomMeasure measure,
+) {
+  final values = <DateTime, List<(double, double?)>>{};
+  for (final o in observations) {
+    final double? value;
+    double? value2;
+    if (observationMeasure(o) == measure) {
+      value = o.valueNumber;
+      value2 = o.valueNumber2;
+    } else if (SymptomMeasure.fromCode(o.measure2) == measure) {
+      value = o.secondaryValue;
+    } else {
+      continue;
+    }
+    if (value == null) continue;
+    (values[localDay(o.recordedAt)] ??= []).add((value, value2));
+  }
+  if (measure == SymptomMeasure.count || measure == SymptomMeasure.duration) {
+    final sums = {
+      for (final e in values.entries)
+        e.key: e.value.fold<double>(0, (sum, v) => sum + v.$1),
+    };
+    final max = sums.values.fold<double>(0, (m, v) => v > m ? v : m);
+    return {
+      for (final e in sums.entries)
+        e.key: (
+          severity: measureSeverity(measure, e.value, maxValue: max),
+          value: e.value,
+          value2: null,
+        ),
+    };
+  }
+  final result = <DateTime, DayMeasure>{};
+  for (final e in values.entries) {
+    DayMeasure? worst;
+    for (final (v, v2) in e.value) {
+      final severity = measure == SymptomMeasure.intensity
+          ? v.clamp(0, 10).toDouble()
+          : measureSeverity(measure, v, value2: v2);
+      // Gleichstand: auffälligerer Rohwert (SpO₂ niedriger, sonst weiter weg).
+      final better =
+          worst == null ||
+          severity > worst.severity ||
+          (severity == worst.severity &&
+              (measure == SymptomMeasure.spo2
+                  ? v < worst.value
+                  : v.abs() > worst.value.abs()));
+      if (better) worst = (severity: severity, value: v, value2: v2);
+    }
+    result[e.key] = worst!;
   }
   return result;
 }
@@ -88,9 +152,17 @@ Color heatmapColor(IntensityBand band, ColorScheme scheme) {
 /// als Zellen, Farbe = höchste Stärke des Tages. Neueste Woche rechts, nach
 /// links scrollbar. Tippen zeigt die Check-ins des Tages darunter.
 class SymptomHeatmap extends StatefulWidget {
-  const SymptomHeatmap({super.key, required this.observations, this.today});
+  const SymptomHeatmap({
+    super.key,
+    required this.observations,
+    this.today,
+    this.measure = SymptomMeasure.intensity,
+  });
 
   final List<SymptomObservation> observations;
+
+  /// v15: Messgröße; Farbe = Schweregrad (siehe [dailySeverity]).
+  final SymptomMeasure measure;
 
   /// Für Tests; sonst heute.
   final DateTime? today;
@@ -115,7 +187,10 @@ class _SymptomHeatmapState extends State<SymptomHeatmap> {
       color: scheme.onSurfaceVariant,
     );
     final today = localDay(widget.today ?? DateTime.now());
-    final maxByDay = dailyMaxIntensity(widget.observations);
+    final measure = widget.measure;
+    final intensity = measure == SymptomMeasure.intensity;
+    final byDay = dailySeverity(widget.observations, measure);
+    final maxByDay = {for (final e in byDay.entries) e.key: e.value.severity};
     final earliest = widget.observations.isEmpty
         ? null
         : widget.observations
@@ -138,11 +213,22 @@ class _SymptomHeatmapState extends State<SymptomHeatmap> {
       }
       final value = maxByDay[day];
       final selected = day == _selected;
+      final dayValue = byDay[day];
       final label = value == null
           ? l10n.symptomHeatmapCellEmpty(cellFormat.format(day))
-          : l10n.symptomHeatmapCell(
+          : intensity
+          ? l10n.symptomHeatmapCell(
               cellFormat.format(day),
               value.round().toString(),
+            )
+          : l10n.heatmapCellMeasure(
+              cellFormat.format(day),
+              formatMeasureValue(
+                measure,
+                dayValue!.value,
+                value2: dayValue.value2,
+                l10n: l10n,
+              ),
             );
       return Semantics(
         label: label,
@@ -215,7 +301,12 @@ class _SymptomHeatmapState extends State<SymptomHeatmap> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Semantics(
-          label: l10n.symptomHeatmapSemantics(maxByDay.length),
+          label: intensity
+              ? l10n.symptomHeatmapSemantics(maxByDay.length)
+              : l10n.heatmapSemanticsMeasure(
+                  measureLabel(measure, l10n),
+                  maxByDay.length,
+                ),
           child: SizedBox(
             height: _labelHeight + 7 * _cell + 6 * _gap,
             child: Row(
@@ -280,11 +371,17 @@ class _SymptomHeatmapState extends State<SymptomHeatmap> {
                   color: heatmapColor(band, scheme),
                   borderRadius: BorderRadius.circular(3),
                 ),
-                label: '$range ${intensityBandLabel(band, l10n)}',
+                label: intensity
+                    ? '$range ${intensityBandLabel(band, l10n)}'
+                    : severityLabel(band, l10n),
                 style: small,
               ),
           ],
         ),
+        if (!intensity) ...[
+          const SizedBox(height: 4),
+          Text(heatmapMappingText(measure, byDay, l10n), style: small),
+        ],
         const SizedBox(height: 4),
         if (selected == null)
           Text(l10n.symptomHeatmapHint, style: small)
@@ -310,6 +407,50 @@ class _SymptomHeatmapState extends State<SymptomHeatmap> {
       ],
     );
   }
+}
+
+/// Legende für Messgrößen außer Stärke (Schweregrad statt 0–10).
+String severityLabel(IntensityBand band, AppLocalizations l10n) =>
+    switch (band) {
+      IntensityBand.none => l10n.severityNone,
+      IntensityBand.mild => l10n.severityMild,
+      IntensityBand.moderate => l10n.severityModerate,
+      IntensityBand.severe => l10n.severitySevere,
+      IntensityBand.unbearable => l10n.severityMax,
+    };
+
+/// Erklärt, wie Werte der Messgröße auf Farben abgebildet werden.
+String heatmapMappingText(
+  SymptomMeasure measure,
+  Map<DateTime, DayMeasure> byDay,
+  AppLocalizations l10n,
+) {
+  String value(double v) => formatMeasureValue(measure, v, l10n: l10n);
+  return switch (measure) {
+    SymptomMeasure.temperature => l10n.heatmapMapTemperature(
+      value(37.5),
+      value(38),
+      value(39),
+      value(40),
+    ),
+    SymptomMeasure.count || SymptomMeasure.duration => l10n.heatmapMapRelative(
+      value(byDay.values.fold<double>(0, (m, d) => d.value > m ? d.value : m)),
+    ),
+    SymptomMeasure.bloodPressure => l10n.heatmapMapBloodPressure,
+    SymptomMeasure.spo2 => l10n.heatmapMapSpo2,
+    SymptomMeasure.glucose => l10n.heatmapMapGlucose(
+      formatNumber(
+        AppUnits.current.glucoseToDisplay(70),
+        digits: displayDigits(measure),
+        locale: l10n.localeName,
+      ),
+      value(180),
+    ),
+    SymptomMeasure.pulse => l10n.heatmapMapPulse,
+    SymptomMeasure.mood => l10n.heatmapMapMood,
+    SymptomMeasure.weight => l10n.heatmapMapWeight,
+    SymptomMeasure.intensity => '',
+  };
 }
 
 class _LegendItem extends StatelessWidget {

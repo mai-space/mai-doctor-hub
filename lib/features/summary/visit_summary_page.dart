@@ -32,6 +32,9 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
   final Set<String> _medicationIds = {};
   bool _diagnoses = true;
   bool _vaccinations = true;
+
+  /// v15: Tagebuch-Einträge — standardmäßig aus.
+  bool _journal = false;
   bool _busy = false;
 
   /// Zyklus-Abschnitt: nur anbietbar, wenn ein Bereich aktiv ist; Standard
@@ -91,6 +94,7 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
     includeVaccinations: _vaccinations,
     questions: _questions.text,
     patientName: _name.text,
+    includeJournal: _journal,
   );
 
   Future<void> _export({required bool share}) async {
@@ -275,6 +279,14 @@ class _VisitSummaryPageState extends State<VisitSummaryPage> {
               value: _includeCycle,
               onChanged: (v) => setState(() => _cycleChoice = v),
             ),
+          SwitchListTile(
+            key: const ValueKey('summary-journal'),
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.summaryIncludeJournal),
+            subtitle: Text(l10n.summaryIncludeJournalSubtitle),
+            value: _journal,
+            onChanged: (v) => setState(() => _journal = v),
+          ),
         ],
       ),
     );
