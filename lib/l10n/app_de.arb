@@ -1405,6 +1405,7 @@
     }
   },
   "svcReminderVaccinationBody": "Termin für die Auffrischung vereinbaren",
+  "svcModelIntegrityFailed": "Der Download war unvollständig oder entsprach nicht der geprüften Version und wurde verworfen. Bitte erneut versuchen.",
   "symptomCheckInHint": "Beschreibe, was du spürst: Art, Charakter, Ort und Stärke (0–10). Tippe auf einen Baustein, um ihn zu ändern.",
   "symptomSensation": "Empfindung",
   "symptomQuality": "Charakter",

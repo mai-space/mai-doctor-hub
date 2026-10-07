@@ -2411,6 +2411,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Book an appointment for the booster';
 
   @override
+  String get svcModelIntegrityFailed =>
+      'The download was incomplete or didn\'t match the verified version and was discarded. Please try again.';
+
+  @override
   String get symptomCheckInHint =>
       'Describe what you feel: type, character, location and intensity (0–10). Tap a part to change it.';
 

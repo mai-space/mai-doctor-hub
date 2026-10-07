@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mai_doctor_hub/services/assistant/assistant_engine.dart';
 import 'package:mai_doctor_hub/services/assistant/model_integrity.dart';
@@ -50,6 +51,41 @@ void main() {
       expect(f.revision, matches(RegExp(r'^[0-9a-f]{40}$')));
       expect(f.sha256, matches(RegExp(r'^[0-9a-f]{64}$')));
       expect(f.url, endsWith('/${f.fileName}'));
+    }
+  });
+
+  test('companion files are found under their namespaced name', () {
+    const pin = GemmaRecordEmbedder.tokenizerFile;
+    expect(
+      installedNameFor(pin, [
+        'embeddinggemma-300M_seq512_mixed-precision.tflite',
+        'embeddinggemma-300M_seq512_mixed-precision__sentencepiece.model',
+      ]),
+      'embeddinggemma-300M_seq512_mixed-precision__sentencepiece.model',
+    );
+    expect(
+      installedNameFor(GemmaRecordEmbedder.modelFile, [
+        'embeddinggemma-300M_seq512_mixed-precision.tflite',
+      ]),
+      'embeddinggemma-300M_seq512_mixed-precision.tflite',
+    );
+    expect(installedNameFor(pin, const []), 'sentencepiece.model');
+  });
+
+  test('names match what flutter_gemma actually stores', () {
+    final spec = EmbeddingModelSpec(
+      name: 'embeddinggemma-300M_seq512_mixed-precision',
+      modelSource: ModelSource.network(GemmaRecordEmbedder.modelFile.url),
+      tokenizerSource: ModelSource.network(
+        GemmaRecordEmbedder.tokenizerFile.url,
+      ),
+    );
+    final names = [for (final f in spec.files) f.filename];
+    for (final pin in [
+      GemmaRecordEmbedder.modelFile,
+      GemmaRecordEmbedder.tokenizerFile,
+    ]) {
+      expect(names, contains(installedNameFor(pin, names)), reason: '$names');
     }
   });
 }

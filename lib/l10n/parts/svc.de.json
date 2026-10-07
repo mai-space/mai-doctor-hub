@@ -475,5 +475,6 @@
   "@svcReminderVaccinationSoon": {"placeholders": {"vaccine": {"type": "String"}}},
   "svcReminderVaccinationToday": "{vaccine}: heute fällig",
   "@svcReminderVaccinationToday": {"placeholders": {"vaccine": {"type": "String"}}},
-  "svcReminderVaccinationBody": "Termin für die Auffrischung vereinbaren"
+  "svcReminderVaccinationBody": "Termin für die Auffrischung vereinbaren",
+  "svcModelIntegrityFailed": "Der Download war unvollständig oder entsprach nicht der geprüften Version und wurde verworfen. Bitte erneut versuchen."
 }

@@ -54,6 +54,14 @@ class GemmaRecordEmbedder implements RecordEmbedder {
   static final _modelUrl = modelFile.url;
   static final _tokenizerUrl = tokenizerFile.url;
 
+  /// Gleiche Spezifikation wie bei der Installation — liefert die Namen, unter
+  /// denen flutter_gemma die Dateien ablegt.
+  static final _spec = EmbeddingModelSpec(
+    name: 'embeddinggemma-300M_seq512_mixed-precision',
+    modelSource: ModelSource.network(_modelUrl),
+    tokenizerSource: ModelSource.network(_tokenizerUrl),
+  );
+
   CancelToken? _cancel;
   EmbeddingModel? _model;
 
@@ -74,12 +82,7 @@ class GemmaRecordEmbedder implements RecordEmbedder {
   @override
   Future<bool> isInstalled() async {
     await GemmaRuntime.ensureInitialized();
-    final spec = EmbeddingModelSpec(
-      name: 'embeddinggemma-300M_seq512_mixed-precision',
-      modelSource: ModelSource.network(_modelUrl),
-      tokenizerSource: ModelSource.network(_tokenizerUrl),
-    );
-    for (final file in spec.files) {
+    for (final file in _spec.files) {
       if (!await FlutterGemma.isModelInstalled(file.filename)) return false;
     }
     return true;
@@ -97,7 +100,10 @@ class GemmaRecordEmbedder implements RecordEmbedder {
             .withCancelToken(cancel)
             .install();
         try {
-          await verifyInstalled([modelFile, tokenizerFile]);
+          await verifyInstalled(
+            [modelFile, tokenizerFile],
+            installedNames: [for (final f in _spec.files) f.filename],
+          );
         } on ModelIntegrityException {
           await FlutterGemma.uninstallEmbedder();
           rethrow;

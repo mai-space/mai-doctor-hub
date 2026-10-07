@@ -2334,6 +2334,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Termin für die Auffrischung vereinbaren';
 
   @override
+  String get svcModelIntegrityFailed =>
+      'Der Download war unvollständig oder entsprach nicht der geprüften Version und wurde verworfen. Bitte erneut versuchen.';
+
+  @override
   String get symptomCheckInHint =>
       'Beschreibe, was du spürst: Art, Charakter, Ort und Stärke (0–10). Tippe auf einen Baustein, um ihn zu ändern.';
 

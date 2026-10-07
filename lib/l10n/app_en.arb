@@ -675,6 +675,7 @@
   "svcReminderVaccinationSoon": "{vaccine}: due in one week",
   "svcReminderVaccinationToday": "{vaccine}: due today",
   "svcReminderVaccinationBody": "Book an appointment for the booster",
+  "svcModelIntegrityFailed": "The download was incomplete or didn't match the verified version and was discarded. Please try again.",
   "symptomCheckInHint": "Describe what you feel: type, character, location and intensity (0–10). Tap a part to change it.",
   "symptomSensation": "Sensation",
   "symptomQuality": "Character",

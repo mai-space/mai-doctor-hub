@@ -66,10 +66,30 @@ Future<void> verifyFile(String path, PinnedModelFile pin) async {
 }
 
 /// Prüft die installierten Dateien von flutter_gemma.
-Future<void> verifyInstalled(List<PinnedModelFile> pins) async {
+///
+/// [installedNames]: Dateinamen laut flutter_gemma-Spezifikation. Begleit-
+/// dateien liegen dort mit Präfix (`<modell>__sentencepiece.model`), damit
+/// gleichnamige Tokenizer verschiedener Modelle sich nicht überschreiben.
+Future<void> verifyInstalled(
+  List<PinnedModelFile> pins, {
+  List<String> installedNames = const [],
+}) async {
   for (final pin in pins) {
-    await verifyFile(await FlutterGemma.getModelPath(pin.fileName), pin);
+    final name = installedNameFor(pin, installedNames);
+    await verifyFile(await FlutterGemma.getModelPath(name), pin);
   }
+}
+
+/// Name, unter dem flutter_gemma [pin] ablegt: exakt oder mit
+/// `<modell>__`-Präfix; ohne Treffer der Originalname.
+@visibleForTesting
+String installedNameFor(PinnedModelFile pin, List<String> installedNames) {
+  for (final name in installedNames) {
+    if (name == pin.fileName || name.endsWith('__${pin.fileName}')) {
+      return name;
+    }
+  }
+  return pin.fileName;
 }
 
 /// Entfernt Download-Aufträge, die einen Token enthalten, aus dem Speicher

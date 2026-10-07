@@ -4153,6 +4153,12 @@ abstract class AppLocalizations {
   /// **'Termin für die Auffrischung vereinbaren'**
   String get svcReminderVaccinationBody;
 
+  /// No description provided for @svcModelIntegrityFailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Download war unvollständig oder entsprach nicht der geprüften Version und wurde verworfen. Bitte erneut versuchen.'**
+  String get svcModelIntegrityFailed;
+
   /// No description provided for @symptomCheckInHint.
   ///
   /// In de, this message translates to:

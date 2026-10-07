@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../../data/app_database.dart';
 import '../../l10n/l10n.dart';
 import 'assistant_engine.dart';
+import 'model_integrity.dart' show ModelIntegrityException;
 import 'record_embedder.dart';
 import 'semantic_index.dart';
 
@@ -80,9 +81,11 @@ class AssistantModel extends ChangeNotifier {
       },
       onError: (Object e) {
         phase = AssistantPhase.notInstalled;
-        message = e is AssistantCancelled
-            ? null
-            : AppLocale.strings.svcDownloadFailed('$e');
+        message = switch (e) {
+          AssistantCancelled() => null,
+          ModelIntegrityException() => AppLocale.strings.svcModelIntegrityFailed,
+          _ => AppLocale.strings.svcDownloadFailed('$e'),
+        };
         notifyListeners();
       },
       onDone: () {
@@ -117,9 +120,11 @@ class AssistantModel extends ChangeNotifier {
       },
       onError: (Object e) {
         semanticPhase = SemanticPhase.notInstalled;
-        semanticMessage = e is AssistantCancelled
-            ? null
-            : AppLocale.strings.svcSemanticDownloadFailed('$e');
+        semanticMessage = switch (e) {
+          AssistantCancelled() => null,
+          ModelIntegrityException() => AppLocale.strings.svcModelIntegrityFailed,
+          _ => AppLocale.strings.svcSemanticDownloadFailed('$e'),
+        };
         notifyListeners();
       },
       onDone: () {
