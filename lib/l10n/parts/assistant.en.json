@@ -1,0 +1,36 @@
+{
+  "assistantHistoryHeading": "EARLIER CONVERSATION",
+  "assistantHistoryTurn": "User: {question}\nAssistant: {answer}",
+  "@assistantHistoryTurn": {
+    "placeholders": {
+      "question": {"type": "String"},
+      "answer": {"type": "String"}
+    }
+  },
+  "assistantPromptReminder": "Answer briefly in Markdown. Last line: FOLLOW-UPS: … | … | …",
+  "assistantFollowUpUnderstandTooltip": "Understand",
+  "assistantFollowUpActTooltip": "Act",
+  "assistantFollowUpRelated": "What could be related?",
+  "assistantFollowUpDevelopment": "How has this developed?",
+  "assistantFollowUpObserve": "What should I keep an eye on?",
+  "assistantFollowUpAskDoctor": "What should I ask my doctor?",
+  "assistantFollowUpWhenDoctor": "When should I see a doctor?",
+  "assistantFollowUpSymptomCourse": "Course of {symptom}",
+  "@assistantFollowUpSymptomCourse": {
+    "placeholders": {"symptom": {"type": "String"}}
+  },
+  "assistantFollowUpSymptomRelated": "What could be related to {symptom}?",
+  "@assistantFollowUpSymptomRelated": {
+    "placeholders": {"symptom": {"type": "String"}}
+  },
+  "assistantFollowUpSymptomDoctor": "Questions for my doctor about {symptom}",
+  "@assistantFollowUpSymptomDoctor": {
+    "placeholders": {"symptom": {"type": "String"}}
+  },
+  "assistantOpenLinkTitle": "Open link?",
+  "assistantOpenLinkBody": "This address will be opened outside the app:\n{url}",
+  "@assistantOpenLinkBody": {
+    "placeholders": {"url": {"type": "String"}}
+  },
+  "assistantOpenLink": "Open"
+}

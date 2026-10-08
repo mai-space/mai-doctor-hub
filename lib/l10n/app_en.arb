@@ -1,5 +1,59 @@
 {
   "@@locale": "en",
+  "assistantHistoryHeading": "EARLIER CONVERSATION",
+  "assistantHistoryTurn": "User: {question}\nAssistant: {answer}",
+  "@assistantHistoryTurn": {
+    "placeholders": {
+      "question": {
+        "type": "String"
+      },
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "assistantPromptReminder": "Answer briefly in Markdown. Last line: FOLLOW-UPS: … | … | …",
+  "assistantFollowUpUnderstandTooltip": "Understand",
+  "assistantFollowUpActTooltip": "Act",
+  "assistantFollowUpRelated": "What could be related?",
+  "assistantFollowUpDevelopment": "How has this developed?",
+  "assistantFollowUpObserve": "What should I keep an eye on?",
+  "assistantFollowUpAskDoctor": "What should I ask my doctor?",
+  "assistantFollowUpWhenDoctor": "When should I see a doctor?",
+  "assistantFollowUpSymptomCourse": "Course of {symptom}",
+  "@assistantFollowUpSymptomCourse": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "assistantFollowUpSymptomRelated": "What could be related to {symptom}?",
+  "@assistantFollowUpSymptomRelated": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "assistantFollowUpSymptomDoctor": "Questions for my doctor about {symptom}",
+  "@assistantFollowUpSymptomDoctor": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "assistantOpenLinkTitle": "Open link?",
+  "assistantOpenLinkBody": "This address will be opened outside the app:\n{url}",
+  "@assistantOpenLinkBody": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "assistantOpenLink": "Open",
   "catalogReminderMorningTitle": "Morning check-in",
   "catalogReminderMorningBody": "How are you feeling today? Quickly log your symptoms.",
   "catalogReminderEveningTitle": "Evening check-in",
@@ -1005,7 +1059,7 @@
   "svcAssistantDeviceCheckFailed": "Couldn't check this device: {error}",
   "svcAssistantNeedsAndroid11": "The on-device assistant requires Android 11 or later.",
   "svcAssistantNeedsArm64": "The on-device assistant requires a 64-bit ARM processor.",
-  "svcContextSystemPrompt": "You are the assistant of the app “Mai Doctor Hub”. You answer questions about\nthe user's personal health record in English, briefly and clearly.\nRules:\n- Use only the information in the RECORD section. If something is not in it,\n  say honestly that it is not noted in the record.\n- Copy dates, times, dosages and values exactly.\n- Do not make diagnoses and do not give therapy or dosage recommendations;\n  for medical questions, refer the user to a doctor or pharmacist.\n- If there are warning signs of an emergency: advise calling the local\n  emergency number (112 in Europe, 911 in the US) immediately.",
+  "svcContextSystemPrompt": "You are the assistant of the app “Mai Doctor Hub”. You help the user calmly and factually to understand their own health record. Answer in English in Markdown, at most about 180 words.\nRules:\n- Rely on the RECORD section. If something is not in it, say honestly that it is not noted in the record.\n- Copy dates, times, dosages and values exactly.\n- Do not make diagnoses and do not give therapy or dosage recommendations. Name possibilities (“could”, “often this is due to …”), never certainties.\n- If there are warning signs of an emergency: advise calling the local emergency number (112 in Europe, 911 in the US) immediately.\nFor complaints or symptoms always answer in two directions at once, 2–4 short points each:\n**Possible connections**\n- What in the record could fit: (new) medications around that time, cycle phase, sleep and mood, other symptoms, recent appointments or reports.\n- Common general causes, worded neutrally.\n**What you can do**\n- What to observe or log in the app.\n- Questions for the doctor.\n- Simple self-care.\n- When to get medical advice soon and when to call the emergency number right away.\nFor other questions (appointments, medications, reports) answer directly and concisely.\nLast line of every answer: FOLLOW-UPS: question 1 | question 2 | question 3\nShort questions from the user's point of view — at least one to understand, one to act.",
   "svcContextRecordHeading": "RECORD",
   "svcContextQuestionHeading": "QUESTION",
   "svcContextToday": "Today: {date}",

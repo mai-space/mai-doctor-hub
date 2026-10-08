@@ -7,6 +7,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:mai_doctor_hub/data/app_database.dart';
 import 'package:mai_doctor_hub/data/database_provider.dart';
 import 'package:mai_doctor_hub/data/repositories/records_repository.dart';
+import 'package:mai_doctor_hub/data/repositories/symptom_repository.dart';
 import 'package:mai_doctor_hub/features/assistant/assistant_page.dart';
 import 'package:mai_doctor_hub/services/assistant/assistant_engine.dart';
 import 'package:mai_doctor_hub/services/assistant/assistant_model.dart';
@@ -296,5 +297,84 @@ void main() {
     await settle(tester);
     expect(engine.completions.single, contains('Schilddrüse'));
     expect(engine.lastPrompt, contains('TSH 3,1'));
+  });
+
+  testWidgets('answer renders as Markdown, follow-ups become chips', (
+    tester,
+  ) async {
+    engine.installed = true;
+    engine.replies.add(const [
+      '**Mögliche Zusammenhänge**\n- Schlaf war ',
+      'kurz\n\n**Was du tun kannst**\n- Schlaf notieren\n\n',
+      'FOLGEFRAGEN: Woher kommt das? | Was soll ich beobachten?',
+    ]);
+    await pump(tester);
+    await tester.tap(find.text('Wann ist mein nächster Termin?'));
+    await settle(tester);
+    expect(
+      find.textContaining('Mögliche Zusammenhänge', findRichText: true),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Schlaf war kurz', findRichText: true), findsOneWidget);
+    expect(find.textContaining('**', findRichText: true), findsNothing);
+    expect(find.textContaining('FOLGEFRAGEN', findRichText: true), findsNothing);
+    expect(find.widgetWithText(ActionChip, 'Woher kommt das?'), findsOneWidget);
+    expect(
+      find.widgetWithText(ActionChip, 'Was soll ich beobachten?'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('tapping a chip asks it with the previous turn as context', (
+    tester,
+  ) async {
+    engine.installed = true;
+    await tester.runAsync(() async {
+      await SymptomRepository(db).create(label: 'Kopfschmerzen');
+      await RecordsRepository(
+        db,
+      ).createNote(body: 'Magnesium probiert wegen Kopfschmerzen');
+    });
+    engine.replies.add(['Mögliche Zusammenhänge: ${'Schlaf ' * 400}']);
+    await pump(tester);
+    await tester.enterText(
+      find.byType(TextField).last,
+      'Woher kommen meine Kopfschmerzen?',
+    );
+    await tester.tap(find.byTooltip('Fragen'));
+    await settle(tester);
+    // Keine Folgefragen vom Modell: feste, symptombezogene in beide Richtungen.
+    for (final chip in [
+      'Verlauf von Kopfschmerzen',
+      'Was könnte bei Kopfschmerzen zusammenhängen?',
+      'Fragen an die Ärztin zu Kopfschmerzen',
+    ]) {
+      expect(find.widgetWithText(ActionChip, chip), findsOneWidget);
+    }
+
+    final chip = find.widgetWithText(
+      ActionChip,
+      'Fragen an die Ärztin zu Kopfschmerzen',
+    );
+    await tester.ensureVisible(chip);
+    await tester.tap(chip);
+    await settle(tester);
+    expect(engine.prompts, hasLength(2));
+    final second = engine.prompts[1];
+    expect(second, contains('FRAGE:\nFragen an die Ärztin zu Kopfschmerzen'));
+    expect(second, contains('BISHERIGES GESPRÄCH:'));
+    expect(second, contains('Nutzer: Woher kommen meine Kopfschmerzen?'));
+    expect(second, contains('Assistent: Mögliche Zusammenhänge'));
+    // Lange Antwort gekürzt, Prompt im Budget.
+    expect(second, isNot(contains('Schlaf ' * 400)));
+    expect(second.length, lessThanOrEqualTo(6000 + 200));
+
+    // Begriffe der vorigen Frage suchen mit (die neue nennt sie nicht).
+    await tester.enterText(find.byType(TextField).last, 'Was hilft dabei?');
+    await tester.tap(find.byTooltip('Fragen'));
+    await settle(tester);
+    expect(engine.prompts, hasLength(3));
+    expect(engine.prompts[2], contains('Magnesium'));
+    expect(engine.prompts[2].length, lessThanOrEqualTo(6000 + 200));
   });
 }

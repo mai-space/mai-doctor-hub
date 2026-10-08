@@ -226,11 +226,13 @@ class AssistantContextBuilder {
   }.toList();
 
   /// [expansion]: zusätzliche Suchbegriffe (Synonyme, Fachbegriffe), siehe
-  /// [expandQuery].
+  /// [expandQuery]. [previous]: vorige Frage im Gespräch — ihre Begriffe
+  /// suchen mit (Anschlussfragen wie „Was könnte zusammenhängen?“).
   Future<String> build(
     String question, {
     DateTime? now,
     List<String> expansion = const [],
+    String? previous,
   }) async {
     final current = now ?? DateTime.now();
     final l10n = _l10n;
@@ -265,7 +267,11 @@ class AssistantContextBuilder {
     ];
 
     final base = sections.where((s) => s.isNotEmpty).join('\n\n');
-    final hits = await relevantHits(question, expansion: expansion);
+    final hits = await relevantHits(
+      question,
+      expansion: expansion,
+      previous: previous,
+    );
     if (hits.isEmpty) return _clip(base, maxChars);
 
     // Treffer bekommen, was sie brauchen — mindestens aber die Hälfte des
@@ -291,8 +297,13 @@ class AssistantContextBuilder {
   Future<List<RecordHit>> relevantHits(
     String question, {
     List<String> expansion = const [],
+    String? previous,
   }) async {
-    final terms = {...keywords(question), ...expansion}.toList();
+    final terms = {
+      ...keywords(question),
+      ...expansion,
+      if (previous != null) ...keywords(previous),
+    }.toList();
     final rows = await RecordsRepository(_db).searchAny(terms, limit: 20);
     final keyword = keywordChunks([
       for (final row in rows)
@@ -306,7 +317,7 @@ class AssistantContextBuilder {
     final semantic = _semantic == null
         ? const <RecordHit>[]
         : await _semantic.search(
-            question,
+            previous == null ? question : '$previous\n$question',
             limit: 10,
             exclude: await RecordsRepository(_db).archivedKeys(),
           );
@@ -445,10 +456,14 @@ class AssistantContextBuilder {
   };
 }
 
-/// Prompt = Akte-Auszug + Frage.
-String assistantPrompt(String context, String question) =>
+/// Prompt = Akte-Auszug + ggf. bisheriges Gespräch ([history], siehe
+/// `conversationHistory`) + Frage + kurze Erinnerung an das Antwortformat
+/// (kleine Modelle halten sich eher an das, was zuletzt steht).
+String assistantPrompt(String context, String question, {String history = ''}) =>
     '${AppLocale.strings.svcContextRecordHeading}:\n$context\n\n'
-    '${AppLocale.strings.svcContextQuestionHeading}:\n${question.trim()}';
+    '${history.isEmpty ? '' : '${AppLocale.strings.assistantHistoryHeading}:\n$history\n\n'}'
+    '${AppLocale.strings.svcContextQuestionHeading}:\n${question.trim()}\n\n'
+    '${AppLocale.strings.assistantPromptReminder}';
 
 /// Lässt das Sprachmodell Suchbegriffe ergänzen (Synonyme, Fach- und
 /// Laienbegriffe, Abkürzungen), damit die Stichwortsuche auch Einträge

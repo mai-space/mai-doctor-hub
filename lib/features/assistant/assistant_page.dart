@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/database_provider.dart';
 import '../../l10n/l10n.dart';
 import '../../services/assistant/assistant_model.dart';
+import '../../services/assistant/follow_ups.dart';
 import '../../services/assistant/record_context.dart';
 
 /// „Frag deine Akte“ — Antworten vom lokalen Modell, nichts verlässt das Gerät.
@@ -27,6 +29,16 @@ class _Turn {
 
   /// Vom Modell ergänzte Suchbegriffe (einmal pro Frage).
   List<String> expansion = const [];
+
+  /// Erfasstes Symptom, das die Frage nennt (für feste Folgefragen).
+  String? symptom;
+
+  /// Vorschläge unter der fertigen Antwort.
+  List<FollowUp> followUps = const [];
+
+  /// Sichtbarer Antworttext ohne die Zeile mit den Folgefragen.
+  String get visibleAnswer =>
+      splitFollowUps(answer.toString(), streaming: !done).text.trim();
 }
 
 class _AssistantPageState extends State<AssistantPage> {
@@ -68,30 +80,70 @@ class _AssistantPageState extends State<AssistantPage> {
   Future<void> _ask(String question) async {
     if (question.trim().isEmpty || _busy) return;
     final turn = _Turn(question.trim());
+    final db = DatabaseScope.of(context);
     setState(() {
       _turns.add(turn);
       _input.clear();
     });
+    _scrollToEnd();
     turn.expansion = await expandQuery(_model.engine, turn.question);
+    try {
+      turn.symptom = await mentionedSymptom(db, turn.question);
+    } catch (_) {}
     if (!mounted) return;
     await _answer(turn, _model.engine.contextChars);
+  }
+
+  /// Die Fragen vor [turn], für Anschlussfragen.
+  List<_Turn> _before(_Turn turn) => _turns.sublist(0, _turns.indexOf(turn));
+
+  /// Bisheriges Gespräch (höchstens zwei Runden) für den Prompt.
+  String _history(_Turn turn, int maxChars) => conversationHistory(
+    [
+      for (final t in _before(turn))
+        if (t.done && t.error == null && t.visibleAnswer.isNotEmpty)
+          (question: t.question, answer: t.visibleAnswer),
+    ],
+    maxChars,
+    context.l10n,
+  );
+
+  void _finish(_Turn turn) {
+    final parts = splitFollowUps(turn.answer.toString());
+    turn
+      ..done = true
+      ..followUps = followUpsFor(
+        parts.followUps,
+        question: turn.question,
+        l10n: context.l10n,
+        symptom: turn.symptom,
+      );
   }
 
   /// Antwortet mit einem Akte-Auszug von höchstens [maxChars] Zeichen.
   /// Bleibt die Antwort leer (Auszug passt nicht ins Kontextfenster), wird
   /// einmal mit halbem Auszug neu gefragt.
+  /// Das bisherige Gespräch geht vom selben Budget ab (höchstens ein
+  /// Viertel).
   Future<void> _answer(_Turn turn, int maxChars, {bool retried = false}) async {
     final db = DatabaseScope.of(context);
+    final history = _history(turn, maxChars ~/ 4);
+    final before = _before(turn);
+    final reminder = context.l10n.assistantPromptReminder.length;
     final extract = await AssistantContextBuilder(
       db,
-      maxChars: maxChars,
+      maxChars: maxChars - history.length - reminder,
       semantic: await _model.ensureIndexed(db),
-    ).build(turn.question, expansion: turn.expansion);
+    ).build(
+      turn.question,
+      expansion: turn.expansion,
+      previous: before.isEmpty ? null : before.last.question,
+    );
     if (!mounted) return;
     _answering = _model.engine
         .answer(
           system: assistantSystemPrompt,
-          prompt: assistantPrompt(extract, turn.question),
+          prompt: assistantPrompt(extract, turn.question, history: history),
         )
         .listen(
           (token) {
@@ -112,11 +164,14 @@ class _AssistantPageState extends State<AssistantPage> {
           },
           onDone: () {
             if (!mounted) return;
-            if (!retried && turn.answer.toString().trim().isEmpty) {
+            if (!retried &&
+                splitFollowUps(turn.answer.toString()).text.trim().isEmpty) {
+              turn.answer.clear();
               _answer(turn, maxChars ~/ 2, retried: true);
               return;
             }
-            setState(() => turn.done = true);
+            setState(() => _finish(turn));
+            _scrollToEnd();
           },
           cancelOnError: true,
         );
@@ -238,7 +293,10 @@ class _AssistantPageState extends State<AssistantPage> {
                   controller: _scroll,
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   itemCount: _turns.length,
-                  itemBuilder: (context, i) => _TurnView(turn: _turns[i]),
+                  itemBuilder: (context, i) => _TurnView(
+                    turn: _turns[i],
+                    onAsk: _busy ? null : _ask,
+                  ),
                 ),
         ),
         Padding(
@@ -282,14 +340,17 @@ class _AssistantPageState extends State<AssistantPage> {
 }
 
 class _TurnView extends StatelessWidget {
-  const _TurnView({required this.turn});
+  const _TurnView({required this.turn, this.onAsk});
 
   final _Turn turn;
+
+  /// Stellt eine Folgefrage; `null`, solange eine Antwort läuft.
+  final ValueChanged<String>? onAsk;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final answer = turn.answer.toString().trim();
+    final answer = turn.visibleAnswer;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
@@ -334,8 +395,114 @@ class _TurnView extends StatelessWidget {
                     context.l10n.svcAssistantEmptyAnswer,
                     style: TextStyle(color: theme.colorScheme.error),
                   )
-                : SelectableText(answer),
+                : _AnswerMarkdown(answer),
           ),
+          if (turn.done && turn.error == null && answer.isNotEmpty)
+            _FollowUpChips(followUps: turn.followUps, onAsk: onAsk),
+        ],
+      ),
+    );
+  }
+}
+
+/// Antwort als Markdown (Fett, Überschriften, Aufzählungen) — auch schon
+/// während des Streamens. Keine Bilder; Links erst nach Rückfrage.
+class _AnswerMarkdown extends StatelessWidget {
+  const _AnswerMarkdown(this.data);
+
+  final String data;
+
+  Future<void> _openLink(BuildContext context, String? href) async {
+    final uri = href == null ? null : Uri.tryParse(href);
+    if (uri == null || !(uri.isScheme('http') || uri.isScheme('https'))) {
+      return;
+    }
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.assistantOpenLinkTitle),
+        content: Text(context.l10n.assistantOpenLinkBody('$uri')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.assistantOpenLink),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final text = theme.textTheme;
+    final bold = text.titleSmall?.copyWith(fontWeight: FontWeight.w700);
+    return MarkdownBody(
+      data: data,
+      selectable: true,
+      softLineBreak: true,
+      styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+        p: text.bodyMedium,
+        listBullet: text.bodyMedium,
+        h1: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        h2: bold,
+        h3: bold,
+        h4: bold,
+        h5: bold,
+        h6: bold,
+        blockSpacing: 8,
+        a: TextStyle(
+          color: theme.colorScheme.primary,
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      onTapLink: (_, href, _) => _openLink(context, href),
+      imageBuilder: (_, _, alt) => Text(alt ?? ''),
+    );
+  }
+}
+
+/// Folgefragen in zwei Richtungen: verstehen und handeln.
+class _FollowUpChips extends StatelessWidget {
+  const _FollowUpChips({required this.followUps, this.onAsk});
+
+  final List<FollowUp> followUps;
+  final ValueChanged<String>? onAsk;
+
+  @override
+  Widget build(BuildContext context) {
+    if (followUps.isEmpty) return const SizedBox.shrink();
+    final l10n = context.l10n;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          for (final f in followUps)
+            Tooltip(
+              message: f.kind == FollowUpKind.act
+                  ? l10n.assistantFollowUpActTooltip
+                  : l10n.assistantFollowUpUnderstandTooltip,
+              child: ActionChip(
+                avatar: Icon(
+                  f.kind == FollowUpKind.act
+                      ? Icons.checklist
+                      : Icons.lightbulb_outline,
+                  size: 18,
+                ),
+                label: Text(f.text),
+                onPressed: onAsk == null ? null : () => onAsk!(f.text),
+              ),
+            ),
         ],
       ),
     );

@@ -98,6 +98,102 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @assistantHistoryHeading.
+  ///
+  /// In de, this message translates to:
+  /// **'BISHERIGES GESPRÄCH'**
+  String get assistantHistoryHeading;
+
+  /// No description provided for @assistantHistoryTurn.
+  ///
+  /// In de, this message translates to:
+  /// **'Nutzer: {question}\nAssistent: {answer}'**
+  String assistantHistoryTurn(String question, String answer);
+
+  /// No description provided for @assistantPromptReminder.
+  ///
+  /// In de, this message translates to:
+  /// **'Antworte kurz in Markdown. Letzte Zeile: FOLGEFRAGEN: … | … | …'**
+  String get assistantPromptReminder;
+
+  /// No description provided for @assistantFollowUpUnderstandTooltip.
+  ///
+  /// In de, this message translates to:
+  /// **'Verstehen'**
+  String get assistantFollowUpUnderstandTooltip;
+
+  /// No description provided for @assistantFollowUpActTooltip.
+  ///
+  /// In de, this message translates to:
+  /// **'Handeln'**
+  String get assistantFollowUpActTooltip;
+
+  /// No description provided for @assistantFollowUpRelated.
+  ///
+  /// In de, this message translates to:
+  /// **'Was könnte zusammenhängen?'**
+  String get assistantFollowUpRelated;
+
+  /// No description provided for @assistantFollowUpDevelopment.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie hat sich das entwickelt?'**
+  String get assistantFollowUpDevelopment;
+
+  /// No description provided for @assistantFollowUpObserve.
+  ///
+  /// In de, this message translates to:
+  /// **'Was soll ich beobachten?'**
+  String get assistantFollowUpObserve;
+
+  /// No description provided for @assistantFollowUpAskDoctor.
+  ///
+  /// In de, this message translates to:
+  /// **'Was frage ich die Ärztin?'**
+  String get assistantFollowUpAskDoctor;
+
+  /// No description provided for @assistantFollowUpWhenDoctor.
+  ///
+  /// In de, this message translates to:
+  /// **'Wann sollte ich zum Arzt?'**
+  String get assistantFollowUpWhenDoctor;
+
+  /// No description provided for @assistantFollowUpSymptomCourse.
+  ///
+  /// In de, this message translates to:
+  /// **'Verlauf von {symptom}'**
+  String assistantFollowUpSymptomCourse(String symptom);
+
+  /// No description provided for @assistantFollowUpSymptomRelated.
+  ///
+  /// In de, this message translates to:
+  /// **'Was könnte bei {symptom} zusammenhängen?'**
+  String assistantFollowUpSymptomRelated(String symptom);
+
+  /// No description provided for @assistantFollowUpSymptomDoctor.
+  ///
+  /// In de, this message translates to:
+  /// **'Fragen an die Ärztin zu {symptom}'**
+  String assistantFollowUpSymptomDoctor(String symptom);
+
+  /// No description provided for @assistantOpenLinkTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Link öffnen?'**
+  String get assistantOpenLinkTitle;
+
+  /// No description provided for @assistantOpenLinkBody.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Adresse wird außerhalb der App geöffnet:\n{url}'**
+  String assistantOpenLinkBody(String url);
+
+  /// No description provided for @assistantOpenLink.
+  ///
+  /// In de, this message translates to:
+  /// **'Öffnen'**
+  String get assistantOpenLink;
+
   /// No description provided for @catalogReminderMorningTitle.
   ///
   /// In de, this message translates to:
@@ -5967,7 +6063,7 @@ abstract class AppLocalizations {
   /// No description provided for @svcContextSystemPrompt.
   ///
   /// In de, this message translates to:
-  /// **'Du bist der Assistent der App „Mai Doctor Hub“. Du beantwortest Fragen zur\npersönlichen Gesundheitsakte des Nutzers auf Deutsch, kurz und klar.\nRegeln:\n- Nutze nur die Informationen aus dem Abschnitt AKTE. Steht etwas nicht darin,\n  sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen;\n  verweise bei medizinischen Fragen an Arzt, Ärztin oder Apotheke.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.'**
+  /// **'Du bist der Assistent der App „Mai Doctor Hub“. Du hilfst ruhig und sachlich, die eigene Gesundheitsakte zu verstehen. Antworte auf Deutsch in Markdown, höchstens etwa 180 Wörter.\nRegeln:\n- Stütze dich auf den Abschnitt AKTE. Steht etwas nicht darin, sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen. Nenne Möglichkeiten („könnte“, „häufig steckt … dahinter“), nie Gewissheiten.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.\nBei Beschwerden oder Symptomen antworte immer in zwei Richtungen zugleich, je 2–4 kurze Punkte:\n**Mögliche Zusammenhänge**\n- Was in der Akte dazu passen könnte: zeitlich passende (neue) Medikamente, Zyklusphase, Schlaf und Stimmung, andere Symptome, letzte Termine oder Befunde.\n- Häufige allgemeine Ursachen, neutral formuliert.\n**Was du tun kannst**\n- Was du in der App beobachten oder notieren kannst.\n- Fragen an die Ärztin oder den Arzt.\n- Einfache Selbstfürsorge.\n- Wann du zeitnah ärztlichen Rat brauchst und wann sofort 112.\nBei anderen Fragen (Termine, Medikamente, Befunde) antworte direkt und knapp.\nLetzte Zeile jeder Antwort: FOLGEFRAGEN: Frage 1 | Frage 2 | Frage 3\nKurze Fragen aus Sicht des Nutzers — mindestens eine zum Verstehen, eine zum Handeln.'**
   String get svcContextSystemPrompt;
 
   /// No description provided for @svcContextRecordHeading.

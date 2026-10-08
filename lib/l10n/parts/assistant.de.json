@@ -1,0 +1,36 @@
+{
+  "assistantHistoryHeading": "BISHERIGES GESPRÄCH",
+  "assistantHistoryTurn": "Nutzer: {question}\nAssistent: {answer}",
+  "@assistantHistoryTurn": {
+    "placeholders": {
+      "question": {"type": "String"},
+      "answer": {"type": "String"}
+    }
+  },
+  "assistantPromptReminder": "Antworte kurz in Markdown. Letzte Zeile: FOLGEFRAGEN: … | … | …",
+  "assistantFollowUpUnderstandTooltip": "Verstehen",
+  "assistantFollowUpActTooltip": "Handeln",
+  "assistantFollowUpRelated": "Was könnte zusammenhängen?",
+  "assistantFollowUpDevelopment": "Wie hat sich das entwickelt?",
+  "assistantFollowUpObserve": "Was soll ich beobachten?",
+  "assistantFollowUpAskDoctor": "Was frage ich die Ärztin?",
+  "assistantFollowUpWhenDoctor": "Wann sollte ich zum Arzt?",
+  "assistantFollowUpSymptomCourse": "Verlauf von {symptom}",
+  "@assistantFollowUpSymptomCourse": {
+    "placeholders": {"symptom": {"type": "String"}}
+  },
+  "assistantFollowUpSymptomRelated": "Was könnte bei {symptom} zusammenhängen?",
+  "@assistantFollowUpSymptomRelated": {
+    "placeholders": {"symptom": {"type": "String"}}
+  },
+  "assistantFollowUpSymptomDoctor": "Fragen an die Ärztin zu {symptom}",
+  "@assistantFollowUpSymptomDoctor": {
+    "placeholders": {"symptom": {"type": "String"}}
+  },
+  "assistantOpenLinkTitle": "Link öffnen?",
+  "assistantOpenLinkBody": "Diese Adresse wird außerhalb der App geöffnet:\n{url}",
+  "@assistantOpenLinkBody": {
+    "placeholders": {"url": {"type": "String"}}
+  },
+  "assistantOpenLink": "Öffnen"
+}

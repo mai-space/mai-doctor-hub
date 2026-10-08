@@ -10,6 +10,65 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get assistantHistoryHeading => 'BISHERIGES GESPRÄCH';
+
+  @override
+  String assistantHistoryTurn(String question, String answer) {
+    return 'Nutzer: $question\nAssistent: $answer';
+  }
+
+  @override
+  String get assistantPromptReminder =>
+      'Antworte kurz in Markdown. Letzte Zeile: FOLGEFRAGEN: … | … | …';
+
+  @override
+  String get assistantFollowUpUnderstandTooltip => 'Verstehen';
+
+  @override
+  String get assistantFollowUpActTooltip => 'Handeln';
+
+  @override
+  String get assistantFollowUpRelated => 'Was könnte zusammenhängen?';
+
+  @override
+  String get assistantFollowUpDevelopment => 'Wie hat sich das entwickelt?';
+
+  @override
+  String get assistantFollowUpObserve => 'Was soll ich beobachten?';
+
+  @override
+  String get assistantFollowUpAskDoctor => 'Was frage ich die Ärztin?';
+
+  @override
+  String get assistantFollowUpWhenDoctor => 'Wann sollte ich zum Arzt?';
+
+  @override
+  String assistantFollowUpSymptomCourse(String symptom) {
+    return 'Verlauf von $symptom';
+  }
+
+  @override
+  String assistantFollowUpSymptomRelated(String symptom) {
+    return 'Was könnte bei $symptom zusammenhängen?';
+  }
+
+  @override
+  String assistantFollowUpSymptomDoctor(String symptom) {
+    return 'Fragen an die Ärztin zu $symptom';
+  }
+
+  @override
+  String get assistantOpenLinkTitle => 'Link öffnen?';
+
+  @override
+  String assistantOpenLinkBody(String url) {
+    return 'Diese Adresse wird außerhalb der App geöffnet:\n$url';
+  }
+
+  @override
+  String get assistantOpenLink => 'Öffnen';
+
+  @override
   String get catalogReminderMorningTitle => 'Morgen-Check-in';
 
   @override
@@ -3461,7 +3520,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get svcContextSystemPrompt =>
-      'Du bist der Assistent der App „Mai Doctor Hub“. Du beantwortest Fragen zur\npersönlichen Gesundheitsakte des Nutzers auf Deutsch, kurz und klar.\nRegeln:\n- Nutze nur die Informationen aus dem Abschnitt AKTE. Steht etwas nicht darin,\n  sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen;\n  verweise bei medizinischen Fragen an Arzt, Ärztin oder Apotheke.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.';
+      'Du bist der Assistent der App „Mai Doctor Hub“. Du hilfst ruhig und sachlich, die eigene Gesundheitsakte zu verstehen. Antworte auf Deutsch in Markdown, höchstens etwa 180 Wörter.\nRegeln:\n- Stütze dich auf den Abschnitt AKTE. Steht etwas nicht darin, sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen. Nenne Möglichkeiten („könnte“, „häufig steckt … dahinter“), nie Gewissheiten.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.\nBei Beschwerden oder Symptomen antworte immer in zwei Richtungen zugleich, je 2–4 kurze Punkte:\n**Mögliche Zusammenhänge**\n- Was in der Akte dazu passen könnte: zeitlich passende (neue) Medikamente, Zyklusphase, Schlaf und Stimmung, andere Symptome, letzte Termine oder Befunde.\n- Häufige allgemeine Ursachen, neutral formuliert.\n**Was du tun kannst**\n- Was du in der App beobachten oder notieren kannst.\n- Fragen an die Ärztin oder den Arzt.\n- Einfache Selbstfürsorge.\n- Wann du zeitnah ärztlichen Rat brauchst und wann sofort 112.\nBei anderen Fragen (Termine, Medikamente, Befunde) antworte direkt und knapp.\nLetzte Zeile jeder Antwort: FOLGEFRAGEN: Frage 1 | Frage 2 | Frage 3\nKurze Fragen aus Sicht des Nutzers — mindestens eine zum Verstehen, eine zum Handeln.';
 
   @override
   String get svcContextRecordHeading => 'AKTE';

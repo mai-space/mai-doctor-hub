@@ -10,6 +10,65 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get assistantHistoryHeading => 'EARLIER CONVERSATION';
+
+  @override
+  String assistantHistoryTurn(String question, String answer) {
+    return 'User: $question\nAssistant: $answer';
+  }
+
+  @override
+  String get assistantPromptReminder =>
+      'Answer briefly in Markdown. Last line: FOLLOW-UPS: … | … | …';
+
+  @override
+  String get assistantFollowUpUnderstandTooltip => 'Understand';
+
+  @override
+  String get assistantFollowUpActTooltip => 'Act';
+
+  @override
+  String get assistantFollowUpRelated => 'What could be related?';
+
+  @override
+  String get assistantFollowUpDevelopment => 'How has this developed?';
+
+  @override
+  String get assistantFollowUpObserve => 'What should I keep an eye on?';
+
+  @override
+  String get assistantFollowUpAskDoctor => 'What should I ask my doctor?';
+
+  @override
+  String get assistantFollowUpWhenDoctor => 'When should I see a doctor?';
+
+  @override
+  String assistantFollowUpSymptomCourse(String symptom) {
+    return 'Course of $symptom';
+  }
+
+  @override
+  String assistantFollowUpSymptomRelated(String symptom) {
+    return 'What could be related to $symptom?';
+  }
+
+  @override
+  String assistantFollowUpSymptomDoctor(String symptom) {
+    return 'Questions for my doctor about $symptom';
+  }
+
+  @override
+  String get assistantOpenLinkTitle => 'Open link?';
+
+  @override
+  String assistantOpenLinkBody(String url) {
+    return 'This address will be opened outside the app:\n$url';
+  }
+
+  @override
+  String get assistantOpenLink => 'Open';
+
+  @override
   String get catalogReminderMorningTitle => 'Morning check-in';
 
   @override
@@ -3509,7 +3568,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get svcContextSystemPrompt =>
-      'You are the assistant of the app “Mai Doctor Hub”. You answer questions about\nthe user\'s personal health record in English, briefly and clearly.\nRules:\n- Use only the information in the RECORD section. If something is not in it,\n  say honestly that it is not noted in the record.\n- Copy dates, times, dosages and values exactly.\n- Do not make diagnoses and do not give therapy or dosage recommendations;\n  for medical questions, refer the user to a doctor or pharmacist.\n- If there are warning signs of an emergency: advise calling the local\n  emergency number (112 in Europe, 911 in the US) immediately.';
+      'You are the assistant of the app “Mai Doctor Hub”. You help the user calmly and factually to understand their own health record. Answer in English in Markdown, at most about 180 words.\nRules:\n- Rely on the RECORD section. If something is not in it, say honestly that it is not noted in the record.\n- Copy dates, times, dosages and values exactly.\n- Do not make diagnoses and do not give therapy or dosage recommendations. Name possibilities (“could”, “often this is due to …”), never certainties.\n- If there are warning signs of an emergency: advise calling the local emergency number (112 in Europe, 911 in the US) immediately.\nFor complaints or symptoms always answer in two directions at once, 2–4 short points each:\n**Possible connections**\n- What in the record could fit: (new) medications around that time, cycle phase, sleep and mood, other symptoms, recent appointments or reports.\n- Common general causes, worded neutrally.\n**What you can do**\n- What to observe or log in the app.\n- Questions for the doctor.\n- Simple self-care.\n- When to get medical advice soon and when to call the emergency number right away.\nFor other questions (appointments, medications, reports) answer directly and concisely.\nLast line of every answer: FOLLOW-UPS: question 1 | question 2 | question 3\nShort questions from the user\'s point of view — at least one to understand, one to act.';
 
   @override
   String get svcContextRecordHeading => 'RECORD';

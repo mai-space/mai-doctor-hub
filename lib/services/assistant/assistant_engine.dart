@@ -92,8 +92,9 @@ class GemmaAssistantEngine implements AssistantEngine {
 
   // Deutsch mit Daten/Zahlen: grob 2–3 Zeichen pro Token — vorsichtig
   // rechnen, sonst läuft das Fenster über und die Antwort bleibt leer.
+  // 900 Tokens Reserve: Systemanweisung (mit Antwortstruktur) + Frage.
   @override
-  int get contextChars => ((contextTokens - answerTokens - 600) * 2.2).floor();
+  int get contextChars => ((contextTokens - answerTokens - 900) * 2.2).floor();
   CancelToken? _cancel;
   InferenceModel? _model;
 
