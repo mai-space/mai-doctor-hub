@@ -193,5 +193,7 @@
   "settingsNotificationSystemHint": "Feinheiten wie Klingelton oder „Nicht stören“ kannst du zusätzlich in den Android-Einstellungen der App je Kanal anpassen.",
   "settingsLockReasonDisable": "App-Sperre ausschalten",
   "settingsKeyUnavailableTitle": "Daten gerade nicht lesbar",
-  "settingsKeyUnavailableText": "Der Schlüssel deiner Akte ist im Moment nicht verfügbar. Deine Daten sind unverändert – bitte versuche es gleich noch einmal oder starte das Gerät neu."
+  "settingsKeyUnavailableText": "Der Schlüssel deiner Akte ist im Moment nicht verfügbar. Deine Daten sind unverändert – bitte versuche es gleich noch einmal oder starte das Gerät neu.",
+  "settingsNotificationSystemHintIos": "Ton, Sperrbildschirm und Fokus kannst du zusätzlich in den iOS-Einstellungen unter Mitteilungen anpassen. Tipp: Inhalte auf dem Sperrbildschirm blendet iOS nur aus, wenn „Vorschauen zeigen“ auf „Wenn entsperrt“ steht — sonst hier „Diskret“ wählen.",
+  "settingsCalendarMobileOnly": "Nur in der App für Android und iOS verfügbar."
 }

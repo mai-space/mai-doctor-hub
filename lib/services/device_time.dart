@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+
+import 'device_platform.dart';
 
 /// Zeitzone des Geräts als IANA-ID (z. B. `Europe/Berlin`).
 ///
@@ -12,9 +13,8 @@ abstract final class DeviceTime {
   static const fallbackTimeZone = 'Europe/Berlin';
 
   static Future<String> timeZone() async {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
-      return fallbackTimeZone;
-    }
+    // Android und iOS liefern die Zone über `mai/device`.
+    if (!DevicePlatform.isMobile) return fallbackTimeZone;
     try {
       final zone = await _channel.invokeMethod<String>('timeZone');
       return zone == null || zone.isEmpty ? fallbackTimeZone : zone;

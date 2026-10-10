@@ -24,5 +24,6 @@
   "mediaUnavailable": "File not available.",
   "mediaCount": "{count, plural, =1{1 item} other{{count} items}}",
   "mediaDatePattern": "MMM d, yyyy, h:mm a",
-  "svcSummaryPdfEvidence": "Evidence: {photos} photos, {videos} videos, {audio} voice notes (in the app)"
+  "svcSummaryPdfEvidence": "Evidence: {photos} photos, {videos} videos, {audio} voice notes (in the app)",
+  "mediaMicDeniedIos": "A voice note needs microphone permission. You can allow it in the iOS Settings under “Mai Doctor Hub”."
 }

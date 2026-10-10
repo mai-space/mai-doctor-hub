@@ -173,6 +173,62 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  # iOS: nur bauen (ohne Signatur) — TestFlight/App Store siehe docs/RELEASE.md.
+  ios:
+    name: iOS build (no codesign)
+    needs: [analyze-test, dart-packages]
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: "3.47.6"
+          channel: stable
+          cache: true
+
+      - name: Pub get
+        run: flutter pub get
+
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      # pod install (ML Kit) und Swift-Pakete laufen im Build automatisch.
+      - name: Build iOS (release, no codesign)
+        run: |
+          set -o pipefail
+          if ! flutter build ios --release --no-codesign 2>&1 | tee ios-build.log; then
+            {
+              echo "## iOS build failed"
+              echo
+              echo '```text'
+              # Swift-/Xcode-Fehler zuerst, sonst das Ende des Logs
+              if grep -nE 'error:|Error \(Xcode\)' ios-build.log >/dev/null 2>&1; then
+                grep -nE -A3 'error:|Error \(Xcode\)' ios-build.log | head -n 120
+              else
+                tail -n 120 ios-build.log
+              fi
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            grep -E 'error:' ios-build.log | head -n 30 | while IFS= read -r line; do
+              safe=$(printf '%s' "$line" | tr '|' '/' | cut -c1-200)
+              echo "::error::$safe"
+            done
+            exit 1
+          fi
+
+      - name: Upload iOS build log (failure)
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ios-build-log
+          path: ios-build.log
+          if-no-files-found: ignore
+          retention-days: 7
+
   deploy-mock:
     name: Deploy (mock)
     needs: build-apk

@@ -476,5 +476,8 @@
   "svcReminderVaccinationToday": "{vaccine}: heute fällig",
   "@svcReminderVaccinationToday": {"placeholders": {"vaccine": {"type": "String"}}},
   "svcReminderVaccinationBody": "Termin für die Auffrischung vereinbaren",
-  "svcModelIntegrityFailed": "Der Download war unvollständig oder entsprach nicht der geprüften Version und wurde verworfen. Bitte erneut versuchen."
+  "svcModelIntegrityFailed": "Der Download war unvollständig oder entsprach nicht der geprüften Version und wurde verworfen. Bitte erneut versuchen.",
+  "svcAssistantLowMemoryIos": "Hinweis: Dieses Gerät hat wenig Arbeitsspeicher. Der Assistent kann langsam sein oder von iOS beendet werden.",
+  "svcAssistantNeedsMoreMemory": "Der lokale Assistent braucht ein Gerät mit mindestens 6 GB Arbeitsspeicher.",
+  "svcAssistantMobileOnly": "Der Assistent läuft nur in der App für Android und iOS."
 }

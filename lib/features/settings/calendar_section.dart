@@ -161,7 +161,7 @@ class _CalendarSectionState extends State<CalendarSection> {
           subtitle: Text(
             supported
                 ? l10n.settingsCalendarExportSubtitle
-                : l10n.settingsCalendarAndroidOnly,
+                : l10n.settingsCalendarMobileOnly,
           ),
           value: _s.calendarSyncEnabled,
           onChanged: !supported || _busy ? null : _toggle,

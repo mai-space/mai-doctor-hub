@@ -2437,6 +2437,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get mediaMicDeniedIos =>
+      'A voice note needs microphone permission. You can allow it in the iOS Settings under “Mai Doctor Hub”.';
+
+  @override
   String get psychTitle => 'Mental health';
 
   @override
@@ -3688,6 +3692,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'The key for your records isn\'t available at the moment. Your data is unchanged — please try again shortly or restart the device.';
 
   @override
+  String get settingsNotificationSystemHintIos =>
+      'You can fine-tune sound, lock screen and Focus in the iOS Settings under Notifications. Tip: iOS only hides content on the lock screen if “Show Previews” is set to “When Unlocked” — otherwise choose “Discreet” here.';
+
+  @override
+  String get settingsCalendarMobileOnly =>
+      'Only available in the Android and iOS app.';
+
+  @override
   String get svcAssistantTitle => 'Assistant';
 
   @override
@@ -4293,6 +4305,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get svcModelIntegrityFailed =>
       'The download was incomplete or didn\'t match the verified version and was discarded. Please try again.';
+
+  @override
+  String get svcAssistantLowMemoryIos =>
+      'Note: This device has little memory. The assistant may be slow or get closed by iOS.';
+
+  @override
+  String get svcAssistantNeedsMoreMemory =>
+      'The on-device assistant requires a device with at least 6 GB of memory.';
+
+  @override
+  String get svcAssistantMobileOnly =>
+      'The assistant only runs in the Android and iOS app.';
 
   @override
   String get symptomCheckInHint =>

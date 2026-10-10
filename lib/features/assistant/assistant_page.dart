@@ -10,6 +10,7 @@ import '../../l10n/l10n.dart';
 import '../../services/assistant/assistant_model.dart';
 import '../../services/assistant/follow_ups.dart';
 import '../../services/assistant/record_context.dart';
+import '../../services/device_platform.dart';
 
 /// „Frag deine Akte“ — Antworten vom lokalen Modell, nichts verlässt das Gerät.
 class AssistantPage extends StatefulWidget {
@@ -547,7 +548,9 @@ class _Setup extends StatelessWidget {
         if (model.lowMemory) ...[
           const SizedBox(height: 12),
           Text(
-            l10n.svcAssistantLowMemory,
+            DevicePlatform.isIOS
+                ? l10n.svcAssistantLowMemoryIos
+                : l10n.svcAssistantLowMemory,
             textAlign: TextAlign.center,
             style: TextStyle(color: theme.colorScheme.error),
           ),

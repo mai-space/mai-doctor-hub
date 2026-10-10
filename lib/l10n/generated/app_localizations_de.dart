@@ -2447,6 +2447,10 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get mediaMicDeniedIos =>
+      'Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den iOS-Einstellungen unter „Mai Doctor Hub“ erlauben.';
+
+  @override
   String get psychTitle => 'Psyche';
 
   @override
@@ -3642,6 +3646,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Der Schlüssel deiner Akte ist im Moment nicht verfügbar. Deine Daten sind unverändert – bitte versuche es gleich noch einmal oder starte das Gerät neu.';
 
   @override
+  String get settingsNotificationSystemHintIos =>
+      'Ton, Sperrbildschirm und Fokus kannst du zusätzlich in den iOS-Einstellungen unter Mitteilungen anpassen. Tipp: Inhalte auf dem Sperrbildschirm blendet iOS nur aus, wenn „Vorschauen zeigen“ auf „Wenn entsperrt“ steht — sonst hier „Diskret“ wählen.';
+
+  @override
+  String get settingsCalendarMobileOnly =>
+      'Nur in der App für Android und iOS verfügbar.';
+
+  @override
   String get svcAssistantTitle => 'Assistent';
 
   @override
@@ -4238,6 +4250,18 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get svcModelIntegrityFailed =>
       'Der Download war unvollständig oder entsprach nicht der geprüften Version und wurde verworfen. Bitte erneut versuchen.';
+
+  @override
+  String get svcAssistantLowMemoryIos =>
+      'Hinweis: Dieses Gerät hat wenig Arbeitsspeicher. Der Assistent kann langsam sein oder von iOS beendet werden.';
+
+  @override
+  String get svcAssistantNeedsMoreMemory =>
+      'Der lokale Assistent braucht ein Gerät mit mindestens 6 GB Arbeitsspeicher.';
+
+  @override
+  String get svcAssistantMobileOnly =>
+      'Der Assistent läuft nur in der App für Android und iOS.';
 
   @override
   String get symptomCheckInHint =>

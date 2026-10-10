@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 
 import '../../l10n/l10n.dart';
+import '../device_platform.dart';
 import 'gemma_runtime.dart';
 import 'model_integrity.dart';
 
@@ -67,6 +68,22 @@ class AssistantCancelled implements Exception {
   const AssistantCancelled();
 }
 
+/// iOS: Gemma (~2,5 GB) braucht ein 64-Bit-Gerät mit mindestens 6 GB
+/// Arbeitsspeicher (iOS meldet etwas weniger, daher 5 GiB als Grenze);
+/// unter ~8 GB gilt das Gerät als knapp.
+@visibleForTesting
+AssistantSupport iosAssistantSupport(Map<Object?, Object?>? info) {
+  const gib = 1024 * 1024 * 1024;
+  if (info?['arm64'] != true) {
+    return AssistantUnsupported(AppLocale.strings.svcAssistantNeedsArm64);
+  }
+  final ram = info?['totalRam'] as int? ?? 0;
+  if (ram < 5 * gib) {
+    return AssistantUnsupported(AppLocale.strings.svcAssistantNeedsMoreMemory);
+  }
+  return AssistantSupported(lowMemory: ram < 7 * gib);
+}
+
 class GemmaAssistantEngine implements AssistantEngine {
   /// Feste Revision + SHA-256 (nicht `main`): siehe [PinnedModelFile].
   static const modelFile = PinnedModelFile(
@@ -117,8 +134,8 @@ class GemmaAssistantEngine implements AssistantEngine {
 
   @override
   Future<AssistantSupport> support() async {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
-      return AssistantUnsupported(AppLocale.strings.svcAssistantAndroidOnly);
+    if (!DevicePlatform.isMobile) {
+      return AssistantUnsupported(AppLocale.strings.svcAssistantMobileOnly);
     }
     final Map<Object?, Object?>? info;
     try {
@@ -127,6 +144,13 @@ class GemmaAssistantEngine implements AssistantEngine {
       return AssistantUnsupported(
         AppLocale.strings.svcAssistantDeviceCheckFailed('${e.message}'),
       );
+    }
+    if (DevicePlatform.isIOS) {
+      final support = iosAssistantSupport(info);
+      if (support is AssistantSupported) {
+        _totalRam = info?['totalRam'] as int? ?? 0;
+      }
+      return support;
     }
     final sdk = info?['sdk'] as int? ?? 0;
     if (sdk < 30) {

@@ -2,10 +2,12 @@ import 'package:drift/drift.dart' show DriftWrappedException;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdfrx/pdfrx.dart';
 
 import 'data/app_database.dart';
 import 'data/database_provider.dart';
+import 'data/repositories/container_paths.dart';
 import 'data/measure_units.dart';
 import 'data/repositories/records_repository.dart' show reportsDirectory;
 import 'data/repositories/settings_repository.dart';
@@ -21,6 +23,7 @@ import 'features/records/detail_pages.dart';
 import 'services/app_lock.dart';
 import 'services/calendar/calendar_gateway.dart';
 import 'services/calendar/calendar_sync_service.dart';
+import 'services/device_platform.dart';
 import 'services/notification_service.dart';
 import 'services/notifications/appointment_reminders.dart';
 import 'services/notifications/cycle_reminders.dart';
@@ -62,6 +65,20 @@ Future<void> _start() async {
     await database.close().catchError((Object _) {});
     runApp(_KeyUnavailableApp(onRetry: _start));
     return;
+  }
+  // iOS: neuer Container-Pfad nach Update/Wiederherstellung → gespeicherte
+  // Dateipfade umbiegen, bevor jemand sie liest.
+  if (DevicePlatform.isIOS) {
+    try {
+      final docs = await getApplicationDocumentsDirectory();
+      final moved = await relocateContainerPaths(
+        database,
+        documentsDir: docs.path,
+      );
+      if (moved > 0) debugPrint('$moved Dateipfade umgestellt');
+    } catch (e) {
+      debugPrint('Dateipfade: $e');
+    }
   }
   // Berichte/Medien verschlüsselt; Altdateien im Hintergrund nachziehen.
   FileVault.current = await FileVault.open();

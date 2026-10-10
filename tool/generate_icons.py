@@ -1,8 +1,10 @@
-"""Erzeugt App-Icon (Android, Web) und In-App-Logo aus einer Vorlage.
+"""Erzeugt App-Icon (Android, iOS, Web) und In-App-Logo aus einer Vorlage.
 
-    pip install cairosvg && python3 tool/generate_icons.py
+    pip install cairosvg pillow && python3 tool/generate_icons.py
 """
 
+import io
+import json
 from pathlib import Path
 
 import cairosvg
@@ -65,6 +67,16 @@ FULL_BLEED = svg(
     + CROSS.format(c=SEED)
 )
 
+# iOS: vollflächig, Ausschnitt enger als das Android-Raster (keine
+# 66er-Schutzzone nötig) — das Motiv wirkt sonst zu klein.
+IOS = svg(
+    BACKGROUND
+    + '<rect width="108" height="108" fill="url(#bg)"/>'
+    + FOLDER
+    + CROSS.format(c=SEED),
+    view="20 20 68 68",
+)
+
 
 def png(source, path, size):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -74,6 +86,28 @@ def png(source, path, size):
         output_width=size,
         output_height=size,
     )
+
+
+def ios_icons():
+    """iOS-AppIcon: vollflächig (iOS rundet selbst ab), ohne Alphakanal —
+    App Store Connect lehnt ein 1024er-Icon mit Transparenz ab."""
+    from PIL import Image
+
+    folder = ROOT / "ios/Runner/Assets.xcassets/AppIcon.appiconset"
+    contents = json.loads((folder / "Contents.json").read_text())
+    for image in contents["images"]:
+        name = image.get("filename")
+        if not name:
+            continue
+        points = float(image["size"].split("x")[0])
+        size = round(points * int(image["scale"].rstrip("x")))
+        data = cairosvg.svg2png(
+            bytestring=IOS.encode(), output_width=size, output_height=size
+        )
+        rgba = Image.open(io.BytesIO(data)).convert("RGBA")
+        flat = Image.new("RGB", rgba.size, SEED)
+        flat.paste(rgba, mask=rgba.split()[3])
+        flat.save(folder / name, optimize=True)
 
 
 def main():
@@ -95,6 +129,8 @@ def main():
     png(ROUNDED, web / "icons/Icon-512.png", 512)
     png(FULL_BLEED, web / "icons/Icon-maskable-192.png", 192)
     png(FULL_BLEED, web / "icons/Icon-maskable-512.png", 512)
+
+    ios_icons()
 
 
 if __name__ == "__main__":

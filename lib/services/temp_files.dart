@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import 'device_platform.dart';
+
 /// Räumt Klartext-Kopien im Cache auf: Scans und Fotos, Kopien der
 /// Dateiauswahl, geteilte Dateien, Exporte und Arbeitsordner.
 ///
@@ -32,6 +34,16 @@ abstract final class TempFiles {
     } catch (_) {
       return 0;
     }
+    var removed = await _purgeIn(dir);
+    // iOS: getTemporaryDirectory() ist Library/Caches; Kamera und Auswahl
+    // (image_picker, file_picker) legen ihre Kopien aber in tmp/ ab.
+    if (cache == null && DevicePlatform.isIOS) {
+      removed += await _purgeIn(Directory.systemTemp);
+    }
+    return removed;
+  }
+
+  static Future<int> _purgeIn(Directory dir) async {
     if (!await dir.exists()) return 0;
     var removed = 0;
     await for (final entry in dir.list(followLinks: false)) {

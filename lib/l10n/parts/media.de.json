@@ -51,5 +51,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "mediaMicDeniedIos": "Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den iOS-Einstellungen unter „Mai Doctor Hub“ erlauben."
 }

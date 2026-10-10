@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 /// Liefert den Schlüssel der App-Datenbank.
@@ -36,15 +37,24 @@ class DatabaseKeyUnavailable implements Exception {
 }
 
 /// Android: Schlüssel im Keystore verpackt, nie im Backup (siehe
-/// `DatabaseKeyChannel.kt`). Andere Plattformen: unverschlüsselt.
+/// `DatabaseKeyChannel.kt`). iOS: Schlüsselbund, nur dieses Gerät (siehe
+/// `DatabaseKeyChannel.swift`). Andere Plattformen: unverschlüsselt.
 class PlatformDatabaseKeyStore implements DatabaseKeyStore {
-  const PlatformDatabaseKeyStore();
+  const PlatformDatabaseKeyStore({@visibleForTesting this.operatingSystem});
+
+  /// Für Tests; sonst `Platform.operatingSystem`.
+  final String? operatingSystem;
 
   static const _channel = MethodChannel('mai/db_key');
 
+  bool get _supported => switch (operatingSystem ?? Platform.operatingSystem) {
+    'android' || 'ios' => true,
+    _ => false,
+  };
+
   @override
   Future<String?> getOrCreate() async {
-    if (!Platform.isAndroid) return null;
+    if (!_supported) return null;
     try {
       return await _channel.invokeMethod<String>('getOrCreate');
     } on PlatformException catch (e) {
@@ -56,6 +66,6 @@ class PlatformDatabaseKeyStore implements DatabaseKeyStore {
 
   @override
   Future<void> reset() async {
-    if (Platform.isAndroid) await _channel.invokeMethod<void>('reset');
+    if (_supported) await _channel.invokeMethod<void>('reset');
   }
 }

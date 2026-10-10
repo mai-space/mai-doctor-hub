@@ -4213,6 +4213,12 @@ abstract class AppLocalizations {
   /// **'Belege: {photos} Fotos, {videos} Videos, {audio} Sprachnotizen (in der App)'**
   String svcSummaryPdfEvidence(int photos, int videos, int audio);
 
+  /// No description provided for @mediaMicDeniedIos.
+  ///
+  /// In de, this message translates to:
+  /// **'Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den iOS-Einstellungen unter „Mai Doctor Hub“ erlauben.'**
+  String get mediaMicDeniedIos;
+
   /// No description provided for @psychTitle.
   ///
   /// In de, this message translates to:
@@ -6258,6 +6264,18 @@ abstract class AppLocalizations {
   /// **'Der Schlüssel deiner Akte ist im Moment nicht verfügbar. Deine Daten sind unverändert – bitte versuche es gleich noch einmal oder starte das Gerät neu.'**
   String get settingsKeyUnavailableText;
 
+  /// No description provided for @settingsNotificationSystemHintIos.
+  ///
+  /// In de, this message translates to:
+  /// **'Ton, Sperrbildschirm und Fokus kannst du zusätzlich in den iOS-Einstellungen unter Mitteilungen anpassen. Tipp: Inhalte auf dem Sperrbildschirm blendet iOS nur aus, wenn „Vorschauen zeigen“ auf „Wenn entsperrt“ steht — sonst hier „Diskret“ wählen.'**
+  String get settingsNotificationSystemHintIos;
+
+  /// No description provided for @settingsCalendarMobileOnly.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur in der App für Android und iOS verfügbar.'**
+  String get settingsCalendarMobileOnly;
+
   /// No description provided for @svcAssistantTitle.
   ///
   /// In de, this message translates to:
@@ -7216,6 +7234,24 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Der Download war unvollständig oder entsprach nicht der geprüften Version und wurde verworfen. Bitte erneut versuchen.'**
   String get svcModelIntegrityFailed;
+
+  /// No description provided for @svcAssistantLowMemoryIos.
+  ///
+  /// In de, this message translates to:
+  /// **'Hinweis: Dieses Gerät hat wenig Arbeitsspeicher. Der Assistent kann langsam sein oder von iOS beendet werden.'**
+  String get svcAssistantLowMemoryIos;
+
+  /// No description provided for @svcAssistantNeedsMoreMemory.
+  ///
+  /// In de, this message translates to:
+  /// **'Der lokale Assistent braucht ein Gerät mit mindestens 6 GB Arbeitsspeicher.'**
+  String get svcAssistantNeedsMoreMemory;
+
+  /// No description provided for @svcAssistantMobileOnly.
+  ///
+  /// In de, this message translates to:
+  /// **'Der Assistent läuft nur in der App für Android und iOS.'**
+  String get svcAssistantMobileOnly;
 
   /// No description provided for @symptomCheckInHint.
   ///

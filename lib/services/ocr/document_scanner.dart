@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+
+import '../device_platform.dart';
 
 /// Ergebnis eines Kamera-Scans: PDF + Seitenbilder (für die Texterkennung).
 class ScannedDocument {
@@ -36,12 +37,12 @@ abstract interface class DocumentScannerApi {
 
 /// Google ML Kit Dokumentenscanner (Android): Kantenerkennung, Zuschnitt,
 /// Filter — läuft auf dem Gerät, ohne Kamera-Berechtigung der App.
+/// iOS: gleicher Kanal mit VisionKit (`DocumentScannerChannel.swift`).
 class MlKitDocumentScanner implements DocumentScannerApi {
   static const _channel = MethodChannel('mai/document_scanner');
 
   @override
-  bool get isSupported =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+  bool get isSupported => DevicePlatform.isMobile;
 
   @override
   Future<ScannedDocument?> scan() async {

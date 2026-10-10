@@ -26,7 +26,7 @@ abstract interface class FileVault {
   /// Ohne Schlüssel (Tests, Desktop): Dateien bleiben unverschlüsselt.
   static FileVault current = const PlainFileVault();
 
-  /// Android: Schlüssel aus dem Datenbankschlüssel; sonst [PlainFileVault].
+  /// Android/iOS: Schlüssel aus dem Datenbankschlüssel; sonst [PlainFileVault].
   static Future<FileVault> open({DatabaseKeyStore? keys}) async {
     final hex = await (keys ?? const PlatformDatabaseKeyStore()).getOrCreate();
     if (hex == null) return const PlainFileVault();

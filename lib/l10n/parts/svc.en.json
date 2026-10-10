@@ -158,5 +158,8 @@
   "svcReminderVaccinationSoon": "{vaccine}: due in one week",
   "svcReminderVaccinationToday": "{vaccine}: due today",
   "svcReminderVaccinationBody": "Book an appointment for the booster",
-  "svcModelIntegrityFailed": "The download was incomplete or didn't match the verified version and was discarded. Please try again."
+  "svcModelIntegrityFailed": "The download was incomplete or didn't match the verified version and was discarded. Please try again.",
+  "svcAssistantLowMemoryIos": "Note: This device has little memory. The assistant may be slow or get closed by iOS.",
+  "svcAssistantNeedsMoreMemory": "The on-device assistant requires a device with at least 6 GB of memory.",
+  "svcAssistantMobileOnly": "The assistant only runs in the Android and iOS app."
 }

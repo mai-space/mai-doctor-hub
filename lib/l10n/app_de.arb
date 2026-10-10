@@ -1516,6 +1516,7 @@
       }
     }
   },
+  "mediaMicDeniedIos": "Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den iOS-Einstellungen unter „Mai Doctor Hub“ erlauben.",
   "psychTitle": "Psyche",
   "psychIntro": "Kurze, anerkannte Fragebögen zeigen, wie es dir über die Wochen geht. Das Ergebnis ist keine Diagnose – sprich mit deiner Ärztin oder deinem Arzt darüber.",
   "psychSettingsSubtitle": "Stimmung, Angst und Tagebuch – mit PHQ-9 und GAD-7 als monatlichem Fragebogen.",
@@ -2220,6 +2221,8 @@
   "settingsLockReasonDisable": "App-Sperre ausschalten",
   "settingsKeyUnavailableTitle": "Daten gerade nicht lesbar",
   "settingsKeyUnavailableText": "Der Schlüssel deiner Akte ist im Moment nicht verfügbar. Deine Daten sind unverändert – bitte versuche es gleich noch einmal oder starte das Gerät neu.",
+  "settingsNotificationSystemHintIos": "Ton, Sperrbildschirm und Fokus kannst du zusätzlich in den iOS-Einstellungen unter Mitteilungen anpassen. Tipp: Inhalte auf dem Sperrbildschirm blendet iOS nur aus, wenn „Vorschauen zeigen“ auf „Wenn entsperrt“ steht — sonst hier „Diskret“ wählen.",
+  "settingsCalendarMobileOnly": "Nur in der App für Android und iOS verfügbar.",
   "svcAssistantTitle": "Assistent",
   "svcAssistantExample1": "Wann ist mein nächster Termin?",
   "svcAssistantExample2": "Welche Medikamente nehme ich gerade?",
@@ -2709,6 +2712,9 @@
   },
   "svcReminderVaccinationBody": "Termin für die Auffrischung vereinbaren",
   "svcModelIntegrityFailed": "Der Download war unvollständig oder entsprach nicht der geprüften Version und wurde verworfen. Bitte erneut versuchen.",
+  "svcAssistantLowMemoryIos": "Hinweis: Dieses Gerät hat wenig Arbeitsspeicher. Der Assistent kann langsam sein oder von iOS beendet werden.",
+  "svcAssistantNeedsMoreMemory": "Der lokale Assistent braucht ein Gerät mit mindestens 6 GB Arbeitsspeicher.",
+  "svcAssistantMobileOnly": "Der Assistent läuft nur in der App für Android und iOS.",
   "symptomCheckInHint": "Beschreibe, was du spürst: Art, Charakter, Ort und Stärke (0–10). Tippe auf einen Baustein, um ihn zu ändern.",
   "symptomSensation": "Empfindung",
   "symptomQuality": "Charakter",

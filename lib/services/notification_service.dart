@@ -3,6 +3,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+import 'device_platform.dart';
 import 'device_time.dart';
 import 'notifications/notification_plan.dart';
 
@@ -100,6 +101,16 @@ class NotificationService
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >();
+    if (android == null) {
+      final ios = _plugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >();
+      if (ios != null) {
+        final options = await ios.checkPermissions();
+        return options?.isEnabled ?? false;
+      }
+    }
     return await android?.areNotificationsEnabled() ?? true;
   }
 
@@ -131,6 +142,12 @@ class NotificationService
   ) async {
     if (kIsWeb) return;
     await initialize();
+    if (DevicePlatform.isIOS) {
+      // Nacheinander: sonst überschneiden sich die Budget-Berechnungen.
+      final next = _iosQueue.then((_) => _replaceWithinBudget(group, plans));
+      _iosQueue = next.catchError((Object _) {});
+      return next;
+    }
     final pending = await _plugin.pendingNotificationRequests();
     for (final request in pending) {
       if (group.contains(request.id)) await _plugin.cancel(id: request.id);
@@ -139,6 +156,70 @@ class NotificationService
       assert(group.contains(plan.id), '$plan liegt nicht in $group');
       await _schedule(plan);
     }
+  }
+
+  /// iOS behält nur 64 ausstehende Benachrichtigungen je App und verwirft den
+  /// Rest stillschweigend. Etwas Reserve darunter.
+  static const iosPendingLimit = 60;
+
+  final Map<NotificationGroup, List<PlannedNotification>> _iosPlans = {};
+  Set<int> _iosScheduled = {};
+  Future<void> _iosQueue = Future.value();
+
+  /// iOS: plant über alle Gruppen nur die [iosPendingLimit] nächsten
+  /// Benachrichtigungen. Der Rest folgt bei einem späteren Abgleich (beim
+  /// Öffnen der App planen alle Quellen neu).
+  Future<void> _replaceWithinBudget(
+    NotificationGroup group,
+    List<PlannedNotification> plans,
+  ) async {
+    _iosPlans[group] = plans;
+    final all = [for (final list in _iosPlans.values) ...list];
+    final allowed = withinBudget(all, tz.TZDateTime.now(tz.local));
+    final pending = await _plugin.pendingNotificationRequests();
+    for (final request in pending) {
+      final id = request.id;
+      // Gruppen, die noch nicht abgeglichen haben, bleiben unangetastet.
+      if (!_iosPlans.keys.any((g) => g.contains(id))) continue;
+      if (group.contains(id) || !allowed.contains(id)) {
+        await _plugin.cancel(id: id);
+      }
+    }
+    for (final plan in all) {
+      if (!allowed.contains(plan.id)) continue;
+      // Eigene Gruppe neu; andere nur, wenn sie bisher nicht geplant waren.
+      if (group.contains(plan.id) || !_iosScheduled.contains(plan.id)) {
+        await _schedule(plan);
+      }
+    }
+    _iosScheduled = allowed;
+  }
+
+  /// IDs der [limit] nächsten Benachrichtigungen; wiederkehrende zählen bei
+  /// iOS als eine einzige ausstehende Anfrage.
+  @visibleForTesting
+  static Set<int> withinBudget(
+    Iterable<PlannedNotification> plans,
+    tz.TZDateTime now, {
+    int limit = iosPendingLimit,
+  }) {
+    final upcoming = <(tz.TZDateTime, int)>[];
+    for (final plan in plans) {
+      if (plan.isRepeating) {
+        upcoming.add((
+          nextInstance(now, plan.hour!, plan.minute!, weekday: plan.weekday),
+          plan.id,
+        ));
+      } else {
+        final at = tz.TZDateTime.from(plan.at!, now.location);
+        if (!at.isBefore(now)) upcoming.add((at, plan.id));
+      }
+    }
+    upcoming.sort((a, b) {
+      final byTime = a.$1.compareTo(b.$1);
+      return byTime != 0 ? byTime : a.$2.compareTo(b.$2);
+    });
+    return {for (final (_, id) in upcoming.take(limit)) id};
   }
 
   static Importance _importance(NotificationLevel level) => switch (level) {

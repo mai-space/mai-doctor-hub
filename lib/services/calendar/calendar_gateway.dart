@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../../l10n/l10n.dart';
+import '../device_platform.dart';
 
 class DeviceCalendar {
   const DeviceCalendar({
@@ -18,7 +19,8 @@ class DeviceCalendar {
   final String accountType;
   final bool isPrimary;
 
-  /// Wird von Android zu Google synchronisiert.
+  /// Wird zu Google synchronisiert (iOS meldet Google-Konten als
+  /// `com.google`, siehe `CalendarChannel.swift`).
   bool get isGoogle => accountType == 'com.google';
 
   String get label => accountName.isEmpty || accountName == name
@@ -89,13 +91,13 @@ abstract interface class CalendarGateway {
   Future<void> requestSync(String calendarId);
 }
 
-/// Android-Kalender über `CalendarContract` (siehe CalendarChannel.kt).
+/// Gerätekalender: Android über `CalendarContract` (CalendarChannel.kt),
+/// iOS über EventKit (CalendarChannel.swift) — gleicher Kanal.
 class AndroidCalendarGateway implements CalendarGateway {
   static const _channel = MethodChannel('mai/calendar');
 
   @override
-  bool get isSupported =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+  bool get isSupported => DevicePlatform.isMobile;
 
   @override
   Future<bool> hasPermission() async =>

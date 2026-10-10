@@ -4,6 +4,7 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../l10n/l10n.dart';
+import '../../services/device_platform.dart';
 import '../../services/notifications/notification_plan.dart';
 
 /// Einstellungen → Benachrichtigungen: je Thema an/aus, Wichtigkeit, diskret.
@@ -50,7 +51,10 @@ class NotificationTopicsPage extends StatelessWidget {
                 ),
               const SizedBox(height: 8),
               Text(
-                l10n.settingsNotificationSystemHint,
+                // iOS kennt keine Kanäle je Thema.
+                DevicePlatform.isIOS
+                    ? l10n.settingsNotificationSystemHintIos
+                    : l10n.settingsNotificationSystemHint,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],

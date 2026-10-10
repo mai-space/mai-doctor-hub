@@ -10,6 +10,7 @@ import '../data/database_provider.dart';
 import '../data/repositories/symptom_media_repository.dart';
 import '../features/symptoms/media_viewer_page.dart';
 import '../l10n/l10n.dart';
+import '../services/device_platform.dart';
 import '../services/file_vault.dart';
 import '../services/media/media_capture.dart';
 
@@ -401,7 +402,9 @@ class _AudioRecorderSheetState extends State<AudioRecorderSheet> {
             const SizedBox(height: 8),
             if (_recording == false)
               Text(
-                l10n.mediaMicDenied,
+                DevicePlatform.isIOS
+                    ? l10n.mediaMicDeniedIos
+                    : l10n.mediaMicDenied,
                 style: TextStyle(color: theme.colorScheme.error),
               )
             else ...[

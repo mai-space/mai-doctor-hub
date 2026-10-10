@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:local_auth/local_auth.dart';
 
 import '../l10n/l10n.dart';
+import 'device_platform.dart';
 
 /// Entsperren per Biometrie oder Geräte-PIN — austauschbar für Tests.
 abstract interface class LockAuthenticator {
@@ -45,11 +46,13 @@ class DeviceLockAuthenticator implements LockAuthenticator {
 }
 
 /// Setzt `FLAG_SECURE` (Android): keine Inhalte in Screenshots/„Zuletzt“.
+/// iOS kann Screenshots nicht sperren — dort verdeckt die App ihren Inhalt
+/// im App-Umschalter (siehe `SecureWindowChannel.swift`).
 abstract final class SecureWindow {
   static const _channel = MethodChannel('mai/secure_window');
 
   static Future<void> setSecure(bool secure) async {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+    if (!DevicePlatform.isMobile) return;
     try {
       await _channel.invokeMethod<void>('setSecure', secure);
     } on MissingPluginException {

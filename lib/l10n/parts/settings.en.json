@@ -170,5 +170,7 @@
   "settingsNotificationSystemHint": "You can fine-tune details like the sound or Do Not Disturb per channel in the app's Android settings.",
   "settingsLockReasonDisable": "Turn off app lock",
   "settingsKeyUnavailableTitle": "Data can't be read right now",
-  "settingsKeyUnavailableText": "The key for your records isn't available at the moment. Your data is unchanged — please try again shortly or restart the device."
+  "settingsKeyUnavailableText": "The key for your records isn't available at the moment. Your data is unchanged — please try again shortly or restart the device.",
+  "settingsNotificationSystemHintIos": "You can fine-tune sound, lock screen and Focus in the iOS Settings under Notifications. Tip: iOS only hides content on the lock screen if “Show Previews” is set to “When Unlocked” — otherwise choose “Discreet” here.",
+  "settingsCalendarMobileOnly": "Only available in the Android and iOS app."
 }

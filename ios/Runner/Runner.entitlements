@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+  Lokale KI (Gemma, ~2,5 GB): mehr Arbeitsspeicher, sonst beendet iOS die App
+  beim Laden des Modells. Erinnerungen an Medikamente dürfen Fokus-Modi
+  durchbrechen („Dringende Mitteilungen“). Beide Fähigkeiten müssen in der
+  App-ID aktiviert sein (siehe docs/RELEASE.md).
+-->
+<dict>
+	<key>com.apple.developer.kernel.increased-memory-limit</key>
+	<true/>
+	<key>com.apple.developer.usernotifications.time-sensitive</key>
+	<true/>
+</dict>
+</plist>

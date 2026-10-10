@@ -17,6 +17,7 @@ analyzer:
     # Eigene Dart-Pakete mit eigenem pubspec — eigener CI-Job.
     - packages/**
     - tools/**
+    - ios/**
 
 linter:
   # The lint rules applied to this project can be customized in the
