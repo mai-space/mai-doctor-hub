@@ -326,6 +326,7 @@ class _CalendarTabState extends State<_CalendarTab> {
           analysis: o.analysis,
           today: o.today,
           showFertileWindow: o.showFertileWindow && o.cycleTracking,
+          firstWeekday: o.calendarFirstWeekday,
           onDayTap: (day) => openCycleDay(context, day),
         ),
         const SizedBox(height: 12),

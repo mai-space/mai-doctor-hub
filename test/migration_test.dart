@@ -276,7 +276,7 @@ void main() {
     expect(await db.select(db.psychAssessments).get(), hasLength(1));
     final version = await db.customSelect('PRAGMA user_version').getSingle();
     expect(version.read<int>('user_version'), db.schemaVersion);
-    expect(db.schemaVersion, 17);
+    expect(db.schemaVersion, 18);
     await db.close();
   });
 
@@ -395,7 +395,56 @@ void main() {
     settings = await db.select(db.appSettings).getSingle();
     expect((settings.typicalCycleLength, settings.cycleSetupDone), (30, true));
     version = await db.customSelect('PRAGMA user_version').getSingle();
-    expect(version.read<int>('user_version'), 17);
+    expect(version.read<int>('user_version'), db.schemaVersion);
+    await db.close();
+  });
+
+  test('migrates v17 → v18: week start stays automatic', () async {
+    // Echtes v17-Schema (Stand des MCP-Fixtures vor v18).
+    final raw = sqlite3.openInMemory();
+    final sql = File('test/migrations/v17.sql').readAsStringSync();
+    for (final statement in sql.split('---')) {
+      final body = statement
+          .split('\n')
+          .where((l) => !l.startsWith('--'))
+          .join('\n')
+          .trim();
+      if (body.isNotEmpty) raw.execute(body);
+    }
+    final at = DateTime(2026, 10, 5, 9).millisecondsSinceEpoch ~/ 1000;
+    raw
+      ..execute(
+        'INSERT INTO app_settings (id, onboarding_completed, cycle_tracking, '
+        'typical_cycle_length, cycle_setup_done) VALUES (1, 1, 1, 29, 1)',
+      )
+      ..execute(
+        "INSERT INTO doctors (id, name, created_at, updated_at) "
+        "VALUES ('d1', 'Dr. Alt', 0, 0)",
+      )
+      ..execute(
+        'INSERT INTO appointments (id, doctor_id, scheduled_at, duration_min, '
+        "title, status, created_at, updated_at) VALUES "
+        "('a1', 'd1', $at, 45, 'Kontrolle', 0, 0, 0)",
+      )
+      ..execute('PRAGMA user_version = 17');
+    final db = AppDatabase(NativeDatabase.opened(raw));
+
+    var settings = await db.select(db.appSettings).getSingle();
+    expect(settings.calendarFirstWeekday, isNull, reason: 'automatisch');
+    expect(settings.typicalCycleLength, 29);
+    expect(settings.cycleSetupDone, isTrue);
+    final appointment = await db.select(db.appointments).getSingle();
+    expect(
+      (appointment.title, appointment.durationMin, appointment.scheduledAt),
+      ('Kontrolle', 45, DateTime(2026, 10, 5, 9)),
+    );
+    await db
+        .update(db.appSettings)
+        .write(const AppSettingsCompanion(calendarFirstWeekday: Value(1)));
+    settings = await db.select(db.appSettings).getSingle();
+    expect(settings.calendarFirstWeekday, 1);
+    final version = await db.customSelect('PRAGMA user_version').getSingle();
+    expect(version.read<int>('user_version'), 18);
     await db.close();
   });
 

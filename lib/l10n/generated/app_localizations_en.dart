@@ -69,6 +69,101 @@ class AppLocalizationsEn extends AppLocalizations {
   String get assistantOpenLink => 'Open';
 
   @override
+  String get calendarViewList => 'List';
+
+  @override
+  String get calendarPrevious => 'Previous';
+
+  @override
+  String get calendarNext => 'Next';
+
+  @override
+  String get calendarAllDay => 'all-day';
+
+  @override
+  String calendarWeekNumber(int week) {
+    return 'W$week';
+  }
+
+  @override
+  String get calendarWeekNumberShort => 'Wk';
+
+  @override
+  String calendarWeekNumberSemantics(int week) {
+    return 'Week $week';
+  }
+
+  @override
+  String calendarMore(int count) {
+    return '+$count more';
+  }
+
+  @override
+  String calendarEventCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count entries',
+      one: '1 entry',
+      zero: 'no entries',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get calendarListEmpty => 'Nothing in this period';
+
+  @override
+  String get calendarDayTitlePattern => 'EEE, MMM d, y';
+
+  @override
+  String get calendarDayHeaderPattern => 'EEEE, MMMM d, y';
+
+  @override
+  String get calendarFullDatePattern => 'MMM d, y';
+
+  @override
+  String get calendarRangeSameMonthStartPattern => 'MMM d';
+
+  @override
+  String get calendarRangeSameMonthEndPattern => 'd, y';
+
+  @override
+  String get calendarRangeSameYearStartPattern => 'MMM d';
+
+  @override
+  String calendarVaccinationDue(String vaccine) {
+    return 'Vaccination due: $vaccine';
+  }
+
+  @override
+  String get calendarPeriod => 'Period';
+
+  @override
+  String get calendarPeriodExpected => 'Period expected (estimate)';
+
+  @override
+  String get calendarFertileWindow => 'Fertile window (rough)';
+
+  @override
+  String get calendarCreateHint => 'Add appointment';
+
+  @override
+  String get calendarNow => 'Now';
+
+  @override
+  String get calendarWeekStart => 'Week starts on';
+
+  @override
+  String calendarWeekStartAuto(String weekday) {
+    return 'Automatic ($weekday)';
+  }
+
+  @override
+  String get calendarWeekStartSubtitle =>
+      'Applies to month, week and year; with Monday, week numbers are shown.';
+
+  @override
   String get catalogReminderMorningTitle => 'Morning check-in';
 
   @override
@@ -1739,6 +1834,113 @@ class AppLocalizationsEn extends AppLocalizations {
   String homeVaccinationDoseLabel(int number) {
     return 'Dose $number';
   }
+
+  @override
+  String get homeCaptureFab => 'Add';
+
+  @override
+  String get homeCaptureTitle => 'Add entry';
+
+  @override
+  String get homeCaptureHint => 'What would you like to record?';
+
+  @override
+  String get homeCaptureCheckIn => 'How are you?';
+
+  @override
+  String get homeCaptureSymptom => 'New symptom';
+
+  @override
+  String get homeCaptureScan => 'Scan report';
+
+  @override
+  String get homeCaptureFile => 'File / PDF';
+
+  @override
+  String get homeCaptureMedia => 'Photo · audio';
+
+  @override
+  String get homeCaptureAppointment => 'Appointment';
+
+  @override
+  String get homeCaptureJournal => 'Journal';
+
+  @override
+  String get homeCapturePeriod => 'Period';
+
+  @override
+  String get homeCaptureMediaPickTitle => 'Which symptom is this for?';
+
+  @override
+  String get homeCaptureMediaNewSymptom => 'Create new symptom';
+
+  @override
+  String homeCaptureMediaKindTitle(String symptom) {
+    return 'Evidence for “$symptom”';
+  }
+
+  @override
+  String get homeCaptureJournalCreateTitle => 'Start a journal?';
+
+  @override
+  String get homeCaptureJournalCreateBody =>
+      'Journal entries belong to a mood symptom. Create “Mood” now? You can then write down what\'s on your mind in the check-in.';
+
+  @override
+  String get homeCaptureJournalCreate => 'Create';
+
+  @override
+  String get homeCaptureJournalSymptomLabel => 'Mood';
+
+  @override
+  String get homeTodayTitle => 'Today';
+
+  @override
+  String homeTodayMedsProgress(int taken, int total) {
+    return '$taken of $total taken';
+  }
+
+  @override
+  String homeTodayMedsQuickTake(String name, String time) {
+    return 'Mark $name ($time) as taken';
+  }
+
+  @override
+  String get homeTodayCheckInsTitle => 'Check-in due';
+
+  @override
+  String homeTodayCheckInsOpen(String names) {
+    return '$names not logged yet';
+  }
+
+  @override
+  String homeTodayMore(int count) {
+    return '+$count more';
+  }
+
+  @override
+  String get homeTodayAppointmentTitle => 'Next appointment';
+
+  @override
+  String get homeTodayAppointmentToday => 'today';
+
+  @override
+  String get homeTodayAppointmentTomorrow => 'tomorrow';
+
+  @override
+  String homeTodayAppointmentInDays(int days) {
+    return 'in $days days';
+  }
+
+  @override
+  String get homeTodayVaccinationsTitle => 'Vaccination due';
+
+  @override
+  String get homeTodayAllDone => 'All done for today ✓';
+
+  @override
+  String get homeEmptyMessageCapture =>
+      'Tap “Add” to record appointments, symptoms, reports and more — appointments will then show up here in the timeline.';
 
   @override
   String get measureIntensity => 'Intensity 0–10';

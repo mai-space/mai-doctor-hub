@@ -63,7 +63,7 @@ void main() {
     await tester.pumpWidget(MaiDoctorHubApp(database: db));
     await settle(tester);
 
-    expect(find.text('Add appointment'), findsOneWidget);
+    expect(find.text('Add'), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('My records'), findsWidgets);
     // Datum im englischen Format, nicht „Do 14. März“.

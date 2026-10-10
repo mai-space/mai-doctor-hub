@@ -15,12 +15,13 @@ import '../../widgets/suggestion_text_field.dart';
 Future<String?> showAddAppointmentSheet(
   BuildContext context, {
   AppointmentSummary? initial,
+  DateTime? at,
 }) {
   return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (context) => AddAppointmentSheet(initial: initial),
+    builder: (context) => AddAppointmentSheet(initial: initial, at: at),
   );
 }
 
@@ -28,9 +29,12 @@ const _durationOptions = [15, 30, 45, 60, 90, 120];
 
 /// Anlegen oder — mit [initial] — Bearbeiten eines Termins.
 class AddAppointmentSheet extends StatefulWidget {
-  const AddAppointmentSheet({super.key, this.initial});
+  const AddAppointmentSheet({super.key, this.initial, this.at});
 
   final AppointmentSummary? initial;
+
+  /// Vorgabe für Datum/Uhrzeit eines neuen Termins (z. B. aus dem Kalender).
+  final DateTime? at;
 
   @override
   State<AddAppointmentSheet> createState() => _AddAppointmentSheetState();
@@ -60,6 +64,7 @@ class _AddAppointmentSheetState extends State<AddAppointmentSheet> {
   void initState() {
     super.initState();
     final initial = widget.initial;
+    if (initial == null && widget.at != null) _scheduledAt = widget.at!;
     if (initial != null) {
       final a = initial.appointment;
       _scheduledAt = a.scheduledAt;

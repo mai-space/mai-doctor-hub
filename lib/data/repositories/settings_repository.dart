@@ -39,6 +39,13 @@ class SettingsRepository {
     );
   }
 
+  /// v18: Wochenbeginn im Kalender (`DateTime.weekday`); `null` = Region.
+  Future<void> setCalendarFirstWeekday(int? weekday) {
+    return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
+      AppSettingsCompanion(calendarFirstWeekday: Value(weekday)),
+    );
+  }
+
   Future<void> completeOnboarding() {
     return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
       const AppSettingsCompanion(onboardingCompleted: Value(true)),

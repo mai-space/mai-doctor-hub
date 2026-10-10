@@ -45,7 +45,7 @@ void main() {
     expect(find.text('Kalender'), findsOneWidget);
     expect(find.text('Meine Akte'), findsOneWidget);
     expect(find.text('Einstellungen'), findsOneWidget);
-    expect(find.text('Termin hinzufügen'), findsOneWidget);
+    expect(find.text('Erfassen'), findsOneWidget);
 
     await disposeApp(tester);
   });

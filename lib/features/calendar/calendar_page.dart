@@ -3,548 +3,336 @@ import 'package:intl/intl.dart';
 
 import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
-import '../../data/repositories/appointment_repository.dart';
+import '../../data/repositories/settings_repository.dart';
 import '../../l10n/l10n.dart';
-import '../../theme/app_theme.dart';
-import '../home/appointment_detail_page.dart';
+import '../home/add_appointment_sheet.dart';
+import 'calendar_events.dart';
+import 'calendar_layout.dart';
+import 'calendar_views.dart';
 
-enum CalendarViewMode { day, week, month, year }
+/// Ansichten wie bei FullCalendar (neue nur am Ende anhängen).
+enum CalendarViewMode { day, week, month, year, list }
 
+/// Kalender: Werkzeugleiste ‹ Heute › mit Titel, Ansichtswahl
+/// (Monat/Woche/Tag/Liste/Jahr), Wischen zum Blättern.
 class CalendarPage extends StatefulWidget {
-  const CalendarPage({super.key});
+  const CalendarPage({super.key, this.initialDate, this.initialView});
+
+  /// Startdatum (Tests); sonst heute.
+  final DateTime? initialDate;
+
+  /// Startansicht (Tests); sonst die zuletzt gewählte dieser Sitzung.
+  final CalendarViewMode? initialView;
 
   @override
   State<CalendarPage> createState() => _CalendarPageState();
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  CalendarViewMode _mode = CalendarViewMode.month;
-  late DateTime _focusedDay;
-  DateTime? _selectedDay;
+  /// Zuletzt gewählte Ansicht — gilt für die laufende Sitzung.
+  static CalendarViewMode _sessionView = CalendarViewMode.month;
 
-  @override
-  void initState() {
-    super.initState();
-    final now = DateTime.now();
-    _focusedDay = DateTime(now.year, now.month, now.day);
-    _selectedDay = _focusedDay;
-  }
+  late CalendarViewMode _mode = widget.initialView ?? _sessionView;
+  late DateTime _focus = dateOnly(widget.initialDate ?? DateTime.now());
 
-  void _jumpToToday() {
-    final now = DateTime.now();
+  Stream<AppSetting>? _settings;
+  Stream<List<CalendarEvent>>? _events;
+  (DateTime, DateTime)? _eventsRange;
+
+  DateTime get _today => dateOnly(DateTime.now());
+
+  static const _listDays = 30;
+
+  void _setMode(CalendarViewMode mode) {
     setState(() {
-      _focusedDay = DateTime(now.year, now.month, now.day);
-      _selectedDay = _focusedDay;
+      _mode = mode;
+      _sessionView = mode;
     });
   }
+
+  void _jumpToToday() => setState(() => _focus = _today);
 
   void _shift(int amount) {
     setState(() {
-      switch (_mode) {
-        case CalendarViewMode.day:
-          _focusedDay = _focusedDay.add(Duration(days: amount));
-          _selectedDay = _focusedDay;
-        case CalendarViewMode.week:
-          _focusedDay = _focusedDay.add(Duration(days: 7 * amount));
-          _selectedDay = _focusedDay;
-        case CalendarViewMode.month:
-          _focusedDay = DateTime(
-            _focusedDay.year,
-            _focusedDay.month + amount,
-            1,
-          );
-        case CalendarViewMode.year:
-          _focusedDay = DateTime(_focusedDay.year + amount, 1, 1);
-      }
+      _focus = switch (_mode) {
+        CalendarViewMode.day => addDays(_focus, amount),
+        CalendarViewMode.week => addDays(_focus, 7 * amount),
+        CalendarViewMode.list => addDays(_focus, _listDays * amount),
+        CalendarViewMode.month => DateTime(_focus.year, _focus.month + amount),
+        CalendarViewMode.year => DateTime(_focus.year + amount),
+      };
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = context.l10n;
-    final db = DatabaseScope.of(context);
-    final repo = AppointmentRepository(db);
-
-    final range = _rangeForMode(_mode, _focusedDay);
-
-    return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 12, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.homeCalendarTitle,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  tooltip: l10n.commonBack,
-                  onPressed: () => _shift(-1),
-                  icon: const Icon(Icons.chevron_left),
-                ),
-                TextButton(
-                  onPressed: _jumpToToday,
-                  child: Text(l10n.commonToday),
-                ),
-                IconButton(
-                  tooltip: l10n.homeCalendarForward,
-                  onPressed: () => _shift(1),
-                  icon: const Icon(Icons.chevron_right),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SegmentedButton<CalendarViewMode>(
-              segments: [
-                ButtonSegment(
-                  value: CalendarViewMode.day,
-                  label: Text(l10n.homeCalendarDay),
-                ),
-                ButtonSegment(
-                  value: CalendarViewMode.week,
-                  label: Text(l10n.homeCalendarWeek),
-                ),
-                ButtonSegment(
-                  value: CalendarViewMode.month,
-                  label: Text(l10n.homeCalendarMonth),
-                ),
-                ButtonSegment(
-                  value: CalendarViewMode.year,
-                  label: Text(l10n.homeCalendarYear),
-                ),
-              ],
-              selected: {_mode},
-              onSelectionChanged: (value) {
-                setState(() => _mode = value.first);
-              },
-            ),
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: StreamBuilder<List<Appointment>>(
-              stream: repo.watchInRange(range.$1, range.$2),
-              builder: (context, snapshot) {
-                final appointments = snapshot.data ?? const [];
-                final byDay = <DateTime, List<Appointment>>{};
-                for (final a in appointments) {
-                  final key = DateTime(
-                    a.scheduledAt.year,
-                    a.scheduledAt.month,
-                    a.scheduledAt.day,
-                  );
-                  byDay.putIfAbsent(key, () => []).add(a);
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: switch (_mode) {
-                    CalendarViewMode.month => _MonthGrid(
-                      focusedDay: _focusedDay,
-                      selectedDay: _selectedDay,
-                      markers: byDay.keys.toSet(),
-                      onSelect: (day) => setState(() {
-                        _selectedDay = day;
-                        _focusedDay = day;
-                      }),
-                    ),
-                    CalendarViewMode.week => _WeekView(
-                      focusedDay: _focusedDay,
-                      selectedDay: _selectedDay,
-                      markers: byDay.keys.toSet(),
-                      onSelect: (day) => setState(() {
-                        _selectedDay = day;
-                        _focusedDay = day;
-                      }),
-                    ),
-                    CalendarViewMode.year => _YearView(
-                      year: _focusedDay.year,
-                      markers: byDay.keys.toSet(),
-                      onSelectMonth: (month) {
-                        setState(() {
-                          _focusedDay = DateTime(_focusedDay.year, month, 1);
-                          _mode = CalendarViewMode.month;
-                        });
-                      },
-                    ),
-                    CalendarViewMode.day => const SizedBox.shrink(),
-                  },
-                );
-              },
-            ),
-          ),
-          if (_mode != CalendarViewMode.year)
-            SizedBox(
-              height: 180,
-              child: _DayAppointmentList(
-                day: _selectedDay ?? _focusedDay,
-                repo: repo,
-              ),
-            ),
-        ],
-      ),
-    );
+  void _openDay(DateTime day) {
+    setState(() {
+      _focus = day;
+      _mode = CalendarViewMode.day;
+      _sessionView = _mode;
+    });
   }
 
-  (DateTime, DateTime) _rangeForMode(CalendarViewMode mode, DateTime focus) {
-    switch (mode) {
+  Future<void> _create(DateTime at) => showAddAppointmentSheet(context, at: at);
+
+  /// Sichtbarer Zeitraum [start, end) der aktuellen Ansicht.
+  (DateTime, DateTime) _range(int firstWeekday) {
+    switch (_mode) {
       case CalendarViewMode.day:
-        final start = DateTime(focus.year, focus.month, focus.day);
-        return (start, start.add(const Duration(days: 1)));
+        return (_focus, addDays(_focus, 1));
       case CalendarViewMode.week:
-        final start = focus.subtract(Duration(days: focus.weekday % 7));
-        final weekStart = DateTime(start.year, start.month, start.day);
-        return (weekStart, weekStart.add(const Duration(days: 7)));
+        final start = startOfWeek(_focus, firstWeekday);
+        return (start, addDays(start, 7));
+      case CalendarViewMode.list:
+        return (_focus, addDays(_focus, _listDays));
       case CalendarViewMode.month:
-        final start = DateTime(focus.year, focus.month, 1);
-        return (start, DateTime(focus.year, focus.month + 1, 1));
+        final start = monthGridDays(_focus, firstWeekday).first;
+        return (start, addDays(start, 42));
       case CalendarViewMode.year:
-        final start = DateTime(focus.year, 1, 1);
-        return (start, DateTime(focus.year + 1, 1, 1));
+        return (DateTime(_focus.year), DateTime(_focus.year + 1));
     }
   }
-}
 
-class _DayAppointmentList extends StatelessWidget {
-  const _DayAppointmentList({required this.day, required this.repo});
-
-  final DateTime day;
-  final AppointmentRepository repo;
+  Stream<List<CalendarEvent>> _eventsFor(
+    AppDatabase db,
+    (DateTime, DateTime) range,
+  ) {
+    if (_events == null || _eventsRange != range) {
+      _eventsRange = range;
+      _events = watchCalendarEvents(db, range.$1, range.$2);
+    }
+    return _events!;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Appointment>>(
-      future: repo.forDay(day),
-      builder: (context, snapshot) {
-        final items = snapshot.data ?? const [];
-        final title = DateFormat(
-          context.l10n.homeCalendarDayTitlePattern,
-        ).format(day);
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-              child: Text(
-                title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+    final db = DatabaseScope.of(context);
+    _settings ??= SettingsRepository(db).watch();
+    final localeIndex = MaterialLocalizations.of(context).firstDayOfWeekIndex;
+    return SafeArea(
+      child: StreamBuilder<AppSetting>(
+        stream: _settings,
+        builder: (context, settings) {
+          final firstWeekday = resolveFirstWeekday(
+            settings.data?.calendarFirstWeekday,
+            localeIndex,
+          );
+          final range = _range(firstWeekday);
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _toolbar(context, firstWeekday, range),
+              const SizedBox(height: 8),
+              Expanded(
+                child: GestureDetector(
+                  // Wischen nach links/rechts blättert (wie bei FullCalendar
+                  // mobil); Pfeile bleiben für Screenreader.
+                  onHorizontalDragEnd: (details) {
+                    final velocity = details.primaryVelocity ?? 0;
+                    if (velocity.abs() < 250) return;
+                    _shift(velocity < 0 ? 1 : -1);
+                  },
+                  child: StreamBuilder<List<CalendarEvent>>(
+                    key: ValueKey(('events', range)),
+                    stream: _eventsFor(db, range),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return const SizedBox.expand();
+                      return _view(firstWeekday, range, snapshot.data!);
+                    },
+                  ),
+                ),
               ),
-            ),
-            Expanded(
-              child: items.isEmpty
-                  ? Center(
-                      child: Text(
-                        context.l10n.homeCalendarNoAppointmentsOnDay,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.muted,
-                        ),
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        final a = items[index];
-                        return ListTile(
-                          leading: const Icon(Icons.event),
-                          title: Text(a.title ?? context.l10n.entityAppointment),
-                          subtitle: Text(
-                            DateFormat('HH:mm').format(a.scheduledAt),
-                          ),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (_) => AppointmentDetailPage(
-                                  appointmentId: a.id,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _MonthGrid extends StatelessWidget {
-  const _MonthGrid({
-    required this.focusedDay,
-    required this.selectedDay,
-    required this.markers,
-    required this.onSelect,
-  });
-
-  final DateTime focusedDay;
-  final DateTime? selectedDay;
-  final Set<DateTime> markers;
-  final ValueChanged<DateTime> onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final firstOfMonth = DateTime(focusedDay.year, focusedDay.month);
-    final daysInMonth = DateTime(focusedDay.year, focusedDay.month + 1, 0).day;
-    final startWeekday = firstOfMonth.weekday % 7;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          DateFormat.yMMMM().format(focusedDay),
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Expanded(
-          child: GridView.count(
-            crossAxisCount: 7,
-            children: [
-              // Sonntag zuerst, Kurzform ohne Punkt („So“, „Mo“ … / „Sun“ …).
-              for (final label
-                  in DateFormat().dateSymbols.STANDALONESHORTWEEKDAYS)
-                Center(
-                  child: Text(
-                    label,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppColors.muted,
-                    ),
-                  ),
-                ),
-              for (var i = 0; i < startWeekday; i++) const SizedBox.shrink(),
-              for (var day = 1; day <= daysInMonth; day++)
-                _DayCell(
-                  day: DateTime(focusedDay.year, focusedDay.month, day),
-                  selected: selectedDay,
-                  hasMarker: markers.contains(
-                    DateTime(focusedDay.year, focusedDay.month, day),
-                  ),
-                  onSelect: onSelect,
-                ),
             ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _WeekView extends StatelessWidget {
-  const _WeekView({
-    required this.focusedDay,
-    required this.selectedDay,
-    required this.markers,
-    required this.onSelect,
-  });
-
-  final DateTime focusedDay;
-  final DateTime? selectedDay;
-  final Set<DateTime> markers;
-  final ValueChanged<DateTime> onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    final start = focusedDay.subtract(Duration(days: focusedDay.weekday % 7));
-    final days = List.generate(
-      7,
-      (i) => DateTime(start.year, start.month, start.day + i),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          context.l10n.homeCalendarWeekFrom(
-            DateFormat(context.l10n.homeCalendarWeekStartPattern)
-                .format(days.first),
-          ),
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 12),
-        Expanded(
-          child: Row(
-            children: [
-              for (final day in days)
-                Expanded(
-                  child: _DayCell(
-                    day: day,
-                    selected: selectedDay,
-                    hasMarker: markers.contains(day),
-                    onSelect: onSelect,
-                    showWeekday: true,
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _YearView extends StatelessWidget {
-  const _YearView({
-    required this.year,
-    required this.markers,
-    required this.onSelectMonth,
-  });
-
-  final int year;
-  final Set<DateTime> markers;
-  final ValueChanged<int> onSelectMonth;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$year',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 12),
-        Expanded(
-          child: GridView.count(
-            crossAxisCount: 3,
-            childAspectRatio: 1.4,
-            children: [
-              for (var month = 1; month <= 12; month++)
-                InkWell(
-                  onTap: () => onSelectMonth(month),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    margin: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outlineVariant,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          DateFormat.MMM().format(DateTime(year, month)),
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          context.l10n.homeCalendarAppointmentCount(
-                            markers
-                                .where(
-                                  (d) => d.year == year && d.month == month,
-                                )
-                                .length,
-                          ),
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(color: AppColors.muted),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _DayCell extends StatelessWidget {
-  const _DayCell({
-    required this.day,
-    required this.selected,
-    required this.hasMarker,
-    required this.onSelect,
-    this.showWeekday = false,
-  });
-
-  final DateTime day;
-  final DateTime? selected;
-  final bool hasMarker;
-  final ValueChanged<DateTime> onSelect;
-  final bool showWeekday;
-
-  @override
-  Widget build(BuildContext context) {
-    final isSelected =
-        selected != null &&
-        selected!.year == day.year &&
-        selected!.month == day.month &&
-        selected!.day == day.day;
-    final isToday = DateUtils.isSameDay(day, DateTime.now());
-
-    return InkWell(
-      onTap: () => onSelect(day),
-      borderRadius: BorderRadius.circular(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (showWeekday)
-            Text(
-              DateFormat('E').format(day),
-              style: Theme.of(
-                context,
-              ).textTheme.labelSmall?.copyWith(color: AppColors.muted),
-            ),
-          Container(
-            width: 36,
-            height: 36,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : isToday
-                  ? Theme.of(context).colorScheme.primaryContainer
-                  : null,
-            ),
-            child: Text(
-              '${day.day}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: isSelected || isToday
-                    ? FontWeight.w700
-                    : FontWeight.w400,
-                color: isSelected
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : AppColors.ink,
-              ),
-            ),
-          ),
-          const SizedBox(height: 2),
-          Container(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: hasMarker
-                  ? Theme.of(context).colorScheme.tertiary
-                  : Colors.transparent,
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
+
+  Widget _view(
+    int firstWeekday,
+    (DateTime, DateTime) range,
+    List<CalendarEvent> events,
+  ) {
+    final today = _today;
+    switch (_mode) {
+      case CalendarViewMode.month:
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+          child: CalendarMonthView(
+            month: _focus,
+            firstWeekday: firstWeekday,
+            events: events,
+            today: today,
+            onDayTap: _openDay,
+            onCreate: _create,
+          ),
+        );
+      case CalendarViewMode.week:
+      case CalendarViewMode.day:
+        return Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: CalendarTimeGrid(
+            key: ValueKey(('grid', _mode, range)),
+            days: daysInRange(range.$1, range.$2),
+            events: events,
+            onCreate: _create,
+            onDayTap: _mode == CalendarViewMode.week ? _openDay : null,
+          ),
+        );
+      case CalendarViewMode.list:
+        return CalendarListView(
+          days: daysInRange(range.$1, range.$2),
+          events: events,
+          today: today,
+        );
+      case CalendarViewMode.year:
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: CalendarYearView(
+            year: _focus.year,
+            firstWeekday: firstWeekday,
+            events: events,
+            today: today,
+            onMonthTap: (month) => setState(() {
+              _focus = DateTime(_focus.year, month);
+              _mode = CalendarViewMode.month;
+              _sessionView = _mode;
+            }),
+          ),
+        );
+    }
+  }
+
+  Widget _toolbar(
+    BuildContext context,
+    int firstWeekday,
+    (DateTime, DateTime) range,
+  ) {
+    final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final title = calendarTitle(
+      l10n,
+      _mode,
+      _focus,
+      range,
+      weekNumbers: firstWeekday == DateTime.monday,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 8, 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Semantics(
+                  header: true,
+                  liveRegion: true,
+                  child: Text(
+                    title,
+                    key: const ValueKey('calendar-title'),
+                    // Lange Titel (Woche/Tag/Liste) etwas kleiner.
+                    style:
+                        (_mode == CalendarViewMode.month ||
+                                    _mode == CalendarViewMode.year
+                                ? theme.textTheme.titleLarge
+                                : theme.textTheme.titleMedium)
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+              IconButton(
+                tooltip: l10n.calendarPrevious,
+                onPressed: () => _shift(-1),
+                icon: const Icon(Icons.chevron_left),
+              ),
+              OutlinedButton(
+                onPressed: _jumpToToday,
+                style: OutlinedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  minimumSize: const Size(0, 36),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+                child: Text(l10n.commonToday),
+              ),
+              IconButton(
+                tooltip: l10n.calendarNext,
+                onPressed: () => _shift(1),
+                icon: const Icon(Icons.chevron_right),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: SegmentedButton<CalendarViewMode>(
+            showSelectedIcon: false,
+            style: SegmentedButton.styleFrom(
+              visualDensity: VisualDensity.compact,
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              tapTargetSize: MaterialTapTargetSize.padded,
+            ),
+            segments: [
+              for (final (mode, label) in [
+                (CalendarViewMode.month, l10n.homeCalendarMonth),
+                (CalendarViewMode.week, l10n.homeCalendarWeek),
+                (CalendarViewMode.day, l10n.homeCalendarDay),
+                (CalendarViewMode.list, l10n.calendarViewList),
+                (CalendarViewMode.year, l10n.homeCalendarYear),
+              ])
+                ButtonSegment(
+                  value: mode,
+                  label: Text(
+                    label,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.fade,
+                  ),
+                ),
+            ],
+            selected: {_mode},
+            onSelectionChanged: (value) => _setMode(value.first),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Titel der Werkzeugleiste: „Oktober 2026“, „KW 41 · 5.–11. Okt. 2026“,
+/// „Mo., 5. Okt. 2026“, Liste/Woche als Zeitraum, Jahr als Zahl.
+String calendarTitle(
+  AppLocalizations l10n,
+  CalendarViewMode mode,
+  DateTime focus,
+  (DateTime, DateTime) range, {
+  required bool weekNumbers,
+}) {
+  final lastDay = addDays(range.$2, -1);
+  return switch (mode) {
+    CalendarViewMode.month => DateFormat.yMMMM().format(focus),
+    CalendarViewMode.year => '${focus.year}',
+    CalendarViewMode.day => DateFormat(
+      l10n.calendarDayTitlePattern,
+    ).format(focus),
+    CalendarViewMode.list => formatDateRange(l10n, range.$1, lastDay),
+    CalendarViewMode.week =>
+      weekNumbers
+          ? '${l10n.calendarWeekNumber(isoWeekNumber(range.$1))} · '
+                '${formatDateRange(l10n, range.$1, lastDay)}'
+          : formatDateRange(l10n, range.$1, lastDay),
+  };
+}
+
+/// Zeitraum kompakt: „5.–11. Okt. 2026“, „28. Sept. – 4. Okt. 2026“,
+/// „29. Dez. 2026 – 4. Jan. 2027“ (englisch: „Oct 5–11, 2026“ …).
+String formatDateRange(AppLocalizations l10n, DateTime from, DateTime to) {
+  final full = DateFormat(l10n.calendarFullDatePattern);
+  if (from.year != to.year) return '${full.format(from)} – ${full.format(to)}';
+  if (from.month != to.month) {
+    return '${DateFormat(l10n.calendarRangeSameYearStartPattern).format(from)}'
+        ' – ${full.format(to)}';
+  }
+  return '${DateFormat(l10n.calendarRangeSameMonthStartPattern).format(from)}'
+      '–${DateFormat(l10n.calendarRangeSameMonthEndPattern).format(to)}';
 }

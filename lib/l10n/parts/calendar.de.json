@@ -1,0 +1,69 @@
+{
+  "calendarViewList": "Liste",
+  "calendarPrevious": "Zurück",
+  "calendarNext": "Weiter",
+  "calendarAllDay": "ganztägig",
+  "calendarWeekNumber": "KW {week}",
+  "@calendarWeekNumber": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarWeekNumberShort": "KW",
+  "calendarWeekNumberSemantics": "Kalenderwoche {week}",
+  "@calendarWeekNumberSemantics": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarMore": "+{count} weitere",
+  "@calendarMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarEventCount": "{count, plural, =0{keine Einträge} =1{1 Eintrag} other{{count} Einträge}}",
+  "@calendarEventCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarListEmpty": "Keine Einträge in diesem Zeitraum",
+  "calendarDayTitlePattern": "EE, d. MMM y",
+  "calendarDayHeaderPattern": "EEEE, d. MMMM y",
+  "calendarFullDatePattern": "d. MMM y",
+  "calendarRangeSameMonthStartPattern": "d.",
+  "calendarRangeSameMonthEndPattern": "d. MMM y",
+  "calendarRangeSameYearStartPattern": "d. MMM",
+  "calendarVaccinationDue": "Impfung fällig: {vaccine}",
+  "@calendarVaccinationDue": {
+    "placeholders": {
+      "vaccine": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarPeriod": "Periode",
+  "calendarPeriodExpected": "Periode erwartet (geschätzt)",
+  "calendarFertileWindow": "Fruchtbares Fenster (grob)",
+  "calendarCreateHint": "Termin anlegen",
+  "calendarNow": "Jetzt",
+  "calendarWeekStart": "Woche beginnt am",
+  "calendarWeekStartAuto": "Automatisch ({weekday})",
+  "@calendarWeekStartAuto": {
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarWeekStartSubtitle": "Gilt für Monat, Woche und Jahr; bei Montag mit Kalenderwochen (KW)."
+}

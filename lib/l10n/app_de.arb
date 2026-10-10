@@ -54,6 +54,73 @@
     }
   },
   "assistantOpenLink": "Öffnen",
+  "calendarViewList": "Liste",
+  "calendarPrevious": "Zurück",
+  "calendarNext": "Weiter",
+  "calendarAllDay": "ganztägig",
+  "calendarWeekNumber": "KW {week}",
+  "@calendarWeekNumber": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarWeekNumberShort": "KW",
+  "calendarWeekNumberSemantics": "Kalenderwoche {week}",
+  "@calendarWeekNumberSemantics": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarMore": "+{count} weitere",
+  "@calendarMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarEventCount": "{count, plural, =0{keine Einträge} =1{1 Eintrag} other{{count} Einträge}}",
+  "@calendarEventCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarListEmpty": "Keine Einträge in diesem Zeitraum",
+  "calendarDayTitlePattern": "EE, d. MMM y",
+  "calendarDayHeaderPattern": "EEEE, d. MMMM y",
+  "calendarFullDatePattern": "d. MMM y",
+  "calendarRangeSameMonthStartPattern": "d.",
+  "calendarRangeSameMonthEndPattern": "d. MMM y",
+  "calendarRangeSameYearStartPattern": "d. MMM",
+  "calendarVaccinationDue": "Impfung fällig: {vaccine}",
+  "@calendarVaccinationDue": {
+    "placeholders": {
+      "vaccine": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarPeriod": "Periode",
+  "calendarPeriodExpected": "Periode erwartet (geschätzt)",
+  "calendarFertileWindow": "Fruchtbares Fenster (grob)",
+  "calendarCreateHint": "Termin anlegen",
+  "calendarNow": "Jetzt",
+  "calendarWeekStart": "Woche beginnt am",
+  "calendarWeekStartAuto": "Automatisch ({weekday})",
+  "@calendarWeekStartAuto": {
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarWeekStartSubtitle": "Gilt für Monat, Woche und Jahr; bei Montag mit Kalenderwochen (KW).",
   "catalogReminderMorningTitle": "Morgen-Check-in",
   "catalogReminderMorningBody": "Wie geht es dir heute? Symptome kurz protokollieren.",
   "catalogReminderEveningTitle": "Abend-Check-in",
@@ -1037,6 +1104,85 @@
       }
     }
   },
+  "homeCaptureFab": "Erfassen",
+  "homeCaptureTitle": "Erfassen",
+  "homeCaptureHint": "Was möchtest du festhalten?",
+  "homeCaptureCheckIn": "Wie geht's?",
+  "homeCaptureSymptom": "Neues Symptom",
+  "homeCaptureScan": "Befund scannen",
+  "homeCaptureFile": "Datei / PDF",
+  "homeCaptureMedia": "Foto · Audio",
+  "homeCaptureAppointment": "Termin",
+  "homeCaptureJournal": "Tagebuch",
+  "homeCapturePeriod": "Periode",
+  "homeCaptureMediaPickTitle": "Beleg zu welchem Symptom?",
+  "homeCaptureMediaNewSymptom": "Neues Symptom anlegen",
+  "homeCaptureMediaKindTitle": "Beleg zu „{symptom}“",
+  "@homeCaptureMediaKindTitle": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCaptureJournalCreateTitle": "Tagebuch beginnen?",
+  "homeCaptureJournalCreateBody": "Tagebuch-Einträge gehören zu einem Stimmungs-Symptom. „Stimmung“ jetzt anlegen? Danach schreibst du im Check-in, was dich beschäftigt.",
+  "homeCaptureJournalCreate": "Anlegen",
+  "homeCaptureJournalSymptomLabel": "Stimmung",
+  "homeTodayTitle": "Heute",
+  "homeTodayMedsProgress": "{taken} von {total} genommen",
+  "@homeTodayMedsProgress": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayMedsQuickTake": "{name} ({time}) als genommen markieren",
+  "@homeTodayMedsQuickTake": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTodayCheckInsTitle": "Check-in offen",
+  "homeTodayCheckInsOpen": "{names} noch nicht erfasst",
+  "@homeTodayCheckInsOpen": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTodayMore": "+{count} weitere",
+  "@homeTodayMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayAppointmentTitle": "Nächster Termin",
+  "homeTodayAppointmentToday": "heute",
+  "homeTodayAppointmentTomorrow": "morgen",
+  "homeTodayAppointmentInDays": "in {days} Tagen",
+  "@homeTodayAppointmentInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayVaccinationsTitle": "Impfung fällig",
+  "homeTodayAllDone": "Alles erledigt für heute ✓",
+  "homeEmptyMessageCapture": "Tippe auf „Erfassen“, um Termine, Symptome, Befunde und mehr festzuhalten — Termine erscheinen danach hier im Zeitstrahl.",
   "measureIntensity": "Stärke 0–10",
   "measureTemperature": "Temperatur",
   "measureCount": "Anzahl",

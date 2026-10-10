@@ -1,0 +1,81 @@
+{
+  "homeCaptureFab": "Add",
+  "homeCaptureTitle": "Add entry",
+  "homeCaptureHint": "What would you like to record?",
+  "homeCaptureCheckIn": "How are you?",
+  "homeCaptureSymptom": "New symptom",
+  "homeCaptureScan": "Scan report",
+  "homeCaptureFile": "File / PDF",
+  "homeCaptureMedia": "Photo · audio",
+  "homeCaptureAppointment": "Appointment",
+  "homeCaptureJournal": "Journal",
+  "homeCapturePeriod": "Period",
+  "homeCaptureMediaPickTitle": "Which symptom is this for?",
+  "homeCaptureMediaNewSymptom": "Create new symptom",
+  "homeCaptureMediaKindTitle": "Evidence for “{symptom}”",
+  "@homeCaptureMediaKindTitle": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCaptureJournalCreateTitle": "Start a journal?",
+  "homeCaptureJournalCreateBody": "Journal entries belong to a mood symptom. Create “Mood” now? You can then write down what's on your mind in the check-in.",
+  "homeCaptureJournalCreate": "Create",
+  "homeCaptureJournalSymptomLabel": "Mood",
+  "homeTodayTitle": "Today",
+  "homeTodayMedsProgress": "{taken} of {total} taken",
+  "@homeTodayMedsProgress": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayMedsQuickTake": "Mark {name} ({time}) as taken",
+  "@homeTodayMedsQuickTake": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTodayCheckInsTitle": "Check-in due",
+  "homeTodayCheckInsOpen": "{names} not logged yet",
+  "@homeTodayCheckInsOpen": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTodayMore": "+{count} more",
+  "@homeTodayMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayAppointmentTitle": "Next appointment",
+  "homeTodayAppointmentToday": "today",
+  "homeTodayAppointmentTomorrow": "tomorrow",
+  "homeTodayAppointmentInDays": "in {days} days",
+  "@homeTodayAppointmentInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayVaccinationsTitle": "Vaccination due",
+  "homeTodayAllDone": "All done for today ✓",
+  "homeEmptyMessageCapture": "Tap “Add” to record appointments, symptoms, reports and more — appointments will then show up here in the timeline."
+}

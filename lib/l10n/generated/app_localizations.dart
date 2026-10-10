@@ -194,6 +194,156 @@ abstract class AppLocalizations {
   /// **'Öffnen'**
   String get assistantOpenLink;
 
+  /// No description provided for @calendarViewList.
+  ///
+  /// In de, this message translates to:
+  /// **'Liste'**
+  String get calendarViewList;
+
+  /// No description provided for @calendarPrevious.
+  ///
+  /// In de, this message translates to:
+  /// **'Zurück'**
+  String get calendarPrevious;
+
+  /// No description provided for @calendarNext.
+  ///
+  /// In de, this message translates to:
+  /// **'Weiter'**
+  String get calendarNext;
+
+  /// No description provided for @calendarAllDay.
+  ///
+  /// In de, this message translates to:
+  /// **'ganztägig'**
+  String get calendarAllDay;
+
+  /// No description provided for @calendarWeekNumber.
+  ///
+  /// In de, this message translates to:
+  /// **'KW {week}'**
+  String calendarWeekNumber(int week);
+
+  /// No description provided for @calendarWeekNumberShort.
+  ///
+  /// In de, this message translates to:
+  /// **'KW'**
+  String get calendarWeekNumberShort;
+
+  /// No description provided for @calendarWeekNumberSemantics.
+  ///
+  /// In de, this message translates to:
+  /// **'Kalenderwoche {week}'**
+  String calendarWeekNumberSemantics(int week);
+
+  /// No description provided for @calendarMore.
+  ///
+  /// In de, this message translates to:
+  /// **'+{count} weitere'**
+  String calendarMore(int count);
+
+  /// No description provided for @calendarEventCount.
+  ///
+  /// In de, this message translates to:
+  /// **'{count, plural, =0{keine Einträge} =1{1 Eintrag} other{{count} Einträge}}'**
+  String calendarEventCount(int count);
+
+  /// No description provided for @calendarListEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Einträge in diesem Zeitraum'**
+  String get calendarListEmpty;
+
+  /// No description provided for @calendarDayTitlePattern.
+  ///
+  /// In de, this message translates to:
+  /// **'EE, d. MMM y'**
+  String get calendarDayTitlePattern;
+
+  /// No description provided for @calendarDayHeaderPattern.
+  ///
+  /// In de, this message translates to:
+  /// **'EEEE, d. MMMM y'**
+  String get calendarDayHeaderPattern;
+
+  /// No description provided for @calendarFullDatePattern.
+  ///
+  /// In de, this message translates to:
+  /// **'d. MMM y'**
+  String get calendarFullDatePattern;
+
+  /// No description provided for @calendarRangeSameMonthStartPattern.
+  ///
+  /// In de, this message translates to:
+  /// **'d.'**
+  String get calendarRangeSameMonthStartPattern;
+
+  /// No description provided for @calendarRangeSameMonthEndPattern.
+  ///
+  /// In de, this message translates to:
+  /// **'d. MMM y'**
+  String get calendarRangeSameMonthEndPattern;
+
+  /// No description provided for @calendarRangeSameYearStartPattern.
+  ///
+  /// In de, this message translates to:
+  /// **'d. MMM'**
+  String get calendarRangeSameYearStartPattern;
+
+  /// No description provided for @calendarVaccinationDue.
+  ///
+  /// In de, this message translates to:
+  /// **'Impfung fällig: {vaccine}'**
+  String calendarVaccinationDue(String vaccine);
+
+  /// No description provided for @calendarPeriod.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode'**
+  String get calendarPeriod;
+
+  /// No description provided for @calendarPeriodExpected.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode erwartet (geschätzt)'**
+  String get calendarPeriodExpected;
+
+  /// No description provided for @calendarFertileWindow.
+  ///
+  /// In de, this message translates to:
+  /// **'Fruchtbares Fenster (grob)'**
+  String get calendarFertileWindow;
+
+  /// No description provided for @calendarCreateHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Termin anlegen'**
+  String get calendarCreateHint;
+
+  /// No description provided for @calendarNow.
+  ///
+  /// In de, this message translates to:
+  /// **'Jetzt'**
+  String get calendarNow;
+
+  /// No description provided for @calendarWeekStart.
+  ///
+  /// In de, this message translates to:
+  /// **'Woche beginnt am'**
+  String get calendarWeekStart;
+
+  /// No description provided for @calendarWeekStartAuto.
+  ///
+  /// In de, this message translates to:
+  /// **'Automatisch ({weekday})'**
+  String calendarWeekStartAuto(String weekday);
+
+  /// No description provided for @calendarWeekStartSubtitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Gilt für Monat, Woche und Jahr; bei Montag mit Kalenderwochen (KW).'**
+  String get calendarWeekStartSubtitle;
+
   /// No description provided for @catalogReminderMorningTitle.
   ///
   /// In de, this message translates to:
@@ -3019,6 +3169,192 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'{number}. Dosis'**
   String homeVaccinationDoseLabel(int number);
+
+  /// No description provided for @homeCaptureFab.
+  ///
+  /// In de, this message translates to:
+  /// **'Erfassen'**
+  String get homeCaptureFab;
+
+  /// No description provided for @homeCaptureTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Erfassen'**
+  String get homeCaptureTitle;
+
+  /// No description provided for @homeCaptureHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Was möchtest du festhalten?'**
+  String get homeCaptureHint;
+
+  /// No description provided for @homeCaptureCheckIn.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie geht\'s?'**
+  String get homeCaptureCheckIn;
+
+  /// No description provided for @homeCaptureSymptom.
+  ///
+  /// In de, this message translates to:
+  /// **'Neues Symptom'**
+  String get homeCaptureSymptom;
+
+  /// No description provided for @homeCaptureScan.
+  ///
+  /// In de, this message translates to:
+  /// **'Befund scannen'**
+  String get homeCaptureScan;
+
+  /// No description provided for @homeCaptureFile.
+  ///
+  /// In de, this message translates to:
+  /// **'Datei / PDF'**
+  String get homeCaptureFile;
+
+  /// No description provided for @homeCaptureMedia.
+  ///
+  /// In de, this message translates to:
+  /// **'Foto · Audio'**
+  String get homeCaptureMedia;
+
+  /// No description provided for @homeCaptureAppointment.
+  ///
+  /// In de, this message translates to:
+  /// **'Termin'**
+  String get homeCaptureAppointment;
+
+  /// No description provided for @homeCaptureJournal.
+  ///
+  /// In de, this message translates to:
+  /// **'Tagebuch'**
+  String get homeCaptureJournal;
+
+  /// No description provided for @homeCapturePeriod.
+  ///
+  /// In de, this message translates to:
+  /// **'Periode'**
+  String get homeCapturePeriod;
+
+  /// No description provided for @homeCaptureMediaPickTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Beleg zu welchem Symptom?'**
+  String get homeCaptureMediaPickTitle;
+
+  /// No description provided for @homeCaptureMediaNewSymptom.
+  ///
+  /// In de, this message translates to:
+  /// **'Neues Symptom anlegen'**
+  String get homeCaptureMediaNewSymptom;
+
+  /// No description provided for @homeCaptureMediaKindTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Beleg zu „{symptom}“'**
+  String homeCaptureMediaKindTitle(String symptom);
+
+  /// No description provided for @homeCaptureJournalCreateTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Tagebuch beginnen?'**
+  String get homeCaptureJournalCreateTitle;
+
+  /// No description provided for @homeCaptureJournalCreateBody.
+  ///
+  /// In de, this message translates to:
+  /// **'Tagebuch-Einträge gehören zu einem Stimmungs-Symptom. „Stimmung“ jetzt anlegen? Danach schreibst du im Check-in, was dich beschäftigt.'**
+  String get homeCaptureJournalCreateBody;
+
+  /// No description provided for @homeCaptureJournalCreate.
+  ///
+  /// In de, this message translates to:
+  /// **'Anlegen'**
+  String get homeCaptureJournalCreate;
+
+  /// No description provided for @homeCaptureJournalSymptomLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'Stimmung'**
+  String get homeCaptureJournalSymptomLabel;
+
+  /// No description provided for @homeTodayTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Heute'**
+  String get homeTodayTitle;
+
+  /// No description provided for @homeTodayMedsProgress.
+  ///
+  /// In de, this message translates to:
+  /// **'{taken} von {total} genommen'**
+  String homeTodayMedsProgress(int taken, int total);
+
+  /// No description provided for @homeTodayMedsQuickTake.
+  ///
+  /// In de, this message translates to:
+  /// **'{name} ({time}) als genommen markieren'**
+  String homeTodayMedsQuickTake(String name, String time);
+
+  /// No description provided for @homeTodayCheckInsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Check-in offen'**
+  String get homeTodayCheckInsTitle;
+
+  /// No description provided for @homeTodayCheckInsOpen.
+  ///
+  /// In de, this message translates to:
+  /// **'{names} noch nicht erfasst'**
+  String homeTodayCheckInsOpen(String names);
+
+  /// No description provided for @homeTodayMore.
+  ///
+  /// In de, this message translates to:
+  /// **'+{count} weitere'**
+  String homeTodayMore(int count);
+
+  /// No description provided for @homeTodayAppointmentTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Nächster Termin'**
+  String get homeTodayAppointmentTitle;
+
+  /// No description provided for @homeTodayAppointmentToday.
+  ///
+  /// In de, this message translates to:
+  /// **'heute'**
+  String get homeTodayAppointmentToday;
+
+  /// No description provided for @homeTodayAppointmentTomorrow.
+  ///
+  /// In de, this message translates to:
+  /// **'morgen'**
+  String get homeTodayAppointmentTomorrow;
+
+  /// No description provided for @homeTodayAppointmentInDays.
+  ///
+  /// In de, this message translates to:
+  /// **'in {days} Tagen'**
+  String homeTodayAppointmentInDays(int days);
+
+  /// No description provided for @homeTodayVaccinationsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Impfung fällig'**
+  String get homeTodayVaccinationsTitle;
+
+  /// No description provided for @homeTodayAllDone.
+  ///
+  /// In de, this message translates to:
+  /// **'Alles erledigt für heute ✓'**
+  String get homeTodayAllDone;
+
+  /// No description provided for @homeEmptyMessageCapture.
+  ///
+  /// In de, this message translates to:
+  /// **'Tippe auf „Erfassen“, um Termine, Symptome, Befunde und mehr festzuhalten — Termine erscheinen danach hier im Zeitstrahl.'**
+  String get homeEmptyMessageCapture;
 
   /// No description provided for @measureIntensity.
   ///

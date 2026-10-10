@@ -7,6 +7,7 @@ import '../../data/repositories/settings_repository.dart';
 import '../../l10n/l10n.dart';
 import '../../services/calendar/calendar_gateway.dart';
 import '../../services/calendar/calendar_sync_service.dart';
+import '../calendar/calendar_layout.dart';
 
 /// Einstellungen → Kalender-Export (einseitig, z. B. Google Kalender).
 class CalendarSection extends StatefulWidget {
@@ -152,6 +153,7 @@ class _CalendarSectionState extends State<CalendarSection> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        _WeekStartTile(setting: _s.calendarFirstWeekday),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           secondary: const Icon(Icons.event_available_outlined),
@@ -243,6 +245,49 @@ class _CalendarSectionState extends State<CalendarSection> {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// v18: „Woche beginnt am“ — Automatisch (Region), Montag, Sonntag, Samstag.
+class _WeekStartTile extends StatelessWidget {
+  const _WeekStartTile({required this.setting});
+
+  final int? setting;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final weekdays = DateFormat.EEEE(l10n.localeName);
+    // Montag, 5. Januar 2026 → Wochentag nach `DateTime.weekday`.
+    String name(int weekday) =>
+        weekdays.format(DateTime(2026, 1, 4 + weekday));
+    final auto = resolveFirstWeekday(
+      null,
+      MaterialLocalizations.of(context).firstDayOfWeekIndex,
+    );
+    // 0 steht im Menü für „automatisch“ (gespeichert: null).
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: DropdownMenu<int>(
+        key: const ValueKey('calendar-week-start'),
+        initialSelection: setting ?? 0,
+        label: Text(l10n.calendarWeekStart),
+        helperText: l10n.calendarWeekStartSubtitle,
+        expandedInsets: EdgeInsets.zero,
+        leadingIcon: const Icon(Icons.view_week_outlined),
+        dropdownMenuEntries: [
+          DropdownMenuEntry(
+            value: 0,
+            label: l10n.calendarWeekStartAuto(name(auto)),
+          ),
+          for (final weekday in calendarWeekStartOptions)
+            DropdownMenuEntry(value: weekday, label: name(weekday)),
+        ],
+        onSelected: (value) => SettingsRepository(
+          DatabaseScope.of(context),
+        ).setCalendarFirstWeekday(value == null || value == 0 ? null : value),
+      ),
     );
   }
 }

@@ -9,11 +9,11 @@ import '../../theme/app_theme.dart';
 import '../../theme/icon_mappings.dart';
 import '../../widgets/app_logo.dart';
 import '../../widgets/empty_state.dart';
-import '../check_in/check_in_sheet.dart';
 import '../cycle/cycle_home_card.dart';
-import '../medications/intake_widgets.dart';
 import 'add_appointment_sheet.dart';
 import 'appointment_detail_page.dart';
+import 'capture_sheet.dart';
+import 'today_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,6 +24,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _centerKey = const ValueKey('timeline-now');
+
+  /// „Erfassen“-Knopf mit Beschriftung nur nahe „Jetzt“; beim Scrollen
+  /// schrumpft er auf „+“.
+  bool _fabExtended = true;
+
+  bool _onScroll(ScrollNotification n) {
+    if (n.depth != 0) return false;
+    final extended = n.metrics.pixels.abs() < 24;
+    if (extended != _fabExtended) setState(() => _fabExtended = extended);
+    return false;
+  }
 
   Future<void> _addAppointment() async {
     final id = await showAddAppointmentSheet(context);
@@ -61,7 +72,16 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return SafeArea(
+    return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        key: const ValueKey('home-capture-fab'),
+        onPressed: () => showCaptureSheet(context),
+        isExtended: _fabExtended,
+        tooltip: context.l10n.homeCaptureTitle,
+        icon: const Icon(Icons.add),
+        label: Text(context.l10n.homeCaptureFab),
+      ),
+      body: SafeArea(
       child: StreamBuilder<List<AppointmentSummary>>(
         stream: _upcoming,
         builder: (context, upcomingSnap) {
@@ -72,7 +92,9 @@ class _HomePageState extends State<HomePage> {
               final past = pastSnap.data ?? const [];
               final empty = upcoming.isEmpty && past.isEmpty;
 
-              return CustomScrollView(
+              return NotificationListener<ScrollNotification>(
+                onNotification: _onScroll,
+                child: CustomScrollView(
                 center: empty ? null : _centerKey,
                 slivers: [
                   if (!empty)
@@ -92,35 +114,12 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AppWordmark(
-                            subtitle: context.l10n.homeWordmarkSubtitle,
-                          ),
-                          const SizedBox(height: 20),
-                          FilledButton.icon(
-                            onPressed: _addAppointment,
-                            icon: const Icon(Icons.add),
-                            label: Text(context.l10n.homeAddAppointment),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () => showCheckInSheet(context),
-                                  icon: const Icon(Icons.favorite_outline),
-                                  label: Text(context.l10n.homeCheckIn),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () =>
-                                      showTodayMedicationsSheet(context),
-                                  icon: const Icon(Icons.medication_outlined),
-                                  label: Text(context.l10n.entityMedications),
-                                ),
-                              ),
-                            ],
+                          // Kompakter Kopf: Platz für „Heute“.
+                          const AppWordmark(),
+                          const SizedBox(height: 12),
+                          TodayCard(
+                            nextAppointment: upcoming.firstOrNull,
+                            hasTimeline: !empty,
                           ),
                           const CycleHomeCard(),
                           if (!empty) ...[
@@ -142,7 +141,7 @@ class _HomePageState extends State<HomePage> {
                     EmptyState(
                       icon: Icons.event_available_outlined,
                       title: context.l10n.homeEmptyTitle,
-                      message: context.l10n.homeEmptyMessage,
+                      message: context.l10n.homeEmptyMessageCapture,
                       actionLabel: context.l10n.homeEmptyAction,
                       onAction: _addAppointment,
                     )
@@ -156,11 +155,16 @@ class _HomePageState extends State<HomePage> {
                         );
                       }, childCount: upcoming.length),
                     ),
+                  // Platz unter dem „Erfassen“-Knopf.
+                  if (!empty)
+                    const SliverToBoxAdapter(child: SizedBox(height: 88)),
                 ],
+                ),
               );
             },
           );
         },
+      ),
       ),
     );
   }

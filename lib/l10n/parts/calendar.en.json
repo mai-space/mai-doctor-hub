@@ -1,0 +1,69 @@
+{
+  "calendarViewList": "List",
+  "calendarPrevious": "Previous",
+  "calendarNext": "Next",
+  "calendarAllDay": "all-day",
+  "calendarWeekNumber": "W{week}",
+  "@calendarWeekNumber": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarWeekNumberShort": "Wk",
+  "calendarWeekNumberSemantics": "Week {week}",
+  "@calendarWeekNumberSemantics": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarMore": "+{count} more",
+  "@calendarMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarEventCount": "{count, plural, =0{no entries} =1{1 entry} other{{count} entries}}",
+  "@calendarEventCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarListEmpty": "Nothing in this period",
+  "calendarDayTitlePattern": "EEE, MMM d, y",
+  "calendarDayHeaderPattern": "EEEE, MMMM d, y",
+  "calendarFullDatePattern": "MMM d, y",
+  "calendarRangeSameMonthStartPattern": "MMM d",
+  "calendarRangeSameMonthEndPattern": "d, y",
+  "calendarRangeSameYearStartPattern": "MMM d",
+  "calendarVaccinationDue": "Vaccination due: {vaccine}",
+  "@calendarVaccinationDue": {
+    "placeholders": {
+      "vaccine": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarPeriod": "Period",
+  "calendarPeriodExpected": "Period expected (estimate)",
+  "calendarFertileWindow": "Fertile window (rough)",
+  "calendarCreateHint": "Add appointment",
+  "calendarNow": "Now",
+  "calendarWeekStart": "Week starts on",
+  "calendarWeekStartAuto": "Automatic ({weekday})",
+  "@calendarWeekStartAuto": {
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarWeekStartSubtitle": "Applies to month, week and year; with Monday, week numbers are shown."
+}

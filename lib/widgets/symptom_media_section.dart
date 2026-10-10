@@ -192,6 +192,51 @@ class SymptomMediaSection extends StatelessWidget {
   }
 }
 
+/// Startseite „Erfassen“: Beleg direkt aufnehmen — dieselben Abläufe wie
+/// die Knöpfe in [SymptomMediaSection], nur ohne Detailseite.
+Future<void> showSymptomMediaCapture(
+  BuildContext context, {
+  required String symptomId,
+  required String title,
+}) async {
+  final section = SymptomMediaSection(symptomId: symptomId);
+  final l10n = context.l10n;
+  final choice = await showModalBottomSheet<int>(
+    context: context,
+    showDragHandle: true,
+    builder: (context) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+            child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+          ),
+          for (final (i, icon, label) in [
+            (0, Icons.photo_camera_outlined, l10n.mediaTakePhoto),
+            (1, Icons.videocam_outlined, l10n.mediaRecordVideo),
+            (2, Icons.mic_none, l10n.mediaRecordAudio),
+            (3, Icons.photo_library_outlined, l10n.mediaFromGallery),
+          ])
+            ListTile(
+              leading: Icon(icon),
+              title: Text(label),
+              onTap: () => Navigator.pop(context, i),
+            ),
+        ],
+      ),
+    ),
+  );
+  if (choice == null || !context.mounted) return;
+  await switch (choice) {
+    0 => section._capture(context, MediaKind.photo, true),
+    1 => section._capture(context, MediaKind.video, true),
+    2 => section._recordAudio(context),
+    _ => section._fromGallery(context),
+  };
+}
+
 /// Vorschau: Fotos entschlüsselt im Speicher, Video/Audio als Symbol.
 class MediaThumbnail extends StatefulWidget {
   const MediaThumbnail({super.key, required this.item, this.onTap});

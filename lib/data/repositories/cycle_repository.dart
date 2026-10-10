@@ -77,6 +77,7 @@ class CycleOverview {
     this.pregnancyStatus,
     this.typicalCycleLength,
     this.cycleSetupDone = true,
+    this.calendarFirstWeekday,
   });
 
   final DateTime today;
@@ -101,6 +102,9 @@ class CycleOverview {
 
   /// v17: Zyklus-Start beantwortet oder übersprungen.
   final bool cycleSetupDone;
+
+  /// v18: Wochenbeginn im Kalender (`null` = automatisch nach Region).
+  final int? calendarFirstWeekday;
 
   /// Zyklus-Start anbieten: Periode wird getrackt, aber noch keine erfasst.
   bool get needsCycleStart =>
@@ -407,6 +411,7 @@ class CycleRepository {
       pregnancyStatus: status,
       typicalCycleLength: settings.typicalCycleLength,
       cycleSetupDone: settings.cycleSetupDone,
+      calendarFirstWeekday: settings.calendarFirstWeekday,
     );
   }
 

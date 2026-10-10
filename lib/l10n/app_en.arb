@@ -54,6 +54,73 @@
     }
   },
   "assistantOpenLink": "Open",
+  "calendarViewList": "List",
+  "calendarPrevious": "Previous",
+  "calendarNext": "Next",
+  "calendarAllDay": "all-day",
+  "calendarWeekNumber": "W{week}",
+  "@calendarWeekNumber": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarWeekNumberShort": "Wk",
+  "calendarWeekNumberSemantics": "Week {week}",
+  "@calendarWeekNumberSemantics": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarMore": "+{count} more",
+  "@calendarMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarEventCount": "{count, plural, =0{no entries} =1{1 entry} other{{count} entries}}",
+  "@calendarEventCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarListEmpty": "Nothing in this period",
+  "calendarDayTitlePattern": "EEE, MMM d, y",
+  "calendarDayHeaderPattern": "EEEE, MMMM d, y",
+  "calendarFullDatePattern": "MMM d, y",
+  "calendarRangeSameMonthStartPattern": "MMM d",
+  "calendarRangeSameMonthEndPattern": "d, y",
+  "calendarRangeSameYearStartPattern": "MMM d",
+  "calendarVaccinationDue": "Vaccination due: {vaccine}",
+  "@calendarVaccinationDue": {
+    "placeholders": {
+      "vaccine": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarPeriod": "Period",
+  "calendarPeriodExpected": "Period expected (estimate)",
+  "calendarFertileWindow": "Fertile window (rough)",
+  "calendarCreateHint": "Add appointment",
+  "calendarNow": "Now",
+  "calendarWeekStart": "Week starts on",
+  "calendarWeekStartAuto": "Automatic ({weekday})",
+  "@calendarWeekStartAuto": {
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarWeekStartSubtitle": "Applies to month, week and year; with Monday, week numbers are shown.",
   "catalogReminderMorningTitle": "Morning check-in",
   "catalogReminderMorningBody": "How are you feeling today? Quickly log your symptoms.",
   "catalogReminderEveningTitle": "Evening check-in",
@@ -582,6 +649,85 @@
   "homeSymptomHealed": "healed",
   "homeRecordsDatePattern": "MM/dd/yyyy",
   "homeVaccinationDoseLabel": "Dose {number}",
+  "homeCaptureFab": "Add",
+  "homeCaptureTitle": "Add entry",
+  "homeCaptureHint": "What would you like to record?",
+  "homeCaptureCheckIn": "How are you?",
+  "homeCaptureSymptom": "New symptom",
+  "homeCaptureScan": "Scan report",
+  "homeCaptureFile": "File / PDF",
+  "homeCaptureMedia": "Photo · audio",
+  "homeCaptureAppointment": "Appointment",
+  "homeCaptureJournal": "Journal",
+  "homeCapturePeriod": "Period",
+  "homeCaptureMediaPickTitle": "Which symptom is this for?",
+  "homeCaptureMediaNewSymptom": "Create new symptom",
+  "homeCaptureMediaKindTitle": "Evidence for “{symptom}”",
+  "@homeCaptureMediaKindTitle": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCaptureJournalCreateTitle": "Start a journal?",
+  "homeCaptureJournalCreateBody": "Journal entries belong to a mood symptom. Create “Mood” now? You can then write down what's on your mind in the check-in.",
+  "homeCaptureJournalCreate": "Create",
+  "homeCaptureJournalSymptomLabel": "Mood",
+  "homeTodayTitle": "Today",
+  "homeTodayMedsProgress": "{taken} of {total} taken",
+  "@homeTodayMedsProgress": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayMedsQuickTake": "Mark {name} ({time}) as taken",
+  "@homeTodayMedsQuickTake": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTodayCheckInsTitle": "Check-in due",
+  "homeTodayCheckInsOpen": "{names} not logged yet",
+  "@homeTodayCheckInsOpen": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTodayMore": "+{count} more",
+  "@homeTodayMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayAppointmentTitle": "Next appointment",
+  "homeTodayAppointmentToday": "today",
+  "homeTodayAppointmentTomorrow": "tomorrow",
+  "homeTodayAppointmentInDays": "in {days} days",
+  "@homeTodayAppointmentInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayVaccinationsTitle": "Vaccination due",
+  "homeTodayAllDone": "All done for today ✓",
+  "homeEmptyMessageCapture": "Tap “Add” to record appointments, symptoms, reports and more — appointments will then show up here in the timeline.",
   "measureIntensity": "Intensity 0–10",
   "measureTemperature": "Temperature",
   "measureCount": "Count",

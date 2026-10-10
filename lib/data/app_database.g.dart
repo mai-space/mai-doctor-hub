@@ -7381,6 +7381,16 @@ class $AppSettingsTable extends AppSettings
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _calendarFirstWeekdayMeta =
+      const VerificationMeta('calendarFirstWeekday');
+  @override
+  late final GeneratedColumn<int> calendarFirstWeekday = GeneratedColumn<int>(
+    'calendar_first_weekday',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -7408,6 +7418,7 @@ class $AppSettingsTable extends AppSettings
     psychQuestionnaires,
     typicalCycleLength,
     cycleSetupDone,
+    calendarFirstWeekday,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7634,6 +7645,15 @@ class $AppSettingsTable extends AppSettings
         ),
       );
     }
+    if (data.containsKey('calendar_first_weekday')) {
+      context.handle(
+        _calendarFirstWeekdayMeta,
+        calendarFirstWeekday.isAcceptableOrUnknown(
+          data['calendar_first_weekday']!,
+          _calendarFirstWeekdayMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -7743,6 +7763,10 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.bool,
         data['${effectivePrefix}cycle_setup_done'],
       )!,
+      calendarFirstWeekday: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}calendar_first_weekday'],
+      ),
     );
   }
 
@@ -7784,6 +7808,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
 
   /// Zyklus-Start erledigt oder übersprungen (nicht erneut nachfragen).
   final bool cycleSetupDone;
+  final int? calendarFirstWeekday;
   const AppSetting({
     required this.id,
     required this.morningReminderEnabled,
@@ -7810,6 +7835,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.psychQuestionnaires,
     this.typicalCycleLength,
     required this.cycleSetupDone,
+    this.calendarFirstWeekday,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7853,6 +7879,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       map['typical_cycle_length'] = Variable<int>(typicalCycleLength);
     }
     map['cycle_setup_done'] = Variable<bool>(cycleSetupDone);
+    if (!nullToAbsent || calendarFirstWeekday != null) {
+      map['calendar_first_weekday'] = Variable<int>(calendarFirstWeekday);
+    }
     return map;
   }
 
@@ -7893,6 +7922,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ? const Value.absent()
           : Value(typicalCycleLength),
       cycleSetupDone: Value(cycleSetupDone),
+      calendarFirstWeekday: calendarFirstWeekday == null && nullToAbsent
+          ? const Value.absent()
+          : Value(calendarFirstWeekday),
     );
   }
 
@@ -7945,6 +7977,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       ),
       typicalCycleLength: serializer.fromJson<int?>(json['typicalCycleLength']),
       cycleSetupDone: serializer.fromJson<bool>(json['cycleSetupDone']),
+      calendarFirstWeekday: serializer.fromJson<int?>(
+        json['calendarFirstWeekday'],
+      ),
     );
   }
   @override
@@ -7980,6 +8015,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'psychQuestionnaires': serializer.toJson<bool>(psychQuestionnaires),
       'typicalCycleLength': serializer.toJson<int?>(typicalCycleLength),
       'cycleSetupDone': serializer.toJson<bool>(cycleSetupDone),
+      'calendarFirstWeekday': serializer.toJson<int?>(calendarFirstWeekday),
     };
   }
 
@@ -8009,6 +8045,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     bool? psychQuestionnaires,
     Value<int?> typicalCycleLength = const Value.absent(),
     bool? cycleSetupDone,
+    Value<int?> calendarFirstWeekday = const Value.absent(),
   }) => AppSetting(
     id: id ?? this.id,
     morningReminderEnabled:
@@ -8043,6 +8080,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
         ? typicalCycleLength.value
         : this.typicalCycleLength,
     cycleSetupDone: cycleSetupDone ?? this.cycleSetupDone,
+    calendarFirstWeekday: calendarFirstWeekday.present
+        ? calendarFirstWeekday.value
+        : this.calendarFirstWeekday,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -8119,6 +8159,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       cycleSetupDone: data.cycleSetupDone.present
           ? data.cycleSetupDone.value
           : this.cycleSetupDone,
+      calendarFirstWeekday: data.calendarFirstWeekday.present
+          ? data.calendarFirstWeekday.value
+          : this.calendarFirstWeekday,
     );
   }
 
@@ -8149,7 +8192,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('weightUnit: $weightUnit, ')
           ..write('psychQuestionnaires: $psychQuestionnaires, ')
           ..write('typicalCycleLength: $typicalCycleLength, ')
-          ..write('cycleSetupDone: $cycleSetupDone')
+          ..write('cycleSetupDone: $cycleSetupDone, ')
+          ..write('calendarFirstWeekday: $calendarFirstWeekday')
           ..write(')'))
         .toString();
   }
@@ -8181,6 +8225,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     psychQuestionnaires,
     typicalCycleLength,
     cycleSetupDone,
+    calendarFirstWeekday,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -8211,7 +8256,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.weightUnit == this.weightUnit &&
           other.psychQuestionnaires == this.psychQuestionnaires &&
           other.typicalCycleLength == this.typicalCycleLength &&
-          other.cycleSetupDone == this.cycleSetupDone);
+          other.cycleSetupDone == this.cycleSetupDone &&
+          other.calendarFirstWeekday == this.calendarFirstWeekday);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -8240,6 +8286,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<bool> psychQuestionnaires;
   final Value<int?> typicalCycleLength;
   final Value<bool> cycleSetupDone;
+  final Value<int?> calendarFirstWeekday;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.morningReminderEnabled = const Value.absent(),
@@ -8266,6 +8313,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.psychQuestionnaires = const Value.absent(),
     this.typicalCycleLength = const Value.absent(),
     this.cycleSetupDone = const Value.absent(),
+    this.calendarFirstWeekday = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -8293,6 +8341,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.psychQuestionnaires = const Value.absent(),
     this.typicalCycleLength = const Value.absent(),
     this.cycleSetupDone = const Value.absent(),
+    this.calendarFirstWeekday = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -8320,6 +8369,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<bool>? psychQuestionnaires,
     Expression<int>? typicalCycleLength,
     Expression<bool>? cycleSetupDone,
+    Expression<int>? calendarFirstWeekday,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -8356,6 +8406,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (typicalCycleLength != null)
         'typical_cycle_length': typicalCycleLength,
       if (cycleSetupDone != null) 'cycle_setup_done': cycleSetupDone,
+      if (calendarFirstWeekday != null)
+        'calendar_first_weekday': calendarFirstWeekday,
     });
   }
 
@@ -8385,6 +8437,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<bool>? psychQuestionnaires,
     Value<int?>? typicalCycleLength,
     Value<bool>? cycleSetupDone,
+    Value<int?>? calendarFirstWeekday,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -8416,6 +8469,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       psychQuestionnaires: psychQuestionnaires ?? this.psychQuestionnaires,
       typicalCycleLength: typicalCycleLength ?? this.typicalCycleLength,
       cycleSetupDone: cycleSetupDone ?? this.cycleSetupDone,
+      calendarFirstWeekday: calendarFirstWeekday ?? this.calendarFirstWeekday,
     );
   }
 
@@ -8507,6 +8561,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (cycleSetupDone.present) {
       map['cycle_setup_done'] = Variable<bool>(cycleSetupDone.value);
     }
+    if (calendarFirstWeekday.present) {
+      map['calendar_first_weekday'] = Variable<int>(calendarFirstWeekday.value);
+    }
     return map;
   }
 
@@ -8537,7 +8594,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('weightUnit: $weightUnit, ')
           ..write('psychQuestionnaires: $psychQuestionnaires, ')
           ..write('typicalCycleLength: $typicalCycleLength, ')
-          ..write('cycleSetupDone: $cycleSetupDone')
+          ..write('cycleSetupDone: $cycleSetupDone, ')
+          ..write('calendarFirstWeekday: $calendarFirstWeekday')
           ..write(')'))
         .toString();
   }
@@ -21474,6 +21532,7 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<bool> psychQuestionnaires,
       Value<int?> typicalCycleLength,
       Value<bool> cycleSetupDone,
+      Value<int?> calendarFirstWeekday,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -21502,6 +21561,7 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<bool> psychQuestionnaires,
       Value<int?> typicalCycleLength,
       Value<bool> cycleSetupDone,
+      Value<int?> calendarFirstWeekday,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -21635,6 +21695,11 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<bool> get cycleSetupDone => $composableBuilder(
     column: $table.cycleSetupDone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get calendarFirstWeekday => $composableBuilder(
+    column: $table.calendarFirstWeekday,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -21772,6 +21837,11 @@ class $$AppSettingsTableOrderingComposer
     column: $table.cycleSetupDone,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get calendarFirstWeekday => $composableBuilder(
+    column: $table.calendarFirstWeekday,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -21905,6 +21975,11 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.cycleSetupDone,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get calendarFirstWeekday => $composableBuilder(
+    column: $table.calendarFirstWeekday,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -21963,6 +22038,7 @@ class $$AppSettingsTableTableManager
                 Value<bool> psychQuestionnaires = const Value.absent(),
                 Value<int?> typicalCycleLength = const Value.absent(),
                 Value<bool> cycleSetupDone = const Value.absent(),
+                Value<int?> calendarFirstWeekday = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -21989,6 +22065,7 @@ class $$AppSettingsTableTableManager
                 psychQuestionnaires: psychQuestionnaires,
                 typicalCycleLength: typicalCycleLength,
                 cycleSetupDone: cycleSetupDone,
+                calendarFirstWeekday: calendarFirstWeekday,
               ),
           createCompanionCallback:
               ({
@@ -22017,6 +22094,7 @@ class $$AppSettingsTableTableManager
                 Value<bool> psychQuestionnaires = const Value.absent(),
                 Value<int?> typicalCycleLength = const Value.absent(),
                 Value<bool> cycleSetupDone = const Value.absent(),
+                Value<int?> calendarFirstWeekday = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -22043,6 +22121,7 @@ class $$AppSettingsTableTableManager
                 psychQuestionnaires: psychQuestionnaires,
                 typicalCycleLength: typicalCycleLength,
                 cycleSetupDone: cycleSetupDone,
+                calendarFirstWeekday: calendarFirstWeekday,
               ),
           withReferenceMapper: (p0) => p0
               .map(

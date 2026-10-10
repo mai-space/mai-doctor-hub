@@ -49,7 +49,11 @@ class CycleMonthCalendar extends StatelessWidget {
     required this.today,
     required this.onDayTap,
     this.showFertileWindow = false,
+    this.firstWeekday,
   });
+
+  /// Wochenbeginn aus den Einstellungen (`null` = automatisch nach Region).
+  final int? firstWeekday;
 
   /// Beliebiger Tag im Monat.
   final DateTime month;
@@ -65,7 +69,8 @@ class CycleMonthCalendar extends StatelessWidget {
     final l10n = context.l10n;
     final first = DateTime(month.year, month.month);
     final firstIndex = MaterialLocalizations.of(context).firstDayOfWeekIndex;
-    final firstWeekday = firstIndex == 0 ? DateTime.sunday : firstIndex;
+    final firstWeekday =
+        this.firstWeekday ?? (firstIndex == 0 ? DateTime.sunday : firstIndex);
     final offset = (first.weekday - firstWeekday) % 7;
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
     final cells = ((offset + daysInMonth) / 7).ceil() * 7;

@@ -1,0 +1,81 @@
+{
+  "homeCaptureFab": "Erfassen",
+  "homeCaptureTitle": "Erfassen",
+  "homeCaptureHint": "Was möchtest du festhalten?",
+  "homeCaptureCheckIn": "Wie geht's?",
+  "homeCaptureSymptom": "Neues Symptom",
+  "homeCaptureScan": "Befund scannen",
+  "homeCaptureFile": "Datei / PDF",
+  "homeCaptureMedia": "Foto · Audio",
+  "homeCaptureAppointment": "Termin",
+  "homeCaptureJournal": "Tagebuch",
+  "homeCapturePeriod": "Periode",
+  "homeCaptureMediaPickTitle": "Beleg zu welchem Symptom?",
+  "homeCaptureMediaNewSymptom": "Neues Symptom anlegen",
+  "homeCaptureMediaKindTitle": "Beleg zu „{symptom}“",
+  "@homeCaptureMediaKindTitle": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "homeCaptureJournalCreateTitle": "Tagebuch beginnen?",
+  "homeCaptureJournalCreateBody": "Tagebuch-Einträge gehören zu einem Stimmungs-Symptom. „Stimmung“ jetzt anlegen? Danach schreibst du im Check-in, was dich beschäftigt.",
+  "homeCaptureJournalCreate": "Anlegen",
+  "homeCaptureJournalSymptomLabel": "Stimmung",
+  "homeTodayTitle": "Heute",
+  "homeTodayMedsProgress": "{taken} von {total} genommen",
+  "@homeTodayMedsProgress": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayMedsQuickTake": "{name} ({time}) als genommen markieren",
+  "@homeTodayMedsQuickTake": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTodayCheckInsTitle": "Check-in offen",
+  "homeTodayCheckInsOpen": "{names} noch nicht erfasst",
+  "@homeTodayCheckInsOpen": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTodayMore": "+{count} weitere",
+  "@homeTodayMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayAppointmentTitle": "Nächster Termin",
+  "homeTodayAppointmentToday": "heute",
+  "homeTodayAppointmentTomorrow": "morgen",
+  "homeTodayAppointmentInDays": "in {days} Tagen",
+  "@homeTodayAppointmentInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayVaccinationsTitle": "Impfung fällig",
+  "homeTodayAllDone": "Alles erledigt für heute ✓",
+  "homeEmptyMessageCapture": "Tippe auf „Erfassen“, um Termine, Symptome, Befunde und mehr festzuhalten — Termine erscheinen danach hier im Zeitstrahl."
+}

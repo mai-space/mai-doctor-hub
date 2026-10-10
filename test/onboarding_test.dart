@@ -52,7 +52,7 @@ void main() {
 
     await tester.tap(find.text('Los geht’s'));
     await settle(tester);
-    expect(find.text('Termin hinzufügen'), findsOneWidget);
+    expect(find.text('Erfassen'), findsOneWidget);
     final settings = await tester.runAsync(() => SettingsRepository(db).get());
     expect(settings!.onboardingCompleted, isTrue);
 
@@ -66,7 +66,7 @@ void main() {
     await settle(tester);
     await tester.tap(find.text('Überspringen'));
     await settle(tester);
-    expect(find.text('Termin hinzufügen'), findsOneWidget);
+    expect(find.text('Erfassen'), findsOneWidget);
     expect(permissions.requests, 0);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 100));

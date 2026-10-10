@@ -430,6 +430,10 @@ class AppSettings extends Table {
   BoolColumn get cycleSetupDone =>
       boolean().withDefault(const Constant(false))();
 
+  // v18: Wochenbeginn im Kalender (`DateTime.weekday`: 1 = Montag,
+  // 6 = Samstag, 7 = Sonntag); `null` = automatisch nach Region.
+  IntColumn get calendarFirstWeekday => integer().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -604,7 +608,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? openAppDatabase());
 
   @override
-  int get schemaVersion => 17;
+  int get schemaVersion => 18;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -784,6 +788,9 @@ class AppDatabase extends _$AppDatabase {
             '(SELECT 1 FROM cycle_days WHERE flow >= ${CycleFlow.light.index})',
           );
         }
+      }
+      if (from < 18) {
+        await migrator.addColumn(appSettings, appSettings.calendarFirstWeekday);
       }
     },
     beforeOpen: (details) async {
