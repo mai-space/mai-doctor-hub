@@ -17,6 +17,9 @@
 ///   abklären lassen.
 /// * Prognose: Median der letzten bis zu 6 Zyklen, Spanne ± halbe Schwankung;
 ///   Eisprung ≈ nächster Beginn − 14 Tage (grobe Schätzung, keine Verhütung).
+///   Solange weniger als 2 abgeschlossene Zyklen vorliegen, zählt die
+///   angegebene übliche Zykluslänge (Zyklus-Start) mit, ohne Angabe 28 Tage
+///   (in der Oberfläche als Standardwert gekennzeichnet).
 library;
 
 import 'dart:math' as math;
@@ -174,12 +177,30 @@ class CycleStats {
   int get variability => max - min;
 }
 
+/// Worauf die Prognose beruht.
+enum CyclePredictionBasis {
+  /// Mindestens zwei erfasste Zyklen.
+  history,
+
+  /// Angegebene übliche Zykluslänge (ggf. gemittelt mit einem Zyklus).
+  typical,
+
+  /// Weder Zyklen noch Angabe: Standardwert 28 Tage.
+  defaultLength,
+}
+
 class CyclePrediction {
   const CyclePrediction({
     required this.start,
     required this.earliest,
     required this.latest,
+    this.basis = CyclePredictionBasis.history,
   });
+
+  final CyclePredictionBasis basis;
+
+  /// Aus Angaben bzw. Standardwert geschätzt (noch zu wenige Zyklen).
+  bool get isEstimated => basis != CyclePredictionBasis.history;
 
   /// Wahrscheinlichster Beginn der nächsten Periode.
   final DateTime start;
@@ -271,6 +292,7 @@ class CycleAnalysis {
     bool pregnant = false,
     bool menopause = false,
     DateTime? pregnancySince,
+    int? typicalCycleLength,
   }) {
     final sorted = logs.toList()..sort((a, b) => a.day.compareTo(b.day));
     return CycleAnalysis._(
@@ -279,6 +301,7 @@ class CycleAnalysis {
       pregnant,
       menopause,
       pregnancySince == null ? null : cycleDay(pregnancySince),
+      typicalCycleLength,
     );
   }
 
@@ -288,6 +311,7 @@ class CycleAnalysis {
     this.pregnant,
     this.menopause,
     this.pregnancySince,
+    this.typicalCycleLength,
   ) {
     periods = detectPeriods(logs);
     cycles = _buildCycles();
@@ -301,6 +325,9 @@ class CycleAnalysis {
   final bool pregnant;
   final bool menopause;
   final DateTime? pregnancySince;
+
+  /// Übliche Zykluslänge laut Angabe (v17), `null` = unbekannt.
+  final int? typicalCycleLength;
 
   late final List<Period> periods;
 
@@ -343,7 +370,10 @@ class CycleAnalysis {
     if (c == null) return null;
     final n = dayDiff(c.start, d) + 1;
     final length =
-        c.length ?? stats?.median ?? CycleThresholds.defaultCycleLength;
+        c.length ??
+        stats?.median ??
+        typicalCycleLength ??
+        CycleThresholds.defaultCycleLength;
     final periodLength = c.period.length;
     if (n <= periodLength) return CyclePhase.menstruation;
     final ovulation = math.max(
@@ -476,8 +506,23 @@ class CycleAnalysis {
 
   CyclePrediction? _predict() {
     final s = stats;
-    if (s == null || periods.isEmpty) return null;
+    if (periods.isEmpty) return null;
     final last = periods.last.start;
+    if (s == null || s.count < 2) {
+      // Zu wenige Zyklen: Angabe (mit einem Zyklus gemittelt) bzw. 28 Tage.
+      final typical = typicalCycleLength;
+      if (s != null && typical == null) return _range(last, s.median, 3);
+      if (typical == null) {
+        return _range(
+          last,
+          CycleThresholds.defaultCycleLength,
+          5,
+          CyclePredictionBasis.defaultLength,
+        );
+      }
+      final length = s == null ? typical : ((s.median + typical) / 2).round();
+      return _range(last, length, 3, CyclePredictionBasis.typical);
+    }
     final start = plusDays(last, s.median);
     // Spanne: halbe Schwankung, mindestens 1, höchstens 7 Tage; bei nur einem
     // Zyklus ± 3 Tage.
@@ -489,10 +534,27 @@ class CycleAnalysis {
     );
   }
 
-  /// Periode später als die geschätzte Spanne (Tage nach [latest]).
+  CyclePrediction _range(
+    DateTime last,
+    int length,
+    int half, [
+    CyclePredictionBasis basis = CyclePredictionBasis.history,
+  ]) {
+    final start = plusDays(last, length);
+    return CyclePrediction(
+      start: start,
+      earliest: plusDays(start, -half),
+      latest: plusDays(start, half),
+      basis: basis,
+    );
+  }
+
+  /// Periode später als die geschätzte Spanne (Tage nach [latest]). Nicht
+  /// beim bloßen Standardwert (28 Tage) — der sagt über „zu spät“ nichts.
   int? get daysLate {
     final p = prediction;
     if (p == null || inPeriod) return null;
+    if (p.basis == CyclePredictionBasis.defaultLength) return null;
     final late = dayDiff(p.latest, today);
     return late > 0 ? late : null;
   }

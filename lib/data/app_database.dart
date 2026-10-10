@@ -422,6 +422,14 @@ class AppSettings extends Table {
   BoolColumn get psychQuestionnaires =>
       boolean().withDefault(const Constant(false))();
 
+  // v17: Zyklus-Start (letzte Periode beim Einschalten erfragen).
+  /// Übliche Zykluslänge laut Angabe (21–45); `null` = unbekannt/unregelmäßig.
+  IntColumn get typicalCycleLength => integer().nullable()();
+
+  /// Zyklus-Start erledigt oder übersprungen (nicht erneut nachfragen).
+  BoolColumn get cycleSetupDone =>
+      boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -596,7 +604,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? openAppDatabase());
 
   @override
-  int get schemaVersion => 16;
+  int get schemaVersion => 17;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -763,6 +771,19 @@ class AppDatabase extends _$AppDatabase {
       if (from < 16) {
         // Tagebuch-Einträge in den Suchindex (bisher nicht durchsuchbar).
         await reindexJournals();
+      }
+      if (from < 17) {
+        await migrator.addColumn(appSettings, appSettings.typicalCycleLength);
+        await migrator.addColumn(appSettings, appSettings.cycleSetupDone);
+        // Bestandsnutzerinnen mit erfasster Periode (Blutung ≥ leicht)
+        // brauchen den Zyklus-Start nicht mehr. Greift auch beim Einspielen
+        // älterer Sicherungen (die werden ebenfalls migriert).
+        if (from >= 14) {
+          await customStatement(
+            'UPDATE app_settings SET cycle_setup_done = 1 WHERE EXISTS '
+            '(SELECT 1 FROM cycle_days WHERE flow >= ${CycleFlow.light.index})',
+          );
+        }
       }
     },
     beforeOpen: (details) async {

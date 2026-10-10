@@ -21,6 +21,14 @@ String flowLabel(CycleFlow flow, AppLocalizations l10n) => switch (flow) {
   CycleFlow.veryHeavy => l10n.cycleFlowVeryHeavy,
 };
 
+/// Hinweis unter der Prognose: woraus geschätzt, keine Verhütung (v17).
+String cycleEstimateNote(CyclePrediction p, AppLocalizations l10n) =>
+    switch (p.basis) {
+      CyclePredictionBasis.history => l10n.cycleEstimateDisclaimer,
+      CyclePredictionBasis.typical => l10n.cycleEstimateFromAnswers,
+      CyclePredictionBasis.defaultLength => l10n.cycleEstimateDefaultLength,
+    };
+
 String phaseLabel(CyclePhase phase, AppLocalizations l10n) => switch (phase) {
   CyclePhase.menstruation => l10n.cyclePhaseMenstruation,
   CyclePhase.follicular => l10n.cyclePhaseFollicular,

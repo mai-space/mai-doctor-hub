@@ -1880,6 +1880,156 @@ abstract class AppLocalizations {
   /// **'Selbst erfasst in Mai Doctor Hub. Schätzungen und Hinweise sind keine Diagnose.'**
   String get cycleReportFooter;
 
+  /// No description provided for @cycleStartTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Zyklus-Start'**
+  String get cycleStartTitle;
+
+  /// No description provided for @cycleStartIntro.
+  ///
+  /// In de, this message translates to:
+  /// **'Ein paar Angaben, damit die Schätzung deiner nächsten Periode gleich beginnen kann. Alles optional.'**
+  String get cycleStartIntro;
+
+  /// No description provided for @cycleStartLastQuestion.
+  ///
+  /// In de, this message translates to:
+  /// **'Wann hat deine letzte Periode begonnen?'**
+  String get cycleStartLastQuestion;
+
+  /// No description provided for @cycleStartWeeksAgo.
+  ///
+  /// In de, this message translates to:
+  /// **'{weeks, plural, =1{vor ~1 Woche} other{vor ~{weeks} Wochen}}'**
+  String cycleStartWeeksAgo(int weeks);
+
+  /// No description provided for @cycleStartPickDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Genaues Datum wählen'**
+  String get cycleStartPickDate;
+
+  /// No description provided for @cycleStartChosenDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Beginn: {date}'**
+  String cycleStartChosenDate(String date);
+
+  /// No description provided for @cycleStartDurationQuestion.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie lange hat sie ungefähr gedauert?'**
+  String get cycleStartDurationQuestion;
+
+  /// No description provided for @cycleStartDays.
+  ///
+  /// In de, this message translates to:
+  /// **'{days, plural, =1{1 Tag} other{{days} Tage}}'**
+  String cycleStartDays(int days);
+
+  /// No description provided for @cycleStartPickEnd.
+  ///
+  /// In de, this message translates to:
+  /// **'Oder: bis wann ging sie?'**
+  String get cycleStartPickEnd;
+
+  /// No description provided for @cycleStartEndDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Ende: {date}'**
+  String cycleStartEndDate(String date);
+
+  /// No description provided for @cycleStartDontKnow.
+  ///
+  /// In de, this message translates to:
+  /// **'Weiß ich nicht'**
+  String get cycleStartDontKnow;
+
+  /// No description provided for @cycleStartLengthQuestion.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie lang ist dein Zyklus normalerweise?'**
+  String get cycleStartLengthQuestion;
+
+  /// No description provided for @cycleStartLengthHelp.
+  ///
+  /// In de, this message translates to:
+  /// **'Vom ersten Tag einer Periode bis zum ersten Tag der nächsten.'**
+  String get cycleStartLengthHelp;
+
+  /// No description provided for @cycleStartIrregular.
+  ///
+  /// In de, this message translates to:
+  /// **'Weiß ich nicht / unregelmäßig'**
+  String get cycleStartIrregular;
+
+  /// No description provided for @cycleStartDecrease.
+  ///
+  /// In de, this message translates to:
+  /// **'Weniger'**
+  String get cycleStartDecrease;
+
+  /// No description provided for @cycleStartIncrease.
+  ///
+  /// In de, this message translates to:
+  /// **'Mehr'**
+  String get cycleStartIncrease;
+
+  /// No description provided for @cycleStartLater.
+  ///
+  /// In de, this message translates to:
+  /// **'Später'**
+  String get cycleStartLater;
+
+  /// No description provided for @cycleStartSave.
+  ///
+  /// In de, this message translates to:
+  /// **'Speichern'**
+  String get cycleStartSave;
+
+  /// No description provided for @cycleStartCardTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Wann war deine letzte Periode?'**
+  String get cycleStartCardTitle;
+
+  /// No description provided for @cycleStartCardText.
+  ///
+  /// In de, this message translates to:
+  /// **'Mit zwei, drei Angaben beginnt die Schätzung deiner nächsten Periode sofort.'**
+  String get cycleStartCardText;
+
+  /// No description provided for @cycleStartCardAction.
+  ///
+  /// In de, this message translates to:
+  /// **'Angaben machen'**
+  String get cycleStartCardAction;
+
+  /// No description provided for @cycleStartAddLast.
+  ///
+  /// In de, this message translates to:
+  /// **'Letzte Periode nachtragen'**
+  String get cycleStartAddLast;
+
+  /// No description provided for @cycleStartSaved.
+  ///
+  /// In de, this message translates to:
+  /// **'Gespeichert — die Schätzung beginnt jetzt.'**
+  String get cycleStartSaved;
+
+  /// No description provided for @cycleEstimateFromAnswers.
+  ///
+  /// In de, this message translates to:
+  /// **'Geschätzt anhand deiner Angaben, bis genug eigene Zyklen erfasst sind — keine Verhütungsmethode und kein Schwangerschaftstest.'**
+  String get cycleEstimateFromAnswers;
+
+  /// No description provided for @cycleEstimateDefaultLength.
+  ///
+  /// In de, this message translates to:
+  /// **'Geschätzt mit einem durchschnittlichen 28-Tage-Zyklus (Standardwert), bis eigene Zyklen erfasst sind — keine Verhütungsmethode und kein Schwangerschaftstest.'**
+  String get cycleEstimateDefaultLength;
+
   /// No description provided for @measureHistoryEarlier.
   ///
   /// In de, this message translates to:

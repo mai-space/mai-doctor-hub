@@ -165,6 +165,7 @@ void main() {
         showFertileWindow: false,
         temperatureUnit: 'fahrenheit',
         psychQuestionnaires: false,
+        cycleSetupDone: false,
       );
       final p = UnitPreferences.fromSettings(row, region: 'GB');
       expect(p.temperature, TemperatureUnit.fahrenheit);

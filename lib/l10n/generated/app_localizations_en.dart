@@ -1101,6 +1101,106 @@ class AppLocalizationsEn extends AppLocalizations {
       'Self-recorded in Mai Doctor Hub. Estimates and pointers are not a diagnosis.';
 
   @override
+  String get cycleStartTitle => 'Cycle start';
+
+  @override
+  String get cycleStartIntro =>
+      'A few details so the estimate of your next period can start right away. All optional.';
+
+  @override
+  String get cycleStartLastQuestion => 'When did your last period start?';
+
+  @override
+  String cycleStartWeeksAgo(int weeks) {
+    String _temp0 = intl.Intl.pluralLogic(
+      weeks,
+      locale: localeName,
+      other: '~$weeks weeks ago',
+      one: '~1 week ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cycleStartPickDate => 'Pick exact date';
+
+  @override
+  String cycleStartChosenDate(String date) {
+    return 'Started: $date';
+  }
+
+  @override
+  String get cycleStartDurationQuestion => 'About how long did it last?';
+
+  @override
+  String cycleStartDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cycleStartPickEnd => 'Or: when did it end?';
+
+  @override
+  String cycleStartEndDate(String date) {
+    return 'Ended: $date';
+  }
+
+  @override
+  String get cycleStartDontKnow => 'Don\'t know';
+
+  @override
+  String get cycleStartLengthQuestion => 'How long is your cycle usually?';
+
+  @override
+  String get cycleStartLengthHelp =>
+      'From the first day of one period to the first day of the next.';
+
+  @override
+  String get cycleStartIrregular => 'Don\'t know / irregular';
+
+  @override
+  String get cycleStartDecrease => 'Less';
+
+  @override
+  String get cycleStartIncrease => 'More';
+
+  @override
+  String get cycleStartLater => 'Later';
+
+  @override
+  String get cycleStartSave => 'Save';
+
+  @override
+  String get cycleStartCardTitle => 'When was your last period?';
+
+  @override
+  String get cycleStartCardText =>
+      'With two or three details, the estimate of your next period starts right away.';
+
+  @override
+  String get cycleStartCardAction => 'Add details';
+
+  @override
+  String get cycleStartAddLast => 'Add your last period';
+
+  @override
+  String get cycleStartSaved => 'Saved — the estimate starts now.';
+
+  @override
+  String get cycleEstimateFromAnswers =>
+      'Estimated from your answers until enough of your own cycles are logged — not a method of contraception or a pregnancy test.';
+
+  @override
+  String get cycleEstimateDefaultLength =>
+      'Estimated with an average 28-day cycle (default) until your own cycles are logged — not a method of contraception or a pregnancy test.';
+
+  @override
   String measureHistoryEarlier(String measure) {
     return 'Previously recorded: $measure';
   }

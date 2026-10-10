@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/repositories/cycle_repository.dart';
 import '../../l10n/l10n.dart';
+import 'cycle_start_sheet.dart';
 import 'cycle_widgets.dart';
 
 /// Onboarding-Schritt „Zyklus & Frauengesundheit“: Mehrfachauswahl, alles
@@ -17,7 +18,13 @@ class CycleOnboardingStep extends StatelessWidget {
   final CycleSetup setup;
   final ValueChanged<CycleSetup> onChanged;
 
-  CycleSetup _with({bool? cycle, bool? menopause, bool? pregnancy}) {
+  CycleSetup _with({
+    bool? cycle,
+    bool? menopause,
+    bool? pregnancy,
+    CycleStartAnswers? start,
+    bool? startAsked,
+  }) {
     final next = CycleSetup(
       cycle: cycle ?? setup.cycle,
       menopause: menopause ?? setup.menopause,
@@ -30,7 +37,17 @@ class CycleOnboardingStep extends StatelessWidget {
       menopause: next.menopause,
       pregnancy: next.pregnancy,
       createGynecologist: setup.any ? setup.createGynecologist : next.any,
+      // Zyklus-Start nur mit Periodentracking (v17).
+      start: next.cycle ? (start ?? setup.start) : null,
+      startAsked: next.cycle && (startAsked ?? setup.startAsked),
     );
+  }
+
+  /// Periode an: gleich nach der letzten Periode fragen (überspringbar).
+  Future<void> _toggleCycle(BuildContext context) async {
+    if (setup.cycle) return onChanged(_with(cycle: false));
+    final start = await showCycleStartSheet(context);
+    onChanged(_with(cycle: true, start: start, startAsked: true));
   }
 
   @override
@@ -129,7 +146,7 @@ class CycleOnboardingStep extends StatelessWidget {
             title: l10n.cycleModeCycle,
             subtitle: l10n.cycleModeCycleSubtitle,
             selected: setup.cycle,
-            onTap: () => onChanged(_with(cycle: !setup.cycle)),
+            onTap: () => _toggleCycle(context),
           ),
           tile(
             key: const ValueKey('onboarding-menopause'),
@@ -168,6 +185,8 @@ class CycleOnboardingStep extends StatelessWidget {
                   menopause: setup.menopause,
                   pregnancy: setup.pregnancy,
                   createGynecologist: v ?? false,
+                  start: setup.start,
+                  startAsked: setup.startAsked,
                 ),
               ),
             ),

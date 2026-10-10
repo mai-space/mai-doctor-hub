@@ -12,6 +12,8 @@ import 'package:mai_doctor_hub/data/repositories/settings_repository.dart';
 import 'package:mai_doctor_hub/l10n/l10n.dart';
 import 'package:mai_doctor_hub/services/assistant/record_context.dart';
 import 'package:mai_doctor_hub/services/backup_service_io.dart';
+import 'package:mai_doctor_hub/services/cycle/cycle_analytics.dart'
+    show CyclePredictionBasis;
 import 'package:mai_doctor_hub/services/cycle/cycle_dates.dart';
 import 'package:mai_doctor_hub/services/cycle/mrs.dart';
 import 'package:mai_doctor_hub/services/cycle/pbac.dart';
@@ -190,6 +192,94 @@ void main() {
       expect(await repo.allPregnancies(), isEmpty);
       expect((await repo.overview()).enabled, isFalse);
       expect(await DoctorRepository(db).watchAll().first, hasLength(1));
+    });
+
+    test('cycle start: period days medium, typical length, estimate', () async {
+      await repo.setCycleTracking(true);
+      var o = await repo.overview(now: d(2026, 3, 20));
+      expect(o.cycleSetupDone, isFalse);
+      expect(o.needsCycleStart, isTrue);
+      expect(o.analysis.prediction, isNull);
+
+      await repo.saveCycleStart(
+        CycleStartAnswers(lastStart: d(2026, 3, 6), typicalCycleLength: 30),
+        now: d(2026, 3, 20),
+      );
+      final days = await repo.allDays();
+      expect(days.map((r) => r.day), [
+        '2026-03-06',
+        '2026-03-07',
+        '2026-03-08',
+        '2026-03-09',
+        '2026-03-10',
+      ]);
+      expect(days.map((r) => r.flow).toSet(), {CycleFlow.medium});
+      o = await repo.overview(now: d(2026, 3, 20));
+      expect(o.cycleSetupDone, isTrue);
+      expect(o.needsCycleStart, isFalse);
+      expect(o.typicalCycleLength, 30);
+      expect(o.analysis.prediction!.start, d(2026, 4, 5));
+      expect(o.analysis.prediction!.isEstimated, isTrue);
+    });
+
+    test('cycle start never overwrites logged bleeding, stops at today', () async {
+      await repo.saveDay(
+        d(2026, 3, 18),
+        const CycleDaysCompanion(flow: Value(CycleFlow.heavy)),
+      );
+      await repo.saveDay(
+        d(2026, 3, 19),
+        const CycleDaysCompanion(pain: Value(6), symptoms: Value('cramps')),
+      );
+      await repo.saveCycleStart(
+        CycleStartAnswers(lastStart: d(2026, 3, 18), periodDays: 7),
+        now: d(2026, 3, 20),
+      );
+      final days = {for (final r in await repo.allDays()) r.day: r};
+      expect(days.keys, ['2026-03-18', '2026-03-19', '2026-03-20']);
+      expect(days['2026-03-18']!.flow, CycleFlow.heavy, reason: 'unverändert');
+      expect(days['2026-03-19']!.flow, CycleFlow.medium);
+      expect(days['2026-03-19']!.pain, 6);
+      expect(days['2026-03-19']!.symptoms, 'cramps');
+      expect(days['2026-03-20']!.flow, CycleFlow.medium);
+      final o = await repo.overview(now: d(2026, 3, 20));
+      expect(o.typicalCycleLength, isNull, reason: 'weiß ich nicht');
+      expect(
+        o.analysis.prediction!.basis,
+        CyclePredictionBasis.defaultLength,
+      );
+    });
+
+    test('cycle start: skip, onboarding choice, delete all resets', () async {
+      await repo.setCycleTracking(true);
+      await repo.skipCycleStart();
+      var o = await repo.overview();
+      expect(o.cycleSetupDone, isTrue);
+      expect(await repo.allDays(), isEmpty);
+
+      // Onboarding: Angaben kommen über CycleSetup.
+      await repo.deleteAll();
+      o = await repo.overview();
+      expect(o.cycleSetupDone, isFalse);
+      expect(o.typicalCycleLength, isNull);
+      await repo.apply(
+        CycleSetup(
+          cycle: true,
+          startAsked: true,
+          start: CycleStartAnswers(
+            lastStart: cycleDay(DateTime.now()),
+            periodDays: 1,
+            typicalCycleLength: 26,
+          ),
+        ),
+      );
+      o = await repo.overview();
+      expect((o.cycleSetupDone, o.typicalCycleLength), (true, 26));
+      expect(await repo.allDays(), hasLength(1));
+      // Ohne gezeigten Zyklus-Start bleibt die Frage offen.
+      await repo.deleteAll();
+      await repo.apply(const CycleSetup(cycle: true));
+      expect((await repo.overview()).cycleSetupDone, isFalse);
     });
   });
 
@@ -417,6 +507,7 @@ void main() {
     await repoA.startPregnancy(lmp: d(2026, 5, 1));
     await logCycles(repoA, d(2026, 1, 1), [28]);
     await repoA.addMrs(MrsResult(const [1, 2, 3]));
+    await repoA.saveCycleStart(const CycleStartAnswers(typicalCycleLength: 31));
     final sealed = await backupA.createBackupFile('korrekt-pferd-batterie');
 
     final (dbB, backupB) = await device('b', 'b2');
@@ -427,5 +518,6 @@ void main() {
     final o = await repoB.overview(now: d(2026, 6, 1));
     expect(o.cycleTracking, isTrue);
     expect(o.pregnancy!.lmp, '2026-05-01');
+    expect((o.typicalCycleLength, o.cycleSetupDone), (31, true));
   });
 }

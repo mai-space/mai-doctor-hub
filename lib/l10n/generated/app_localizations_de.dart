@@ -1115,6 +1115,109 @@ class AppLocalizationsDe extends AppLocalizations {
       'Selbst erfasst in Mai Doctor Hub. Schätzungen und Hinweise sind keine Diagnose.';
 
   @override
+  String get cycleStartTitle => 'Zyklus-Start';
+
+  @override
+  String get cycleStartIntro =>
+      'Ein paar Angaben, damit die Schätzung deiner nächsten Periode gleich beginnen kann. Alles optional.';
+
+  @override
+  String get cycleStartLastQuestion =>
+      'Wann hat deine letzte Periode begonnen?';
+
+  @override
+  String cycleStartWeeksAgo(int weeks) {
+    String _temp0 = intl.Intl.pluralLogic(
+      weeks,
+      locale: localeName,
+      other: 'vor ~$weeks Wochen',
+      one: 'vor ~1 Woche',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cycleStartPickDate => 'Genaues Datum wählen';
+
+  @override
+  String cycleStartChosenDate(String date) {
+    return 'Beginn: $date';
+  }
+
+  @override
+  String get cycleStartDurationQuestion =>
+      'Wie lange hat sie ungefähr gedauert?';
+
+  @override
+  String cycleStartDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days Tage',
+      one: '1 Tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cycleStartPickEnd => 'Oder: bis wann ging sie?';
+
+  @override
+  String cycleStartEndDate(String date) {
+    return 'Ende: $date';
+  }
+
+  @override
+  String get cycleStartDontKnow => 'Weiß ich nicht';
+
+  @override
+  String get cycleStartLengthQuestion =>
+      'Wie lang ist dein Zyklus normalerweise?';
+
+  @override
+  String get cycleStartLengthHelp =>
+      'Vom ersten Tag einer Periode bis zum ersten Tag der nächsten.';
+
+  @override
+  String get cycleStartIrregular => 'Weiß ich nicht / unregelmäßig';
+
+  @override
+  String get cycleStartDecrease => 'Weniger';
+
+  @override
+  String get cycleStartIncrease => 'Mehr';
+
+  @override
+  String get cycleStartLater => 'Später';
+
+  @override
+  String get cycleStartSave => 'Speichern';
+
+  @override
+  String get cycleStartCardTitle => 'Wann war deine letzte Periode?';
+
+  @override
+  String get cycleStartCardText =>
+      'Mit zwei, drei Angaben beginnt die Schätzung deiner nächsten Periode sofort.';
+
+  @override
+  String get cycleStartCardAction => 'Angaben machen';
+
+  @override
+  String get cycleStartAddLast => 'Letzte Periode nachtragen';
+
+  @override
+  String get cycleStartSaved => 'Gespeichert — die Schätzung beginnt jetzt.';
+
+  @override
+  String get cycleEstimateFromAnswers =>
+      'Geschätzt anhand deiner Angaben, bis genug eigene Zyklen erfasst sind — keine Verhütungsmethode und kein Schwangerschaftstest.';
+
+  @override
+  String get cycleEstimateDefaultLength =>
+      'Geschätzt mit einem durchschnittlichen 28-Tage-Zyklus (Standardwert), bis eigene Zyklen erfasst sind — keine Verhütungsmethode und kein Schwangerschaftstest.';
+
+  @override
   String measureHistoryEarlier(String measure) {
     return 'Früher erfasst: $measure';
   }

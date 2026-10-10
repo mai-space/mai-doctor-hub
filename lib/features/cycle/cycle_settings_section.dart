@@ -6,6 +6,7 @@ import '../../data/repositories/cycle_repository.dart';
 import '../../l10n/l10n.dart';
 import '../../theme/app_theme.dart';
 import 'cycle_home_card.dart' show openCyclePage;
+import 'cycle_start_sheet.dart';
 import 'cycle_widgets.dart';
 
 /// Einstellungen → Zyklus & Frauengesundheit: dieselben Bereiche wie im
@@ -58,6 +59,17 @@ class _CycleSettingsSectionState extends State<CycleSettingsSection> {
     messenger.showSnackBar(SnackBar(content: Text(l10n.cycleDeleteAllDone)));
   }
 
+  /// Einschalten: Zyklus-Start anbieten, solange er nicht erledigt ist und
+  /// noch keine Periode erfasst wurde (v17).
+  Future<void> _setCycleTracking(bool value) async {
+    final repo = CycleRepository(DatabaseScope.of(context));
+    await repo.setCycleTracking(value);
+    if (!value || widget.settings.cycleSetupDone) return;
+    final o = await repo.overview();
+    if (!mounted || !o.needsCycleStart) return;
+    await runCycleStart(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -82,7 +94,7 @@ class _CycleSettingsSectionState extends State<CycleSettingsSection> {
           title: Text(l10n.cycleModeCycle),
           subtitle: Text(l10n.cycleModeCycleSubtitle),
           value: s.cycleTracking,
-          onChanged: repo.setCycleTracking,
+          onChanged: _setCycleTracking,
         ),
         if (s.cycleTracking)
           SwitchListTile(

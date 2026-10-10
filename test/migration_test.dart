@@ -276,7 +276,7 @@ void main() {
     expect(await db.select(db.psychAssessments).get(), hasLength(1));
     final version = await db.customSelect('PRAGMA user_version').getSingle();
     expect(version.read<int>('user_version'), db.schemaVersion);
-    expect(db.schemaVersion, 16);
+    expect(db.schemaVersion, 17);
     await db.close();
   });
 
@@ -329,7 +329,73 @@ void main() {
     final hits = await RecordsRepository(db).search('Fluss');
     expect([for (final h in hits) h.read<String>('entity_id')], ['o1']);
     final version = await db.customSelect('PRAGMA user_version').getSingle();
-    expect(version.read<int>('user_version'), 16);
+    expect(version.read<int>('user_version'), db.schemaVersion);
+    await db.close();
+  });
+
+  /// Echtes v16-Schema (Stand des MCP-Fixtures vor v17) mit [cycleRows].
+  Future<AppDatabase> openV16(List<String> cycleRows) async {
+    final raw = sqlite3.openInMemory();
+    final sql = File('test/migrations/v16.sql').readAsStringSync();
+    for (final statement in sql.split('---')) {
+      final body = statement
+          .split('\n')
+          .where((l) => !l.startsWith('--'))
+          .join('\n')
+          .trim();
+      if (body.isNotEmpty) raw.execute(body);
+    }
+    raw.execute(
+      'INSERT INTO app_settings (id, onboarding_completed, cycle_tracking, '
+      'show_fertile_window) VALUES (1, 1, 1, 1)',
+    );
+    for (final row in cycleRows) {
+      raw.execute(
+        'INSERT INTO cycle_days (day, flow, pain, updated_at) VALUES $row',
+      );
+    }
+    raw.execute('PRAGMA user_version = 16');
+    return AppDatabase(NativeDatabase.opened(raw));
+  }
+
+  test('migrates v16 → v17: cycle start fields, users with periods done', () async {
+    // Bestandsnutzerin mit erfasster Periode (mittel = 3) → nicht fragen.
+    var db = await openV16([
+      "('2026-09-01', 3, 4, 0)",
+      "('2026-09-02', 2, NULL, 0)",
+    ]);
+    var settings = await db.select(db.appSettings).getSingle();
+    expect(settings.cycleTracking, isTrue);
+    expect(settings.showFertileWindow, isTrue);
+    expect(settings.cycleSetupDone, isTrue);
+    expect(settings.typicalCycleLength, isNull);
+    // Alte Tage und Enum-Werte unverändert.
+    final days = await db.select(db.cycleDays).get();
+    expect(days.map((d) => (d.day, d.flow, d.pain)), [
+      ('2026-09-01', CycleFlow.medium, 4),
+      ('2026-09-02', CycleFlow.light, null),
+    ]);
+    var version = await db.customSelect('PRAGMA user_version').getSingle();
+    expect(version.read<int>('user_version'), db.schemaVersion);
+    await db.close();
+
+    // Nur Schmierblutung bzw. gar nichts erfasst → Zyklus-Start anbieten.
+    db = await openV16(["('2026-09-05', 1, NULL, 0)"]);
+    settings = await db.select(db.appSettings).getSingle();
+    expect(settings.cycleSetupDone, isFalse);
+    // Neue Spalten sind beschreibbar.
+    await db
+        .update(db.appSettings)
+        .write(
+          const AppSettingsCompanion(
+            typicalCycleLength: Value(30),
+            cycleSetupDone: Value(true),
+          ),
+        );
+    settings = await db.select(db.appSettings).getSingle();
+    expect((settings.typicalCycleLength, settings.cycleSetupDone), (30, true));
+    version = await db.customSelect('PRAGMA user_version').getSingle();
+    expect(version.read<int>('user_version'), 17);
     await db.close();
   });
 

@@ -137,15 +137,91 @@ void main() {
       expect(late.daysLate, 5);
     });
 
-    test('no prediction with a single period or during pregnancy', () {
+    test('no prediction without a period or during pregnancy', () {
+      expect(CycleAnalysis(const [], today: d(2026, 1, 10)).prediction, isNull);
       expect(
-        CycleAnalysis(period(d(2026, 1, 1)), today: d(2026, 1, 10)).prediction,
+        CycleAnalysis(
+          const [],
+          today: d(2026, 1, 10),
+          typicalCycleLength: 30,
+        ).prediction,
         isNull,
       );
       expect(
         CycleAnalysis(logs, today: today, pregnant: true).prediction,
         isNull,
       );
+      expect(
+        CycleAnalysis(
+          period(d(2026, 1, 1)),
+          today: d(2026, 1, 10),
+          pregnant: true,
+          typicalCycleLength: 30,
+        ).prediction,
+        isNull,
+      );
+    });
+
+    test('single period: typical length from the setup, ± 3 days', () {
+      final a = CycleAnalysis(
+        period(d(2026, 1, 1)),
+        today: d(2026, 1, 10),
+        typicalCycleLength: 30,
+      );
+      final p = a.prediction!;
+      expect(p.basis, CyclePredictionBasis.typical);
+      expect(p.isEstimated, isTrue);
+      expect(p.start, d(2026, 1, 31));
+      expect((p.earliest, p.latest), (d(2026, 1, 28), d(2026, 2, 3)));
+      // Phase des laufenden Zyklus nach der Angabe (Eisprung ≈ Tag 16).
+      expect(a.phaseOf(d(2026, 1, 16)), CyclePhase.ovulation);
+      // Zu spät nach Angabe: ja.
+      expect(
+        CycleAnalysis(
+          period(d(2026, 1, 1)),
+          today: d(2026, 2, 6),
+          typicalCycleLength: 30,
+        ).daysLate,
+        3,
+      );
+    });
+
+    test('single period without answer: 28-day default, marked, never late', () {
+      final p = CycleAnalysis(
+        period(d(2026, 1, 1)),
+        today: d(2026, 1, 10),
+      ).prediction!;
+      expect(p.basis, CyclePredictionBasis.defaultLength);
+      expect(p.start, d(2026, 1, 29));
+      expect(dayDiff(p.earliest, p.latest), 10);
+      expect(
+        CycleAnalysis(period(d(2026, 1, 1)), today: d(2026, 4, 1)).daysLate,
+        isNull,
+        reason: 'Standardwert sagt nichts über „zu spät“',
+      );
+    });
+
+    test('one real cycle blends with the typical length', () {
+      // Ein Zyklus mit 34 Tagen, Angabe 28 → (34 + 28) / 2 = 31.
+      final a = CycleAnalysis(
+        cyclesOf(d(2026, 1, 1), [34]),
+        today: d(2026, 2, 10),
+        typicalCycleLength: 28,
+      );
+      expect(a.prediction!.basis, CyclePredictionBasis.typical);
+      expect(a.prediction!.start, plusDays(d(2026, 2, 4), 31));
+    });
+
+    test('two or more real cycles win over the typical length', () {
+      final a = CycleAnalysis(
+        cyclesOf(d(2026, 1, 1), [32, 32]),
+        today: d(2026, 3, 10),
+        typicalCycleLength: 25,
+      );
+      final p = a.prediction!;
+      expect(p.basis, CyclePredictionBasis.history);
+      expect(p.isEstimated, isFalse);
+      expect(p.start, plusDays(d(2026, 3, 6), 32));
     });
 
     test('one cycle → ± 3 days', () {

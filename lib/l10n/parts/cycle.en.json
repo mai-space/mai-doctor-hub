@@ -230,5 +230,58 @@
   "cycleReportPeriod": "Period (days)",
   "cycleReportStrongPain": "Days pain ≥ 7",
   "cycleReportRunning": "ongoing",
-  "cycleReportFooter": "Self-recorded in Mai Doctor Hub. Estimates and pointers are not a diagnosis."
+  "cycleReportFooter": "Self-recorded in Mai Doctor Hub. Estimates and pointers are not a diagnosis.",
+  "cycleStartTitle": "Cycle start",
+  "cycleStartIntro": "A few details so the estimate of your next period can start right away. All optional.",
+  "cycleStartLastQuestion": "When did your last period start?",
+  "cycleStartWeeksAgo": "{weeks, plural, =1{~1 week ago} other{~{weeks} weeks ago}}",
+  "@cycleStartWeeksAgo": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleStartPickDate": "Pick exact date",
+  "cycleStartChosenDate": "Started: {date}",
+  "@cycleStartChosenDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleStartDurationQuestion": "About how long did it last?",
+  "cycleStartDays": "{days, plural, =1{1 day} other{{days} days}}",
+  "@cycleStartDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleStartPickEnd": "Or: when did it end?",
+  "cycleStartEndDate": "Ended: {date}",
+  "@cycleStartEndDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleStartDontKnow": "Don't know",
+  "cycleStartLengthQuestion": "How long is your cycle usually?",
+  "cycleStartLengthHelp": "From the first day of one period to the first day of the next.",
+  "cycleStartIrregular": "Don't know / irregular",
+  "cycleStartDecrease": "Less",
+  "cycleStartIncrease": "More",
+  "cycleStartLater": "Later",
+  "cycleStartSave": "Save",
+  "cycleStartCardTitle": "When was your last period?",
+  "cycleStartCardText": "With two or three details, the estimate of your next period starts right away.",
+  "cycleStartCardAction": "Add details",
+  "cycleStartAddLast": "Add your last period",
+  "cycleStartSaved": "Saved — the estimate starts now.",
+  "cycleEstimateFromAnswers": "Estimated from your answers until enough of your own cycles are logged — not a method of contraception or a pregnancy test.",
+  "cycleEstimateDefaultLength": "Estimated with an average 28-day cycle (default) until your own cycles are logged — not a method of contraception or a pregnancy test."
 }

@@ -19,6 +19,8 @@ class CycleSetup {
     this.menopause = false,
     this.pregnancy = false,
     this.createGynecologist = false,
+    this.start,
+    this.startAsked = false,
   });
 
   final bool cycle;
@@ -26,7 +28,38 @@ class CycleSetup {
   final bool pregnancy;
   final bool createGynecologist;
 
+  /// Angaben aus dem Zyklus-Start (nur mit [cycle]); `null` = übersprungen.
+  final CycleStartAnswers? start;
+
+  /// Zyklus-Start wurde gezeigt (beantwortet oder übersprungen).
+  final bool startAsked;
+
   bool get any => cycle || menopause || pregnancy;
+}
+
+/// v17: Angaben aus dem Zyklus-Start, damit die Schätzung sofort beginnt.
+class CycleStartAnswers {
+  const CycleStartAnswers({
+    this.lastStart,
+    this.periodDays = defaultPeriodDays,
+    this.typicalCycleLength,
+  });
+
+  static const defaultPeriodDays = 5;
+  static const minPeriodDays = 1;
+  static const maxPeriodDays = 10;
+  static const defaultCycleLength = 28;
+  static const minCycleLength = 21;
+  static const maxCycleLength = 45;
+
+  /// Beginn der letzten Periode; `null` = nicht angegeben.
+  final DateTime? lastStart;
+
+  /// Dauer der Periode in Tagen (1–10).
+  final int periodDays;
+
+  /// Übliche Zykluslänge (21–45); `null` = weiß nicht/unregelmäßig.
+  final int? typicalCycleLength;
 }
 
 /// Alles, was Seite, Startkarte, PDF, Assistent und Erinnerungen brauchen.
@@ -42,6 +75,8 @@ class CycleOverview {
     required this.mrs,
     this.pregnancy,
     this.pregnancyStatus,
+    this.typicalCycleLength,
+    this.cycleSetupDone = true,
   });
 
   final DateTime today;
@@ -60,6 +95,16 @@ class CycleOverview {
   /// Aktive Schwangerschaft (nur bei eingeschaltetem Bereich).
   final Pregnancy? pregnancy;
   final PregnancyStatus? pregnancyStatus;
+
+  /// v17: übliche Zykluslänge laut Zyklus-Start.
+  final int? typicalCycleLength;
+
+  /// v17: Zyklus-Start beantwortet oder übersprungen.
+  final bool cycleSetupDone;
+
+  /// Zyklus-Start anbieten: Periode wird getrackt, aber noch keine erfasst.
+  bool get needsCycleStart =>
+      cycleTracking && !pregnant && analysis.periods.isEmpty;
 
   bool get enabled => cycleTracking || menopauseTracking || pregnancyTracking;
   bool get pregnant => pregnancy != null;
@@ -117,6 +162,41 @@ class CycleRepository {
     );
     return _db.into(_db.cycleDays).insertOnConflictUpdate(row);
   }
+
+  /// Zyklus-Start speichern: Periodentage (mittlere Blutung, höchstens bis
+  /// heute) und übliche Zykluslänge. Bereits erfasste Blutung bleibt
+  /// unverändert; Tage ohne Blutungsangabe bekommen nur die Blutung dazu.
+  Future<void> saveCycleStart(CycleStartAnswers answers, {DateTime? now}) =>
+      _db.transaction(() async {
+        final today = cycleDay(now ?? DateTime.now());
+        final start = answers.lastStart;
+        if (start != null) {
+          final days = answers.periodDays.clamp(
+            CycleStartAnswers.minPeriodDays,
+            CycleStartAnswers.maxPeriodDays,
+          );
+          for (var i = 0; i < days; i++) {
+            final day = plusDays(cycleDay(start), i);
+            if (day.isAfter(today)) break;
+            final existing = await getDay(day);
+            if (existing?.flow != null) continue;
+            await saveDay(
+              day,
+              const CycleDaysCompanion(flow: Value(CycleFlow.medium)),
+            );
+          }
+        }
+        await _settings(
+          AppSettingsCompanion(
+            typicalCycleLength: Value(answers.typicalCycleLength),
+            cycleSetupDone: const Value(true),
+          ),
+        );
+      });
+
+  /// Zyklus-Start überspringen („Später“): nicht erneut von selbst fragen.
+  Future<void> skipCycleStart() =>
+      _settings(const AppSettingsCompanion(cycleSetupDone: Value(true)));
 
   Future<void> deleteDay(DateTime day) =>
       (_db.delete(_db.cycleDays)..where((t) => t.day.equals(dayKey(day)))).go();
@@ -241,6 +321,10 @@ class CycleRepository {
       ),
     );
     if (setup.pregnancy) await startPregnancy();
+    if (setup.cycle && setup.startAsked) {
+      final start = setup.start;
+      start == null ? await skipCycleStart() : await saveCycleStart(start);
+    }
     if (setup.createGynecologist && setup.any) return ensureGynecologist();
     return null;
   });
@@ -279,6 +363,8 @@ class CycleRepository {
         menopauseTracking: Value(false),
         pregnancyTracking: Value(false),
         showFertileWindow: Value(false),
+        typicalCycleLength: Value(null),
+        cycleSetupDone: Value(false),
       ),
     );
   });
@@ -314,10 +400,13 @@ class CycleRepository {
         pregnant: pregnancy != null,
         menopause: settings.menopauseTracking,
         pregnancySince: status?.start ?? pregnancy?.createdAt,
+        typicalCycleLength: settings.typicalCycleLength,
       ),
       mrs: await allMrs(),
       pregnancy: pregnancy,
       pregnancyStatus: status,
+      typicalCycleLength: settings.typicalCycleLength,
+      cycleSetupDone: settings.cycleSetupDone,
     );
   }
 

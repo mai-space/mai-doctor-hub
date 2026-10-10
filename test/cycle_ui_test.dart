@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart' show DateFormat;
 import 'package:mai_doctor_hub/data/app_database.dart';
 import 'package:mai_doctor_hub/data/database_provider.dart';
 import 'package:mai_doctor_hub/data/repositories/appointment_repository.dart';
@@ -67,6 +68,10 @@ void main() {
       expect(find.text('Gynäkologie als Ärztin/Arzt anlegen'), findsNothing);
       await tester.tap(find.byKey(const ValueKey('onboarding-cycle')));
       await settle(tester);
+      // Zyklus-Start fragt nach der letzten Periode — hier „Später“.
+      expect(find.text('Wann hat deine letzte Periode begonnen?'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('cycle-start-later')));
+      await settle(tester);
       // Standard: Gynäkologie mit anlegen.
       final checkbox = tester.widget<CheckboxListTile>(
         find.byType(CheckboxListTile),
@@ -86,6 +91,7 @@ void main() {
       ))!;
       expect(settings.onboardingCompleted, isTrue);
       expect(settings.cycleTracking, isTrue);
+      expect(settings.cycleSetupDone, isTrue, reason: 'übersprungen');
       expect(settings.menopauseTracking, isFalse);
       expect(doctors.map((d) => d.name), ['Meine Gynäkologin/mein Gynäkologe']);
       // Startseite zeigt die Zyklus-Karte.
@@ -127,10 +133,49 @@ void main() {
       await unmount(tester);
     });
 
+    testWidgets('period start answered in onboarding starts the estimate', (
+      tester,
+    ) async {
+      tallScreen(tester);
+      await toCycleStep(tester);
+      await tester.tap(find.byKey(const ValueKey('onboarding-cycle')));
+      await settle(tester);
+      await tester.tap(find.byKey(const ValueKey('cycle-start-weeks-1')));
+      await tester.pump();
+      await tester.ensureVisible(find.byKey(const ValueKey('cycle-start-save')));
+      await tester.tap(find.byKey(const ValueKey('cycle-start-save')));
+      await settle(tester);
+      await tester.tap(find.text('Weiter'));
+      await settle(tester);
+      await tester.tap(find.text('Los geht’s'));
+      await settle(tester);
+
+      final today = cycleDay(DateTime.now());
+      final (settings, days) = (await tester.runAsync(
+        () async => (
+          await SettingsRepository(db).get(),
+          await CycleRepository(db).allDays(),
+        ),
+      ))!;
+      expect(settings.cycleSetupDone, isTrue);
+      expect(settings.typicalCycleLength, 28);
+      expect(days.map((r) => r.day), [
+        for (var i = 0; i < 5; i++) dayKey(plusDays(today, -7 + i)),
+      ]);
+      // Startseite: Schätzung sofort (28 − 7 = 21 Tage).
+      expect(
+        find.textContaining('nächste Periode in ~21 Tagen'),
+        findsOneWidget,
+      );
+      await unmount(tester);
+    });
+
     testWidgets('"not for me" clears the choice', (tester) async {
       tallScreen(tester);
       await toCycleStep(tester);
       await tester.tap(find.byKey(const ValueKey('onboarding-cycle')));
+      await settle(tester);
+      await tester.tap(find.byKey(const ValueKey('cycle-start-later')));
       await settle(tester);
       await tester.tap(find.byKey(const ValueKey('onboarding-none')));
       await settle(tester);
@@ -171,6 +216,9 @@ void main() {
     await settle(tester);
     expect(find.text('Heute erfassen'), findsOneWidget);
     expect(find.textContaining('Zyklustag 29'), findsOneWidget);
+    // Bestandsnutzerin mit Perioden: kein Zyklus-Start.
+    expect(find.byKey(const ValueKey('cycle-start-prompt')), findsNothing);
+    expect(find.byKey(const ValueKey('cycle-start-add')), findsNothing);
 
     await tester.tap(find.byKey(const ValueKey('flow-medium')));
     await settle(tester);
@@ -263,11 +311,21 @@ void main() {
     expect(find.text('Gynäkologie als Ärztin/Arzt anlegen'), findsNothing);
     await tester.tap(find.text('Periode/Zyklus tracken'));
     await settle(tester);
-    expect(
-      (await tester.runAsync(() => SettingsRepository(db).get()))!
-          .cycleTracking,
-      isTrue,
-    );
+    // Zyklus-Start erscheint; „Später“ merkt sich das.
+    expect(find.text('Wann hat deine letzte Periode begonnen?'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('cycle-start-later')));
+    await settle(tester);
+    final settings = (await tester.runAsync(
+      () => SettingsRepository(db).get(),
+    ))!;
+    expect(settings.cycleTracking, isTrue);
+    expect(settings.cycleSetupDone, isTrue);
+    // Aus und wieder ein: nicht erneut fragen.
+    await tester.tap(find.text('Periode/Zyklus tracken'));
+    await settle(tester);
+    await tester.tap(find.text('Periode/Zyklus tracken'));
+    await settle(tester);
+    expect(find.text('Wann hat deine letzte Periode begonnen?'), findsNothing);
     expect(find.text('Fruchtbares Fenster anzeigen'), findsOneWidget);
 
     await tester.tap(find.text('Gynäkologie als Ärztin/Arzt anlegen'));
@@ -278,6 +336,171 @@ void main() {
     );
     expect(find.text('Gynäkologie als Ärztin/Arzt anlegen'), findsNothing);
     await unmount(tester);
+  });
+
+  group('cycle start on "Heute"', () {
+    testWidgets('2 weeks ago, 5 days, 30-day cycle → estimate right away', (
+      tester,
+    ) async {
+      tallScreen(tester);
+      final today = cycleDay(DateTime.now());
+      await tester.runAsync(() => CycleRepository(db).setCycleTracking(true));
+      await tester.pumpWidget(host(const CyclePage()));
+      await settle(tester);
+      expect(find.byKey(const ValueKey('cycle-start-prompt')), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('cycle-start-open')));
+      await settle(tester);
+      await tester.tap(find.byKey(const ValueKey('cycle-start-weeks-2')));
+      await tester.pump();
+      expect(find.text('5 Tage'), findsOneWidget, reason: 'Standarddauer');
+      final plus = find.byKey(const ValueKey('cycle-start-length-plus'));
+      await tester.ensureVisible(plus);
+      await tester.tap(plus);
+      await tester.pump();
+      await tester.tap(plus);
+      await tester.pump();
+      expect(find.text('30 Tage'), findsOneWidget);
+      await tester.ensureVisible(find.byKey(const ValueKey('cycle-start-save')));
+      await tester.tap(find.byKey(const ValueKey('cycle-start-save')));
+      await settle(tester);
+
+      final start = plusDays(today, -14);
+      final (days, settings) = (await tester.runAsync(
+        () async => (
+          await CycleRepository(db).allDays(),
+          await SettingsRepository(db).get(),
+        ),
+      ))!;
+      expect(days.map((r) => r.day), [
+        for (var i = 0; i < 5; i++) dayKey(plusDays(start, i)),
+      ]);
+      expect(days.map((r) => r.flow).toSet(), {CycleFlow.medium});
+      expect((settings.typicalCycleLength, settings.cycleSetupDone), (
+        30,
+        true,
+      ));
+      // Nächste Periode ≈ Beginn + 30 = heute + 16.
+      expect(find.textContaining('Zyklustag 15'), findsOneWidget);
+      expect(
+        find.textContaining('nächste Periode in ~16 Tagen'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('anhand deiner Angaben'), findsOneWidget);
+      expect(find.textContaining('keine Verhütungsmethode'), findsOneWidget);
+      expect(find.byKey(const ValueKey('cycle-start-prompt')), findsNothing);
+
+      await tester.tap(find.text('Kalender'));
+      await settle(tester);
+      final date = DateFormat('dd.MM.yyyy');
+      expect(
+        find.textContaining(date.format(plusDays(start, 27))),
+        findsWidgets,
+      );
+      expect(
+        find.textContaining(date.format(plusDays(start, 33))),
+        findsWidgets,
+      );
+      await unmount(tester);
+    });
+
+    testWidgets('existing logged days are not overwritten', (tester) async {
+      tallScreen(tester);
+      final today = cycleDay(DateTime.now());
+      await tester.runAsync(() async {
+        final repo = CycleRepository(db);
+        await repo.setCycleTracking(true);
+        // Nur Schmierblutung → zählt nicht als Periode.
+        await repo.saveDay(
+          plusDays(today, -13),
+          const CycleDaysCompanion(
+            flow: Value(CycleFlow.spotting),
+            pain: Value(3),
+          ),
+        );
+      });
+      await tester.pumpWidget(host(const CyclePage()));
+      await settle(tester);
+      await tester.tap(find.byKey(const ValueKey('cycle-start-open')));
+      await settle(tester);
+      await tester.tap(find.byKey(const ValueKey('cycle-start-weeks-2')));
+      await tester.pump();
+      await tester.ensureVisible(find.byKey(const ValueKey('cycle-start-save')));
+      await tester.tap(find.byKey(const ValueKey('cycle-start-save')));
+      await settle(tester);
+      final kept = await tester.runAsync(
+        () => CycleRepository(db).getDay(plusDays(today, -13)),
+      );
+      expect((kept!.flow, kept.pain), (CycleFlow.spotting, 3));
+      expect(
+        await tester.runAsync(() => CycleRepository(db).allDays()),
+        hasLength(5),
+      );
+      await unmount(tester);
+    });
+
+    testWidgets('"Später" hides the prompt but keeps a way back', (
+      tester,
+    ) async {
+      tallScreen(tester);
+      await tester.runAsync(() => CycleRepository(db).setCycleTracking(true));
+      await tester.pumpWidget(host(const CyclePage()));
+      await settle(tester);
+      await tester.tap(find.byKey(const ValueKey('cycle-start-prompt-later')));
+      await settle(tester);
+      expect(find.byKey(const ValueKey('cycle-start-prompt')), findsNothing);
+      expect(find.byKey(const ValueKey('cycle-start-add')), findsOneWidget);
+      final (settings, days) = (await tester.runAsync(
+        () async => (
+          await SettingsRepository(db).get(),
+          await CycleRepository(db).allDays(),
+        ),
+      ))!;
+      expect(settings.cycleSetupDone, isTrue);
+      expect(days, isEmpty);
+
+      // Später nachtragen; „Später“ im Sheet speichert nichts.
+      await tester.tap(find.byKey(const ValueKey('cycle-start-add')));
+      await settle(tester);
+      await tester.tap(find.byKey(const ValueKey('cycle-start-later')));
+      await settle(tester);
+      expect(
+        await tester.runAsync(() => CycleRepository(db).allDays()),
+        isEmpty,
+      );
+      await unmount(tester);
+    });
+
+    testWidgets('settings: no setup when a period is already logged', (
+      tester,
+    ) async {
+      tallScreen(tester);
+      await tester.runAsync(
+        () => CycleRepository(db).saveDay(
+          DateTime.now(),
+          const CycleDaysCompanion(flow: Value(CycleFlow.medium)),
+        ),
+      );
+      await tester.pumpWidget(
+        host(
+          Scaffold(
+            body: SingleChildScrollView(
+              child: StreamBuilder<AppSetting>(
+                stream: SettingsRepository(db).watch(),
+                builder: (context, snapshot) => snapshot.data == null
+                    ? const SizedBox.shrink()
+                    : CycleSettingsSection(settings: snapshot.data!),
+              ),
+            ),
+          ),
+        ),
+      );
+      await settle(tester);
+      await tester.tap(find.text('Periode/Zyklus tracken'));
+      await settle(tester);
+      expect(find.text('Wann hat deine letzte Periode begonnen?'), findsNothing);
+      await unmount(tester);
+    });
   });
 
   testWidgets('summary: cycle section defaults on for the gynecologist only', (

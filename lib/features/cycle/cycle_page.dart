@@ -15,6 +15,7 @@ import '../../theme/app_theme.dart';
 import '../../widgets/cycle_charts.dart';
 import '../../widgets/observation_chart.dart' show ChartPoint;
 import 'cycle_day_page.dart';
+import 'cycle_start_sheet.dart';
 import 'cycle_widgets.dart';
 import 'mrs_page.dart';
 import 'pregnancy_section.dart';
@@ -110,7 +111,7 @@ class _TodayTab extends StatelessWidget {
                   if (o.cycleTracking && o.analysis.prediction != null) ...[
                     const SizedBox(height: 6),
                     Text(
-                      l10n.cycleEstimateDisclaimer,
+                      cycleEstimateNote(o.analysis.prediction!, l10n),
                       style: theme.textTheme.bodySmall,
                     ),
                   ],
@@ -118,6 +119,7 @@ class _TodayTab extends StatelessWidget {
               ),
             ),
           ),
+        if (o.needsCycleStart) CycleStartPrompt(overview: o),
         CycleHintsCard(hints: o.analysis.hints),
         const SizedBox(height: 8),
         _QuickLog(overview: o),
@@ -434,7 +436,7 @@ class _InsightsTab extends StatelessWidget {
                   ),
                 const SizedBox(height: 4),
                 Text(
-                  l10n.cycleEstimateDisclaimer,
+                  cycleEstimateNote(p, l10n),
                   style: theme.textTheme.bodySmall,
                 ),
               ],

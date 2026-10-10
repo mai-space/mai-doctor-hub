@@ -723,6 +723,59 @@
   "cycleReportStrongPain": "Tage Schmerz ≥ 7",
   "cycleReportRunning": "läuft",
   "cycleReportFooter": "Selbst erfasst in Mai Doctor Hub. Schätzungen und Hinweise sind keine Diagnose.",
+  "cycleStartTitle": "Zyklus-Start",
+  "cycleStartIntro": "Ein paar Angaben, damit die Schätzung deiner nächsten Periode gleich beginnen kann. Alles optional.",
+  "cycleStartLastQuestion": "Wann hat deine letzte Periode begonnen?",
+  "cycleStartWeeksAgo": "{weeks, plural, =1{vor ~1 Woche} other{vor ~{weeks} Wochen}}",
+  "@cycleStartWeeksAgo": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleStartPickDate": "Genaues Datum wählen",
+  "cycleStartChosenDate": "Beginn: {date}",
+  "@cycleStartChosenDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleStartDurationQuestion": "Wie lange hat sie ungefähr gedauert?",
+  "cycleStartDays": "{days, plural, =1{1 Tag} other{{days} Tage}}",
+  "@cycleStartDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleStartPickEnd": "Oder: bis wann ging sie?",
+  "cycleStartEndDate": "Ende: {date}",
+  "@cycleStartEndDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleStartDontKnow": "Weiß ich nicht",
+  "cycleStartLengthQuestion": "Wie lang ist dein Zyklus normalerweise?",
+  "cycleStartLengthHelp": "Vom ersten Tag einer Periode bis zum ersten Tag der nächsten.",
+  "cycleStartIrregular": "Weiß ich nicht / unregelmäßig",
+  "cycleStartDecrease": "Weniger",
+  "cycleStartIncrease": "Mehr",
+  "cycleStartLater": "Später",
+  "cycleStartSave": "Speichern",
+  "cycleStartCardTitle": "Wann war deine letzte Periode?",
+  "cycleStartCardText": "Mit zwei, drei Angaben beginnt die Schätzung deiner nächsten Periode sofort.",
+  "cycleStartCardAction": "Angaben machen",
+  "cycleStartAddLast": "Letzte Periode nachtragen",
+  "cycleStartSaved": "Gespeichert — die Schätzung beginnt jetzt.",
+  "cycleEstimateFromAnswers": "Geschätzt anhand deiner Angaben, bis genug eigene Zyklen erfasst sind — keine Verhütungsmethode und kein Schwangerschaftstest.",
+  "cycleEstimateDefaultLength": "Geschätzt mit einem durchschnittlichen 28-Tage-Zyklus (Standardwert), bis eigene Zyklen erfasst sind — keine Verhütungsmethode und kein Schwangerschaftstest.",
   "measureHistoryEarlier": "Früher erfasst: {measure}",
   "@measureHistoryEarlier": {
     "placeholders": {

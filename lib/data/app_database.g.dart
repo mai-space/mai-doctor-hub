@@ -7356,6 +7356,31 @@ class $AppSettingsTable extends AppSettings
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _typicalCycleLengthMeta =
+      const VerificationMeta('typicalCycleLength');
+  @override
+  late final GeneratedColumn<int> typicalCycleLength = GeneratedColumn<int>(
+    'typical_cycle_length',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _cycleSetupDoneMeta = const VerificationMeta(
+    'cycleSetupDone',
+  );
+  @override
+  late final GeneratedColumn<bool> cycleSetupDone = GeneratedColumn<bool>(
+    'cycle_setup_done',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("cycle_setup_done" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -7381,6 +7406,8 @@ class $AppSettingsTable extends AppSettings
     glucoseUnit,
     weightUnit,
     psychQuestionnaires,
+    typicalCycleLength,
+    cycleSetupDone,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7589,6 +7616,24 @@ class $AppSettingsTable extends AppSettings
         ),
       );
     }
+    if (data.containsKey('typical_cycle_length')) {
+      context.handle(
+        _typicalCycleLengthMeta,
+        typicalCycleLength.isAcceptableOrUnknown(
+          data['typical_cycle_length']!,
+          _typicalCycleLengthMeta,
+        ),
+      );
+    }
+    if (data.containsKey('cycle_setup_done')) {
+      context.handle(
+        _cycleSetupDoneMeta,
+        cycleSetupDone.isAcceptableOrUnknown(
+          data['cycle_setup_done']!,
+          _cycleSetupDoneMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -7690,6 +7735,14 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.bool,
         data['${effectivePrefix}psych_questionnaires'],
       )!,
+      typicalCycleLength: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}typical_cycle_length'],
+      ),
+      cycleSetupDone: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}cycle_setup_done'],
+      )!,
     );
   }
 
@@ -7725,6 +7778,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final String? glucoseUnit;
   final String? weightUnit;
   final bool psychQuestionnaires;
+
+  /// Übliche Zykluslänge laut Angabe (21–45); `null` = unbekannt/unregelmäßig.
+  final int? typicalCycleLength;
+
+  /// Zyklus-Start erledigt oder übersprungen (nicht erneut nachfragen).
+  final bool cycleSetupDone;
   const AppSetting({
     required this.id,
     required this.morningReminderEnabled,
@@ -7749,6 +7808,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     this.glucoseUnit,
     this.weightUnit,
     required this.psychQuestionnaires,
+    this.typicalCycleLength,
+    required this.cycleSetupDone,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7788,6 +7849,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       map['weight_unit'] = Variable<String>(weightUnit);
     }
     map['psych_questionnaires'] = Variable<bool>(psychQuestionnaires);
+    if (!nullToAbsent || typicalCycleLength != null) {
+      map['typical_cycle_length'] = Variable<int>(typicalCycleLength);
+    }
+    map['cycle_setup_done'] = Variable<bool>(cycleSetupDone);
     return map;
   }
 
@@ -7824,6 +7889,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ? const Value.absent()
           : Value(weightUnit),
       psychQuestionnaires: Value(psychQuestionnaires),
+      typicalCycleLength: typicalCycleLength == null && nullToAbsent
+          ? const Value.absent()
+          : Value(typicalCycleLength),
+      cycleSetupDone: Value(cycleSetupDone),
     );
   }
 
@@ -7874,6 +7943,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       psychQuestionnaires: serializer.fromJson<bool>(
         json['psychQuestionnaires'],
       ),
+      typicalCycleLength: serializer.fromJson<int?>(json['typicalCycleLength']),
+      cycleSetupDone: serializer.fromJson<bool>(json['cycleSetupDone']),
     );
   }
   @override
@@ -7907,6 +7978,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'glucoseUnit': serializer.toJson<String?>(glucoseUnit),
       'weightUnit': serializer.toJson<String?>(weightUnit),
       'psychQuestionnaires': serializer.toJson<bool>(psychQuestionnaires),
+      'typicalCycleLength': serializer.toJson<int?>(typicalCycleLength),
+      'cycleSetupDone': serializer.toJson<bool>(cycleSetupDone),
     };
   }
 
@@ -7934,6 +8007,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     Value<String?> glucoseUnit = const Value.absent(),
     Value<String?> weightUnit = const Value.absent(),
     bool? psychQuestionnaires,
+    Value<int?> typicalCycleLength = const Value.absent(),
+    bool? cycleSetupDone,
   }) => AppSetting(
     id: id ?? this.id,
     morningReminderEnabled:
@@ -7964,6 +8039,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     glucoseUnit: glucoseUnit.present ? glucoseUnit.value : this.glucoseUnit,
     weightUnit: weightUnit.present ? weightUnit.value : this.weightUnit,
     psychQuestionnaires: psychQuestionnaires ?? this.psychQuestionnaires,
+    typicalCycleLength: typicalCycleLength.present
+        ? typicalCycleLength.value
+        : this.typicalCycleLength,
+    cycleSetupDone: cycleSetupDone ?? this.cycleSetupDone,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -8034,6 +8113,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       psychQuestionnaires: data.psychQuestionnaires.present
           ? data.psychQuestionnaires.value
           : this.psychQuestionnaires,
+      typicalCycleLength: data.typicalCycleLength.present
+          ? data.typicalCycleLength.value
+          : this.typicalCycleLength,
+      cycleSetupDone: data.cycleSetupDone.present
+          ? data.cycleSetupDone.value
+          : this.cycleSetupDone,
     );
   }
 
@@ -8062,7 +8147,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('temperatureUnit: $temperatureUnit, ')
           ..write('glucoseUnit: $glucoseUnit, ')
           ..write('weightUnit: $weightUnit, ')
-          ..write('psychQuestionnaires: $psychQuestionnaires')
+          ..write('psychQuestionnaires: $psychQuestionnaires, ')
+          ..write('typicalCycleLength: $typicalCycleLength, ')
+          ..write('cycleSetupDone: $cycleSetupDone')
           ..write(')'))
         .toString();
   }
@@ -8092,6 +8179,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     glucoseUnit,
     weightUnit,
     psychQuestionnaires,
+    typicalCycleLength,
+    cycleSetupDone,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -8120,7 +8209,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.temperatureUnit == this.temperatureUnit &&
           other.glucoseUnit == this.glucoseUnit &&
           other.weightUnit == this.weightUnit &&
-          other.psychQuestionnaires == this.psychQuestionnaires);
+          other.psychQuestionnaires == this.psychQuestionnaires &&
+          other.typicalCycleLength == this.typicalCycleLength &&
+          other.cycleSetupDone == this.cycleSetupDone);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -8147,6 +8238,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<String?> glucoseUnit;
   final Value<String?> weightUnit;
   final Value<bool> psychQuestionnaires;
+  final Value<int?> typicalCycleLength;
+  final Value<bool> cycleSetupDone;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.morningReminderEnabled = const Value.absent(),
@@ -8171,6 +8264,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.glucoseUnit = const Value.absent(),
     this.weightUnit = const Value.absent(),
     this.psychQuestionnaires = const Value.absent(),
+    this.typicalCycleLength = const Value.absent(),
+    this.cycleSetupDone = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -8196,6 +8291,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.glucoseUnit = const Value.absent(),
     this.weightUnit = const Value.absent(),
     this.psychQuestionnaires = const Value.absent(),
+    this.typicalCycleLength = const Value.absent(),
+    this.cycleSetupDone = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -8221,6 +8318,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<String>? glucoseUnit,
     Expression<String>? weightUnit,
     Expression<bool>? psychQuestionnaires,
+    Expression<int>? typicalCycleLength,
+    Expression<bool>? cycleSetupDone,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -8254,6 +8353,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (weightUnit != null) 'weight_unit': weightUnit,
       if (psychQuestionnaires != null)
         'psych_questionnaires': psychQuestionnaires,
+      if (typicalCycleLength != null)
+        'typical_cycle_length': typicalCycleLength,
+      if (cycleSetupDone != null) 'cycle_setup_done': cycleSetupDone,
     });
   }
 
@@ -8281,6 +8383,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<String?>? glucoseUnit,
     Value<String?>? weightUnit,
     Value<bool>? psychQuestionnaires,
+    Value<int?>? typicalCycleLength,
+    Value<bool>? cycleSetupDone,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -8310,6 +8414,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       glucoseUnit: glucoseUnit ?? this.glucoseUnit,
       weightUnit: weightUnit ?? this.weightUnit,
       psychQuestionnaires: psychQuestionnaires ?? this.psychQuestionnaires,
+      typicalCycleLength: typicalCycleLength ?? this.typicalCycleLength,
+      cycleSetupDone: cycleSetupDone ?? this.cycleSetupDone,
     );
   }
 
@@ -8395,6 +8501,12 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (psychQuestionnaires.present) {
       map['psych_questionnaires'] = Variable<bool>(psychQuestionnaires.value);
     }
+    if (typicalCycleLength.present) {
+      map['typical_cycle_length'] = Variable<int>(typicalCycleLength.value);
+    }
+    if (cycleSetupDone.present) {
+      map['cycle_setup_done'] = Variable<bool>(cycleSetupDone.value);
+    }
     return map;
   }
 
@@ -8423,7 +8535,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('temperatureUnit: $temperatureUnit, ')
           ..write('glucoseUnit: $glucoseUnit, ')
           ..write('weightUnit: $weightUnit, ')
-          ..write('psychQuestionnaires: $psychQuestionnaires')
+          ..write('psychQuestionnaires: $psychQuestionnaires, ')
+          ..write('typicalCycleLength: $typicalCycleLength, ')
+          ..write('cycleSetupDone: $cycleSetupDone')
           ..write(')'))
         .toString();
   }
@@ -21358,6 +21472,8 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<String?> glucoseUnit,
       Value<String?> weightUnit,
       Value<bool> psychQuestionnaires,
+      Value<int?> typicalCycleLength,
+      Value<bool> cycleSetupDone,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -21384,6 +21500,8 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<String?> glucoseUnit,
       Value<String?> weightUnit,
       Value<bool> psychQuestionnaires,
+      Value<int?> typicalCycleLength,
+      Value<bool> cycleSetupDone,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -21507,6 +21625,16 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<bool> get psychQuestionnaires => $composableBuilder(
     column: $table.psychQuestionnaires,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get typicalCycleLength => $composableBuilder(
+    column: $table.typicalCycleLength,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get cycleSetupDone => $composableBuilder(
+    column: $table.cycleSetupDone,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -21634,6 +21762,16 @@ class $$AppSettingsTableOrderingComposer
     column: $table.psychQuestionnaires,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get typicalCycleLength => $composableBuilder(
+    column: $table.typicalCycleLength,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get cycleSetupDone => $composableBuilder(
+    column: $table.cycleSetupDone,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -21757,6 +21895,16 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.psychQuestionnaires,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get typicalCycleLength => $composableBuilder(
+    column: $table.typicalCycleLength,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get cycleSetupDone => $composableBuilder(
+    column: $table.cycleSetupDone,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -21813,6 +21961,8 @@ class $$AppSettingsTableTableManager
                 Value<String?> glucoseUnit = const Value.absent(),
                 Value<String?> weightUnit = const Value.absent(),
                 Value<bool> psychQuestionnaires = const Value.absent(),
+                Value<int?> typicalCycleLength = const Value.absent(),
+                Value<bool> cycleSetupDone = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -21837,6 +21987,8 @@ class $$AppSettingsTableTableManager
                 glucoseUnit: glucoseUnit,
                 weightUnit: weightUnit,
                 psychQuestionnaires: psychQuestionnaires,
+                typicalCycleLength: typicalCycleLength,
+                cycleSetupDone: cycleSetupDone,
               ),
           createCompanionCallback:
               ({
@@ -21863,6 +22015,8 @@ class $$AppSettingsTableTableManager
                 Value<String?> glucoseUnit = const Value.absent(),
                 Value<String?> weightUnit = const Value.absent(),
                 Value<bool> psychQuestionnaires = const Value.absent(),
+                Value<int?> typicalCycleLength = const Value.absent(),
+                Value<bool> cycleSetupDone = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 morningReminderEnabled: morningReminderEnabled,
@@ -21887,6 +22041,8 @@ class $$AppSettingsTableTableManager
                 glucoseUnit: glucoseUnit,
                 weightUnit: weightUnit,
                 psychQuestionnaires: psychQuestionnaires,
+                typicalCycleLength: typicalCycleLength,
+                cycleSetupDone: cycleSetupDone,
               ),
           withReferenceMapper: (p0) => p0
               .map(
