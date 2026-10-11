@@ -178,7 +178,23 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      # Uhr-App (Wear OS, Modul android/wear): baut im selben Gradle-Lauf mit
+      # (`assembleRelease` gilt für alle Module). Eigenes APK für die Uhr.
+      - name: Rename Wear OS APK
+        if: success()
+        run: cp build/wear/outputs/apk/release/wear-release.apk build/wear/outputs/apk/release/mai-doctor-hub-wear.apk
+
+      - name: Upload Wear OS APK artifact
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mai-doctor-hub-wear.apk
+          path: build/wear/outputs/apk/release/mai-doctor-hub-wear.apk
+          if-no-files-found: error
+          retention-days: 14
+
   # iOS: nur bauen (ohne Signatur) — TestFlight/App Store siehe docs/RELEASE.md.
+  # Baut die Apple-Watch-App (Ziele „Watch“ und „WatchWidgets“) mit.
   ios:
     name: iOS build (no codesign)
     needs: [analyze-test, dart-packages]

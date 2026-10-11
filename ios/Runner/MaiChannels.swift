@@ -10,6 +10,7 @@ final class MaiChannels {
   private let databaseKey = DatabaseKeyChannel()
   private let calendar = CalendarChannel()
   private let secureWindow = SecureWindowChannel()
+  private let homeWidgets = HomeWidgetChannel()
   private let documentScanner: DocumentScannerChannel
   private var methodChannels: [FlutterMethodChannel] = []
 
@@ -33,6 +34,9 @@ final class MaiChannels {
     }
     bind(SecureWindowChannel.name, messenger) { [secureWindow] call, result in
       secureWindow.handle(call, result: result)
+    }
+    bind(HomeWidgetChannel.name, messenger) { [homeWidgets] call, result in
+      homeWidgets.handle(call, result: result)
     }
   }
 

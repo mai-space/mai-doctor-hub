@@ -4514,4 +4514,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get widgetsDetailedText =>
       'Shows doctor, appointment title, medications and symptom – visible to anyone who sees your home screen.';
+
+  @override
+  String get widgetsWatchTitle => 'Apple Watch';
+
+  @override
+  String get widgetsWatchIntro =>
+      'Next appointment, today\'s medications and check-in on your Apple Watch: as a complication on the watch face and in the Ärzte watch app. Data only goes directly to your paired watch.';
+
+  @override
+  String get widgetsWatchHint =>
+      'Also applies to the tiles and complications of the Ärzte watch app on your Wear OS watch. Data only goes to paired watches that have the watch app installed.';
 }

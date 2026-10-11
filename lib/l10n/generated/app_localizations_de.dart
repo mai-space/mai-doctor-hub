@@ -4460,4 +4460,15 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get widgetsDetailedText =>
       'Zeigt Arzt, Termintitel, Medikamente und Symptom – für alle sichtbar, die deinen Startbildschirm sehen.';
+
+  @override
+  String get widgetsWatchTitle => 'Apple Watch';
+
+  @override
+  String get widgetsWatchIntro =>
+      'Nächster Termin, Medikamente heute und Check-in auf der Apple Watch: als Komplikation auf dem Zifferblatt und in der Uhr-App „Ärzte“. Daten gehen nur direkt an deine gekoppelte Uhr.';
+
+  @override
+  String get widgetsWatchHint =>
+      'Gilt auch für Kacheln und Komplikationen der Uhr-App „Ärzte“ auf deiner Wear-OS-Uhr. Daten gehen nur an gekoppelte Uhren, auf denen die Uhr-App installiert ist.';
 }

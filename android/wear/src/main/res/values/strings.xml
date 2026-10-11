@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Uhr-App (Standard: Englisch; Deutsch in values-de). Texte wie bei den
+     Startbildschirm-Widgets der Telefon-App. -->
+<resources>
+    <string name="app_name" translatable="false">Ärzte</string>
+    <string name="tile_appointment_name">Next appointment</string>
+    <string name="tile_meds_name">Medications today</string>
+    <string name="tile_checkin_name">Check-in</string>
+
+    <string name="watch_open_phone">Open the Ärzte app on your phone once to load this</string>
+    <string name="watch_waiting">Waiting for your phone …</string>
+    <string name="watch_queued">Will be added when you next open the app on your phone</string>
+    <string name="watch_today">Today</string>
+    <string name="watch_tomorrow">Tomorrow</string>
+    <string name="watch_running">Now</string>
+    <string name="watch_soon">Soon</string>
+    <plurals name="watch_in_hours">
+        <item quantity="one">in %d hour</item>
+        <item quantity="other">in %d hours</item>
+    </plurals>
+    <plurals name="watch_in_days">
+        <item quantity="one">in %d day</item>
+        <item quantity="other">in %d days</item>
+    </plurals>
+    <string name="watch_date_time">%1$s · %2$s</string>
+
+    <string name="watch_appointment_generic">Doctor\'s appointment</string>
+    <string name="watch_no_appointments">No upcoming appointments</string>
+
+    <string name="watch_meds_none">No doses planned today</string>
+    <string name="watch_meds_stale">Open the Ärzte app on your phone to update the plan</string>
+    <string name="watch_meds_count">%1$d/%2$d</string>
+    <string name="watch_meds_taken_of">%1$d of %2$d taken</string>
+    <string name="watch_meds_next">next %s</string>
+    <string name="watch_meds_all_done">All done</string>
+    <string name="watch_dose_generic">Dose</string>
+    <string name="watch_dose_open">Due</string>
+    <string name="watch_dose_taken">Taken</string>
+    <string name="watch_dose_skipped">Skipped</string>
+    <string name="watch_dose_mark">Mark %s as taken</string>
+    <string name="watch_dose_button">Taken</string>
+
+    <string name="watch_checkin_question">How are you today?</string>
+    <string name="watch_checkin_none">No open symptoms</string>
+    <string name="watch_checkin_today_value">Today %d/10</string>
+    <string name="watch_checkin_today_done">Today ✓</string>
+    <string name="watch_checkin_pending">Open today</string>
+    <string name="watch_checkin_hint">0 = none · 10 = worst</string>
+    <string name="watch_checkin_rate">Record intensity %d of 10</string>
+    <string name="watch_checkin_on_phone">Do this check-in in the app on your phone</string>
+</resources>

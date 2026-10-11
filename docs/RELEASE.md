@@ -85,6 +85,25 @@ Optional **variables** (not secret):
 
 Delete the local `.b64` file after saving the secret.
 
+## Wear OS watch app
+
+The watch app lives in the Gradle module `android/wear` (tiles, complications,
+a short overview). It is built together with the phone app (`assembleRelease`
+and `bundleRelease` run in every module): `build/wear/outputs/…/wear-release.*`.
+
+- **Same package and signing key** as the phone app
+  (`space.mai.mai_doctor_hub`) — otherwise Google Play services do not
+  deliver the messages between phone and watch. The release workflow checks
+  that both bundles carry the upload key.
+- **versionCode** = 1,000,000,000 + phone versionCode, so both artifacts never
+  share a number.
+- **Play Console:** add the Wear OS form factor (*Release → Advanced settings
+  → Form factors*), then set the repository variable `PLAY_WEAR_TRACK`
+  (e.g. `wear:internal`). Without it the workflow only builds the artifact.
+- No `INTERNET` permission and no Android backup on the watch. Data reaches
+  the watch only as a message to paired watches with the app installed (no
+  `DataItem`s); in discreet mode without any names.
+
 ## Manual run
 
 **Actions → Release → Run workflow**, choose the tag under
@@ -147,6 +166,25 @@ install the profile, run `flutter build ipa --release
 --export-options-plist=…` and upload the `.ipa` with the App Store Connect
 API key (`xcrun altool --upload-app --apiKey … --apiIssuer …` or fastlane
 `pilot`). Delete the temporary keychain afterwards.
+
+## Apple Watch app
+
+The Xcode project contains a watchOS app (target `Watch`, embedded in
+`Runner`) with a WidgetKit extension for complications (target
+`WatchWidgets`). CI builds both with the iOS app (`flutter build ios` detects
+the watch companion and leaves out `-sdk iphoneos`). For a signed upload also:
+
+- register the App IDs `space.mai.maiDoctorHub.watchkitapp` and
+  `space.mai.maiDoctorHub.watchkitapp.widgets`,
+- create the App Group `group.space.mai.maiDoctorHub` and enable it for both
+  (entitlements in `ios/Watch` and `ios/WatchWidgets`) — the complications
+  read the last snapshot from there,
+- add provisioning profiles for both targets.
+
+The iPhone sends the widget snapshot with WatchConnectivity
+(`ios/Runner/WatchSync.swift`) only when a paired watch has the app installed.
+Watch versions follow `--build-name`/`--build-number` via
+`ios/Watch/Watch.xcconfig`.
 
 ## Known iOS differences
 

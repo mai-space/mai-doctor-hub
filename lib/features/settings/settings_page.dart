@@ -96,7 +96,7 @@ class SettingsPage extends StatelessWidget {
               const SizedBox(height: 24),
               const SecuritySection(),
               const SizedBox(height: 24),
-              if (DevicePlatform.isAndroid) ...[
+              if (DevicePlatform.isMobile) ...[
                 HomeWidgetsSection(settings: settings),
                 const SizedBox(height: 24),
               ],

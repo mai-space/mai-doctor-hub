@@ -185,8 +185,9 @@ Future<void> _start() async {
     calendarSync?.trigger();
   });
 
-  // Startbildschirm-Widgets (Android): Snapshot aktuell halten, Eingaben
-  // vom Widget übernehmen, Tipps aufs Widget öffnen das passende Ziel.
+  // Startbildschirm-Widgets (Android) und Uhr-Apps (Wear OS, Apple Watch):
+  // Snapshot aktuell halten, Eingaben vom Widget bzw. von der Uhr übernehmen,
+  // Tipps aufs Widget öffnen das passende Ziel.
   final homeWidgets = HomeWidgetSync.isSupported
       ? (HomeWidgetSync(database)
           ..onOpen = _openFromWidget

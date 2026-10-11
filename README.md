@@ -29,6 +29,7 @@ flutter pub get
 - **Eingaben:** Autovervollständigung aus allem, was schon einmal eingegeben wurde
 - **Einstellungen:** Erinnerungen, Kalender-Export, App-Sperre, verschlüsselte Datensicherung
 - **Startbildschirm-Widgets (Android):** „Nächster Termin“, „Check-in“ (Stärke 0–10 per Tipp) und „Medikamente heute“ (direkt abhaken) — frei in der Größe veränderbar, Layout passt sich an (1×1 bis groß), Material-You-Farben ab Android 12, Dark Mode; Eingaben am Widget übernimmt die App beim nächsten Öffnen
+- **Uhr (Wear OS und Apple Watch):** dieselben Inhalte als Kacheln (Wear OS), Komplikationen auf dem Zifferblatt und kurze Übersicht in der Uhr-App „Ärzte“; Einnahmen abhaken und Check-in direkt an der Uhr — die App trägt sie beim nächsten Öffnen nach
 - **Kalender-Export (opt-in):** Termine einseitig in einen Gerätekalender (z. B. Google) — nur „Arzttermin“, Arzt, Ort; `.ics` pro Termin
 - **Assistent auf dem Handy (optional):** „Frag deine Akte“ (✨ in Meine Akte) — Gemma 4 E2B läuft per LiteRT-LM komplett auf dem Gerät; Modell (~2,6 GB) wird auf Wunsch geladen und lässt sich wieder löschen. Android 11+, arm64, empfohlen ≥ 6 GB RAM. Optional **semantische Suche**: EmbeddingGemma (~180 MB, einmalig mit Hugging-Face-Token wegen Gemma-Lizenz) — Antworten nutzen dann die besten Treffer per Stichwort (BM25) *und* per Bedeutung; Vektoren liegen in der verschlüsselten App-Datenbank. Ohne Zusatzmodell ergänzt Gemma 4 jede Frage um Suchbegriffe (Synonyme, Fachbegriffe, Abkürzungen); beide Suchen arbeiten auf ~600-Zeichen-Abschnitten, damit möglichst viele passende Stellen ins Kontextfenster passen
 - **Assistent am Rechner (optional):** [`tools/mai_mcp`](tools/mai_mcp/README.md) macht eine Sicherung read-only per MCP für Gemini oder lokales Gemma abfragbar
@@ -91,7 +92,7 @@ Workflow: `.github/workflows/ci.yml` (Trigger: `push` auf alle Branches, `pull_r
 - Daten verlassen das Gerät nur durch bewusste Aktionen: verschlüsselte Sicherung, Kalender-Export (minimal, opt-in), MCP-Server auf eigenem Rechner
 - Internet-Berechtigung nur für den Download des KI-Modells (Hugging Face); Fragen und Akte-Daten verarbeitet das Modell lokal, der Chatverlauf wird nicht gespeichert
 - App-Sperre (Biometrie/Geräte-PIN) blendet Inhalte in Screenshots und „Zuletzt verwendet“ aus
-- Widgets lesen nur einen kleinen Auszug (nicht die verschlüsselte Datenbank); **diskret** (nur Zeiten und Anzahl, keine Namen) ist automatisch an, solange die App-Sperre aktiv ist — einstellbar unter Einstellungen → Startbildschirm-Widgets
+- Widgets lesen nur einen kleinen Auszug (nicht die verschlüsselte Datenbank); **diskret** (nur Zeiten und Anzahl, keine Namen) ist automatisch an, solange die App-Sperre aktiv ist — einstellbar unter Einstellungen → Startbildschirm-Widgets; gilt genauso für die Uhr. Den Auszug bekommen nur gekoppelte Uhren, auf denen die Uhr-App installiert ist (Wear OS: Nachricht über Google Play-Dienste, keine gespeicherten DataItems; Apple Watch: WatchConnectivity); die Uhr-App hat keine Internet-Berechtigung
 - Berichte (PDF/Scan) unter `Documents/reports/`; extrahierter Text lokal indexiert
 - Erinnerungen sind **lokal** (kein FCM/Server-Push)
 - CI baut Artefakte; Mock-Deploy lädt **keine** Nutzerdaten hoch

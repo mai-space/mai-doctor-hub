@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -382,6 +383,45 @@ void main() {
     await settle();
     settings = await tester.runAsync(() => SettingsRepository(db).get());
     expect(settings!.widgetDiscreet, isNull);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(const Duration(milliseconds: 100));
+  });
+
+  test('watch apps: widget sync also runs on iOS (Apple Watch)', () {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    expect(HomeWidgetSync.isSupported, isTrue);
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    expect(HomeWidgetSync.isSupported, isTrue);
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    expect(HomeWidgetSync.isSupported, isFalse);
+  });
+
+  testWidgets('settings: watch hint on Android, watch title on iOS', (
+    tester,
+  ) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    final settings = await tester.runAsync(() => SettingsRepository(db).get());
+    Widget section() => DatabaseScope(
+      database: db,
+      child: MaterialApp(
+        home: Scaffold(body: HomeWidgetsSection(settings: settings!)),
+      ),
+    );
+
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    await tester.pumpWidget(section());
+    expect(find.text('Startbildschirm-Widgets'), findsOneWidget);
+    expect(find.textContaining('Wear-OS-Uhr'), findsOneWidget);
+
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    await tester.pumpWidget(section());
+    await tester.pump();
+    expect(find.text('Apple Watch'), findsOneWidget);
+    expect(find.textContaining('Wear-OS-Uhr'), findsNothing);
+    debugDefaultTargetPlatformOverride = null;
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 100));
