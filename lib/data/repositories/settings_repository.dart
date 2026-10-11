@@ -46,6 +46,14 @@ class SettingsRepository {
     );
   }
 
+  /// v19: Startbildschirm-Widgets diskret (`true`), mit Details (`false`)
+  /// oder automatisch (`null`: diskret, solange die App-Sperre an ist).
+  Future<void> setWidgetDiscreet(bool? discreet) {
+    return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
+      AppSettingsCompanion(widgetDiscreet: Value(discreet)),
+    );
+  }
+
   Future<void> completeOnboarding() {
     return (_db.update(_db.appSettings)..where((t) => t.id.equals(1))).write(
       const AppSettingsCompanion(onboardingCompleted: Value(true)),

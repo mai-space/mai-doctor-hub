@@ -28,6 +28,7 @@ flutter pub get
 - **Berichte:** PDF/Bild anhängen, In-App-Viewer, Text-Erkennung (PDFium) → Suche
 - **Eingaben:** Autovervollständigung aus allem, was schon einmal eingegeben wurde
 - **Einstellungen:** Erinnerungen, Kalender-Export, App-Sperre, verschlüsselte Datensicherung
+- **Startbildschirm-Widgets (Android):** „Nächster Termin“, „Check-in“ (Stärke 0–10 per Tipp) und „Medikamente heute“ (direkt abhaken) — frei in der Größe veränderbar, Layout passt sich an (1×1 bis groß), Material-You-Farben ab Android 12, Dark Mode; Eingaben am Widget übernimmt die App beim nächsten Öffnen
 - **Kalender-Export (opt-in):** Termine einseitig in einen Gerätekalender (z. B. Google) — nur „Arzttermin“, Arzt, Ort; `.ics` pro Termin
 - **Assistent auf dem Handy (optional):** „Frag deine Akte“ (✨ in Meine Akte) — Gemma 4 E2B läuft per LiteRT-LM komplett auf dem Gerät; Modell (~2,6 GB) wird auf Wunsch geladen und lässt sich wieder löschen. Android 11+, arm64, empfohlen ≥ 6 GB RAM. Optional **semantische Suche**: EmbeddingGemma (~180 MB, einmalig mit Hugging-Face-Token wegen Gemma-Lizenz) — Antworten nutzen dann die besten Treffer per Stichwort (BM25) *und* per Bedeutung; Vektoren liegen in der verschlüsselten App-Datenbank. Ohne Zusatzmodell ergänzt Gemma 4 jede Frage um Suchbegriffe (Synonyme, Fachbegriffe, Abkürzungen); beide Suchen arbeiten auf ~600-Zeichen-Abschnitten, damit möglichst viele passende Stellen ins Kontextfenster passen
 - **Assistent am Rechner (optional):** [`tools/mai_mcp`](tools/mai_mcp/README.md) macht eine Sicherung read-only per MCP für Gemini oder lokales Gemma abfragbar
@@ -90,6 +91,7 @@ Workflow: `.github/workflows/ci.yml` (Trigger: `push` auf alle Branches, `pull_r
 - Daten verlassen das Gerät nur durch bewusste Aktionen: verschlüsselte Sicherung, Kalender-Export (minimal, opt-in), MCP-Server auf eigenem Rechner
 - Internet-Berechtigung nur für den Download des KI-Modells (Hugging Face); Fragen und Akte-Daten verarbeitet das Modell lokal, der Chatverlauf wird nicht gespeichert
 - App-Sperre (Biometrie/Geräte-PIN) blendet Inhalte in Screenshots und „Zuletzt verwendet“ aus
+- Widgets lesen nur einen kleinen Auszug (nicht die verschlüsselte Datenbank); **diskret** (nur Zeiten und Anzahl, keine Namen) ist automatisch an, solange die App-Sperre aktiv ist — einstellbar unter Einstellungen → Startbildschirm-Widgets
 - Berichte (PDF/Scan) unter `Documents/reports/`; extrahierter Text lokal indexiert
 - Erinnerungen sind **lokal** (kein FCM/Server-Push)
 - CI baut Artefakte; Mock-Deploy lädt **keine** Nutzerdaten hoch

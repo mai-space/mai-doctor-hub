@@ -1424,5 +1424,14 @@
   "symptomHeatmapCellPattern": "MMM d, y",
   "symptomHeatmapMonthPattern": "MMM",
   "symptomHeatmapSemantics": "Intensity calendar: {days} days with check-ins",
-  "symptomPickerRecent": "Recently used"
+  "symptomPickerRecent": "Recently used",
+  "widgetsTitle": "Home screen widgets",
+  "widgetsIntro": "Next appointment, check-in and today's medications right on your home screen. Long-press the home screen → Widgets → Doctor Hub.",
+  "widgetsModeAuto": "Automatic",
+  "widgetsModeDiscreet": "Discreet",
+  "widgetsModeDetailed": "Details",
+  "widgetsAutoDiscreet": "Currently discreet because the app lock is on.",
+  "widgetsAutoDetailed": "Currently showing details. Discreet automatically with the app lock.",
+  "widgetsDiscreetText": "Only times and counts – no names of doctors, medications or symptoms.",
+  "widgetsDetailedText": "Shows doctor, appointment title, medications and symptom – visible to anyone who sees your home screen."
 }

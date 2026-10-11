@@ -434,6 +434,10 @@ class AppSettings extends Table {
   // 6 = Samstag, 7 = Sonntag); `null` = automatisch nach Region.
   IntColumn get calendarFirstWeekday => integer().nullable()();
 
+  // v19: Startbildschirm-Widgets. `null` = automatisch (diskret, solange die
+  // App-Sperre an ist), `true` = immer diskret, `false` = mit Details.
+  BoolColumn get widgetDiscreet => boolean().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -608,7 +612,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? openAppDatabase());
 
   @override
-  int get schemaVersion => 18;
+  int get schemaVersion => 19;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -791,6 +795,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 18) {
         await migrator.addColumn(appSettings, appSettings.calendarFirstWeekday);
+      }
+      if (from < 19) {
+        await migrator.addColumn(appSettings, appSettings.widgetDiscreet);
       }
     },
     beforeOpen: (details) async {

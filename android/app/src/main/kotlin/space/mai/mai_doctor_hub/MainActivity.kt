@@ -1,6 +1,7 @@
 package space.mai.mai_doctor_hub
 
 import android.app.ActivityManager
+import android.content.Intent
 import android.os.Build
 import android.view.WindowManager
 import java.util.TimeZone
@@ -9,10 +10,12 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import androidx.work.WorkManager
 import java.io.File
+import space.mai.mai_doctor_hub.widgets.HomeWidgetChannel
 
 // FragmentActivity wird von local_auth (BiometricPrompt) benötigt.
 class MainActivity : FlutterFragmentActivity() {
     private var calendar: CalendarChannel? = null
+    private var homeWidgets: HomeWidgetChannel? = null
 
     // Registriert einen Activity-Result-Launcher: muss beim Erzeugen passieren.
     private val documentScanner = DocumentScannerChannel(this)
@@ -61,6 +64,9 @@ class MainActivity : FlutterFragmentActivity() {
             MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CalendarChannel.NAME)
                 .setMethodCallHandler(it)
         }
+        // Startbildschirm-Widgets: Snapshot, Eingaben, Ziel eines Widget-Tipps.
+        homeWidgets = HomeWidgetChannel(this, flutterEngine.dartExecutor.binaryMessenger)
+            .also { it.onLaunch(intent) }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "mai/secure_window")
             .setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -76,6 +82,11 @@ class MainActivity : FlutterFragmentActivity() {
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        homeWidgets?.onNewIntent(intent)
     }
 
     override fun onRequestPermissionsResult(

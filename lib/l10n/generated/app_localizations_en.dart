@@ -4482,4 +4482,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get symptomPickerRecent => 'Recently used';
+
+  @override
+  String get widgetsTitle => 'Home screen widgets';
+
+  @override
+  String get widgetsIntro =>
+      'Next appointment, check-in and today\'s medications right on your home screen. Long-press the home screen → Widgets → Doctor Hub.';
+
+  @override
+  String get widgetsModeAuto => 'Automatic';
+
+  @override
+  String get widgetsModeDiscreet => 'Discreet';
+
+  @override
+  String get widgetsModeDetailed => 'Details';
+
+  @override
+  String get widgetsAutoDiscreet =>
+      'Currently discreet because the app lock is on.';
+
+  @override
+  String get widgetsAutoDetailed =>
+      'Currently showing details. Discreet automatically with the app lock.';
+
+  @override
+  String get widgetsDiscreetText =>
+      'Only times and counts – no names of doctors, medications or symptoms.';
+
+  @override
+  String get widgetsDetailedText =>
+      'Shows doctor, appointment title, medications and symptom – visible to anyone who sees your home screen.';
 }

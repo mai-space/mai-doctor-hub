@@ -57,6 +57,52 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Startbildschirm-Widgets (responsive, Daten aus WidgetStore). -->
+        <receiver
+            android:name=".widgets.AppointmentWidget"
+            android:exported="false"
+            android:label="@string/widget_appointment_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_appointment_info" />
+        </receiver>
+        <receiver
+            android:name=".widgets.CheckInWidget"
+            android:exported="false"
+            android:label="@string/widget_checkin_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_checkin_info" />
+        </receiver>
+        <receiver
+            android:name=".widgets.MedicationsWidget"
+            android:exported="false"
+            android:label="@string/widget_meds_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_meds_info" />
+        </receiver>
+        <!-- Eingaben am Widget; Neuzeichnen bei Uhrzeit-, Zeitzonen- und
+             Sprachwechsel sowie nach einem App-Update. -->
+        <receiver
+            android:name=".widgets.WidgetActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

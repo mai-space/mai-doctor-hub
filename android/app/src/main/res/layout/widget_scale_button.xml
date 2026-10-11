@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ein Wert der Skala (Gewicht 1 → gleich breit verteilt). -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_value"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_marginStart="2dp"
+    android:layout_marginEnd="2dp"
+    android:layout_weight="1"
+    android:background="@drawable/widget_button_bg"
+    android:fontFamily="sans-serif-medium"
+    android:gravity="center"
+    android:singleLine="true"
+    android:textColor="@color/widget_on_chip"
+    android:textSize="15sp" />

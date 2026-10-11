@@ -10,7 +10,9 @@ import '../psych/psych_settings_section.dart';
 import 'appointment_reminders_tile.dart';
 import 'backup_section.dart';
 import '../../services/notifications/notification_plan.dart';
+import '../../services/device_platform.dart';
 import 'calendar_section.dart';
+import 'home_widgets_section.dart';
 import 'notification_topics_page.dart';
 import 'reminders_section.dart';
 import 'security_section.dart';
@@ -94,6 +96,10 @@ class SettingsPage extends StatelessWidget {
               const SizedBox(height: 24),
               const SecuritySection(),
               const SizedBox(height: 24),
+              if (DevicePlatform.isAndroid) ...[
+                HomeWidgetsSection(settings: settings),
+                const SizedBox(height: 24),
+              ],
               const BackupSection(),
               ListTile(
                 contentPadding: EdgeInsets.zero,

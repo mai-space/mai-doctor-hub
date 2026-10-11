@@ -33,6 +33,8 @@ import 'services/notifications/psych_reminders.dart';
 import 'services/notifications/reminder_service.dart';
 import 'services/notifications/vaccination_reminders.dart';
 import 'services/file_vault.dart';
+import 'services/home_widgets/home_widget_sync.dart';
+import 'services/home_widgets/widget_actions.dart';
 import 'services/temp_files.dart';
 import 'services/time_change_observer.dart';
 import 'data/connection/connection.dart';
@@ -183,6 +185,14 @@ Future<void> _start() async {
     calendarSync?.trigger();
   });
 
+  // Startbildschirm-Widgets (Android): Snapshot aktuell halten, Eingaben
+  // vom Widget übernehmen, Tipps aufs Widget öffnen das passende Ziel.
+  final homeWidgets = HomeWidgetSync.isSupported
+      ? (HomeWidgetSync(database)
+          ..onOpen = _openFromWidget
+          ..start())
+      : null;
+
   runApp(MaiDoctorHubApp(database: database, appLock: appLock));
 
   // Klartext-Reste früherer Scans, Auswahlen und Freigaben entfernen.
@@ -196,6 +206,12 @@ Future<void> _start() async {
   if (launch != null) {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _openFromNotification(launch),
+    );
+  }
+  final widgetLaunch = await homeWidgets?.launchLink();
+  if (widgetLaunch != null) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _openFromWidget(widgetLaunch),
     );
   }
 }
@@ -309,6 +325,32 @@ void _openFromNotification(String? payload) {
         builder: (_) => AppointmentDetailPage(appointmentId: appointmentId),
       ),
     );
+  }
+}
+
+/// Tipp auf ein Startbildschirm-Widget. Die App-Sperre liegt darüber
+/// ([AppLockGate]) — ohne Entsperren ist nichts zu sehen.
+void _openFromWidget(WidgetLink link) {
+  final context = appNavigatorKey.currentContext;
+  if (context == null) return;
+  // Ein Ziel nach dem anderen: offene Blätter/Seiten vom letzten Tipp weg.
+  Navigator.of(context).popUntil((route) => route.isFirst);
+  switch (link) {
+    case AppointmentLink(:final id):
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => AppointmentDetailPage(appointmentId: id),
+        ),
+      );
+    case AppointmentsLink():
+      break;
+    case MedicationsLink():
+      showTodayMedicationsSheet(context);
+    case CheckInLink(:final symptomId):
+      showCheckInSheet(
+        context,
+        symptomIds: [?symptomId],
+      );
   }
 }
 

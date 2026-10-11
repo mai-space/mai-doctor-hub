@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Startbildschirm-Widgets: Farben der App (Seed #1F6B5C). Ab Android 12
+     ersetzt values-v31 sie durch die Systemfarben (Material You). -->
+<resources>
+    <color name="widget_bg">#FFF4FBF8</color>
+    <color name="widget_on_bg">#FF171D1B</color>
+    <color name="widget_muted">#FF3F4946</color>
+    <color name="widget_accent">#FF1F6B5C</color>
+    <color name="widget_on_accent">#FFFFFFFF</color>
+    <color name="widget_chip">#FFD3E8E1</color>
+    <color name="widget_on_chip">#FF0F2019</color>
+</resources>
