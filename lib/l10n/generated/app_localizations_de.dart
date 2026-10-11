@@ -178,7 +178,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Abendliche Symptom-Notizen — dauert nur einen Moment.';
 
   @override
-  String get appTitle => 'Mai Doctor Hub';
+  String get appTitle => 'Ärzte';
 
   @override
   String get commonCancel => 'Abbrechen';
@@ -1207,7 +1207,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get cycleReportFooter =>
-      'Selbst erfasst in Mai Doctor Hub. Schätzungen und Hinweise sind keine Diagnose.';
+      'Selbst erfasst in der App Ärzte. Schätzungen und Hinweise sind keine Diagnose.';
 
   @override
   String get cycleStartTitle => 'Zyklus-Start';
@@ -2448,7 +2448,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get mediaMicDeniedIos =>
-      'Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den iOS-Einstellungen unter „Mai Doctor Hub“ erlauben.';
+      'Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den iOS-Einstellungen unter „Ärzte“ erlauben.';
 
   @override
   String get psychTitle => 'Psyche';
@@ -3133,7 +3133,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get settingsBackupShareSubject => 'Mai Doctor Hub — Sicherung';
+  String get settingsBackupShareSubject => 'Ärzte — Sicherung';
 
   @override
   String get settingsBackupCreated =>
@@ -3144,7 +3144,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsBackupNotABackup =>
-      'Keine Mai-Doctor-Hub-Sicherung (.maibackup).';
+      'Keine Sicherung der App „Ärzte“ (.maibackup).';
 
   @override
   String get settingsBackupRestoreConfirmTitle => 'Sicherung wiederherstellen?';
@@ -3184,7 +3184,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String settingsDocumentsShareSubject(int count) {
-    return 'Mai Doctor Hub — $count Dokumente';
+    return 'Ärzte — $count Dokumente';
   }
 
   @override
@@ -3435,7 +3435,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Keine Displaysperre eingerichtet — bitte zuerst in den Geräteeinstellungen PIN oder Biometrie aktivieren.';
 
   @override
-  String get settingsLockLockedTitle => 'Mai Doctor Hub ist gesperrt';
+  String get settingsLockLockedTitle => '„Ärzte“ ist gesperrt';
 
   @override
   String get settingsLockLockedText =>
@@ -3448,7 +3448,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsLockReasonSetup => 'App-Sperre einrichten';
 
   @override
-  String get settingsLockReasonUnlock => 'Mai Doctor Hub entsperren';
+  String get settingsLockReasonUnlock => '„Ärzte“ entsperren';
 
   @override
   String settingsArchiveSnack(String label) {
@@ -3501,7 +3501,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsOnboardingPrivacyText =>
-      'Mai Doctor Hub speichert alles nur auf diesem Gerät. Kein Konto, kein Server. Was das Gerät verlässt — Sicherung, Kalender, Assistent — entscheidest du.';
+      '„Ärzte“ speichert alles nur auf diesem Gerät. Kein Konto, kein Server. Was das Gerät verlässt — Sicherung, Kalender, Assistent — entscheidest du.';
 
   @override
   String get settingsOnboardingAllInOneTitle => 'Alles an einem Ort';
@@ -3837,7 +3837,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get svcContextSystemPrompt =>
-      'Du bist der Assistent der App „Mai Doctor Hub“. Du hilfst ruhig und sachlich, die eigene Gesundheitsakte zu verstehen. Antworte auf Deutsch in Markdown, höchstens etwa 180 Wörter.\nRegeln:\n- Stütze dich auf den Abschnitt AKTE. Steht etwas nicht darin, sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen. Nenne Möglichkeiten („könnte“, „häufig steckt … dahinter“), nie Gewissheiten.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.\nBei Beschwerden oder Symptomen antworte immer in zwei Richtungen zugleich, je 2–4 kurze Punkte:\n**Mögliche Zusammenhänge**\n- Was in der Akte dazu passen könnte: zeitlich passende (neue) Medikamente, Zyklusphase, Schlaf und Stimmung, andere Symptome, letzte Termine oder Befunde.\n- Häufige allgemeine Ursachen, neutral formuliert.\n**Was du tun kannst**\n- Was du in der App beobachten oder notieren kannst.\n- Fragen an die Ärztin oder den Arzt.\n- Einfache Selbstfürsorge.\n- Wann du zeitnah ärztlichen Rat brauchst und wann sofort 112.\nBei anderen Fragen (Termine, Medikamente, Befunde) antworte direkt und knapp.\nLetzte Zeile jeder Antwort: FOLGEFRAGEN: Frage 1 | Frage 2 | Frage 3\nKurze Fragen aus Sicht des Nutzers — mindestens eine zum Verstehen, eine zum Handeln.';
+      'Du bist der Assistent der App „Ärzte“. Du hilfst ruhig und sachlich, die eigene Gesundheitsakte zu verstehen. Antworte auf Deutsch in Markdown, höchstens etwa 180 Wörter.\nRegeln:\n- Stütze dich auf den Abschnitt AKTE. Steht etwas nicht darin, sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen. Nenne Möglichkeiten („könnte“, „häufig steckt … dahinter“), nie Gewissheiten.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.\nBei Beschwerden oder Symptomen antworte immer in zwei Richtungen zugleich, je 2–4 kurze Punkte:\n**Mögliche Zusammenhänge**\n- Was in der Akte dazu passen könnte: zeitlich passende (neue) Medikamente, Zyklusphase, Schlaf und Stimmung, andere Symptome, letzte Termine oder Befunde.\n- Häufige allgemeine Ursachen, neutral formuliert.\n**Was du tun kannst**\n- Was du in der App beobachten oder notieren kannst.\n- Fragen an die Ärztin oder den Arzt.\n- Einfache Selbstfürsorge.\n- Wann du zeitnah ärztlichen Rat brauchst und wann sofort 112.\nBei anderen Fragen (Termine, Medikamente, Befunde) antworte direkt und knapp.\nLetzte Zeile jeder Antwort: FOLGEFRAGEN: Frage 1 | Frage 2 | Frage 3\nKurze Fragen aus Sicht des Nutzers — mindestens eine zum Verstehen, eine zum Handeln.';
 
   @override
   String get svcContextRecordHeading => 'AKTE';
@@ -3943,7 +3943,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String svcSummaryPdfFooter(String date) {
-    return 'Erstellt am $date mit Mai Doctor Hub · Angaben des Patienten, keine ärztliche Dokumentation';
+    return 'Erstellt am $date mit der App Ärzte · Angaben des Patienten, keine ärztliche Dokumentation';
   }
 
   @override
@@ -4139,7 +4139,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get svcCalendarManagedBy => 'Verwaltet von Mai Doctor Hub';
+  String get svcCalendarManagedBy => 'Verwaltet von der App „Ärzte“';
 
   @override
   String get svcCalendarNoPermission => 'Kalenderzugriff nicht erlaubt';
@@ -4165,7 +4165,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String svcExportFileName(String date) {
-    return 'Mai-Doctor-Hub-Dokumente-$date.zip';
+    return 'Aerzte-Dokumente-$date.zip';
   }
 
   @override
@@ -4231,7 +4231,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get svcDiscreetCheckInTitle => 'Zeit für deinen Check-in';
 
   @override
-  String get svcDiscreetBody => 'Details in Doctor Hub';
+  String get svcDiscreetBody => 'Details in der App „Ärzte“';
 
   @override
   String svcReminderVaccinationSoon(String vaccine) {
@@ -4434,7 +4434,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get widgetsIntro =>
-      'Nächster Termin, Check-in und Medikamente heute direkt auf dem Startbildschirm. Lange auf den Startbildschirm tippen → Widgets → Doctor Hub.';
+      'Nächster Termin, Check-in und Medikamente heute direkt auf dem Startbildschirm. Lange auf den Startbildschirm tippen → Widgets → Ärzte.';
 
   @override
   String get widgetsModeAuto => 'Automatisch';

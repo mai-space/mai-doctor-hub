@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Mai Doctor Hub</string>
+	<string>Ärzte</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -20,7 +20,7 @@
 		<string>en</string>
 	</array>
 	<key>CFBundleName</key>
-	<string>Mai Doctor Hub</string>
+	<string>Ärzte</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -34,9 +34,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>Mai Doctor Hub trägt deine Arzttermine in den gewählten Kalender ein und hält sie aktuell.</string>
+	<string>„Ärzte“ trägt deine Arzttermine in den gewählten Kalender ein und hält sie aktuell.</string>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Mai Doctor Hub trägt deine Arzttermine in den gewählten Kalender ein und hält sie aktuell.</string>
+	<string>„Ärzte“ trägt deine Arzttermine in den gewählten Kalender ein und hält sie aktuell.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Die Kamera wird zum Scannen von Befunden und für Fotos und Videos zu Symptomen verwendet. Die Aufnahmen bleiben verschlüsselt auf dem Gerät.</string>
 	<key>NSFaceIDUsageDescription</key>

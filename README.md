@@ -1,6 +1,6 @@
 # Mai Doctor Hub
 
-Lokale Patientenakte — **Privacy first**, auf Deutsch und Englisch. Alle Daten bleiben auf dem Gerät. Kein Account, kein Server mit PHI; Kalender-Export und Assistent sind opt-in.
+App-Name auf dem Gerät: **Ärzte**. Lokale Patientenakte — **Privacy first**, auf Deutsch und Englisch. Alle Daten bleiben auf dem Gerät. Kein Account, kein Server mit PHI; Kalender-Export und Assistent sind opt-in.
 
 ## Stack
 
@@ -81,7 +81,7 @@ flutter build apk --release
 Workflow: `.github/workflows/ci.yml` (Trigger: `push` auf alle Branches, `pull_request` auf `main`)
 
 1. `flutter analyze` + `flutter test` (inkl. PDFium-Download für PDF-Tests); `dart analyze` + `dart test` für `packages/` und `tools/`
-2. Release-APK → Artifact `app-release.apk` (Retention 14 Tage)
+2. Release-APK → Artifact `mai-doctor-hub.apk` (Retention 14 Tage)
 3. `deploy-mock` auf `main`: loggt nur `would deploy` — **kein PHI, kein Datenupload**
 
 ## Privacy
