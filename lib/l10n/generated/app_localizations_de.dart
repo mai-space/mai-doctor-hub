@@ -4428,4 +4428,36 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get symptomPickerRecent => 'Zuletzt verwendet';
+
+  @override
+  String get widgetsTitle => 'Startbildschirm-Widgets';
+
+  @override
+  String get widgetsIntro =>
+      'Nächster Termin, Check-in und Medikamente heute direkt auf dem Startbildschirm. Lange auf den Startbildschirm tippen → Widgets → Doctor Hub.';
+
+  @override
+  String get widgetsModeAuto => 'Automatisch';
+
+  @override
+  String get widgetsModeDiscreet => 'Diskret';
+
+  @override
+  String get widgetsModeDetailed => 'Details';
+
+  @override
+  String get widgetsAutoDiscreet =>
+      'Zurzeit diskret, weil die App-Sperre an ist.';
+
+  @override
+  String get widgetsAutoDetailed =>
+      'Zurzeit mit Details. Mit App-Sperre automatisch diskret.';
+
+  @override
+  String get widgetsDiscreetText =>
+      'Nur Uhrzeiten und Anzahl – keine Namen von Ärzten, Medikamenten oder Symptomen.';
+
+  @override
+  String get widgetsDetailedText =>
+      'Zeigt Arzt, Termintitel, Medikamente und Symptom – für alle sichtbar, die deinen Startbildschirm sehen.';
 }

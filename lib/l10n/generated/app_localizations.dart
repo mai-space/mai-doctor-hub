@@ -7552,6 +7552,60 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Zuletzt verwendet'**
   String get symptomPickerRecent;
+
+  /// No description provided for @widgetsTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Startbildschirm-Widgets'**
+  String get widgetsTitle;
+
+  /// No description provided for @widgetsIntro.
+  ///
+  /// In de, this message translates to:
+  /// **'Nächster Termin, Check-in und Medikamente heute direkt auf dem Startbildschirm. Lange auf den Startbildschirm tippen → Widgets → Doctor Hub.'**
+  String get widgetsIntro;
+
+  /// No description provided for @widgetsModeAuto.
+  ///
+  /// In de, this message translates to:
+  /// **'Automatisch'**
+  String get widgetsModeAuto;
+
+  /// No description provided for @widgetsModeDiscreet.
+  ///
+  /// In de, this message translates to:
+  /// **'Diskret'**
+  String get widgetsModeDiscreet;
+
+  /// No description provided for @widgetsModeDetailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Details'**
+  String get widgetsModeDetailed;
+
+  /// No description provided for @widgetsAutoDiscreet.
+  ///
+  /// In de, this message translates to:
+  /// **'Zurzeit diskret, weil die App-Sperre an ist.'**
+  String get widgetsAutoDiscreet;
+
+  /// No description provided for @widgetsAutoDetailed.
+  ///
+  /// In de, this message translates to:
+  /// **'Zurzeit mit Details. Mit App-Sperre automatisch diskret.'**
+  String get widgetsAutoDetailed;
+
+  /// No description provided for @widgetsDiscreetText.
+  ///
+  /// In de, this message translates to:
+  /// **'Nur Uhrzeiten und Anzahl – keine Namen von Ärzten, Medikamenten oder Symptomen.'**
+  String get widgetsDiscreetText;
+
+  /// No description provided for @widgetsDetailedText.
+  ///
+  /// In de, this message translates to:
+  /// **'Zeigt Arzt, Termintitel, Medikamente und Symptom – für alle sichtbar, die deinen Startbildschirm sehen.'**
+  String get widgetsDetailedText;
 }
 
 class _AppLocalizationsDelegate

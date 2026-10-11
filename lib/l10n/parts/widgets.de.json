@@ -1,0 +1,11 @@
+{
+  "widgetsTitle": "Startbildschirm-Widgets",
+  "widgetsIntro": "Nächster Termin, Check-in und Medikamente heute direkt auf dem Startbildschirm. Lange auf den Startbildschirm tippen → Widgets → Doctor Hub.",
+  "widgetsModeAuto": "Automatisch",
+  "widgetsModeDiscreet": "Diskret",
+  "widgetsModeDetailed": "Details",
+  "widgetsAutoDiscreet": "Zurzeit diskret, weil die App-Sperre an ist.",
+  "widgetsAutoDetailed": "Zurzeit mit Details. Mit App-Sperre automatisch diskret.",
+  "widgetsDiscreetText": "Nur Uhrzeiten und Anzahl – keine Namen von Ärzten, Medikamenten oder Symptomen.",
+  "widgetsDetailedText": "Zeigt Arzt, Termintitel, Medikamente und Symptom – für alle sichtbar, die deinen Startbildschirm sehen."
+}

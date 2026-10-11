@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Startbildschirm-Widgets (Standard: Englisch; Deutsch in values-de). -->
+<resources>
+    <string name="widget_appointment_name">Next appointment</string>
+    <string name="widget_appointment_description">Date and time of your next doctor\'s appointment</string>
+    <string name="widget_checkin_name">Check-in</string>
+    <string name="widget_checkin_description">Rate your symptom 0–10 with one tap</string>
+    <string name="widget_meds_name">Medications today</string>
+    <string name="widget_meds_description">Today\'s doses, tick them off right here</string>
+
+    <string name="widget_open_app">Open Doctor Hub once to load this widget</string>
+    <string name="widget_today">Today</string>
+    <string name="widget_tomorrow">Tomorrow</string>
+    <string name="widget_running">Now</string>
+    <string name="widget_soon">Soon</string>
+    <plurals name="widget_in_hours">
+        <item quantity="one">in %d hour</item>
+        <item quantity="other">in %d hours</item>
+    </plurals>
+    <plurals name="widget_in_days">
+        <item quantity="one">in %d day</item>
+        <item quantity="other">in %d days</item>
+    </plurals>
+    <string name="widget_date_time">%1$s · %2$s</string>
+    <!-- Nur für die Vorschau in der Widget-Auswahl. -->
+    <string name="widget_sample_time" translatable="false">09:30</string>
+    <string name="widget_sample_time_morning" translatable="false">08:00</string>
+    <string name="widget_sample_time_evening" translatable="false">20:00</string>
+    <string name="widget_preview_value_0" translatable="false">0</string>
+    <string name="widget_preview_value_3" translatable="false">3</string>
+    <string name="widget_preview_value_5" translatable="false">5</string>
+    <string name="widget_preview_value_7" translatable="false">7</string>
+    <string name="widget_preview_value_10" translatable="false">10</string>
+    <string name="widget_preview_count" translatable="false">1/2</string>
+
+    <string name="widget_appointment_title">Next appointment</string>
+    <string name="widget_appointment_generic">Doctor\'s appointment</string>
+    <string name="widget_no_appointments">No upcoming appointments</string>
+
+    <string name="widget_meds_title">Medications today</string>
+    <string name="widget_meds_none">No doses planned today</string>
+    <string name="widget_meds_stale">Open Doctor Hub to update the plan</string>
+    <string name="widget_meds_count">%1$d/%2$d</string>
+    <string name="widget_meds_taken_of">%1$d of %2$d taken</string>
+    <string name="widget_meds_next">next %s</string>
+    <string name="widget_meds_all_done">All done</string>
+    <string name="widget_meds_more">+%d more</string>
+    <string name="widget_dose_generic">Dose</string>
+    <string name="widget_dose_open">Due</string>
+    <string name="widget_dose_taken">Taken</string>
+    <string name="widget_dose_skipped">Skipped</string>
+    <string name="widget_dose_mark">Mark %s as taken</string>
+
+    <string name="widget_checkin_title">Check-in</string>
+    <string name="widget_checkin_question">How are you today?</string>
+    <string name="widget_checkin_none">No open symptoms</string>
+    <string name="widget_checkin_start">Start check-in</string>
+    <string name="widget_checkin_today_value">Today %d/10</string>
+    <string name="widget_checkin_today_done">Today ✓</string>
+    <string name="widget_checkin_pending">Open today</string>
+    <string name="widget_checkin_hint">0 = none · 10 = worst</string>
+    <string name="widget_checkin_rate">Record intensity %d of 10</string>
+</resources>

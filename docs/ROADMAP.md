@@ -31,7 +31,8 @@ Nächste Iteration: siehe [`TODO.md`](TODO.md).
 | B10 Web speichert keine Dateien | offen | Web bleibt Debug-Ziel |
 | Termin-Vorbereitung als PDF/Share | offen | Notizen pro Termin gibt es bereits |
 | Undo-Snackbars, OCR für Scans | offen | |
-| Home-Widgets, Material You/Dark Mode | Future | Abschnitt 5 |
+| Home-Widgets (Termin, Check-in, Medikamente; responsive, diskret) | ✅ | `lib/services/home_widgets/*`, `android/…/widgets/*` · `home_widgets_test` |
+| Material You/Dark Mode (App) | Future | Abschnitt 5 |
 
 ---
 
@@ -248,7 +249,17 @@ MCP-Server + Tools + Tests 3 PT · Doku/Setup Gemini & Ollama 0,5 PT.
 
 ## 5. Future Enhancements
 
-### Home-Bildschirm-Widgets (Android)
+### Home-Bildschirm-Widgets (Android) — ✅ umgesetzt (Schema v19)
+
+Umgesetzt mit eigenen `AppWidgetProvider`n (ohne `home_widget`-Paket):
+Flutter schreibt bei jeder Änderung einen minimalen Snapshot (Termine,
+Einnahmen für 7 Tage, Check-in-Symptom) über `mai/home_widgets` in die
+privaten Einstellungen; Layouts je Größe (Android 12+: `RemoteViews` mit
+Größen-Map, darunter über die Widget-Optionen). Eingaben am Widget landen in
+einer Warteschlange und werden beim Öffnen der App eingetragen (die
+verschlüsselte Datenbank bleibt dem Widget verschlossen). Ursprüngliches
+Konzept:
+
 - **„Nächster Termin“** (2×1 / 4×1): Datum, Uhrzeit, Arzt, Countdown; Tap
   öffnet Termin-Detail per Deep-Link `maidoctorhub://appointment/<id>`.
 - **„Check-in“** (1×1 / 2×1): Schnell-Check-in für das wichtigste offene

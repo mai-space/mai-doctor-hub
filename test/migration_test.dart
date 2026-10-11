@@ -276,7 +276,7 @@ void main() {
     expect(await db.select(db.psychAssessments).get(), hasLength(1));
     final version = await db.customSelect('PRAGMA user_version').getSingle();
     expect(version.read<int>('user_version'), db.schemaVersion);
-    expect(db.schemaVersion, 18);
+    expect(db.schemaVersion, 19);
     await db.close();
   });
 
@@ -444,7 +444,56 @@ void main() {
     settings = await db.select(db.appSettings).getSingle();
     expect(settings.calendarFirstWeekday, 1);
     final version = await db.customSelect('PRAGMA user_version').getSingle();
-    expect(version.read<int>('user_version'), 18);
+    expect(version.read<int>('user_version'), db.schemaVersion);
+    await db.close();
+  });
+
+  test('migrates v18 → v19: widgets stay automatic (discreet with lock)', () async {
+    // Echtes v18-Schema (Stand des MCP-Fixtures vor v19).
+    final raw = sqlite3.openInMemory();
+    final sql = File('test/migrations/v18.sql').readAsStringSync();
+    for (final statement in sql.split('---')) {
+      final body = statement
+          .split('\n')
+          .where((l) => !l.startsWith('--'))
+          .join('\n')
+          .trim();
+      if (body.isNotEmpty) raw.execute(body);
+    }
+    final at = DateTime(2026, 10, 12, 9, 30).millisecondsSinceEpoch ~/ 1000;
+    raw
+      ..execute(
+        'INSERT INTO app_settings (id, onboarding_completed, app_lock_enabled, '
+        'calendar_first_weekday) VALUES (1, 1, 1, 7)',
+      )
+      ..execute(
+        "INSERT INTO doctors (id, name, created_at, updated_at) "
+        "VALUES ('d1', 'Dr. Alt', 0, 0)",
+      )
+      ..execute(
+        'INSERT INTO appointments (id, doctor_id, scheduled_at, duration_min, '
+        "title, status, created_at, updated_at) VALUES "
+        "('a1', 'd1', $at, 30, 'Kontrolle', 0, 0, 0)",
+      )
+      ..execute('PRAGMA user_version = 18');
+    final db = AppDatabase(NativeDatabase.opened(raw));
+
+    var settings = await db.select(db.appSettings).getSingle();
+    expect(settings.widgetDiscreet, isNull, reason: 'automatisch');
+    expect(settings.appLockEnabled, isTrue);
+    expect(settings.calendarFirstWeekday, 7);
+    final appointment = await db.select(db.appointments).getSingle();
+    expect(
+      (appointment.title, appointment.scheduledAt),
+      ('Kontrolle', DateTime(2026, 10, 12, 9, 30)),
+    );
+    await db
+        .update(db.appSettings)
+        .write(const AppSettingsCompanion(widgetDiscreet: Value(false)));
+    settings = await db.select(db.appSettings).getSingle();
+    expect(settings.widgetDiscreet, isFalse);
+    final version = await db.customSelect('PRAGMA user_version').getSingle();
+    expect(version.read<int>('user_version'), db.schemaVersion);
     await db.close();
   });
 

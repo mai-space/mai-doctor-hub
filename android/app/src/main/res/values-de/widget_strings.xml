@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_appointment_name">Nächster Termin</string>
+    <string name="widget_appointment_description">Datum und Uhrzeit deines nächsten Arzttermins</string>
+    <string name="widget_checkin_name">Check-in</string>
+    <string name="widget_checkin_description">Symptom mit einem Tipp von 0–10 bewerten</string>
+    <string name="widget_meds_name">Medikamente heute</string>
+    <string name="widget_meds_description">Einnahmen von heute, direkt abhaken</string>
+
+    <string name="widget_open_app">Öffne Doctor Hub einmal, um das Widget zu laden</string>
+    <string name="widget_today">Heute</string>
+    <string name="widget_tomorrow">Morgen</string>
+    <string name="widget_running">Jetzt</string>
+    <string name="widget_soon">Gleich</string>
+    <plurals name="widget_in_hours">
+        <item quantity="one">in %d Std.</item>
+        <item quantity="other">in %d Std.</item>
+    </plurals>
+    <plurals name="widget_in_days">
+        <item quantity="one">in %d Tag</item>
+        <item quantity="other">in %d Tagen</item>
+    </plurals>
+    <string name="widget_date_time">%1$s · %2$s</string>
+
+    <string name="widget_appointment_title">Nächster Termin</string>
+    <string name="widget_appointment_generic">Arzttermin</string>
+    <string name="widget_no_appointments">Keine Termine geplant</string>
+
+    <string name="widget_meds_title">Medikamente heute</string>
+    <string name="widget_meds_none">Heute keine Einnahmen geplant</string>
+    <string name="widget_meds_stale">Öffne Doctor Hub, um den Plan zu aktualisieren</string>
+    <string name="widget_meds_count">%1$d/%2$d</string>
+    <string name="widget_meds_taken_of">%1$d von %2$d genommen</string>
+    <string name="widget_meds_next">nächste %s</string>
+    <string name="widget_meds_all_done">Alles erledigt</string>
+    <string name="widget_meds_more">+%d weitere</string>
+    <string name="widget_dose_generic">Einnahme</string>
+    <string name="widget_dose_open">Fällig</string>
+    <string name="widget_dose_taken">Genommen</string>
+    <string name="widget_dose_skipped">Ausgelassen</string>
+    <string name="widget_dose_mark">%s als genommen markieren</string>
+
+    <string name="widget_checkin_title">Check-in</string>
+    <string name="widget_checkin_question">Wie geht es dir heute?</string>
+    <string name="widget_checkin_none">Keine offenen Symptome</string>
+    <string name="widget_checkin_start">Check-in starten</string>
+    <string name="widget_checkin_today_value">Heute %d/10</string>
+    <string name="widget_checkin_today_done">Heute ✓</string>
+    <string name="widget_checkin_pending">Heute offen</string>
+    <string name="widget_checkin_hint">0 = keine · 10 = am stärksten</string>
+    <string name="widget_checkin_rate">Stärke %d von 10 eintragen</string>
+</resources>
