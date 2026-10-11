@@ -1,7 +1,7 @@
 /* Permission prompts (English). */
-"CFBundleDisplayName" = "Mai Doctor Hub";
-"NSCalendarsFullAccessUsageDescription" = "Mai Doctor Hub adds your doctor's appointments to the calendar you choose and keeps them up to date.";
-"NSCalendarsUsageDescription" = "Mai Doctor Hub adds your doctor's appointments to the calendar you choose and keeps them up to date.";
+"CFBundleDisplayName" = "Ärzte";
+"NSCalendarsFullAccessUsageDescription" = "The Ärzte app adds your doctor's appointments to the calendar you choose and keeps them up to date.";
+"NSCalendarsUsageDescription" = "The Ärzte app adds your doctor's appointments to the calendar you choose and keeps them up to date.";
 "NSCameraUsageDescription" = "The camera is used to scan medical documents and to take photos and videos of symptoms. Recordings stay encrypted on your device.";
 "NSFaceIDUsageDescription" = "Face ID unlocks your health record.";
 "NSMicrophoneUsageDescription" = "The microphone is used for voice notes and videos about symptoms. Recordings stay encrypted on your device.";

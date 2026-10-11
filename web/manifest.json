@@ -1,6 +1,6 @@
 {
-    "name": "Mai Doctor Hub",
-    "short_name": "Doctor Hub",
+    "name": "Ärzte",
+    "short_name": "Ärzte",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F6F8F7",

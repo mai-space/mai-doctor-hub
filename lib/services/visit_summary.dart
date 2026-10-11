@@ -304,7 +304,7 @@ abstract final class VisitSummaryPdf {
     final decimalSeparator = NumberFormat().symbols.DECIMAL_SEP;
     final doc = pw.Document(
       title: l10n.svcSummaryPdfTitle,
-      creator: 'Mai Doctor Hub',
+      creator: 'Ärzte',
     );
     final a = data.appointment;
     final heading = pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold);

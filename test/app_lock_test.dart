@@ -115,13 +115,13 @@ void main() {
       await settle(tester);
 
       expect(auth.calls, 1, reason: 'fragt beim Start automatisch');
-      expect(find.text('Mai Doctor Hub ist gesperrt'), findsOneWidget);
+      expect(find.text('„Ärzte“ ist gesperrt'), findsOneWidget);
       expect(find.text('Erfassen'), findsNothing);
 
       auth.succeed = true;
       await tester.tap(find.text('Entsperren'));
       await settle(tester);
-      expect(find.text('Mai Doctor Hub ist gesperrt'), findsNothing);
+      expect(find.text('„Ärzte“ ist gesperrt'), findsNothing);
       expect(find.text('Erfassen'), findsOneWidget);
 
       await tester.pumpWidget(const SizedBox.shrink());

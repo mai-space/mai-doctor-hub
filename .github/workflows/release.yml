@@ -128,6 +128,8 @@ jobs:
         run: |
           flutter build appbundle --release --build-name="$BUILD_NAME" --build-number="$BUILD_NUMBER"
           flutter build apk --release --build-name="$BUILD_NAME" --build-number="$BUILD_NUMBER"
+          # Einheitlicher Dateiname über alle Apps: mai-<repo>.apk
+          cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/mai-doctor-hub.apk
 
       - name: Verify upload signature
         run: |
@@ -148,7 +150,7 @@ jobs:
           name: release-${{ steps.version.outputs.name }}
           path: |
             build/app/outputs/bundle/release/app-release.aab
-            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/flutter-apk/mai-doctor-hub.apk
           if-no-files-found: error
           retention-days: 30
 

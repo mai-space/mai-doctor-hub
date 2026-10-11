@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In de, this message translates to:
-  /// **'Mai Doctor Hub'**
+  /// **'Ärzte'**
   String get appTitle;
 
   /// No description provided for @commonCancel.
@@ -2027,7 +2027,7 @@ abstract class AppLocalizations {
   /// No description provided for @cycleReportFooter.
   ///
   /// In de, this message translates to:
-  /// **'Selbst erfasst in Mai Doctor Hub. Schätzungen und Hinweise sind keine Diagnose.'**
+  /// **'Selbst erfasst in der App Ärzte. Schätzungen und Hinweise sind keine Diagnose.'**
   String get cycleReportFooter;
 
   /// No description provided for @cycleStartTitle.
@@ -4216,7 +4216,7 @@ abstract class AppLocalizations {
   /// No description provided for @mediaMicDeniedIos.
   ///
   /// In de, this message translates to:
-  /// **'Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den iOS-Einstellungen unter „Mai Doctor Hub“ erlauben.'**
+  /// **'Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den iOS-Einstellungen unter „Ärzte“ erlauben.'**
   String get mediaMicDeniedIos;
 
   /// No description provided for @psychTitle.
@@ -5409,7 +5409,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsBackupShareSubject.
   ///
   /// In de, this message translates to:
-  /// **'Mai Doctor Hub — Sicherung'**
+  /// **'Ärzte — Sicherung'**
   String get settingsBackupShareSubject;
 
   /// No description provided for @settingsBackupCreated.
@@ -5427,7 +5427,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsBackupNotABackup.
   ///
   /// In de, this message translates to:
-  /// **'Keine Mai-Doctor-Hub-Sicherung (.maibackup).'**
+  /// **'Keine Sicherung der App „Ärzte“ (.maibackup).'**
   String get settingsBackupNotABackup;
 
   /// No description provided for @settingsBackupRestoreConfirmTitle.
@@ -5493,7 +5493,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsDocumentsShareSubject.
   ///
   /// In de, this message translates to:
-  /// **'Mai Doctor Hub — {count} Dokumente'**
+  /// **'Ärzte — {count} Dokumente'**
   String settingsDocumentsShareSubject(int count);
 
   /// No description provided for @settingsReindexAllDone.
@@ -5919,7 +5919,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsLockLockedTitle.
   ///
   /// In de, this message translates to:
-  /// **'Mai Doctor Hub ist gesperrt'**
+  /// **'„Ärzte“ ist gesperrt'**
   String get settingsLockLockedTitle;
 
   /// No description provided for @settingsLockLockedText.
@@ -5943,7 +5943,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsLockReasonUnlock.
   ///
   /// In de, this message translates to:
-  /// **'Mai Doctor Hub entsperren'**
+  /// **'„Ärzte“ entsperren'**
   String get settingsLockReasonUnlock;
 
   /// No description provided for @settingsArchiveSnack.
@@ -6027,7 +6027,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsOnboardingPrivacyText.
   ///
   /// In de, this message translates to:
-  /// **'Mai Doctor Hub speichert alles nur auf diesem Gerät. Kein Konto, kein Server. Was das Gerät verlässt — Sicherung, Kalender, Assistent — entscheidest du.'**
+  /// **'„Ärzte“ speichert alles nur auf diesem Gerät. Kein Konto, kein Server. Was das Gerät verlässt — Sicherung, Kalender, Assistent — entscheidest du.'**
   String get settingsOnboardingPrivacyText;
 
   /// No description provided for @settingsOnboardingAllInOneTitle.
@@ -6567,7 +6567,7 @@ abstract class AppLocalizations {
   /// No description provided for @svcContextSystemPrompt.
   ///
   /// In de, this message translates to:
-  /// **'Du bist der Assistent der App „Mai Doctor Hub“. Du hilfst ruhig und sachlich, die eigene Gesundheitsakte zu verstehen. Antworte auf Deutsch in Markdown, höchstens etwa 180 Wörter.\nRegeln:\n- Stütze dich auf den Abschnitt AKTE. Steht etwas nicht darin, sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen. Nenne Möglichkeiten („könnte“, „häufig steckt … dahinter“), nie Gewissheiten.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.\nBei Beschwerden oder Symptomen antworte immer in zwei Richtungen zugleich, je 2–4 kurze Punkte:\n**Mögliche Zusammenhänge**\n- Was in der Akte dazu passen könnte: zeitlich passende (neue) Medikamente, Zyklusphase, Schlaf und Stimmung, andere Symptome, letzte Termine oder Befunde.\n- Häufige allgemeine Ursachen, neutral formuliert.\n**Was du tun kannst**\n- Was du in der App beobachten oder notieren kannst.\n- Fragen an die Ärztin oder den Arzt.\n- Einfache Selbstfürsorge.\n- Wann du zeitnah ärztlichen Rat brauchst und wann sofort 112.\nBei anderen Fragen (Termine, Medikamente, Befunde) antworte direkt und knapp.\nLetzte Zeile jeder Antwort: FOLGEFRAGEN: Frage 1 | Frage 2 | Frage 3\nKurze Fragen aus Sicht des Nutzers — mindestens eine zum Verstehen, eine zum Handeln.'**
+  /// **'Du bist der Assistent der App „Ärzte“. Du hilfst ruhig und sachlich, die eigene Gesundheitsakte zu verstehen. Antworte auf Deutsch in Markdown, höchstens etwa 180 Wörter.\nRegeln:\n- Stütze dich auf den Abschnitt AKTE. Steht etwas nicht darin, sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen. Nenne Möglichkeiten („könnte“, „häufig steckt … dahinter“), nie Gewissheiten.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.\nBei Beschwerden oder Symptomen antworte immer in zwei Richtungen zugleich, je 2–4 kurze Punkte:\n**Mögliche Zusammenhänge**\n- Was in der Akte dazu passen könnte: zeitlich passende (neue) Medikamente, Zyklusphase, Schlaf und Stimmung, andere Symptome, letzte Termine oder Befunde.\n- Häufige allgemeine Ursachen, neutral formuliert.\n**Was du tun kannst**\n- Was du in der App beobachten oder notieren kannst.\n- Fragen an die Ärztin oder den Arzt.\n- Einfache Selbstfürsorge.\n- Wann du zeitnah ärztlichen Rat brauchst und wann sofort 112.\nBei anderen Fragen (Termine, Medikamente, Befunde) antworte direkt und knapp.\nLetzte Zeile jeder Antwort: FOLGEFRAGEN: Frage 1 | Frage 2 | Frage 3\nKurze Fragen aus Sicht des Nutzers — mindestens eine zum Verstehen, eine zum Handeln.'**
   String get svcContextSystemPrompt;
 
   /// No description provided for @svcContextRecordHeading.
@@ -6729,7 +6729,7 @@ abstract class AppLocalizations {
   /// No description provided for @svcSummaryPdfFooter.
   ///
   /// In de, this message translates to:
-  /// **'Erstellt am {date} mit Mai Doctor Hub · Angaben des Patienten, keine ärztliche Dokumentation'**
+  /// **'Erstellt am {date} mit der App Ärzte · Angaben des Patienten, keine ärztliche Dokumentation'**
   String svcSummaryPdfFooter(String date);
 
   /// No description provided for @svcSummaryPdfAppointment.
@@ -7052,7 +7052,7 @@ abstract class AppLocalizations {
   /// No description provided for @svcCalendarManagedBy.
   ///
   /// In de, this message translates to:
-  /// **'Verwaltet von Mai Doctor Hub'**
+  /// **'Verwaltet von der App „Ärzte“'**
   String get svcCalendarManagedBy;
 
   /// No description provided for @svcCalendarNoPermission.
@@ -7094,7 +7094,7 @@ abstract class AppLocalizations {
   /// No description provided for @svcExportFileName.
   ///
   /// In de, this message translates to:
-  /// **'Mai-Doctor-Hub-Dokumente-{date}.zip'**
+  /// **'Aerzte-Dokumente-{date}.zip'**
   String svcExportFileName(String date);
 
   /// No description provided for @svcExportOverviewFile.
@@ -7208,7 +7208,7 @@ abstract class AppLocalizations {
   /// No description provided for @svcDiscreetBody.
   ///
   /// In de, this message translates to:
-  /// **'Details in Doctor Hub'**
+  /// **'Details in der App „Ärzte“'**
   String get svcDiscreetBody;
 
   /// No description provided for @svcReminderVaccinationSoon.
@@ -7562,7 +7562,7 @@ abstract class AppLocalizations {
   /// No description provided for @widgetsIntro.
   ///
   /// In de, this message translates to:
-  /// **'Nächster Termin, Check-in und Medikamente heute direkt auf dem Startbildschirm. Lange auf den Startbildschirm tippen → Widgets → Doctor Hub.'**
+  /// **'Nächster Termin, Check-in und Medikamente heute direkt auf dem Startbildschirm. Lange auf den Startbildschirm tippen → Widgets → Ärzte.'**
   String get widgetsIntro;
 
   /// No description provided for @widgetsModeAuto.

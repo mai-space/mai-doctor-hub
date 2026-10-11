@@ -164,12 +164,17 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      # Einheitlicher Dateiname über alle Apps: mai-<repo>.apk
+      - name: Rename APK
+        if: success()
+        run: cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/mai-doctor-hub.apk
+
       - name: Upload APK artifact
         if: success()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: app-release.apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: mai-doctor-hub.apk
+          path: build/app/outputs/flutter-apk/mai-doctor-hub.apk
           if-no-files-found: error
           retention-days: 14
 
@@ -240,5 +245,5 @@ jobs:
         run: |
           echo "would deploy"
           echo "Linse: kein PHI, kein Datenupload, kein echtes Hosting."
-          echo "Artifact: app-release.apk (CI-only; not uploaded to any patient-facing service)."
+          echo "Artifact: mai-doctor-hub.apk (CI-only; not uploaded to any patient-facing service)."
           echo "Rollback: N/A — mock deploy performs no external mutation."

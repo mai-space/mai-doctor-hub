@@ -178,7 +178,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Evening symptom notes — takes just a moment.';
 
   @override
-  String get appTitle => 'Mai Doctor Hub';
+  String get appTitle => 'Ärzte';
 
   @override
   String get commonCancel => 'Cancel';
@@ -1193,7 +1193,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cycleReportFooter =>
-      'Self-recorded in Mai Doctor Hub. Estimates and pointers are not a diagnosis.';
+      'Self-recorded in the Ärzte app. Estimates and pointers are not a diagnosis.';
 
   @override
   String get cycleStartTitle => 'Cycle start';
@@ -2438,7 +2438,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mediaMicDeniedIos =>
-      'A voice note needs microphone permission. You can allow it in the iOS Settings under “Mai Doctor Hub”.';
+      'A voice note needs microphone permission. You can allow it in the iOS Settings under “Ärzte”.';
 
   @override
   String get psychTitle => 'Mental health';
@@ -3117,7 +3117,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get settingsBackupShareSubject => 'Mai Doctor Hub — Backup';
+  String get settingsBackupShareSubject => 'Ärzte — Backup';
 
   @override
   String get settingsBackupCreated =>
@@ -3128,7 +3128,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsBackupNotABackup =>
-      'Not a Mai Doctor Hub backup (.maibackup).';
+      'Not a backup of the Ärzte app (.maibackup).';
 
   @override
   String get settingsBackupRestoreConfirmTitle => 'Restore backup?';
@@ -3180,7 +3180,7 @@ class AppLocalizationsEn extends AppLocalizations {
       other: '$count documents',
       one: '1 document',
     );
-    return 'Mai Doctor Hub — $_temp0';
+    return 'Ärzte — $_temp0';
   }
 
   @override
@@ -3465,7 +3465,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'No screen lock set up — please enable a PIN or biometrics in your device settings first.';
 
   @override
-  String get settingsLockLockedTitle => 'Mai Doctor Hub is locked';
+  String get settingsLockLockedTitle => 'Ärzte is locked';
 
   @override
   String get settingsLockLockedText =>
@@ -3478,7 +3478,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLockReasonSetup => 'Set up app lock';
 
   @override
-  String get settingsLockReasonUnlock => 'Unlock Mai Doctor Hub';
+  String get settingsLockReasonUnlock => 'Unlock Ärzte';
 
   @override
   String settingsArchiveSnack(String label) {
@@ -3537,7 +3537,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsOnboardingPrivacyText =>
-      'Mai Doctor Hub stores everything on this device only. No account, no server. You decide what leaves the device — backup, calendar, assistant.';
+      'The Ärzte app stores everything on this device only. No account, no server. You decide what leaves the device — backup, calendar, assistant.';
 
   @override
   String get settingsOnboardingAllInOneTitle => 'Everything in one place';
@@ -3882,7 +3882,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get svcContextSystemPrompt =>
-      'You are the assistant of the app “Mai Doctor Hub”. You help the user calmly and factually to understand their own health record. Answer in English in Markdown, at most about 180 words.\nRules:\n- Rely on the RECORD section. If something is not in it, say honestly that it is not noted in the record.\n- Copy dates, times, dosages and values exactly.\n- Do not make diagnoses and do not give therapy or dosage recommendations. Name possibilities (“could”, “often this is due to …”), never certainties.\n- If there are warning signs of an emergency: advise calling the local emergency number (112 in Europe, 911 in the US) immediately.\nFor complaints or symptoms always answer in two directions at once, 2–4 short points each:\n**Possible connections**\n- What in the record could fit: (new) medications around that time, cycle phase, sleep and mood, other symptoms, recent appointments or reports.\n- Common general causes, worded neutrally.\n**What you can do**\n- What to observe or log in the app.\n- Questions for the doctor.\n- Simple self-care.\n- When to get medical advice soon and when to call the emergency number right away.\nFor other questions (appointments, medications, reports) answer directly and concisely.\nLast line of every answer: FOLLOW-UPS: question 1 | question 2 | question 3\nShort questions from the user\'s point of view — at least one to understand, one to act.';
+      'You are the assistant of the app “Ärzte”. You help the user calmly and factually to understand their own health record. Answer in English in Markdown, at most about 180 words.\nRules:\n- Rely on the RECORD section. If something is not in it, say honestly that it is not noted in the record.\n- Copy dates, times, dosages and values exactly.\n- Do not make diagnoses and do not give therapy or dosage recommendations. Name possibilities (“could”, “often this is due to …”), never certainties.\n- If there are warning signs of an emergency: advise calling the local emergency number (112 in Europe, 911 in the US) immediately.\nFor complaints or symptoms always answer in two directions at once, 2–4 short points each:\n**Possible connections**\n- What in the record could fit: (new) medications around that time, cycle phase, sleep and mood, other symptoms, recent appointments or reports.\n- Common general causes, worded neutrally.\n**What you can do**\n- What to observe or log in the app.\n- Questions for the doctor.\n- Simple self-care.\n- When to get medical advice soon and when to call the emergency number right away.\nFor other questions (appointments, medications, reports) answer directly and concisely.\nLast line of every answer: FOLLOW-UPS: question 1 | question 2 | question 3\nShort questions from the user\'s point of view — at least one to understand, one to act.';
 
   @override
   String get svcContextRecordHeading => 'RECORD';
@@ -3994,7 +3994,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String svcSummaryPdfFooter(String date) {
-    return 'Created on $date with Mai Doctor Hub · Patient-reported, not medical documentation';
+    return 'Created on $date with the Ärzte app · Patient-reported, not medical documentation';
   }
 
   @override
@@ -4196,7 +4196,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get svcCalendarManagedBy => 'Managed by Mai Doctor Hub';
+  String get svcCalendarManagedBy => 'Managed by the Ärzte app';
 
   @override
   String get svcCalendarNoPermission => 'Calendar access not allowed';
@@ -4220,7 +4220,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String svcExportFileName(String date) {
-    return 'Mai-Doctor-Hub-Documents-$date.zip';
+    return 'Aerzte-Documents-$date.zip';
   }
 
   @override
@@ -4286,7 +4286,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get svcDiscreetCheckInTitle => 'Time for your check-in';
 
   @override
-  String get svcDiscreetBody => 'Details in Doctor Hub';
+  String get svcDiscreetBody => 'Details in the Ärzte app';
 
   @override
   String svcReminderVaccinationSoon(String vaccine) {
@@ -4488,7 +4488,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get widgetsIntro =>
-      'Next appointment, check-in and today\'s medications right on your home screen. Long-press the home screen → Widgets → Doctor Hub.';
+      'Next appointment, check-in and today\'s medications right on your home screen. Long-press the home screen → Widgets → Ärzte.';
 
   @override
   String get widgetsModeAuto => 'Automatic';

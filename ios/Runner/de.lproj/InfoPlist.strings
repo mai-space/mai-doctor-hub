@@ -1,7 +1,7 @@
 /* Systemdialoge für Berechtigungen (Deutsch). */
-"CFBundleDisplayName" = "Mai Doctor Hub";
-"NSCalendarsFullAccessUsageDescription" = "Mai Doctor Hub trägt deine Arzttermine in den gewählten Kalender ein und hält sie aktuell.";
-"NSCalendarsUsageDescription" = "Mai Doctor Hub trägt deine Arzttermine in den gewählten Kalender ein und hält sie aktuell.";
+"CFBundleDisplayName" = "Ärzte";
+"NSCalendarsFullAccessUsageDescription" = "„Ärzte“ trägt deine Arzttermine in den gewählten Kalender ein und hält sie aktuell.";
+"NSCalendarsUsageDescription" = "„Ärzte“ trägt deine Arzttermine in den gewählten Kalender ein und hält sie aktuell.";
 "NSCameraUsageDescription" = "Die Kamera wird zum Scannen von Befunden und für Fotos und Videos zu Symptomen verwendet. Die Aufnahmen bleiben verschlüsselt auf dem Gerät.";
 "NSFaceIDUsageDescription" = "Face ID entsperrt deine Gesundheitsakte.";
 "NSMicrophoneUsageDescription" = "Das Mikrofon wird für Sprachnotizen und Videos zu Symptomen verwendet. Die Aufnahmen bleiben verschlüsselt auf dem Gerät.";

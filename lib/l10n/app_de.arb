@@ -125,7 +125,7 @@
   "catalogReminderMorningBody": "Wie geht es dir heute? Symptome kurz protokollieren.",
   "catalogReminderEveningTitle": "Abend-Check-in",
   "catalogReminderEveningBody": "Abendliche Symptom-Notizen — dauert nur einen Moment.",
-  "appTitle": "Mai Doctor Hub",
+  "appTitle": "Ärzte",
   "commonCancel": "Abbrechen",
   "commonSave": "Speichern",
   "commonDelete": "Löschen",
@@ -789,7 +789,7 @@
   "cycleReportPeriod": "Periode (Tage)",
   "cycleReportStrongPain": "Tage Schmerz ≥ 7",
   "cycleReportRunning": "läuft",
-  "cycleReportFooter": "Selbst erfasst in Mai Doctor Hub. Schätzungen und Hinweise sind keine Diagnose.",
+  "cycleReportFooter": "Selbst erfasst in der App Ärzte. Schätzungen und Hinweise sind keine Diagnose.",
   "cycleStartTitle": "Zyklus-Start",
   "cycleStartIntro": "Ein paar Angaben, damit die Schätzung deiner nächsten Periode gleich beginnen kann. Alles optional.",
   "cycleStartLastQuestion": "Wann hat deine letzte Periode begonnen?",
@@ -1516,7 +1516,7 @@
       }
     }
   },
-  "mediaMicDeniedIos": "Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den iOS-Einstellungen unter „Mai Doctor Hub“ erlauben.",
+  "mediaMicDeniedIos": "Ohne Mikrofon-Berechtigung keine Sprachnotiz. Du kannst sie in den iOS-Einstellungen unter „Ärzte“ erlauben.",
   "psychTitle": "Psyche",
   "psychIntro": "Kurze, anerkannte Fragebögen zeigen, wie es dir über die Wochen geht. Das Ergebnis ist keine Diagnose – sprich mit deiner Ärztin oder deinem Arzt darüber.",
   "psychSettingsSubtitle": "Stimmung, Angst und Tagebuch – mit PHQ-9 und GAD-7 als monatlichem Fragebogen.",
@@ -1910,10 +1910,10 @@
       }
     }
   },
-  "settingsBackupShareSubject": "Mai Doctor Hub — Sicherung",
+  "settingsBackupShareSubject": "Ärzte — Sicherung",
   "settingsBackupCreated": "Sicherung erstellt — Passwort gut aufbewahren!",
   "settingsBackupPickTitle": "Sicherung wählen",
-  "settingsBackupNotABackup": "Keine Mai-Doctor-Hub-Sicherung (.maibackup).",
+  "settingsBackupNotABackup": "Keine Sicherung der App „Ärzte“ (.maibackup).",
   "settingsBackupRestoreConfirmTitle": "Sicherung wiederherstellen?",
   "settingsBackupRestoreConfirmText": "Alle aktuellen Daten und Berichte auf diesem Gerät werden durch die Sicherung ersetzt. Der Kalender-Export muss danach neu eingerichtet werden.",
   "settingsBackupReplace": "Ersetzen",
@@ -1941,7 +1941,7 @@
   "settingsDocumentsExportConfirmText": "Alle Berichte und Scans werden als ZIP mit lesbaren Dateinamen und einer Übersicht (CSV) geteilt. Das Archiv ist nicht verschlüsselt — nur an vertrauenswürdige Ziele senden.",
   "settingsDocumentsExportAction": "Exportieren",
   "settingsDocumentsExportNone": "Keine Dokumente zum Exportieren.",
-  "settingsDocumentsShareSubject": "Mai Doctor Hub — {count} Dokumente",
+  "settingsDocumentsShareSubject": "Ärzte — {count} Dokumente",
   "@settingsDocumentsShareSubject": {
     "placeholders": {
       "count": {
@@ -2085,11 +2085,11 @@
   "settingsLockTitle": "App-Sperre",
   "settingsLockSubtitle": "Beim Öffnen und nach 1 Minute im Hintergrund mit Biometrie oder Geräte-PIN entsperren. Inhalte erscheinen nicht in Screenshots oder der App-Übersicht.",
   "settingsLockNoDeviceLock": "Keine Displaysperre eingerichtet — bitte zuerst in den Geräteeinstellungen PIN oder Biometrie aktivieren.",
-  "settingsLockLockedTitle": "Mai Doctor Hub ist gesperrt",
+  "settingsLockLockedTitle": "„Ärzte“ ist gesperrt",
   "settingsLockLockedText": "Mit Fingerabdruck, Gesicht oder Geräte-PIN entsperren.",
   "settingsLockUnlock": "Entsperren",
   "settingsLockReasonSetup": "App-Sperre einrichten",
-  "settingsLockReasonUnlock": "Mai Doctor Hub entsperren",
+  "settingsLockReasonUnlock": "„Ärzte“ entsperren",
   "settingsArchiveSnack": "{label} im Archiv",
   "@settingsArchiveSnack": {
     "placeholders": {
@@ -2134,7 +2134,7 @@
   },
   "settingsOnboardingSkip": "Überspringen",
   "settingsOnboardingPrivacyTitle": "Deine Akte bleibt bei dir",
-  "settingsOnboardingPrivacyText": "Mai Doctor Hub speichert alles nur auf diesem Gerät. Kein Konto, kein Server. Was das Gerät verlässt — Sicherung, Kalender, Assistent — entscheidest du.",
+  "settingsOnboardingPrivacyText": "„Ärzte“ speichert alles nur auf diesem Gerät. Kein Konto, kein Server. Was das Gerät verlässt — Sicherung, Kalender, Assistent — entscheidest du.",
   "settingsOnboardingAllInOneTitle": "Alles an einem Ort",
   "settingsOnboardingAllInOneText": "Termine, Ärzte, Diagnosen, Symptome, Medikamente und Arztberichte — durchsuchbar und miteinander verknüpft. Für den nächsten Arztbesuch hast du alles parat.",
   "settingsOnboardingRemindersTitle": "Erinnerungen",
@@ -2371,7 +2371,7 @@
   },
   "svcAssistantNeedsAndroid11": "Der lokale Assistent braucht mindestens Android 11.",
   "svcAssistantNeedsArm64": "Der lokale Assistent braucht einen 64-Bit-ARM-Prozessor.",
-  "svcContextSystemPrompt": "Du bist der Assistent der App „Mai Doctor Hub“. Du hilfst ruhig und sachlich, die eigene Gesundheitsakte zu verstehen. Antworte auf Deutsch in Markdown, höchstens etwa 180 Wörter.\nRegeln:\n- Stütze dich auf den Abschnitt AKTE. Steht etwas nicht darin, sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen. Nenne Möglichkeiten („könnte“, „häufig steckt … dahinter“), nie Gewissheiten.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.\nBei Beschwerden oder Symptomen antworte immer in zwei Richtungen zugleich, je 2–4 kurze Punkte:\n**Mögliche Zusammenhänge**\n- Was in der Akte dazu passen könnte: zeitlich passende (neue) Medikamente, Zyklusphase, Schlaf und Stimmung, andere Symptome, letzte Termine oder Befunde.\n- Häufige allgemeine Ursachen, neutral formuliert.\n**Was du tun kannst**\n- Was du in der App beobachten oder notieren kannst.\n- Fragen an die Ärztin oder den Arzt.\n- Einfache Selbstfürsorge.\n- Wann du zeitnah ärztlichen Rat brauchst und wann sofort 112.\nBei anderen Fragen (Termine, Medikamente, Befunde) antworte direkt und knapp.\nLetzte Zeile jeder Antwort: FOLGEFRAGEN: Frage 1 | Frage 2 | Frage 3\nKurze Fragen aus Sicht des Nutzers — mindestens eine zum Verstehen, eine zum Handeln.",
+  "svcContextSystemPrompt": "Du bist der Assistent der App „Ärzte“. Du hilfst ruhig und sachlich, die eigene Gesundheitsakte zu verstehen. Antworte auf Deutsch in Markdown, höchstens etwa 180 Wörter.\nRegeln:\n- Stütze dich auf den Abschnitt AKTE. Steht etwas nicht darin, sag ehrlich, dass es in der Akte nicht vermerkt ist.\n- Übernimm Daten, Uhrzeiten, Dosierungen und Werte exakt.\n- Stelle keine Diagnosen und gib keine Therapie- oder Dosierungsempfehlungen. Nenne Möglichkeiten („könnte“, „häufig steckt … dahinter“), nie Gewissheiten.\n- Bei Warnzeichen für einen Notfall: rate, sofort 112 anzurufen.\nBei Beschwerden oder Symptomen antworte immer in zwei Richtungen zugleich, je 2–4 kurze Punkte:\n**Mögliche Zusammenhänge**\n- Was in der Akte dazu passen könnte: zeitlich passende (neue) Medikamente, Zyklusphase, Schlaf und Stimmung, andere Symptome, letzte Termine oder Befunde.\n- Häufige allgemeine Ursachen, neutral formuliert.\n**Was du tun kannst**\n- Was du in der App beobachten oder notieren kannst.\n- Fragen an die Ärztin oder den Arzt.\n- Einfache Selbstfürsorge.\n- Wann du zeitnah ärztlichen Rat brauchst und wann sofort 112.\nBei anderen Fragen (Termine, Medikamente, Befunde) antworte direkt und knapp.\nLetzte Zeile jeder Antwort: FOLGEFRAGEN: Frage 1 | Frage 2 | Frage 3\nKurze Fragen aus Sicht des Nutzers — mindestens eine zum Verstehen, eine zum Handeln.",
   "svcContextRecordHeading": "AKTE",
   "svcContextQuestionHeading": "FRAGE",
   "svcContextToday": "Heute: {date}",
@@ -2488,7 +2488,7 @@
   },
   "svcSummaryPdfDatePattern": "dd.MM.yyyy",
   "svcSummaryPdfDateTimePattern": "dd.MM. HH:mm",
-  "svcSummaryPdfFooter": "Erstellt am {date} mit Mai Doctor Hub · Angaben des Patienten, keine ärztliche Dokumentation",
+  "svcSummaryPdfFooter": "Erstellt am {date} mit der App Ärzte · Angaben des Patienten, keine ärztliche Dokumentation",
   "@svcSummaryPdfFooter": {
     "placeholders": {
       "date": {
@@ -2646,7 +2646,7 @@
       }
     }
   },
-  "svcCalendarManagedBy": "Verwaltet von Mai Doctor Hub",
+  "svcCalendarManagedBy": "Verwaltet von der App „Ärzte“",
   "svcCalendarNoPermission": "Kalenderzugriff nicht erlaubt",
   "svcCalendarNoEventId": "Keine Event-ID erhalten",
   "svcImportPickFailed": "Dateiauswahl fehlgeschlagen",
@@ -2660,7 +2660,7 @@
   },
   "svcImportFileNotSaved": "Datei konnte nicht lokal gespeichert werden.",
   "svcImportReportNotSaved": "Bericht konnte nicht gespeichert werden.",
-  "svcExportFileName": "Mai-Doctor-Hub-Dokumente-{date}.zip",
+  "svcExportFileName": "Aerzte-Dokumente-{date}.zip",
   "@svcExportFileName": {
     "placeholders": {
       "date": {
@@ -2693,7 +2693,7 @@
   "svcDiscreetAppointmentTitle": "Erinnerung an einen Termin",
   "svcDiscreetVaccinationTitle": "Eine Impfung ist bald fällig",
   "svcDiscreetCheckInTitle": "Zeit für deinen Check-in",
-  "svcDiscreetBody": "Details in Doctor Hub",
+  "svcDiscreetBody": "Details in der App „Ärzte“",
   "svcReminderVaccinationSoon": "{vaccine}: in einer Woche fällig",
   "@svcReminderVaccinationSoon": {
     "placeholders": {
@@ -2817,7 +2817,7 @@
   },
   "symptomPickerRecent": "Zuletzt verwendet",
   "widgetsTitle": "Startbildschirm-Widgets",
-  "widgetsIntro": "Nächster Termin, Check-in und Medikamente heute direkt auf dem Startbildschirm. Lange auf den Startbildschirm tippen → Widgets → Doctor Hub.",
+  "widgetsIntro": "Nächster Termin, Check-in und Medikamente heute direkt auf dem Startbildschirm. Lange auf den Startbildschirm tippen → Widgets → Ärzte.",
   "widgetsModeAuto": "Automatisch",
   "widgetsModeDiscreet": "Diskret",
   "widgetsModeDetailed": "Details",
