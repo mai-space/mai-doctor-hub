@@ -27,7 +27,7 @@ class WatchStore(context: Context) {
     /** Neuer Snapshot vom Telefon. Eingaben, die er schon enthält (oder die
      *  zu alt sind), verlassen den Ausgang; die übrigen werden weiter
      *  gesendet. */
-    fun save(snapshot: String) = synchronized(lock) {
+    fun save(snapshot: String): Unit = synchronized(lock) {
         val data = WatchData.parse(snapshot) ?: return
         val now = System.currentTimeMillis()
         val remaining = readOutbox().filterNot { arrived(it, data, now) }
@@ -35,7 +35,7 @@ class WatchStore(context: Context) {
             .putString(KEY_SNAPSHOT, snapshot)
             .putLong(KEY_RECEIVED_AT, now)
             .putString(KEY_OUTBOX, JSONArray(remaining).toString())
-            .commit()
+            .apply()
     }
 
     private fun arrived(action: JSONObject, data: WatchData, now: Long): Boolean {
