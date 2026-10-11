@@ -84,4 +84,6 @@ dependencies {
     // Erledigte Download-Aufträge (mit Hugging-Face-Token) aus der
     // WorkManager-Datenbank entfernen; Version wie background_downloader.
     implementation("androidx.work:work-runtime-ktx:2.11.0")
+    // Uhr-App (Wear OS): Snapshot per Nachricht an gekoppelte Uhren.
+    implementation("com.google.android.gms:play-services-wearable:19.0.0")
 }

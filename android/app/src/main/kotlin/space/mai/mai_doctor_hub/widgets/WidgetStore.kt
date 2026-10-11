@@ -31,6 +31,43 @@ class WidgetStore(context: Context) {
             .commit()
     }
 
+    /**
+     * Snapshot für die Uhr (gleiches Format wie für die Widgets), mit den
+     * noch nicht übernommenen Eingaben schon eingetragen; `null` = keiner.
+     */
+    fun watchJson(): String? = synchronized(lock) {
+        val raw = prefs.getString(KEY_SNAPSHOT, null) ?: return null
+        try {
+            val json = JSONObject(raw)
+            val doses = json.optJSONArray("doses")
+            for (action in actions()) {
+                when (action.text("type")) {
+                    TYPE_INTAKE -> {
+                        val med = action.text("med") ?: continue
+                        val at = action.long("at") ?: continue
+                        for (i in 0 until (doses?.length() ?: 0)) {
+                            val dose = doses?.optJSONObject(i) ?: continue
+                            if (dose.text("med") == med && dose.long("at") == at && dose.text("status") == null) {
+                                dose.put("status", "taken")
+                            }
+                        }
+                    }
+                    TYPE_CHECK_IN -> {
+                        val checkIn = json.optJSONObject("checkIn") ?: continue
+                        val ts = action.long("ts") ?: continue
+                        if (action.text("symptom") != checkIn.text("symptom")) continue
+                        val last = checkIn.long("lastAt")
+                        if (last != null && last > ts) continue
+                        checkIn.put("lastAt", ts).put("lastValue", action.optInt("value"))
+                    }
+                }
+            }
+            json.toString()
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     /** Warteschlange als JSON-Liste (für die App). */
     fun pendingJson(): String = synchronized(lock) {
         JSONArray(actions()).toString()

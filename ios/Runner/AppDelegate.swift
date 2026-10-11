@@ -16,6 +16,9 @@ import UserNotifications
     // zeigen und Antippen an Dart weiterreichen.
     UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
     AppDelegate.excludeDataFromBackup()
+    // Uhr-App: Eingaben an der Uhr auch empfangen, wenn die App nur im
+    // Hintergrund geweckt wird.
+    WatchSync.shared.activate()
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 

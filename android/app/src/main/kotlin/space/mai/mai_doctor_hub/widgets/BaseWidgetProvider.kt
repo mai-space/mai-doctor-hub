@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.SizeF
 import android.widget.RemoteViews
 import space.mai.mai_doctor_hub.R
+import space.mai.mai_doctor_hub.watch.WatchSync
 
 /**
  * Gemeinsame Grundlage der Widgets: responsive Layouts je Größe.
@@ -81,12 +82,14 @@ abstract class BaseWidgetProvider : AppWidgetProvider() {
     }
 }
 
-/** Zeichnet alle Widgets neu (nach neuem Snapshot oder Eingabe). */
+/** Zeichnet alle Widgets neu (nach neuem Snapshot oder Eingabe) und
+ *  schickt den Stand an die Uhr-App, falls eine verbunden ist. */
 object WidgetUpdater {
     fun updateAll(context: Context) {
         val manager = AppWidgetManager.getInstance(context)
         val data = WidgetStore(context).load()
         listOf(AppointmentWidget(), CheckInWidget(), MedicationsWidget())
             .forEach { it.renderAll(context, manager, data) }
+        WatchSync.push(context)
     }
 }

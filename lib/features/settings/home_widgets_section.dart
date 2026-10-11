@@ -4,10 +4,12 @@ import '../../data/app_database.dart';
 import '../../data/database_provider.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../l10n/l10n.dart';
+import '../../services/device_platform.dart';
 import '../../services/home_widgets/widget_snapshot.dart';
 
-/// v19: Einstellungen → Startbildschirm-Widgets (nur Android): diskret,
-/// mit Details oder automatisch (diskret, solange die App-Sperre an ist).
+/// v19: Einstellungen → Startbildschirm-Widgets: diskret, mit Details oder
+/// automatisch (diskret, solange die App-Sperre an ist). Gilt auch für die
+/// Uhr-Apps (Wear OS, Apple Watch); unter iOS gibt es nur die Uhr.
 class HomeWidgetsSection extends StatelessWidget {
   const HomeWidgetsSection({super.key, required this.settings});
 
@@ -29,13 +31,20 @@ class HomeWidgetsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          l10n.widgetsTitle,
+          DevicePlatform.isIOS ? l10n.widgetsWatchTitle : l10n.widgetsTitle,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 4),
-        Text(l10n.widgetsIntro, style: theme.textTheme.bodySmall),
+        Text(
+          DevicePlatform.isIOS ? l10n.widgetsWatchIntro : l10n.widgetsIntro,
+          style: theme.textTheme.bodySmall,
+        ),
+        if (DevicePlatform.isAndroid) ...[
+          const SizedBox(height: 4),
+          Text(l10n.widgetsWatchHint, style: theme.textTheme.bodySmall),
+        ],
         const SizedBox(height: 12),
         // Enum statt bool?: SegmentedButton braucht eindeutige Werte.
         SegmentedButton<_Mode>(

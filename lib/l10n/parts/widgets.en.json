@@ -7,5 +7,8 @@
   "widgetsAutoDiscreet": "Currently discreet because the app lock is on.",
   "widgetsAutoDetailed": "Currently showing details. Discreet automatically with the app lock.",
   "widgetsDiscreetText": "Only times and counts – no names of doctors, medications or symptoms.",
-  "widgetsDetailedText": "Shows doctor, appointment title, medications and symptom – visible to anyone who sees your home screen."
+  "widgetsDetailedText": "Shows doctor, appointment title, medications and symptom – visible to anyone who sees your home screen.",
+  "widgetsWatchTitle": "Apple Watch",
+  "widgetsWatchIntro": "Next appointment, today's medications and check-in on your Apple Watch: as a complication on the watch face and in the Ärzte watch app. Data only goes directly to your paired watch.",
+  "widgetsWatchHint": "Also applies to the tiles and complications of the Ärzte watch app on your Wear OS watch. Data only goes to paired watches that have the watch app installed."
 }

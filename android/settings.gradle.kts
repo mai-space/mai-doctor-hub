@@ -26,3 +26,6 @@ plugins {
 }
 
 include(":app")
+// Uhr-App (Wear OS): eigenständiges APK, gleiche Paket-ID und Signatur wie
+// die Telefon-App (Voraussetzung für den Abgleich über Google Play-Dienste).
+include(":wear")

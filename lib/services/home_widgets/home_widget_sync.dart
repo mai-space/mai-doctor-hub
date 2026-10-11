@@ -25,7 +25,7 @@ abstract interface class HomeWidgetBridge {
   set onOpen(void Function(String link)? handler);
 }
 
-/// Android: Kanal `mai/home_widgets` (`HomeWidgetChannel.kt`).
+/// Kanal `mai/home_widgets` (`HomeWidgetChannel.kt` bzw. `.swift`).
 class MethodChannelHomeWidgetBridge implements HomeWidgetBridge {
   MethodChannelHomeWidgetBridge() {
     _channel.setMethodCallHandler((call) async {
@@ -69,8 +69,9 @@ class HomeWidgetSync with WidgetsBindingObserver {
   }) : _bridge = bridge ?? MethodChannelHomeWidgetBridge(),
        _clock = clock ?? DateTime.now;
 
-  /// Widgets gibt es (bisher) nur auf Android.
-  static bool get isSupported => DevicePlatform.isAndroid;
+  /// Android: Startbildschirm-Widgets und Wear-OS-Uhr; iOS: Apple Watch
+  /// (gleicher Kanal, gleicher Snapshot).
+  static bool get isSupported => DevicePlatform.isMobile;
 
   final AppDatabase _db;
   final HomeWidgetBridge _bridge;

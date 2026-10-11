@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tile_appointment_name">Nächster Termin</string>
+    <string name="tile_meds_name">Medikamente heute</string>
+    <string name="tile_checkin_name">Check-in</string>
+
+    <string name="watch_open_phone">Öffne die App „Ärzte“ einmal am Telefon, um das zu laden</string>
+    <string name="watch_waiting">Warte auf das Telefon …</string>
+    <string name="watch_queued">Wird eingetragen, sobald du die App am Telefon öffnest</string>
+    <string name="watch_today">Heute</string>
+    <string name="watch_tomorrow">Morgen</string>
+    <string name="watch_running">Jetzt</string>
+    <string name="watch_soon">Gleich</string>
+    <plurals name="watch_in_hours">
+        <item quantity="one">in %d Std.</item>
+        <item quantity="other">in %d Std.</item>
+    </plurals>
+    <plurals name="watch_in_days">
+        <item quantity="one">in %d Tag</item>
+        <item quantity="other">in %d Tagen</item>
+    </plurals>
+    <string name="watch_date_time">%1$s · %2$s</string>
+
+    <string name="watch_appointment_generic">Arzttermin</string>
+    <string name="watch_no_appointments">Keine Termine geplant</string>
+
+    <string name="watch_meds_none">Heute keine Einnahmen geplant</string>
+    <string name="watch_meds_stale">Öffne die App „Ärzte“ am Telefon, um den Plan zu aktualisieren</string>
+    <string name="watch_meds_count">%1$d/%2$d</string>
+    <string name="watch_meds_taken_of">%1$d von %2$d genommen</string>
+    <string name="watch_meds_next">nächste %s</string>
+    <string name="watch_meds_all_done">Alles erledigt</string>
+    <string name="watch_dose_generic">Einnahme</string>
+    <string name="watch_dose_open">Fällig</string>
+    <string name="watch_dose_taken">Genommen</string>
+    <string name="watch_dose_skipped">Ausgelassen</string>
+    <string name="watch_dose_mark">%s als genommen markieren</string>
+    <string name="watch_dose_button">Genommen</string>
+
+    <string name="watch_checkin_question">Wie geht es dir heute?</string>
+    <string name="watch_checkin_none">Keine offenen Symptome</string>
+    <string name="watch_checkin_today_value">Heute %d/10</string>
+    <string name="watch_checkin_today_done">Heute ✓</string>
+    <string name="watch_checkin_pending">Heute offen</string>
+    <string name="watch_checkin_hint">0 = keine · 10 = am stärksten</string>
+    <string name="watch_checkin_rate">Stärke %d von 10 eintragen</string>
+    <string name="watch_checkin_on_phone">Diesen Check-in bitte in der App am Telefon machen</string>
+</resources>
