@@ -5,7 +5,7 @@
   Lokale KI (Gemma, ~2,5 GB): mehr Arbeitsspeicher, sonst beendet iOS die App
   beim Laden des Modells. Erinnerungen an Medikamente dürfen Fokus-Modi
   durchbrechen („Dringende Mitteilungen“). Beide Fähigkeiten müssen in der
-  App-ID aktiviert sein (siehe docs/RELEASE.md).
+  App-ID aktiviert sein (siehe project-docs/RELEASE.md).
 -->
 <dict>
 	<key>com.apple.developer.kernel.increased-memory-limit</key>

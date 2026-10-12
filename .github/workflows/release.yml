@@ -2,7 +2,7 @@
 # Auslöser: Tag vX.Y.Z (z. B. `git tag v1.2.0 && git push origin v1.2.0`).
 # Signatur und Play-Zugang kommen ausschließlich aus GitHub-Secrets;
 # key.properties und Keystore entstehen nur zur Laufzeit im Runner.
-# Anleitung: docs/RELEASE.md
+# Anleitung: project-docs/RELEASE.md
 name: Release
 
 on:
@@ -73,7 +73,7 @@ jobs:
           [ -n "$KEY_PASSWORD" ] || missing="$missing ANDROID_KEY_PASSWORD"
           [ -n "$PLAY_JSON" ] || missing="$missing PLAY_SERVICE_ACCOUNT_JSON"
           if [ -n "$missing" ]; then
-            echo "::error::Missing secrets:$missing — see docs/RELEASE.md"
+            echo "::error::Missing secrets:$missing — see project-docs/RELEASE.md"
             exit 1
           fi
 
