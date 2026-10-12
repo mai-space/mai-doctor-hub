@@ -32,5 +32,28 @@
   "@assistantOpenLinkBody": {
     "placeholders": {"url": {"type": "String"}}
   },
-  "assistantOpenLink": "Open"
+  "assistantOpenLink": "Open",
+  "assistantAiLabel": "AI-generated",
+  "assistantReport": "Report",
+  "assistantReportTooltip": "Report this answer as wrong, harmful or inappropriate",
+  "assistantReported": "Reported",
+  "assistantReportTitle": "Report answer",
+  "assistantReportIntro": "What is wrong with this AI answer?",
+  "assistantReportReasonWrong": "Wrong or misleading",
+  "assistantReportReasonHarmful": "Harmful or dangerous",
+  "assistantReportReasonInappropriate": "Inappropriate or offensive",
+  "assistantReportReasonOther": "Something else",
+  "assistantReportComment": "Comment (optional)",
+  "assistantReportIncludeAnswer": "Include the answer text",
+  "assistantReportIncludeAnswerHint": "May contain details from your record. Your question and the record itself are never included.",
+  "assistantReportPrivacy": "The app sends nothing by itself. An email draft to {address} opens, which you can review and send yourself.",
+  "@assistantReportPrivacy": {"placeholders": {"address": {"type": "String"}}},
+  "assistantReportSend": "Prepare email",
+  "assistantReportNoMailApp": "No email app found. The text has been copied; feel free to send it to {address}.",
+  "@assistantReportNoMailApp": {"placeholders": {"address": {"type": "String"}}},
+  "assistantReportMailSubject": "Report: AI answer in Ärzte",
+  "assistantReportMailReason": "Reason",
+  "assistantReportMailComment": "Comment",
+  "assistantReportMailAnswer": "AI answer",
+  "assistantReportMailModel": "Model"
 }

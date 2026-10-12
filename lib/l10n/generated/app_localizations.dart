@@ -194,6 +194,132 @@ abstract class AppLocalizations {
   /// **'Öffnen'**
   String get assistantOpenLink;
 
+  /// No description provided for @assistantAiLabel.
+  ///
+  /// In de, this message translates to:
+  /// **'KI-generiert'**
+  String get assistantAiLabel;
+
+  /// No description provided for @assistantReport.
+  ///
+  /// In de, this message translates to:
+  /// **'Melden'**
+  String get assistantReport;
+
+  /// No description provided for @assistantReportTooltip.
+  ///
+  /// In de, this message translates to:
+  /// **'Antwort als falsch, schädlich oder unangemessen melden'**
+  String get assistantReportTooltip;
+
+  /// No description provided for @assistantReported.
+  ///
+  /// In de, this message translates to:
+  /// **'Gemeldet'**
+  String get assistantReported;
+
+  /// No description provided for @assistantReportTitle.
+  ///
+  /// In de, this message translates to:
+  /// **'Antwort melden'**
+  String get assistantReportTitle;
+
+  /// No description provided for @assistantReportIntro.
+  ///
+  /// In de, this message translates to:
+  /// **'Was stimmt mit dieser KI-Antwort nicht?'**
+  String get assistantReportIntro;
+
+  /// No description provided for @assistantReportReasonWrong.
+  ///
+  /// In de, this message translates to:
+  /// **'Falsch oder irreführend'**
+  String get assistantReportReasonWrong;
+
+  /// No description provided for @assistantReportReasonHarmful.
+  ///
+  /// In de, this message translates to:
+  /// **'Schädlich oder gefährlich'**
+  String get assistantReportReasonHarmful;
+
+  /// No description provided for @assistantReportReasonInappropriate.
+  ///
+  /// In de, this message translates to:
+  /// **'Unangemessen oder anstößig'**
+  String get assistantReportReasonInappropriate;
+
+  /// No description provided for @assistantReportReasonOther.
+  ///
+  /// In de, this message translates to:
+  /// **'Etwas anderes'**
+  String get assistantReportReasonOther;
+
+  /// No description provided for @assistantReportComment.
+  ///
+  /// In de, this message translates to:
+  /// **'Kommentar (optional)'**
+  String get assistantReportComment;
+
+  /// No description provided for @assistantReportIncludeAnswer.
+  ///
+  /// In de, this message translates to:
+  /// **'Antworttext mitschicken'**
+  String get assistantReportIncludeAnswer;
+
+  /// No description provided for @assistantReportIncludeAnswerHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Kann Angaben aus deiner Akte enthalten. Deine Frage und die Akte selbst gehen nie mit.'**
+  String get assistantReportIncludeAnswerHint;
+
+  /// No description provided for @assistantReportPrivacy.
+  ///
+  /// In de, this message translates to:
+  /// **'Die App sendet nichts selbst. Es öffnet sich ein E-Mail-Entwurf an {address}, den du prüfen und selbst abschicken kannst.'**
+  String assistantReportPrivacy(String address);
+
+  /// No description provided for @assistantReportSend.
+  ///
+  /// In de, this message translates to:
+  /// **'E-Mail vorbereiten'**
+  String get assistantReportSend;
+
+  /// No description provided for @assistantReportNoMailApp.
+  ///
+  /// In de, this message translates to:
+  /// **'Keine Mail-App gefunden. Der Text ist kopiert; schick ihn gern an {address}.'**
+  String assistantReportNoMailApp(String address);
+
+  /// No description provided for @assistantReportMailSubject.
+  ///
+  /// In de, this message translates to:
+  /// **'Meldung: KI-Antwort in Ärzte'**
+  String get assistantReportMailSubject;
+
+  /// No description provided for @assistantReportMailReason.
+  ///
+  /// In de, this message translates to:
+  /// **'Grund'**
+  String get assistantReportMailReason;
+
+  /// No description provided for @assistantReportMailComment.
+  ///
+  /// In de, this message translates to:
+  /// **'Kommentar'**
+  String get assistantReportMailComment;
+
+  /// No description provided for @assistantReportMailAnswer.
+  ///
+  /// In de, this message translates to:
+  /// **'KI-Antwort'**
+  String get assistantReportMailAnswer;
+
+  /// No description provided for @assistantReportMailModel.
+  ///
+  /// In de, this message translates to:
+  /// **'Modell'**
+  String get assistantReportMailModel;
+
   /// No description provided for @calendarViewList.
   ///
   /// In de, this message translates to:

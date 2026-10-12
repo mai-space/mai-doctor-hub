@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mai_doctor_hub/data/app_database.dart';
@@ -9,6 +10,7 @@ import 'package:mai_doctor_hub/data/database_provider.dart';
 import 'package:mai_doctor_hub/data/repositories/records_repository.dart';
 import 'package:mai_doctor_hub/data/repositories/symptom_repository.dart';
 import 'package:mai_doctor_hub/features/assistant/assistant_page.dart';
+import 'package:mai_doctor_hub/services/assistant/answer_report.dart';
 import 'package:mai_doctor_hub/services/assistant/assistant_engine.dart';
 import 'package:mai_doctor_hub/services/assistant/assistant_model.dart';
 import 'package:mai_doctor_hub/services/assistant/record_embedder.dart';
@@ -376,5 +378,111 @@ void main() {
     expect(engine.prompts, hasLength(3));
     expect(engine.prompts[2], contains('Magnesium'));
     expect(engine.prompts[2].length, lessThanOrEqualTo(6000 + 200));
+  });
+
+  group('report an answer', () {
+    late List<Uri> launched;
+    late bool mailAppAvailable;
+    final originalLauncher = AnswerReport.launcher;
+
+    setUp(() {
+      launched = [];
+      mailAppAvailable = true;
+      AnswerReport.launcher = (uri) async {
+        launched.add(uri);
+        return mailAppAvailable;
+      };
+    });
+    tearDown(() => AnswerReport.launcher = originalLauncher);
+
+    Future<void> askOnce(WidgetTester tester) async {
+      engine.installed = true;
+      await pump(tester);
+      await tester.tap(find.text('Wann ist mein nächster Termin?'));
+      await settle(tester);
+    }
+
+    testWidgets('every answer is labeled and can be reported', (tester) async {
+      await askOnce(tester);
+      expect(find.text('KI-generiert'), findsOneWidget);
+
+      await tester.tap(find.text('Melden'));
+      await settle(tester);
+      expect(find.text('Antwort melden'), findsOneWidget);
+      // Ohne Grund geht es nicht weiter.
+      final send = find.widgetWithText(FilledButton, 'E-Mail vorbereiten');
+      expect(tester.widget<FilledButton>(send).onPressed, isNull);
+
+      await tester.tap(find.text('Schädlich oder gefährlich'));
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Kommentar (optional)'),
+        'Falsches Datum',
+      );
+      await settle(tester);
+      await tester.tap(send);
+      await settle(tester);
+
+      expect(launched, hasLength(1));
+      final uri = launched.single;
+      expect(uri.scheme, 'mailto');
+      expect(uri.path, 'joel@maispace.de');
+      expect(uri.toString(), isNot(contains('+')));
+      final body = uri.queryParameters['body']!;
+      expect(body, contains('Grund: Schädlich oder gefährlich'));
+      expect(body, contains('Falsches Datum'));
+      expect(body, contains('Testmodell'));
+      // Antwort nur auf Wunsch, Frage nie.
+      expect(body, isNot(contains('20.10.')));
+      expect(body, isNot(contains('nächster Termin')));
+      expect(find.text('Gemeldet'), findsOneWidget);
+      expect(find.text('Melden'), findsNothing);
+    });
+
+    testWidgets('answer text only when ticked; clipboard without mail app', (
+      tester,
+    ) async {
+      final clipboard = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.setData') {
+            clipboard.add((call.arguments as Map)['text'] as String);
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+      mailAppAvailable = false;
+      await askOnce(tester);
+      await tester.tap(find.text('Melden'));
+      await settle(tester);
+      await tester.tap(find.text('Falsch oder irreführend'));
+      await tester.tap(find.text('Antworttext mitschicken'));
+      await settle(tester);
+      await tester.tap(find.text('E-Mail vorbereiten'));
+      await settle(tester);
+
+      final body = launched.single.queryParameters['body']!;
+      expect(body, contains('KI-Antwort:\nDein nächster Termin ist am 20.10.'));
+      expect(body, isNot(contains('Wann ist mein')));
+      expect(clipboard.single, body);
+      expect(find.textContaining('Keine Mail-App gefunden'), findsOneWidget);
+      expect(find.text('Gemeldet'), findsOneWidget);
+    });
+
+    testWidgets('cancel reports nothing', (tester) async {
+      await askOnce(tester);
+      await tester.tap(find.text('Melden'));
+      await settle(tester);
+      await tester.tap(find.text('Abbrechen'));
+      await settle(tester);
+      expect(launched, isEmpty);
+      expect(find.text('Melden'), findsOneWidget);
+    });
   });
 }

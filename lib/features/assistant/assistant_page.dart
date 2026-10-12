@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/database_provider.dart';
 import '../../l10n/l10n.dart';
+import '../../services/assistant/answer_report.dart';
 import '../../services/assistant/assistant_model.dart';
 import '../../services/assistant/follow_ups.dart';
 import '../../services/assistant/record_context.dart';
@@ -36,6 +37,9 @@ class _Turn {
 
   /// Vorschläge unter der fertigen Antwort.
   List<FollowUp> followUps = const [];
+
+  /// In dieser Sitzung gemeldet (der Verlauf wird nicht gespeichert).
+  bool reported = false;
 
   /// Sichtbarer Antworttext ohne die Zeile mit den Folgefragen.
   String get visibleAnswer =>
@@ -213,6 +217,41 @@ class _AssistantPageState extends State<AssistantPage> {
     }
   }
 
+  /// Meldung einer Antwort: Dialog, dann E-Mail-Entwurf in der Mail-App.
+  /// Ohne Mail-App landet der Text in der Zwischenablage.
+  Future<void> _report(_Turn turn) async {
+    final l10n = context.l10n;
+    final messenger = ScaffoldMessenger.of(context);
+    final report = await showDialog<AnswerReport>(
+      context: context,
+      builder: (context) => _ReportDialog(
+        answer: turn.visibleAnswer,
+        modelName: _model.engine.modelName,
+      ),
+    );
+    if (report == null || !mounted) return;
+    final uri = report.mailto(
+      subject: l10n.assistantReportMailSubject,
+      reasonLabel: _reasonLabel(l10n, report.reason),
+      reasonHeading: l10n.assistantReportMailReason,
+      commentHeading: l10n.assistantReportMailComment,
+      answerHeading: l10n.assistantReportMailAnswer,
+      modelHeading: l10n.assistantReportMailModel,
+    );
+    final opened = await AnswerReport.launcher(uri);
+    if (!opened) {
+      await Clipboard.setData(
+        ClipboardData(text: uri.queryParameters['body'] ?? ''),
+      );
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(l10n.assistantReportNoMailApp(AnswerReport.address)),
+        ),
+      );
+    }
+    if (mounted) setState(() => turn.reported = true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -297,6 +336,7 @@ class _AssistantPageState extends State<AssistantPage> {
                   itemBuilder: (context, i) => _TurnView(
                     turn: _turns[i],
                     onAsk: _busy ? null : _ask,
+                    onReport: () => _report(_turns[i]),
                   ),
                 ),
         ),
@@ -341,12 +381,15 @@ class _AssistantPageState extends State<AssistantPage> {
 }
 
 class _TurnView extends StatelessWidget {
-  const _TurnView({required this.turn, this.onAsk});
+  const _TurnView({required this.turn, this.onAsk, this.onReport});
 
   final _Turn turn;
 
   /// Stellt eine Folgefrage; `null`, solange eine Antwort läuft.
   final ValueChanged<String>? onAsk;
+
+  /// Meldet die fertige Antwort.
+  final VoidCallback? onReport;
 
   @override
   Widget build(BuildContext context) {
@@ -398,10 +441,181 @@ class _TurnView extends StatelessWidget {
                   )
                 : _AnswerMarkdown(answer),
           ),
+          if (turn.error == null && answer.isNotEmpty)
+            _AiFooter(
+              reported: turn.reported,
+              onReport: turn.done ? onReport : null,
+            ),
           if (turn.done && turn.error == null && answer.isNotEmpty)
             _FollowUpChips(followUps: turn.followUps, onAsk: onAsk),
         ],
       ),
+    );
+  }
+}
+
+String _reasonLabel(AppLocalizations l10n, ReportReason reason) =>
+    switch (reason) {
+      ReportReason.wrong => l10n.assistantReportReasonWrong,
+      ReportReason.harmful => l10n.assistantReportReasonHarmful,
+      ReportReason.inappropriate => l10n.assistantReportReasonInappropriate,
+      ReportReason.other => l10n.assistantReportReasonOther,
+    };
+
+/// Kennzeichnung „KI-generiert“ unter jeder Antwort und der Melden-Knopf.
+class _AiFooter extends StatelessWidget {
+  const _AiFooter({required this.reported, this.onReport});
+
+  final bool reported;
+
+  /// `null`, solange die Antwort noch entsteht.
+  final VoidCallback? onReport;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final muted = theme.textTheme.labelSmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    return Padding(
+      padding: const EdgeInsets.only(left: 6, top: 2),
+      child: Row(
+        children: [
+          Icon(
+            Icons.auto_awesome_outlined,
+            size: 14,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 4),
+          Text(l10n.assistantAiLabel, style: muted),
+          const Spacer(),
+          if (reported)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(Icons.flag, size: 16, color: theme.colorScheme.error),
+                  const SizedBox(width: 4),
+                  Text(l10n.assistantReported, style: muted),
+                ],
+              ),
+            )
+          else
+            Tooltip(
+              message: l10n.assistantReportTooltip,
+              child: TextButton.icon(
+                style: TextButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                ),
+                onPressed: onReport,
+                icon: const Icon(Icons.flag_outlined, size: 18),
+                label: Text(l10n.assistantReport),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Dialog zum Melden: Grund, optionaler Kommentar, Antworttext nur auf
+/// Wunsch. Liefert die fertige [AnswerReport] oder `null`.
+class _ReportDialog extends StatefulWidget {
+  const _ReportDialog({required this.answer, this.modelName});
+
+  final String answer;
+  final String? modelName;
+
+  @override
+  State<_ReportDialog> createState() => _ReportDialogState();
+}
+
+class _ReportDialogState extends State<_ReportDialog> {
+  final _comment = TextEditingController();
+  ReportReason? _reason;
+  bool _includeAnswer = false;
+
+  @override
+  void dispose() {
+    _comment.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    return AlertDialog(
+      title: Text(l10n.assistantReportTitle),
+      scrollable: true,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(l10n.assistantReportIntro),
+          const SizedBox(height: 8),
+          RadioGroup<ReportReason>(
+            groupValue: _reason,
+            onChanged: (value) => setState(() => _reason = value),
+            child: Column(
+              children: [
+                for (final reason in ReportReason.values)
+                  RadioListTile<ReportReason>(
+                    value: reason,
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    title: Text(_reasonLabel(l10n, reason)),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _comment,
+            minLines: 1,
+            maxLines: 4,
+            maxLength: 1000,
+            decoration: InputDecoration(labelText: l10n.assistantReportComment),
+          ),
+          CheckboxListTile(
+            value: _includeAnswer,
+            onChanged: (value) =>
+                setState(() => _includeAnswer = value ?? false),
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+            title: Text(l10n.assistantReportIncludeAnswer),
+            subtitle: Text(l10n.assistantReportIncludeAnswerHint),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.assistantReportPrivacy(AnswerReport.address),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.commonCancel),
+        ),
+        FilledButton(
+          onPressed: _reason == null
+              ? null
+              : () => Navigator.pop(
+                  context,
+                  AnswerReport(
+                    reason: _reason!,
+                    comment: _comment.text,
+                    answer: _includeAnswer ? widget.answer : null,
+                    modelName: widget.modelName,
+                  ),
+                ),
+          child: Text(l10n.assistantReportSend),
+        ),
+      ],
     );
   }
 }
