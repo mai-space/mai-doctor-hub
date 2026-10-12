@@ -85,6 +85,37 @@ Optional **variables** (not secret):
 
 Delete the local `.b64` file after saving the secret.
 
+### 5. Signed bundle on every push to `main` (optional)
+
+The CI workflow (`ci.yml`, job *Signed app bundle (main)*) also builds a
+signed AAB on every push to `main` — handy for the very first manual upload
+in the Play Console. It needs only the four `ANDROID_*` signing secrets, and
+they must be **repository secrets** (*Settings → Secrets and variables →
+Actions → New repository secret*): environment secrets of `play-store` are
+not visible to the CI workflow. The release workflow reads repository
+secrets too, so one set is enough.
+
+- Secrets missing → the job only notes this in the run summary and stays
+  green; everything else runs as before.
+- Secrets present → artifact `mai-doctor-hub-signed-aab` (phone and Wear OS
+  bundle, kept 30 days), checked to carry the upload key, not the debug key.
+- versionCode is the CI run number, so tag releases (`v1.0.0` →
+  `1000000`) always install over it.
+
+Locally the same works with `android/key.properties` (git-ignored):
+
+```properties
+storeFile=/absolute/path/to/upload-keystore.jks
+storePassword=…
+keyAlias=upload
+keyPassword=…
+```
+
+```sh
+flutter build appbundle --release
+# → build/app/outputs/bundle/release/app-release.aab
+```
+
 ## Wear OS watch app
 
 The watch app lives in the Gradle module `android/wear` (tiles, complications,

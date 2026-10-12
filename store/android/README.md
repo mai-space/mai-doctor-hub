@@ -25,8 +25,9 @@ Kalender · Diagnose · Einstellungen (Kalender-Export und App-Sperre).
 - **Kategorie:** Medizin (alternativ Gesundheit & Fitness)
 - **E-Mail-Adresse:** joel@maispace.de
 - **Entwickler:** maispace (Joël Maximilian Mai)
-- **Datenschutzerklärung:** wird in einem eigenen Schritt erstellt; die URL
-  hier eintragen, sobald sie online ist.
+- **Datenschutzerklärung:** liegt unter `docs/datenschutz/` (GitHub Pages);
+  bei aktivierten Pages ist die URL
+  `https://mai-space.github.io/mai-doctor-hub/datenschutz/`.
 - **Datensicherheit (Vorschlag, bitte selbst prüfen):** Es werden keine Daten
   erhoben oder an Dritte weitergegeben – alles bleibt auf dem Gerät. Daten
   verlassen das Gerät nur durch bewusste Aktionen der Nutzerin bzw. des
