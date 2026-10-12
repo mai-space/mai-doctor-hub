@@ -1,0 +1,51 @@
+Ärzte is your personal health record on your phone: doctor appointments, symptoms, medications, vaccinations and reports in one place – clear, in English and German, and without your data ever leaving your device.
+
+PRIVATE BY DESIGN
+• No account, no sign-up, no server: everything stays on your phone.
+• The database and attached files are encrypted; the key is protected by the Android Keystore.
+• No ads, no tracking, no analytics.
+• No Android cloud backup – you make backups yourself, as an encrypted file protected by your password.
+• Optional app lock with biometrics or device PIN. Content is then hidden from screenshots and the app switcher.
+
+APPOINTMENTS AT A GLANCE
+• Timeline of upcoming and past appointments, plus a calendar with day, week, month and year views.
+• Reminders before each appointment – local on the device, no push server.
+• Optional one-way export to your device calendar. Only "Doctor appointment", the doctor and the location are shared – no diagnoses or notes.
+
+SYMPTOMS AND HISTORY
+• Track symptoms with an intensity of 0–10 or measurements such as temperature, pulse or blood pressure.
+• Quick morning and evening check-ins, optionally with sleep, energy and a journal.
+• History charts show how symptoms change over days and weeks.
+• Photos, videos and voice notes as evidence right on the symptom.
+
+MEDICATIONS AND VACCINATIONS
+• Medications with dose and schedule, intake reminders and one-tap check-off.
+• Vaccinations with date, batch and next booster.
+
+REPORTS AND DOCUMENTS
+• Attach PDFs and photos of reports or scan paper with the camera.
+• Text recognition runs on the device, so you can find reports with full-text search.
+• Diagnoses link appointments, symptoms, medications, notes and reports.
+
+READY FOR YOUR DOCTOR VISIT
+• Questions, symptom history, medications and vaccinations at a glance – as a PDF to show or share.
+
+WIDGETS AND WATCH
+• Home screen widgets for next appointment, check-in and today's medications – freely resizable.
+• Tiles and complications for Wear OS.
+• Discreet mode shows only times and counts, no names – automatically on while the app lock is active.
+
+CYCLE AND MENTAL HEALTH (OPTIONAL)
+• Log your cycle, bleeding, symptoms and menopause.
+• Mood, anxiety and journal, with the PHQ-9 and GAD-7 questionnaires as a monthly history.
+
+ASK YOUR RECORDS (OPTIONAL)
+• An AI assistant answers questions about your own entries. The model runs entirely on your phone; only the one-time model download (about 2.6 GB) needs internet. Your questions and records never leave the device.
+• Answers may contain mistakes and do not replace talking to a doctor.
+
+MOVE AND EXPORT
+• Encrypted backup of all data and files, for example when you get a new phone.
+• Export all reports and scans as a ZIP with an overview.
+
+IMPORTANT
+Ärzte is a tool for organising and documenting. The app does not diagnose, does not give medical advice and does not replace professional medical care. If you feel unwell or in an emergency, contact a doctor or call your local emergency number.
