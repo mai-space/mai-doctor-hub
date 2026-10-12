@@ -1,0 +1,51 @@
+Ärzte ist deine persönliche Gesundheitsakte für das Handy: Arzttermine, Symptome, Medikamente, Impfungen und Befunde an einem Ort – übersichtlich, auf Deutsch und Englisch, und ohne dass deine Daten dein Gerät verlassen.
+
+PRIVAT VON ANFANG AN
+• Kein Konto, keine Anmeldung, kein Server: Alles bleibt auf deinem Handy.
+• Die Datenbank und angehängte Dateien sind verschlüsselt; der Schlüssel liegt geschützt im Android-Keystore.
+• Keine Werbung, kein Tracking, keine Analyse-Dienste.
+• Kein Cloud-Backup durch Android – Sicherungen machst du selbst, als verschlüsselte Datei mit deinem Passwort.
+• Optionale App-Sperre mit Biometrie oder Geräte-PIN. Inhalte erscheinen dann nicht in Screenshots oder der App-Übersicht.
+
+TERMINE IM BLICK
+• Zeitstrahl mit kommenden und vergangenen Terminen, dazu Kalender mit Tag-, Wochen-, Monats- und Jahresansicht.
+• Erinnerungen vor dem Termin – lokal auf dem Gerät, ohne Push-Server.
+• Auf Wunsch einseitiger Export in deinen Gerätekalender. Übertragen werden nur „Arzttermin“, Arzt und Ort – keine Diagnosen oder Notizen.
+
+SYMPTOME UND VERLAUF
+• Symptome mit Stärke 0–10 oder Messwerten wie Temperatur, Puls oder Blutdruck festhalten.
+• Kurze Check-ins am Morgen und Abend, auf Wunsch mit Schlaf, Energie und Tagebuch.
+• Verlaufsdiagramme zeigen, wie sich Beschwerden über Tage und Wochen entwickeln.
+• Fotos, Videos und Sprachnotizen als Belege direkt am Symptom.
+
+MEDIKAMENTE UND IMPFUNGEN
+• Medikamente mit Dosis und Einnahmezeiten, Erinnerung zur Einnahme und Abhaken mit einem Tipp.
+• Impfungen mit Datum, Charge und nächster Auffrischung.
+
+BEFUNDE UND DOKUMENTE
+• PDFs und Fotos von Befunden anhängen oder Papier direkt mit der Kamera scannen.
+• Die Texterkennung läuft auf dem Gerät; danach findest du Befunde über die Volltextsuche.
+• Diagnosen verbinden Termine, Symptome, Medikamente, Notizen und Berichte.
+
+GUT VORBEREITET ZUM ARZTBESUCH
+• Fragen, Symptom-Verläufe, Medikamente und Impfungen auf einen Blick – als PDF zum Zeigen oder Teilen.
+
+WIDGETS UND UHR
+• Startbildschirm-Widgets für nächsten Termin, Check-in und Medikamente heute – frei in der Größe veränderbar.
+• Kacheln und Komplikationen für Wear OS.
+• Diskreter Modus zeigt nur Zeiten und Anzahl, ohne Namen – automatisch, sobald die App-Sperre aktiv ist.
+
+ZYKLUS UND PSYCHE (OPTIONAL)
+• Zyklus, Blutung, Beschwerden und Wechseljahre dokumentieren.
+• Stimmung, Angst und Tagebuch, mit den Fragebögen PHQ-9 und GAD-7 als monatlichem Verlauf.
+
+FRAG DEINE AKTE (OPTIONAL)
+• Ein KI-Assistent beantwortet Fragen zu deinen eigenen Einträgen. Das Modell läuft komplett auf dem Handy; nur der einmalige Download des Modells (ca. 2,6 GB) braucht Internet. Fragen und Akte-Daten verlassen das Gerät nicht.
+• Antworten können Fehler enthalten und ersetzen kein ärztliches Gespräch.
+
+UMZIEHEN UND EXPORTIEREN
+• Verschlüsselte Sicherung aller Daten und Dateien, zum Beispiel für ein neues Handy.
+• Alle Berichte und Scans als ZIP mit Übersicht exportieren.
+
+WICHTIGER HINWEIS
+Ärzte ist ein Werkzeug zum Organisieren und Dokumentieren. Die App stellt keine Diagnosen, gibt keine medizinischen Empfehlungen und ersetzt keine ärztliche Beratung. Bei Beschwerden oder im Notfall wende dich an eine Ärztin, einen Arzt oder den Notruf 112.
