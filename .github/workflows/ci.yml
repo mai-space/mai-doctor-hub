@@ -193,7 +193,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  # iOS: nur bauen (ohne Signatur) — TestFlight/App Store siehe docs/RELEASE.md.
+  # iOS: nur bauen (ohne Signatur) — TestFlight/App Store siehe project-docs/RELEASE.md.
   # Baut die Apple-Watch-App (Ziele „Watch“ und „WatchWidgets“) mit.
   ios:
     name: iOS build (no codesign)
