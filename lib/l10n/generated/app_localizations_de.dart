@@ -69,6 +69,75 @@ class AppLocalizationsDe extends AppLocalizations {
   String get assistantOpenLink => 'Öffnen';
 
   @override
+  String get assistantAiLabel => 'KI-generiert';
+
+  @override
+  String get assistantReport => 'Melden';
+
+  @override
+  String get assistantReportTooltip =>
+      'Antwort als falsch, schädlich oder unangemessen melden';
+
+  @override
+  String get assistantReported => 'Gemeldet';
+
+  @override
+  String get assistantReportTitle => 'Antwort melden';
+
+  @override
+  String get assistantReportIntro => 'Was stimmt mit dieser KI-Antwort nicht?';
+
+  @override
+  String get assistantReportReasonWrong => 'Falsch oder irreführend';
+
+  @override
+  String get assistantReportReasonHarmful => 'Schädlich oder gefährlich';
+
+  @override
+  String get assistantReportReasonInappropriate => 'Unangemessen oder anstößig';
+
+  @override
+  String get assistantReportReasonOther => 'Etwas anderes';
+
+  @override
+  String get assistantReportComment => 'Kommentar (optional)';
+
+  @override
+  String get assistantReportIncludeAnswer => 'Antworttext mitschicken';
+
+  @override
+  String get assistantReportIncludeAnswerHint =>
+      'Kann Angaben aus deiner Akte enthalten. Deine Frage und die Akte selbst gehen nie mit.';
+
+  @override
+  String assistantReportPrivacy(String address) {
+    return 'Die App sendet nichts selbst. Es öffnet sich ein E-Mail-Entwurf an $address, den du prüfen und selbst abschicken kannst.';
+  }
+
+  @override
+  String get assistantReportSend => 'E-Mail vorbereiten';
+
+  @override
+  String assistantReportNoMailApp(String address) {
+    return 'Keine Mail-App gefunden. Der Text ist kopiert; schick ihn gern an $address.';
+  }
+
+  @override
+  String get assistantReportMailSubject => 'Meldung: KI-Antwort in Ärzte';
+
+  @override
+  String get assistantReportMailReason => 'Grund';
+
+  @override
+  String get assistantReportMailComment => 'Kommentar';
+
+  @override
+  String get assistantReportMailAnswer => 'KI-Antwort';
+
+  @override
+  String get assistantReportMailModel => 'Modell';
+
+  @override
   String get calendarViewList => 'Liste';
 
   @override

@@ -69,6 +69,75 @@ class AppLocalizationsEn extends AppLocalizations {
   String get assistantOpenLink => 'Open';
 
   @override
+  String get assistantAiLabel => 'AI-generated';
+
+  @override
+  String get assistantReport => 'Report';
+
+  @override
+  String get assistantReportTooltip =>
+      'Report this answer as wrong, harmful or inappropriate';
+
+  @override
+  String get assistantReported => 'Reported';
+
+  @override
+  String get assistantReportTitle => 'Report answer';
+
+  @override
+  String get assistantReportIntro => 'What is wrong with this AI answer?';
+
+  @override
+  String get assistantReportReasonWrong => 'Wrong or misleading';
+
+  @override
+  String get assistantReportReasonHarmful => 'Harmful or dangerous';
+
+  @override
+  String get assistantReportReasonInappropriate => 'Inappropriate or offensive';
+
+  @override
+  String get assistantReportReasonOther => 'Something else';
+
+  @override
+  String get assistantReportComment => 'Comment (optional)';
+
+  @override
+  String get assistantReportIncludeAnswer => 'Include the answer text';
+
+  @override
+  String get assistantReportIncludeAnswerHint =>
+      'May contain details from your record. Your question and the record itself are never included.';
+
+  @override
+  String assistantReportPrivacy(String address) {
+    return 'The app sends nothing by itself. An email draft to $address opens, which you can review and send yourself.';
+  }
+
+  @override
+  String get assistantReportSend => 'Prepare email';
+
+  @override
+  String assistantReportNoMailApp(String address) {
+    return 'No email app found. The text has been copied; feel free to send it to $address.';
+  }
+
+  @override
+  String get assistantReportMailSubject => 'Report: AI answer in Ärzte';
+
+  @override
+  String get assistantReportMailReason => 'Reason';
+
+  @override
+  String get assistantReportMailComment => 'Comment';
+
+  @override
+  String get assistantReportMailAnswer => 'AI answer';
+
+  @override
+  String get assistantReportMailModel => 'Model';
+
+  @override
   String get calendarViewList => 'List';
 
   @override

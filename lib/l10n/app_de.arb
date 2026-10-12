@@ -54,6 +54,41 @@
     }
   },
   "assistantOpenLink": "Öffnen",
+  "assistantAiLabel": "KI-generiert",
+  "assistantReport": "Melden",
+  "assistantReportTooltip": "Antwort als falsch, schädlich oder unangemessen melden",
+  "assistantReported": "Gemeldet",
+  "assistantReportTitle": "Antwort melden",
+  "assistantReportIntro": "Was stimmt mit dieser KI-Antwort nicht?",
+  "assistantReportReasonWrong": "Falsch oder irreführend",
+  "assistantReportReasonHarmful": "Schädlich oder gefährlich",
+  "assistantReportReasonInappropriate": "Unangemessen oder anstößig",
+  "assistantReportReasonOther": "Etwas anderes",
+  "assistantReportComment": "Kommentar (optional)",
+  "assistantReportIncludeAnswer": "Antworttext mitschicken",
+  "assistantReportIncludeAnswerHint": "Kann Angaben aus deiner Akte enthalten. Deine Frage und die Akte selbst gehen nie mit.",
+  "assistantReportPrivacy": "Die App sendet nichts selbst. Es öffnet sich ein E-Mail-Entwurf an {address}, den du prüfen und selbst abschicken kannst.",
+  "@assistantReportPrivacy": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "assistantReportSend": "E-Mail vorbereiten",
+  "assistantReportNoMailApp": "Keine Mail-App gefunden. Der Text ist kopiert; schick ihn gern an {address}.",
+  "@assistantReportNoMailApp": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "assistantReportMailSubject": "Meldung: KI-Antwort in Ärzte",
+  "assistantReportMailReason": "Grund",
+  "assistantReportMailComment": "Kommentar",
+  "assistantReportMailAnswer": "KI-Antwort",
+  "assistantReportMailModel": "Modell",
   "calendarViewList": "Liste",
   "calendarPrevious": "Zurück",
   "calendarNext": "Weiter",
