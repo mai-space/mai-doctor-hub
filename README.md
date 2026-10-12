@@ -83,7 +83,8 @@ Workflow: `.github/workflows/ci.yml` (Trigger: `push` auf alle Branches, `pull_r
 
 1. `flutter analyze` + `flutter test` (inkl. PDFium-Download für PDF-Tests); `dart analyze` + `dart test` für `packages/` und `tools/`
 2. Release-APK → Artifact `mai-doctor-hub.apk` (Retention 14 Tage)
-3. `deploy-mock` auf `main`: loggt nur `would deploy` — **kein PHI, kein Datenupload**
+3. Signiertes App-Bundle auf `main`, sobald die Signatur-Secrets gesetzt sind (Artifact `mai-doctor-hub-signed-aab`, siehe [`project-docs/RELEASE.md`](project-docs/RELEASE.md)); ohne Secrets wird der Schritt übersprungen
+4. `deploy-mock` auf `main`: loggt nur `would deploy` — **kein PHI, kein Datenupload**
 
 ## Privacy
 
