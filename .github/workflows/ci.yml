@@ -157,7 +157,7 @@ jobs:
 
       - name: Upload APK build log (failure)
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apk-build-log
           path: apk-build.log
@@ -171,7 +171,7 @@ jobs:
 
       - name: Upload APK artifact
         if: success()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: mai-doctor-hub.apk
           path: build/app/outputs/flutter-apk/mai-doctor-hub.apk
@@ -186,7 +186,7 @@ jobs:
 
       - name: Upload Wear OS APK artifact
         if: success()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: mai-doctor-hub-wear.apk
           path: build/wear/outputs/apk/release/mai-doctor-hub-wear.apk
@@ -295,7 +295,7 @@ jobs:
 
       - name: Upload signed bundle
         if: steps.secrets.outputs.ready == 'true'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: mai-doctor-hub-signed-aab
           path: |
@@ -354,7 +354,7 @@ jobs:
 
       - name: Upload iOS build log (failure)
         if: failure()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ios-build-log
           path: ios-build.log
