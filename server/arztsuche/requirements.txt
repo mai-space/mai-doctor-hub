@@ -1,0 +1,6 @@
+# Laufzeit (gepinnt; Updates bewusst gemeinsam testen)
+fastapi==0.163.1
+pydantic==2.14.3
+starlette==1.10.0
+uvicorn==0.54.0
+osmium==4.3.2

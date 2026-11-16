@@ -1,0 +1,22 @@
+# Caddy holt das Let's-Encrypt-Zertifikat selbst (Port 80/443 müssen offen sein,
+# DNS-A/AAAA-Eintrag doctorhub.maispace.de → Server).
+doctorhub.maispace.de {
+	# Keine Zugriffsprotokolle (Datenschutz): Caddy loggt Anfragen nur mit „log“.
+	encode zstd gzip
+
+	handle /api/* {
+		reverse_proxy api:8000 {
+			# Client-IP nicht weiterreichen – die API braucht sie nicht.
+			header_up -X-Forwarded-For
+			header_up -X-Real-IP
+		}
+	}
+	handle {
+		respond "Mai Doctor Hub" 200
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+}

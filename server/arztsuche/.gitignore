@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+*.sqlite*
+*.pbf
+nodes.cache
+optout.txt
+.ruff_cache/
