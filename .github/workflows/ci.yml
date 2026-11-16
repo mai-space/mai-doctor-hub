@@ -82,6 +82,34 @@ jobs:
       - name: Test
         run: dart test
 
+  arztsuche-api:
+    name: Arztsuche-API (Python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: server/arztsuche
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+
+      - name: Install
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check arztsuche tests
+
+      - name: Test
+        run: pytest -q
+
+      - name: Docker build
+        run: docker build -t mai-arztsuche:ci .
+
   build-apk:
     name: Release APK
     needs: [analyze-test, dart-packages]

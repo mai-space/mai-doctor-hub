@@ -1,0 +1,41 @@
+# Für einen vorhandenen nginx auf dem Server (statt des Caddy-Profils).
+# Zertifikat z. B. mit: certbot --nginx -d doctorhub.maispace.de
+
+limit_req_zone $binary_remote_addr zone=arztsuche:10m rate=10r/s;
+limit_req_zone $binary_remote_addr zone=arztsuche_write:10m rate=6r/m;
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name doctorhub.maispace.de;
+
+    ssl_certificate     /etc/letsencrypt/live/doctorhub.maispace.de/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/doctorhub.maispace.de/privkey.pem;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # Datenschutz: keine Zugriffsprotokolle für die API (URLs enthalten PLZ/Adresse).
+    access_log off;
+
+    location /api/ {
+        limit_req zone=arztsuche burst=20 nodelay;
+        proxy_pass http://127.0.0.1:8000;   # Pfad /api bleibt erhalten
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        client_max_body_size 16k;
+    }
+
+    # Konten anlegen und Schreibzugriffe zusätzlich drosseln
+    location = /api/v1/accounts {
+        limit_req zone=arztsuche_write burst=3 nodelay;
+        proxy_pass http://127.0.0.1:8000;
+        client_max_body_size 4k;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name doctorhub.maispace.de;
+    return 301 https://$host$request_uri;
+}

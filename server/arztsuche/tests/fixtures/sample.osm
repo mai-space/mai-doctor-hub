@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Frei erfundene Testdaten im OSM-Format (Berlin-Mitte / Köln). -->
+<osm version="0.6" generator="handwritten">
+  <!-- Hausadressen für den Geocoder -->
+  <node id="1" lat="52.5300" lon="13.3850" version="1">
+    <tag k="addr:street" v="Musterstraße"/><tag k="addr:housenumber" v="1"/>
+    <tag k="addr:postcode" v="10115"/><tag k="addr:city" v="Berlin"/>
+  </node>
+  <node id="2" lat="52.5310" lon="13.3870" version="1">
+    <tag k="addr:street" v="Musterstraße"/><tag k="addr:housenumber" v="9"/>
+    <tag k="addr:postcode" v="10115"/><tag k="addr:city" v="Berlin"/>
+  </node>
+  <!-- Gebäude als Weg (Knoten ohne Tags) -->
+  <node id="10" lat="52.5200" lon="13.4000" version="1"/>
+  <node id="11" lat="52.5200" lon="13.4010" version="1"/>
+  <node id="12" lat="52.5210" lon="13.4010" version="1"/>
+  <node id="13" lat="52.5210" lon="13.4000" version="1"/>
+  <way id="100" version="1">
+    <nd ref="10"/><nd ref="11"/><nd ref="12"/><nd ref="13"/><nd ref="10"/>
+    <tag k="building" v="yes"/>
+    <tag k="addr:street" v="Beispielweg"/><tag k="addr:housenumber" v="3"/>
+    <tag k="addr:postcode" v="10178"/><tag k="addr:city" v="Berlin"/>
+  </way>
+  <node id="3" lat="50.9400" lon="6.9600" version="1">
+    <tag k="addr:street" v="Domgasse"/><tag k="addr:housenumber" v="2"/>
+    <tag k="addr:postcode" v="50667"/><tag k="addr:city" v="Köln"/>
+  </node>
+
+  <!-- Praxen -->
+  <node id="501" lat="52.5305" lon="13.3860" version="1">
+    <tag k="amenity" v="doctors"/><tag k="healthcare" v="doctor"/>
+    <tag k="name" v="Hausarztpraxis Alex Beispiel"/>
+    <tag k="healthcare:speciality" v="general;internal"/>
+    <tag k="addr:street" v="Musterstraße"/><tag k="addr:housenumber" v="5"/>
+    <tag k="addr:postcode" v="10115"/><tag k="addr:city" v="Berlin"/>
+    <tag k="phone" v="+49 30 1234567"/><tag k="website" v="praxis-beispiel.example"/>
+    <tag k="insurance:health" v="public;private"/>
+    <tag k="opening_hours" v="Mo-Fr 08:00-12:00"/>
+  </node>
+  <node id="502" lat="52.5320" lon="13.3900" version="1">
+    <tag k="amenity" v="dentist"/>
+    <tag k="name" v="Zahnarzt Sam Muster"/>
+    <tag k="insurance:health" v="private"/>
+  </node>
+  <way id="600" version="1">
+    <nd ref="10"/><nd ref="11"/><nd ref="12"/><nd ref="13"/><nd ref="10"/>
+    <tag k="amenity" v="doctors"/>
+    <tag k="name" v="Augenarztpraxis am Beispielweg"/>
+    <tag k="healthcare:speciality" v="ophthalmology"/>
+    <tag k="contact:phone" v="030 9999"/>
+  </way>
+  <node id="503" lat="50.9410" lon="6.9580" version="1">
+    <tag k="healthcare" v="psychotherapist"/>
+    <tag k="name" v="Psychotherapie Domblick"/>
+  </node>
+  <!-- ohne Namen: wird ausgelassen -->
+  <node id="504" lat="52.5301" lon="13.3851" version="1">
+    <tag k="amenity" v="doctors"/>
+  </node>
+  <!-- Opt-out-Kandidat -->
+  <node id="505" lat="52.5302" lon="13.3852" version="1">
+    <tag k="amenity" v="doctors"/><tag k="name" v="Praxis Widerspruch"/>
+  </node>
+</osm>

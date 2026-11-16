@@ -1,0 +1,55 @@
+# Arztsuche unter https://doctorhub.maispace.de/api
+#
+#   docker compose run --rm importer        # einmalig + monatlich (Cron)
+#   docker compose up -d api                # API auf 127.0.0.1:8000
+#   docker compose --profile caddy up -d    # optional: Caddy mit HTTPS
+#
+# Ohne Caddy-Profil hängt die API nur an localhost und wird von einem
+# vorhandenen Reverse-Proxy (nginx, Traefik …) unter /api eingebunden.
+
+services:
+  api:
+    build: .
+    image: mai-arztsuche:latest
+    restart: unless-stopped
+    environment:
+      ARZTSUCHE_COMMUNITY: "1"        # 0 = nur Suche, keine Konten/Bewertungen
+      ARZTSUCHE_POW_BITS: "20"        # Rechenaufwand je neuem Konto
+      ARZTSUCHE_WRITES_PER_HOUR: "30"
+      ARZTSUCHE_DOCS: "1"             # /api/docs (OpenAPI)
+    volumes:
+      - arztsuche-data:/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+
+  importer:
+    image: mai-arztsuche:latest
+    build: .
+    profiles: ["import"]
+    command: ["arztsuche-import"]
+    environment:
+      ARZTSUCHE_PBF_URL: "https://download.geofabrik.de/europe/germany-latest.osm.pbf"
+    volumes:
+      - arztsuche-data:/data
+
+  caddy:
+    image: caddy:2.10-alpine
+    profiles: ["caddy"]
+    restart: unless-stopped
+    depends_on: [api]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  arztsuche-data:
+  caddy-data:
+  caddy-config:
